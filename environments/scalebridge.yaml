@@ -1,0 +1,250 @@
+name: scalebridge-dev
+
+# =============================================================================
+# ScaleBridge Research Development Environment
+# =============================================================================
+#
+# Purpose
+# -------
+# Unified development environment for the ScaleBridge research codebase:
+#   - PyTorch-first ML/SciML development
+#   - NeuroMANCER-compatible constrained learning and control
+#   - EnergyPlus interaction through opyplus
+#   - Optimization with CasADi, Pyomo, CVXPY, and solver interfaces
+#   - Reinforcement learning with Stable-Baselines3 / Gymnasium
+#   - Experiment tracking with MLflow
+#   - Automated hyperparameter tuning with Optuna / Ray Tune
+#   - Plotting, notebooks, paper figures, and reproducible experiments
+#
+# Design Notes
+# ------------
+# 1. Python 3.10 is used intentionally for broad compatibility across:
+#      - NeuroMANCER
+#      - PyTorch
+#      - Stable-Baselines3
+#      - CasADi / Pyomo / CVXPY
+#      - WSU HPC and Windows development machines
+#
+# 2. This is a GPU-preferred environment. It installs the CUDA-enabled
+#    PyTorch stack through the pytorch/nvidia conda channels.
+#
+# 3. TensorFlow is intentionally NOT included. Legacy TensorFlow/Keras scripts
+#    should be used only as reference logic. TensorBoard is included because it
+#    is useful for PyTorch experiment logging.
+#
+# 4. If a target machine has no NVIDIA GPU, this environment should still create,
+#    but PyTorch CUDA availability will be False. A CPU-only fallback YAML can be
+#    made by removing `pytorch-cuda` and adding `cpuonly`.
+#
+# Usage
+# -----
+#   conda env create -f scalebridge.yaml
+#   conda activate scalebridge-dev
+#   python scripts/check_scalebridge_environment.py
+#
+# =============================================================================
+
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+  - defaults
+
+dependencies:
+  # ---------------------------------------------------------------------------
+  # Core Python
+  # ---------------------------------------------------------------------------
+  - python=3.10
+  - pip
+  - setuptools
+  - wheel
+
+  # ---------------------------------------------------------------------------
+  # PyTorch GPU Stack
+  # ---------------------------------------------------------------------------
+  # For NVIDIA GPU support. If this causes issues on a CPU-only machine,
+  # use the CPU fallback variant described in the notes.
+  - pytorch
+  - torchvision
+  - torchaudio
+  - pytorch-cuda=12.4
+
+  # ---------------------------------------------------------------------------
+  # Core Scientific Python
+  # ---------------------------------------------------------------------------
+  - numpy
+  - scipy
+  - pandas
+  - polars
+  - pyarrow
+  - xarray
+  - bottleneck
+  - numexpr
+  - h5py
+  - openpyxl
+  - xlrd
+  - tables
+
+  # ---------------------------------------------------------------------------
+  # Machine Learning / Classical Baselines
+  # ---------------------------------------------------------------------------
+  - scikit-learn
+  - statsmodels
+  - joblib
+  - cloudpickle
+
+  # ---------------------------------------------------------------------------
+  # Optimization and Mathematical Programming
+  # ---------------------------------------------------------------------------
+  - casadi
+  - pyomo
+  - cvxpy
+  - scipy
+  - sympy
+  - networkx
+
+  # Open-source solvers useful with Pyomo/CVXPY.
+  # Commercial solvers like Gurobi/CPLEX should be installed separately if
+  # licenses are available on a given machine/HPC system.
+  - glpk
+  - coincbc
+  - ipopt
+  - highs
+  - highspy
+  - osqp
+  - ecos
+  - scs
+  - clarabel
+
+  # ---------------------------------------------------------------------------
+  # Plotting, Visualization, Paper Figures
+  # ---------------------------------------------------------------------------
+  - matplotlib
+  - seaborn
+  - plotly
+  - bokeh
+  - altair
+  - panel
+  - holoviews
+  - hvplot
+  - graphviz
+  - python-graphviz
+  - pillow
+  - imageio
+  - kaleido
+
+  # ---------------------------------------------------------------------------
+  # Geospatial / Grid Visualization Support
+  # ---------------------------------------------------------------------------
+  - geopandas
+  - shapely
+  - pyproj
+  - fiona
+  - folium
+
+  # ---------------------------------------------------------------------------
+  # Notebooks and Interactive Development
+  # ---------------------------------------------------------------------------
+  - jupyterlab
+  - notebook
+  - ipykernel
+  - ipywidgets
+  - nbformat
+  - nbconvert
+  - jupyterlab_widgets
+
+  # ---------------------------------------------------------------------------
+  # Experiment Tracking / MLOps
+  # ---------------------------------------------------------------------------
+  - mlflow
+  - sqlalchemy
+  - alembic
+  - pydantic
+  - pydantic-settings
+  - python-dotenv
+  - fastapi
+  - uvicorn
+  - requests
+  - tqdm
+  - rich
+  - typer
+  - hydra-core
+  - omegaconf
+  - pyyaml
+
+  # ---------------------------------------------------------------------------
+  # Hyperparameter Tuning / Distributed Experiment Management
+  # ---------------------------------------------------------------------------
+  - optuna
+  - optuna-dashboard
+  - ray-tune
+
+  # ---------------------------------------------------------------------------
+  # Development Tooling
+  # ---------------------------------------------------------------------------
+  - pytest
+  - pytest-cov
+  - black
+  - ruff
+  - mypy
+  - pre-commit
+  - isort
+  - ipdb
+
+  # ---------------------------------------------------------------------------
+  # Pip Packages
+  # ---------------------------------------------------------------------------
+  - pip:
+      # -----------------------------------------------------------------------
+      # NeuroMANCER and differentiable scientific ML
+      # -----------------------------------------------------------------------
+      - neuromancer
+      - torchdiffeq
+      - torchsde
+      - cvxpylayers
+      - diffcp
+
+      # -----------------------------------------------------------------------
+      # Reinforcement learning
+      # -----------------------------------------------------------------------
+      - "stable-baselines3[extra]"
+      - sb3-contrib
+      - gymnasium
+      - ale-py
+
+      # -----------------------------------------------------------------------
+      # EnergyPlus / building simulation interaction
+      # -----------------------------------------------------------------------
+      - opyplus
+      - eppy
+      - ladybug-core
+
+      # -----------------------------------------------------------------------
+      # PyTorch-adjacent logging and model utilities
+      # -----------------------------------------------------------------------
+      - tensorboard
+      - tensorboardX
+      - torchinfo
+      - torchviz
+      - einops
+
+      # -----------------------------------------------------------------------
+      # Additional experiment / plotting utilities
+      # -----------------------------------------------------------------------
+      - scienceplots
+      - tikzplotlib
+      - tabulate
+      - dataframe-image
+
+      # -----------------------------------------------------------------------
+      # Optional but useful for database/API workflows
+      # -----------------------------------------------------------------------
+      - psycopg2-binary
+      - python-slugify
+
+      # -----------------------------------------------------------------------
+      # Optional commercial solver interface.
+      # Requires an active Gurobi license on the target machine.
+      # Remove this line if installation fails or if no license is available.
+      # -----------------------------------------------------------------------
+      - gurobipy
