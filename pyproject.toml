@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scalebridge"
+version = "0.1.0"
+description = "PyTorch-first research software for scalable building-grid modeling and control."
+authors = [{name = "Ninad Gaikwad"}]
+requires-python = ">=3.10"
+dependencies = [
+    "numpy",
+    "pandas",
+    "scikit-learn",
+    "matplotlib",
+    "torch",
+    "mlflow",
+    "optuna",
+    "pydantic",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff",
+    "mypy",
+    "ipykernel",
+]
+tuning = [
+    "ray[tune]",
+]
+db = [
+    "sqlalchemy",
+    "psycopg[binary]",
+    "alembic",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

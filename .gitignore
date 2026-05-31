@@ -1,0 +1,46 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Environments
+.venv/
+venv/
+env/
+.conda/
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Data and outputs
+/data/raw_external/*
+/data/interim/*
+/data/processed/*
+/outputs/*
+/experiments/*/results/*
+/experiments/*/mlruns/*
+mlruns/
+
+# Models/artifacts
+*.pt
+*.pth
+*.ckpt
+*.h5
+*.pkl
+*.pickle
+*.joblib
+*.save
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vs/
+.idea/
+.vscode/
