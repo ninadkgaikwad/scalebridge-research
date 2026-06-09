@@ -1,4 +1,4 @@
-﻿name: scalebridge-dev
+name: scalebridge-dev
 
 # =============================================================================
 # ScaleBridge Research Development Environment
@@ -131,6 +131,7 @@ dependencies:
   - python-graphviz
   - pillow
   - imageio
+  - kaleido
 
   # ---------------------------------------------------------------------------
   # Geospatial / Grid Visualization Support
@@ -194,8 +195,6 @@ dependencies:
   # Pip Packages
   # ---------------------------------------------------------------------------
   - pip:
-
-      - kaleido
       # -----------------------------------------------------------------------
       # NeuroMANCER and differentiable scientific ML
       # -----------------------------------------------------------------------

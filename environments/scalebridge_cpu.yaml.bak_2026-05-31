@@ -1,4 +1,4 @@
-﻿name: scalebridge-dev
+name: scalebridge-dev-cpu
 
 # =============================================================================
 # ScaleBridge Research Development Environment
@@ -26,7 +26,7 @@
 #      - WSU HPC and Windows development machines
 #
 # 2. This is a GPU-preferred environment. It installs the CUDA-enabled
-#    PyTorch stack through the pytorch/nvidia conda channels.
+#    PyTorch stack through the pytorch conda channel.
 #
 # 3. TensorFlow is intentionally NOT included. Legacy TensorFlow/Keras scripts
 #    should be used only as reference logic. TensorBoard is included because it
@@ -67,7 +67,7 @@ dependencies:
   - pytorch
   - torchvision
   - torchaudio
-  - pytorch-cuda=12.4
+  - cpuonly
 
   # ---------------------------------------------------------------------------
   # Core Scientific Python
@@ -131,6 +131,7 @@ dependencies:
   - python-graphviz
   - pillow
   - imageio
+  - kaleido
 
   # ---------------------------------------------------------------------------
   # Geospatial / Grid Visualization Support
@@ -194,8 +195,6 @@ dependencies:
   # Pip Packages
   # ---------------------------------------------------------------------------
   - pip:
-
-      - kaleido
       # -----------------------------------------------------------------------
       # NeuroMANCER and differentiable scientific ML
       # -----------------------------------------------------------------------

@@ -1,0 +1,148 @@
+﻿============================================================
+SCALEBRIDGE WINDOWS ENVIRONMENT SETUP REPORT
+Date: 2026-05-31
+Machine label: dev_laptop
+Computer name: NKG-WIN-LAPTOP
+User: ninad
+Repo path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+============================================================
+
+Purpose:
+Create or update the ScaleBridge Windows development environment,
+install scalebridge editable, and run the environment smoke test.
+
+
+SECTION 1 — REPO STATUS
+============================================================
+Current location:
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+Git status:
+?? docs/deployment/
+?? scalebridge_week0_windows_env_setup_dev_laptop_2026-05-31.txt
+
+
+Git branch:
+* main 4fbd00b [origin/main] Organize ScaleBridge environment files
+
+
+SECTION 2 — CONDA STATUS BEFORE SETUP
+============================================================
+conda version:
+conda 24.11.3
+
+
+Existing conda environments:
+
+# conda environments:
+#
+opf-env                C:\Users\ninad\Anaconda3\envs\opf-env
+quarto-notes           C:\Users\ninad\Anaconda3\envs\quarto-notes
+base                   C:\Users\ninad\anaconda3
+BasicANN_Journal       C:\Users\ninad\anaconda3\envs\BasicANN_Journal
+DuckCurve_Stochastic   C:\Users\ninad\anaconda3\envs\DuckCurve_Stochastic
+SmartComSim_Base       C:\Users\ninad\anaconda3\envs\SmartComSim_Base
+neuromancer          * C:\Users\ninad\anaconda3\envs\neuromancer
+opf-env                C:\Users\ninad\anaconda3\envs\opf-env
+quarto-notes           C:\Users\ninad\anaconda3\envs\quarto-notes
+
+
+
+SECTION 3 — REQUIRED ENVIRONMENT FILES
+============================================================
+PASS	environments\scalebridge.yaml
+PASS	environments\scalebridge_cpu.yaml
+PASS	environments\check_scalebridge_environment.py
+PASS	pyproject.toml
+PASS	src\scalebridge\__init__.py
+
+SECTION 4 — CREATE OR UPDATE scalebridge-dev
+============================================================
+Environment scalebridge-dev does not exist. Creating from environments\scalebridge.yaml ...
+
+SECTION 5 — EDITABLE INSTALL IN scalebridge-dev
+============================================================
+conda.exe : 
+At C:\Users\ninad\Anaconda3\shell\condabin\Conda.psm1:153 char:17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+EnvironmentLocationNotFound: Not a conda environment: C:\Users\ninad\anaconda3\envs\scalebridge-dev
+
+
+conda.exe : 
+At C:\Users\ninad\Anaconda3\shell\condabin\Conda.psm1:153 char:17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+EnvironmentLocationNotFound: Not a conda environment: C:\Users\ninad\anaconda3\envs\scalebridge-dev
+
+
+
+SECTION 6 — import scalebridge TEST
+============================================================
+conda.exe : 
+At C:\Users\ninad\Anaconda3\shell\condabin\Conda.psm1:153 char:17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+EnvironmentLocationNotFound: Not a conda environment: C:\Users\ninad\anaconda3\envs\scalebridge-dev
+
+
+
+SECTION 7 — PACKAGE LOCATION
+============================================================
+conda.exe : 
+At C:\Users\ninad\Anaconda3\shell\condabin\Conda.psm1:153 char:17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+EnvironmentLocationNotFound: Not a conda environment: C:\Users\ninad\anaconda3\envs\scalebridge-dev
+
+
+
+SECTION 8 — ENVIRONMENT SMOKE TEST
+============================================================
+conda.exe : 
+At C:\Users\ninad\Anaconda3\shell\condabin\Conda.psm1:153 char:17
++ ...             & $Env:CONDA_EXE $Env:_CE_M $Env:_CE_CONDA $Command @Othe ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+EnvironmentLocationNotFound: Not a conda environment: C:\Users\ninad\anaconda3\envs\scalebridge-dev
+
+
+
+SECTION 9 — CONDA STATUS AFTER SETUP
+============================================================
+
+# conda environments:
+#
+opf-env                C:\Users\ninad\Anaconda3\envs\opf-env
+quarto-notes           C:\Users\ninad\Anaconda3\envs\quarto-notes
+base                   C:\Users\ninad\anaconda3
+BasicANN_Journal       C:\Users\ninad\anaconda3\envs\BasicANN_Journal
+DuckCurve_Stochastic   C:\Users\ninad\anaconda3\envs\DuckCurve_Stochastic
+SmartComSim_Base       C:\Users\ninad\anaconda3\envs\SmartComSim_Base
+neuromancer          * C:\Users\ninad\anaconda3\envs\neuromancer
+opf-env                C:\Users\ninad\anaconda3\envs\opf-env
+quarto-notes           C:\Users\ninad\anaconda3\envs\quarto-notes
+
+
+
+SECTION 10 — NEXT ACTION
+============================================================
+Upload this report for review:
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scalebridge_week0_windows_env_setup_dev_laptop_2026-05-31.txt
+
+If scalebridge-dev failed due to CUDA/GPU dependency resolution,
+next step is CPU fallback using environments\scalebridge_cpu.yaml.

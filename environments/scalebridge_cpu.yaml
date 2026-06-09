@@ -1,4 +1,4 @@
-name: scalebridge-dev-cpu
+﻿name: scalebridge-dev-cpu
 
 # =============================================================================
 # ScaleBridge Research Development Environment
@@ -131,7 +131,6 @@ dependencies:
   - python-graphviz
   - pillow
   - imageio
-  - kaleido
 
   # ---------------------------------------------------------------------------
   # Geospatial / Grid Visualization Support
@@ -195,6 +194,8 @@ dependencies:
   # Pip Packages
   # ---------------------------------------------------------------------------
   - pip:
+
+      - kaleido
       # -----------------------------------------------------------------------
       # NeuroMANCER and differentiable scientific ML
       # -----------------------------------------------------------------------
