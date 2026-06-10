@@ -1,0 +1,51 @@
+﻿TORCH GPU TEST REPORT
+Machine: NKG-WIN-LAPTOP
+Date: 06/10/2026 09:21:34
+PWD: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+===== CONDA ENV LIST =====
+
+# conda environments:
+#
+opf-env                C:\Users\ninad\Anaconda3\envs\opf-env
+quarto-notes           C:\Users\ninad\Anaconda3\envs\quarto-notes
+scalebridge-torch-gpu-test   C:\Users\ninad\Anaconda3\envs\scalebridge-torch-gpu-test
+base                   C:\Users\ninad\anaconda3
+BasicANN_Journal       C:\Users\ninad\anaconda3\envs\BasicANN_Journal
+DuckCurve_Stochastic   C:\Users\ninad\anaconda3\envs\DuckCurve_Stochastic
+SmartComSim_Base       C:\Users\ninad\anaconda3\envs\SmartComSim_Base
+neuromancer            C:\Users\ninad\anaconda3\envs\neuromancer
+opf-env                C:\Users\ninad\anaconda3\envs\opf-env
+quarto-notes           C:\Users\ninad\anaconda3\envs\quarto-notes
+scalebridge-torch-gpu-test * C:\Users\ninad\anaconda3\envs\scalebridge-torch-gpu-test
+
+
+===== NVIDIA-SMI =====
+Wed Jun 10 09:21:37 2026       
++-----------------------------------------------------------------------------+
+| NVIDIA-SMI 528.79       Driver Version: 528.79       CUDA Version: 12.0     |
+|-------------------------------+----------------------+----------------------+
+| GPU  Name            TCC/WDDM | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp  Perf  Pwr:Usage/Cap|         Memory-Usage | GPU-Util  Compute M. |
+|                               |                      |               MIG M. |
+|===============================+======================+======================|
+|   0  NVIDIA GeForce ... WDDM  | 00000000:01:00.0 Off |                  N/A |
+| N/A   49C    P0    N/A /  N/A |      0MiB /  2048MiB |      0%      Default |
+|                               |                      |                  N/A |
++-------------------------------+----------------------+----------------------+
+                                                                               
++-----------------------------------------------------------------------------+
+| Processes:                                                                  |
+|  GPU   GI   CI        PID   Type   Process name                  GPU Memory |
+|        ID   ID                                                   Usage      |
+|=============================================================================|
+|  No running processes found                                                 |
++-----------------------------------------------------------------------------+
+
+===== TORCH CUDA TEST =====
+torch: 2.5.1
+torch cuda build: 11.8
+cuda available: True
+device count: 1
+device 0: NVIDIA GeForce MX150
+gpu matmul OK: torch.Size([500, 500])

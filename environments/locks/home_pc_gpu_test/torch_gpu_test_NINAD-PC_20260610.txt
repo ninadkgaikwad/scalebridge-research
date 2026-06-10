@@ -1,0 +1,61 @@
+TORCH GPU TEST REPORT 
+Machine: NINAD-PC 
+Date: Wed 06/10/2026  9:35:05.05 
+PWD: D:\Dropbox (Personal)\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research 
+ 
+===== CONDA ENV LIST ===== 
+
+# conda environments:
+#
+# * -> active
+# + -> frozen
+base                     C:\Users\ninad\anaconda3
+scalebridge-torch-gpu-test *   C:\Users\ninad\anaconda3\envs\scalebridge-torch-gpu-test
+
+ 
+===== NVIDIA-SMI ===== 
+Wed Jun 10 09:35:06 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 560.94                 Driver Version: 560.94         CUDA Version: 12.6     |
+|-----------------------------------------+------------------------+----------------------+
+| GPU  Name                  Driver-Model | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA GeForce GTX 1050 Ti   WDDM  |   00000000:09:00.0  On |                  N/A |
+| 45%   27C    P5             N/A /   75W |     788MiB /   4096MiB |      1%      Default |
+|                                         |                        |                  N/A |
++-----------------------------------------+------------------------+----------------------+
+                                                                                         
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI        PID   Type   Process name                              GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|    0   N/A  N/A      9696    C+G   ...es (x86)\Dropbox\Client\Dropbox.exe      N/A      |
+|    0   N/A  N/A     14692    C+G   ...oogle\Chrome\Application\chrome.exe      N/A      |
+|    0   N/A  N/A     15644    C+G   ...on\148.0.3967.96\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     20276    C+G   ...nzyj5cx40ttqa\iCloud\iCloudHome.exe      N/A      |
+|    0   N/A  N/A     22180    C+G   ...oogle\Chrome\Application\chrome.exe      N/A      |
+|    0   N/A  N/A     22564    C+G   ...on\143.0.3650.80\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A     27316    C+G   ....Search_cw5n1h2txyewy\SearchApp.exe      N/A      |
+|    0   N/A  N/A    129644    C+G   ...2txyewy\StartMenuExperienceHost.exe      N/A      |
+|    0   N/A  N/A    187244    C+G   ...crosoft\Edge\Application\msedge.exe      N/A      |
+|    0   N/A  N/A    187904    C+G   ...Programs\Microsoft VS Code\Code.exe      N/A      |
+|    0   N/A  N/A    188776    C+G   ...5n1h2txyewy\ShellExperienceHost.exe      N/A      |
+|    0   N/A  N/A    192192    C+G   ...on\148.0.3967.96\msedgewebview2.exe      N/A      |
+|    0   N/A  N/A    211260    C+G   C:\Windows\explorer.exe                     N/A      |
+|    0   N/A  N/A    212576    C+G   ....Search_cw5n1h2txyewy\SearchApp.exe      N/A      |
+|    0   N/A  N/A    216292    C+G   ...CBS_cw5n1h2txyewy\TextInputHost.exe      N/A      |
+|    0   N/A  N/A    221404    C+G   ...siveControlPanel\SystemSettings.exe      N/A      |
+|    0   N/A  N/A    222164    C+G   ...ekyb3d8bbwe\PhoneExperienceHost.exe      N/A      |
++-----------------------------------------------------------------------------------------+
+ 
+===== TORCH CUDA TEST ===== 
+torch: 2.5.1
+torch cuda build: 12.4
+cuda available: True
+device count: 1
+device 0: NVIDIA GeForce GTX 1050 Ti
+gpu matmul OK: torch.Size([500, 500])
+ 
