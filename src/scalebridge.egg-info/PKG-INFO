@@ -1,0 +1,28 @@
+Metadata-Version: 2.4
+Name: scalebridge
+Version: 0.1.0
+Summary: PyTorch-first research software for scalable building-grid modeling and control.
+Author: Ninad Gaikwad
+Requires-Python: >=3.10
+License-File: LICENSE
+Requires-Dist: numpy
+Requires-Dist: pandas
+Requires-Dist: scikit-learn
+Requires-Dist: matplotlib
+Requires-Dist: torch
+Requires-Dist: mlflow
+Requires-Dist: optuna
+Requires-Dist: pydantic
+Requires-Dist: pyyaml
+Provides-Extra: dev
+Requires-Dist: pytest; extra == "dev"
+Requires-Dist: ruff; extra == "dev"
+Requires-Dist: mypy; extra == "dev"
+Requires-Dist: ipykernel; extra == "dev"
+Provides-Extra: tuning
+Requires-Dist: ray[tune]; extra == "tuning"
+Provides-Extra: db
+Requires-Dist: sqlalchemy; extra == "db"
+Requires-Dist: psycopg[binary]; extra == "db"
+Requires-Dist: alembic; extra == "db"
+Dynamic: license-file

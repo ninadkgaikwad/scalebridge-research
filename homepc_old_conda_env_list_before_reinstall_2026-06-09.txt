@@ -1,0 +1,6 @@
+# conda environments:
+#
+base                  *  C:\Users\ninad\anaconda3
+SmartComSim_Base         C:\Users\ninad\anaconda3\envs\SmartComSim_Base
+bayesian_filters_smoothers_env     C:\Users\ninad\anaconda3\envs\bayesian_filters_smoothers_env
+
