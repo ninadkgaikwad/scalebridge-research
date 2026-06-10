@@ -1,46 +1,167 @@
-# Python
+# =============================================================================
+# ScaleBridge Research - Git Ignore Rules
+# =============================================================================
+# Goal:
+# - Track source code, configs, scripts, curated environment lock files, docs.
+# - Ignore local environments, generated outputs, large data, caches, logs,
+#   model artifacts, and machine-specific runtime files.
+# =============================================================================
+
+
+# =============================================================================
+# Python caches / build artifacts
+# =============================================================================
 __pycache__/
 *.py[cod]
 *.pyo
 *.pyd
+*.so
+
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+htmlcov/
+
+*.egg-info/
+src/*.egg-info/
+build/
+dist/
+
+
+# =============================================================================
+# Jupyter / notebooks
+# =============================================================================
 .ipynb_checkpoints/
 
-# Environments
+
+# =============================================================================
+# Local Python / Conda environments
+# =============================================================================
 .venv/
 venv/
 env/
 .conda/
+conda_envs/
+.anaconda/
 
-# Secrets
+# Accidental environment folders inside repo
+*/env/
+*/venv/
+*/.venv/
+
+
+# =============================================================================
+# Secrets / local configuration
+# =============================================================================
 .env
 .env.*
 !.env.example
 
-# Data and outputs
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+
+
+# =============================================================================
+# Data
+# =============================================================================
+# Keep folder structure if needed with .gitkeep, but do not track large datasets.
 /data/raw_external/*
 /data/interim/*
 /data/processed/*
+/data/cache/*
+
+!/data/raw_external/.gitkeep
+!/data/interim/.gitkeep
+!/data/processed/.gitkeep
+!/data/cache/.gitkeep
+
+
+# =============================================================================
+# Outputs / experiment results
+# =============================================================================
 /outputs/*
+!/outputs/.gitkeep
+
 /experiments/*/results/*
 /experiments/*/mlruns/*
 mlruns/
 
-# Models/artifacts
+# Common generated reports/logs outside curated lock folders
+*.log
+*.out
+*.err
+*_full_log_*.txt
+*_runtime_diagnostic_*.txt
+*runtime_diagnostic*.txt
+*torch_gpu_test*.txt
+*env_create_full_log*.txt
+
+
+# =============================================================================
+# Preserve curated environment baselines
+# =============================================================================
+# These should remain trackable even though they may contain .txt/.out/.err files.
+!environments/locks/
+!environments/locks/**
+
+
+# =============================================================================
+# Models / binary artifacts
+# =============================================================================
 *.pt
 *.pth
 *.ckpt
 *.h5
+*.hdf5
+*.onnx
 *.pkl
 *.pickle
 *.joblib
 *.save
+*.npy
+*.npz
 
-# OS/editor
+
+# =============================================================================
+# Databases / local stores
+# =============================================================================
+*.sqlite
+*.sqlite3
+*.db
+*.duckdb
+*.parquet
+*.feather
+
+
+# =============================================================================
+# OS / editor / IDE
+# =============================================================================
 .DS_Store
 Thumbs.db
+ehthumbs.db
+Desktop.ini
+
 .vs/
 .idea/
 .vscode/
+
+# Keep shared VS Code recommendations/settings only if you later decide to track them.
+# Uncomment these exceptions if needed:
+# !.vscode/settings.json
+# !.vscode/extensions.json
+
+
+# =============================================================================
+# Temporary files
+# =============================================================================
+tmp/
+temp/
+*.tmp
+*.bak
+*.swp
+*.swo
+~$*
