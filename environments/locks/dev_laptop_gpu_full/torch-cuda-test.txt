@@ -1,0 +1,6 @@
+﻿torch: 2.5.1+cu118
+torch cuda build: 11.8
+cuda available: True
+device count: 1
+device 0: NVIDIA GeForce MX150
+gpu matmul OK: torch.Size([500, 500])
