@@ -90,6 +90,8 @@ conda_envs/
 /experiments/*/mlruns/*
 mlruns/
 
+/environments/locks/*
+
 # Common generated reports/logs outside curated lock folders
 *.log
 *.out
