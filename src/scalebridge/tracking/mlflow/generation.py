@@ -1,0 +1,141 @@
+"""Optional MLflow logging for distributed EnergyPlus generation.
+
+The tracker is enabled when ``MLFLOW_TRACKING_URI`` is set. Connection or
+logging failures never invalidate scientific generation; local manifests
+remain authoritative and the failure is returned as tracking metadata.
+"""
+
+from __future__ import annotations
+
+import os
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any
+
+from scalebridge.integration.energyplus.manifests.models import (
+    CaseSpec,
+    GenerationResult,
+    TrackingMetadata,
+)
+
+
+@dataclass(frozen=True)
+class MLflowTrackingHandle:
+    """Identifiers for one active or successfully created MLflow run."""
+
+    experiment_name: str
+    run_id: str
+    tracking_uri: str
+
+    def to_metadata(self) -> TrackingMetadata:
+        """Convert the handle to persisted manifest tracking metadata."""
+        return TrackingMetadata(
+            mlflow_experiment=self.experiment_name,
+            mlflow_run_id=self.run_id,
+            mlflow_tracking_uri=self.tracking_uri,
+        )
+
+
+class MLflowGenerationTracker:
+    """Log compact generation metadata to the configured laptop server."""
+
+    def __init__(
+        self,
+        *,
+        experiment_name: str = "scalebridge-p1-data-generation",
+        tracking_uri: str | None = None,
+    ) -> None:
+        self.experiment_name = experiment_name
+        self.tracking_uri = tracking_uri or os.environ.get("MLFLOW_TRACKING_URI")
+
+    @property
+    def enabled(self) -> bool:
+        """Return whether a tracking server URI was configured."""
+        return bool(self.tracking_uri)
+
+    def start(
+        self,
+        *,
+        case_spec: CaseSpec,
+        run_id: str,
+        campaign_id: str | None,
+        machine_id: str,
+    ) -> MLflowTrackingHandle | None:
+        """Create one MLflow run and log immutable case parameters."""
+        if not self.enabled:
+            return None
+        mlflow = _import_mlflow()
+        mlflow.set_tracking_uri(self.tracking_uri)
+        mlflow.set_experiment(self.experiment_name)
+        active = mlflow.start_run(run_name=run_id)
+        mlflow.log_params(
+            {
+                "case_id": case_spec.case_id,
+                "building_type": case_spec.building_type or "",
+                "weather_location": case_spec.weather_location or "",
+                "climate_zone": case_spec.climate_zone or "",
+                "prototype_year": case_spec.prototype_year or "",
+                "timestep_minutes": case_spec.timestep_minutes,
+                "calendar_year": case_spec.run_period.calendar_year or "",
+                "start_date": (
+                    f"{case_spec.run_period.start_month:02d}-"
+                    f"{case_spec.run_period.start_day:02d}"
+                ),
+                "end_date": (
+                    f"{case_spec.run_period.end_month:02d}-"
+                    f"{case_spec.run_period.end_day:02d}"
+                ),
+                "requested_variable_count": len(case_spec.output_variables),
+                "machine_id": machine_id,
+            }
+        )
+        mlflow.set_tags(
+            {
+                "campaign_id": campaign_id or "",
+                "paper": case_spec.tags.get("paper", ""),
+                "case_id": case_spec.case_id,
+            }
+        )
+        return MLflowTrackingHandle(
+            experiment_name=self.experiment_name,
+            run_id=active.info.run_id,
+            tracking_uri=str(self.tracking_uri),
+        )
+
+    def finish(
+        self,
+        *,
+        handle: MLflowTrackingHandle | None,
+        result: GenerationResult,
+        manifest_path: Path,
+    ) -> None:
+        """Log final metrics and the compact run manifest, then close the run."""
+        if handle is None:
+            return
+        mlflow = _import_mlflow()
+        try:
+            mlflow.log_metrics(
+                {
+                    "runtime_seconds": result.runtime_seconds,
+                    "warning_count": float(result.warning_count),
+                    "severe_count": float(result.severe_count),
+                    "fatal_count": float(result.fatal_count),
+                    "produced_signal_count": float(result.produced_signal_count),
+                    "timestep_count": float(result.timestep_count or 0),
+                }
+            )
+            mlflow.set_tag("generation_status", result.status.value)
+            mlflow.log_artifact(str(manifest_path), artifact_path="manifests")
+            mlflow.end_run(status="FINISHED")
+        except Exception:
+            mlflow.end_run(status="FAILED")
+            raise
+
+
+def _import_mlflow() -> Any:
+    """Import MLflow only when remote tracking is configured."""
+    try:
+        import mlflow
+    except ImportError as exc:
+        raise RuntimeError("MLflow tracking is configured but mlflow is absent") from exc
+    return mlflow

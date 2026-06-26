@@ -11,11 +11,13 @@ requires-python = ">=3.10"
 dependencies = [
     "numpy",
     "pandas",
+    "pyarrow>=14",
     "scikit-learn",
     "matplotlib",
     "torch",
     "mlflow",
     "optuna",
+    "opyplus>=2.0.7,<3",
     "pydantic",
     "pyyaml",
 ]

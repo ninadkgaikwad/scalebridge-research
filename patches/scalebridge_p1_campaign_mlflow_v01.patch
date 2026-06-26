@@ -1,0 +1,864 @@
+diff --git a/scripts/energyplus/build_p1_campaign.py b/scripts/energyplus/build_p1_campaign.py
+new file mode 100644
+index 0000000..686b75f
+--- /dev/null
++++ b/scripts/energyplus/build_p1_campaign.py
+@@ -0,0 +1,20 @@
++"""Build the locked 64-case P1 campaign without running EnergyPlus."""
++
++from scalebridge.integration.energyplus.p1 import (
++    build_p1_case_specs,
++    write_p1_campaign_manifest,
++)
++
++
++def main() -> None:
++    """Validate source files and write portable P1 campaign manifests."""
++    cases = build_p1_case_specs()
++    result = write_p1_campaign_manifest(cases)
++    print(f"Campaign: {result.campaign_id}")
++    print(f"Cases: {result.case_count}")
++    print(f"JSON: {result.json_path}")
++    print(f"CSV: {result.csv_path}")
++
++
++if __name__ == "__main__":
++    main()
+diff --git a/scripts/mlflow/start_laptop_tracking_server.ps1 b/scripts/mlflow/start_laptop_tracking_server.ps1
+new file mode 100644
+index 0000000..f1774f0
+--- /dev/null
++++ b/scripts/mlflow/start_laptop_tracking_server.ps1
+@@ -0,0 +1,34 @@
++<#
++.SYNOPSIS
++Starts the laptop-hosted ScaleBridge MLflow tracking server.
++
++.DESCRIPTION
++Stores the SQLite metadata database in laptop-local application data so
++Dropbox never synchronizes an open database file. Compact MLflow artifacts
++are stored under the shared ScaleBridge generated-data directory.
++#>
++
++$ErrorActionPreference = "Stop"
++
++if (-not $env:SCALEBRIDGE_GENERATED_DATA_ROOT) {
++    throw "SCALEBRIDGE_GENERATED_DATA_ROOT is not configured."
++}
++
++$LocalStateRoot = Join-Path $env:LOCALAPPDATA "ScaleBridge\mlflow"
++$ArtifactRoot = Join-Path $env:SCALEBRIDGE_GENERATED_DATA_ROOT "mlflow_artifacts"
++$DatabasePath = Join-Path $LocalStateRoot "mlflow.db"
++
++New-Item -ItemType Directory -Path $LocalStateRoot -Force | Out-Null
++New-Item -ItemType Directory -Path $ArtifactRoot -Force | Out-Null
++
++$DatabaseUriPath = $DatabasePath.Replace("\", "/")
++
++Write-Host "MLflow backend: $DatabasePath"
++Write-Host "MLflow artifacts: $ArtifactRoot"
++Write-Host "MLflow endpoint: http://0.0.0.0:5000"
++
++python -m mlflow server `
++    --backend-store-uri "sqlite:///$DatabaseUriPath" `
++    --artifacts-destination $ArtifactRoot `
++    --host 0.0.0.0 `
++    --port 5000
+diff --git a/src/scalebridge/integration/energyplus/__init__.py b/src/scalebridge/integration/energyplus/__init__.py
+index c60929b..a968a58 100644
+--- a/src/scalebridge/integration/energyplus/__init__.py
++++ b/src/scalebridge/integration/energyplus/__init__.py
+@@ -67,6 +67,15 @@ from scalebridge.integration.energyplus.outputs import (
+     EnergyPlusOutputExtractor,
+     extract_canonical_outputs,
+ )
++from scalebridge.integration.energyplus.p1 import (
++    P1_BUILDING_TYPES,
++    P1_CAMPAIGN_ID,
++    P1_CLIMATES,
++    P1_REQUIRED_VARIABLE_NAMES,
++    build_p1_case_specs,
++    p1_output_variables,
++    write_p1_campaign_manifest,
++)
+ 
+ __all__ = [
+     "ArtifactRecord",
+@@ -94,6 +103,10 @@ __all__ = [
+     "PrototypeInventoryError",
+     "PrototypeInventoryRecord",
+     "PrototypeInventoryResult",
++    "P1_BUILDING_TYPES",
++    "P1_CAMPAIGN_ID",
++    "P1_CLIMATES",
++    "P1_REQUIRED_VARIABLE_NAMES",
+     "RunManifest",
+     "RunPeriod",
+     "RunStatus",
+@@ -103,14 +116,17 @@ __all__ = [
+     "ValidationSummary",
+     "build_case_id",
+     "build_and_write_pnnl_inventory",
++    "build_p1_case_specs",
+     "extract_canonical_outputs",
+     "generate_energyplus_case",
+     "load_case_spec",
+     "load_run_manifest",
+     "prepare_idf",
++    "p1_output_variables",
+     "resolve_external_data_root",
+     "resolve_generated_data_root",
+     "scan_pnnl_commercial_prototypes",
+     "write_case_spec",
+     "write_run_manifest",
++    "write_p1_campaign_manifest",
+ ]
+diff --git a/src/scalebridge/integration/energyplus/generation/orchestrator.py b/src/scalebridge/integration/energyplus/generation/orchestrator.py
+index c9cb02e..621ae18 100644
+--- a/src/scalebridge/integration/energyplus/generation/orchestrator.py
++++ b/src/scalebridge/integration/energyplus/generation/orchestrator.py
+@@ -87,6 +87,7 @@ class EnergyPlusGenerationOrchestrator:
+         idf_preparer: Any | None = None,
+         runner: Any | None = None,
+         output_extractor: Any | None = None,
++        mlflow_tracker: Any | None = None,
+     ) -> None:
+         self._generated_root = resolve_generated_data_root(generated_data_root)
+         self._collection_name = case_collection_name
+@@ -98,6 +99,11 @@ class EnergyPlusGenerationOrchestrator:
+         self._idf_preparer = idf_preparer or IdfPreparer()
+         self._runner = runner or EnergyPlusRunner(beat_frequency_seconds=5)
+         self._output_extractor = output_extractor or EnergyPlusOutputExtractor()
++        if mlflow_tracker is None:
++            from scalebridge.tracking.mlflow import MLflowGenerationTracker
++
++            mlflow_tracker = MLflowGenerationTracker()
++        self._mlflow_tracker = mlflow_tracker
+ 
+     def generate(
+         self,
+@@ -138,6 +144,21 @@ class EnergyPlusGenerationOrchestrator:
+         extraction: Any | None = None
+         status = RunStatus.FAILED
+         error: ErrorRecord | None = None
++        tracking_metadata = tracking or TrackingMetadata()
++        tracking_handle = None
++
++        if tracking is None and self._mlflow_tracker is not None:
++            try:
++                tracking_handle = self._mlflow_tracker.start(
++                    case_spec=case_spec,
++                    run_id=attempt_id,
++                    campaign_id=campaign_id,
++                    machine_id=self._machine_id,
++                )
++                if tracking_handle is not None:
++                    tracking_metadata = tracking_handle.to_metadata()
++            except Exception:
++                tracking_handle = None
+ 
+         try:
+             preparation = self._idf_preparer.prepare(
+@@ -205,7 +226,7 @@ class EnergyPlusGenerationOrchestrator:
+             software=_software_metadata(case_spec),
+             validation=validation,
+             artifacts=artifacts,
+-            tracking=tracking or TrackingMetadata(),
++            tracking=tracking_metadata,
+             error=error,
+         )
+         write_run_manifest(manifest, manifest_path)
+@@ -220,7 +241,7 @@ class EnergyPlusGenerationOrchestrator:
+         raw_paths = _relative_role_paths(run_root, raw_root)
+         canonical_paths = _relative_role_paths(run_root, canonical_root)
+         compatibility_paths = _relative_role_paths(run_root, legacy_root)
+-        return GenerationResult(
++        result = GenerationResult(
+             case_id=case_spec.case_id,
+             run_id=attempt_id,
+             status=status,
+@@ -243,6 +264,16 @@ class EnergyPlusGenerationOrchestrator:
+             error_type=error.error_type if error else None,
+             error_message=error.message if error else None,
+         )
++        if self._mlflow_tracker is not None and tracking_handle is not None:
++            try:
++                self._mlflow_tracker.finish(
++                    handle=tracking_handle,
++                    result=result,
++                    manifest_path=manifest_path,
++                )
++            except Exception:
++                pass
++        return result
+ 
+ 
+ def generate_energyplus_case(
+diff --git a/src/scalebridge/integration/energyplus/p1.py b/src/scalebridge/integration/energyplus/p1.py
+new file mode 100644
+index 0000000..0cbc4f4
+--- /dev/null
++++ b/src/scalebridge/integration/energyplus/p1.py
+@@ -0,0 +1,280 @@
++"""P1 annual EnergyPlus campaign definitions.
++
++P1 uses all 16 ASHRAE 90.1-2013 commercial prototype building types across
++four climate-specific prototype locations: Seattle (4C), Tucson (2B), Tampa
++(2A), and Buffalo (5A). This produces 64 distinct annual cases.
++"""
++
++from __future__ import annotations
++
++import csv
++import json
++from dataclasses import dataclass
++from pathlib import Path
++from typing import Final
++
++from scalebridge.integration.energyplus.manifests.models import (
++    CaseSpec,
++    OutputVariableRequest,
++    RunPeriod,
++)
++from scalebridge.integration.energyplus.prototypes import (
++    resolve_external_data_root,
++    resolve_generated_data_root,
++    scan_pnnl_commercial_prototypes,
++)
++
++
++P1_CAMPAIGN_ID: Final = "p1_ashrae2013_one_zone_64"
++P1_BUILDING_TYPES: Final = (
++    "ApartmentHighRise",
++    "ApartmentMidRise",
++    "Hospital",
++    "HotelLarge",
++    "HotelSmall",
++    "OfficeLarge",
++    "OfficeMedium",
++    "OfficeSmall",
++    "OutPatientHealthCare",
++    "RestaurantFastFood",
++    "RestaurantSitDown",
++    "RetailStandalone",
++    "RetailStripmall",
++    "SchoolPrimary",
++    "SchoolSecondary",
++    "Warehouse",
++)
++P1_CLIMATES: Final = {
++    "Seattle": {"category": "cool_marine", "climate_zone": "4C"},
++    "Tucson": {"category": "hot_dry", "climate_zone": "2B"},
++    "Tampa": {"category": "hot_humid", "climate_zone": "2A"},
++    "Buffalo": {"category": "cold", "climate_zone": "5A"},
++}
++P1_REQUIRED_VARIABLE_NAMES: Final = (
++    "Schedule Value",
++    "Facility Total HVAC Electric Demand Power",
++    "Site Diffuse Solar Radiation Rate per Area",
++    "Site Direct Solar Radiation Rate per Area",
++    "Site Outdoor Air Drybulb Temperature",
++    "Site Solar Altitude Angle",
++    "Surface Inside Face Internal Gains Radiation Heat Gain Rate",
++    "Surface Inside Face Lights Radiation Heat Gain Rate",
++    "Surface Inside Face Solar Radiation Heat Gain Rate",
++    "Surface Inside Face Temperature",
++    "Zone Windows Total Transmitted Solar Radiation Rate",
++    "Zone Air Temperature",
++    "Zone People Convective Heating Rate",
++    "Zone Lights Convective Heating Rate",
++    "Zone Electric Equipment Convective Heating Rate",
++    "Zone Gas Equipment Convective Heating Rate",
++    "Zone Other Equipment Convective Heating Rate",
++    "Zone Hot Water Equipment Convective Heating Rate",
++    "Zone Steam Equipment Convective Heating Rate",
++    "Zone People Radiant Heating Rate",
++    "Zone Lights Radiant Heating Rate",
++    "Zone Electric Equipment Radiant Heating Rate",
++    "Zone Gas Equipment Radiant Heating Rate",
++    "Zone Other Equipment Radiant Heating Rate",
++    "Zone Hot Water Equipment Radiant Heating Rate",
++    "Zone Steam Equipment Radiant Heating Rate",
++    "Zone Lights Visible Radiation Heating Rate",
++    "Zone Total Internal Convective Heating Rate",
++    "Zone Total Internal Radiant Heating Rate",
++    "Zone Total Internal Total Heating Rate",
++    "Zone Total Internal Visible Radiation Heating Rate",
++    "Zone Air System Sensible Cooling Rate",
++    "Zone Air System Sensible Heating Rate",
++    "System Node Temperature",
++    "System Node Mass Flow Rate",
++)
++
++
++class P1CampaignError(RuntimeError):
++    """Raised when the source inventory cannot produce the locked P1 campaign."""
++
++
++@dataclass(frozen=True)
++class P1CampaignManifestResult:
++    """Paths and counts for a persisted P1 campaign specification."""
++
++    campaign_id: str
++    case_count: int
++    json_path: Path
++    csv_path: Path
++
++
++def p1_output_variables() -> tuple[OutputVariableRequest, ...]:
++    """Return the locked P1 EnergyPlus output-variable requests."""
++    return tuple(
++        OutputVariableRequest(
++            variable_name=name,
++            reporting_frequency="timestep",
++            required=True,
++            semantic_role=_semantic_role(name),
++        )
++        for name in P1_REQUIRED_VARIABLE_NAMES
++    )
++
++
++def build_p1_case_specs(
++    *,
++    external_data_root: str | Path | None = None,
++    write_legacy_pickles: bool = False,
++) -> tuple[CaseSpec, ...]:
++    """Build and validate all 64 annual P1 case specifications."""
++    data_root = resolve_external_data_root(external_data_root)
++    records = scan_pnnl_commercial_prototypes(
++        external_data_root=data_root,
++        standard_year=2013,
++    )
++    selected = {
++        (record.building_type, record.location): record
++        for record in records
++        if record.status == "eligible"
++        and record.building_type in P1_BUILDING_TYPES
++        and record.location in P1_CLIMATES
++    }
++
++    expected = {
++        (building_type, location)
++        for building_type in P1_BUILDING_TYPES
++        for location in P1_CLIMATES
++    }
++    missing = sorted(expected - set(selected))
++    if missing:
++        raise P1CampaignError(f"P1 source cases are missing: {missing}")
++
++    requests = p1_output_variables()
++    cases: list[CaseSpec] = []
++    for building_type in P1_BUILDING_TYPES:
++        for location, climate in P1_CLIMATES.items():
++            record = selected[(building_type, location)]
++            if record.epw_relative_path is None or record.epw_sha256 is None:
++                raise P1CampaignError(
++                    f"P1 case has no validated EPW: {building_type}/{location}"
++                )
++            cases.append(
++                CaseSpec(
++                    case_name=f"p1_{building_type}_{location}_2013",
++                    building_type=building_type,
++                    prototype_standard="ASHRAE 90.1",
++                    prototype_year="2013",
++                    climate_zone=climate["climate_zone"],
++                    weather_location=location,
++                    idf_path=data_root / record.idf_relative_path,
++                    epw_path=data_root / record.epw_relative_path,
++                    idf_sha256=record.idf_sha256,
++                    epw_sha256=record.epw_sha256,
++                    run_period=RunPeriod(
++                        start_month=1,
++                        start_day=1,
++                        end_month=12,
++                        end_day=31,
++                        calendar_year=2013,
++                    ),
++                    timestep_minutes=5,
++                    output_variables=requests,
++                    energyplus_version="9.0.1",
++                    write_legacy_pickles=write_legacy_pickles,
++                    preserve_raw_outputs=True,
++                    tags={
++                        "paper": "P1",
++                        "campaign_id": P1_CAMPAIGN_ID,
++                        "climate_category": climate["category"],
++                    },
++                )
++            )
++    return tuple(cases)
++
++
++def write_p1_campaign_manifest(
++    cases: tuple[CaseSpec, ...],
++    *,
++    generated_data_root: str | Path | None = None,
++) -> P1CampaignManifestResult:
++    """Persist portable JSON and CSV manifests before campaign execution."""
++    root = resolve_generated_data_root(generated_data_root)
++    destination = root / "campaigns" / P1_CAMPAIGN_ID
++    destination.mkdir(parents=True, exist_ok=True)
++    json_path = destination / "case_specs.json"
++    csv_path = destination / "case_specs.csv"
++
++    json_path.write_text(
++        json.dumps(
++            {
++                "schema_version": "0.1.0",
++                "campaign_id": P1_CAMPAIGN_ID,
++                "case_count": len(cases),
++                "cases": [
++                    {
++                        "case_id": case.case_id,
++                        **case.model_dump(
++                            mode="json",
++                            exclude_none=True,
++                            exclude={"output_variables"},
++                        ),
++                        "output_variable_count": len(case.output_variables),
++                    }
++                    for case in cases
++                ],
++            },
++            indent=2,
++            sort_keys=True,
++        )
++        + "\n",
++        encoding="utf-8",
++    )
++    with csv_path.open("w", encoding="utf-8", newline="") as stream:
++        fieldnames = [
++            "case_id",
++            "case_name",
++            "building_type",
++            "climate_zone",
++            "weather_location",
++            "idf_path",
++            "epw_path",
++            "timestep_minutes",
++            "output_variable_count",
++        ]
++        writer = csv.DictWriter(stream, fieldnames=fieldnames)
++        writer.writeheader()
++        for case in cases:
++            writer.writerow(
++                {
++                    "case_id": case.case_id,
++                    "case_name": case.case_name,
++                    "building_type": case.building_type,
++                    "climate_zone": case.climate_zone,
++                    "weather_location": case.weather_location,
++                    "idf_path": case.idf_path,
++                    "epw_path": case.epw_path,
++                    "timestep_minutes": case.timestep_minutes,
++                    "output_variable_count": len(case.output_variables),
++                }
++            )
++    return P1CampaignManifestResult(
++        campaign_id=P1_CAMPAIGN_ID,
++        case_count=len(cases),
++        json_path=json_path,
++        csv_path=csv_path,
++    )
++
++
++def _semantic_role(name: str) -> str:
++    """Assign a stable broad P1 role without altering EnergyPlus names."""
++    lowered = name.casefold()
++    if "temperature" in lowered:
++        return "temperature"
++    if "solar" in lowered:
++        return "solar"
++    if "mass flow" in lowered:
++        return "mass_flow"
++    if "schedule" in lowered:
++        return "schedule"
++    if "hvac electric" in lowered:
++        return "hvac_electric_power"
++    if "cooling rate" in lowered:
++        return "hvac_cooling_rate"
++    if "heating rate" in lowered or "heat gain rate" in lowered:
++        return "heat_gain_rate"
++    return "other"
+diff --git a/src/scalebridge/integration/energyplus/prototypes.py b/src/scalebridge/integration/energyplus/prototypes.py
+index 2c6c386..f8be26e 100644
+--- a/src/scalebridge/integration/energyplus/prototypes.py
++++ b/src/scalebridge/integration/energyplus/prototypes.py
+@@ -124,7 +124,11 @@ def resolve_external_data_root(explicit_root: str | Path | None = None) -> Path:
+     explicit_root:
+         Optional path overriding ``SCALEBRIDGE_EXTERNAL_DATA_ROOT``.
+     """
+-    root_value = explicit_root or os.environ.get(EXTERNAL_DATA_ENV)
++    root_value = (
++        explicit_root
++        or os.environ.get(EXTERNAL_DATA_ENV)
++        or _discover_repository_relative_data_root()
++    )
+     if not root_value:
+         raise PrototypeInventoryError(
+             f"{EXTERNAL_DATA_ENV} is not set and no external root was provided"
+@@ -138,7 +142,11 @@ def resolve_external_data_root(explicit_root: str | Path | None = None) -> Path:
+ 
+ def resolve_generated_data_root(explicit_root: str | Path | None = None) -> Path:
+     """Resolve and create the ScaleBridge generated-data root."""
+-    root_value = explicit_root or os.environ.get(GENERATED_DATA_ENV)
++    root_value = (
++        explicit_root
++        or os.environ.get(GENERATED_DATA_ENV)
++        or resolve_external_data_root() / "ScaleBridge"
++    )
+     if not root_value:
+         raise PrototypeInventoryError(
+             f"{GENERATED_DATA_ENV} is not set and no generated root was provided"
+@@ -149,6 +157,13 @@ def resolve_generated_data_root(explicit_root: str | Path | None = None) -> Path
+     return root
+ 
+ 
++def _discover_repository_relative_data_root() -> Path | None:
++    """Discover the shared ``Data`` directory two levels above the repository."""
++    repository_root = Path(__file__).resolve().parents[4]
++    candidate = repository_root.parents[1] / "Data"
++    return candidate if candidate.is_dir() else None
++
++
+ def sha256_file(path: Path, *, chunk_size: int = 1024 * 1024) -> str:
+     """Calculate a file SHA-256 digest without loading the file into memory."""
+     digest = hashlib.sha256()
+diff --git a/src/scalebridge/tracking/__init__.py b/src/scalebridge/tracking/__init__.py
+new file mode 100644
+index 0000000..15dd376
+--- /dev/null
++++ b/src/scalebridge/tracking/__init__.py
+@@ -0,0 +1 @@
++"""Experiment-tracking integrations for ScaleBridge."""
+diff --git a/src/scalebridge/tracking/mlflow/__init__.py b/src/scalebridge/tracking/mlflow/__init__.py
+new file mode 100644
+index 0000000..b9c862e
+--- /dev/null
++++ b/src/scalebridge/tracking/mlflow/__init__.py
+@@ -0,0 +1,8 @@
++"""MLflow tracking for EnergyPlus generation attempts."""
++
++from scalebridge.tracking.mlflow.client import (
++    MLflowGenerationTracker,
++    MLflowTrackingHandle,
++)
++
++__all__ = ["MLflowGenerationTracker", "MLflowTrackingHandle"]
+diff --git a/src/scalebridge/tracking/mlflow/client.py b/src/scalebridge/tracking/mlflow/client.py
+new file mode 100644
+index 0000000..e71ea6c
+--- /dev/null
++++ b/src/scalebridge/tracking/mlflow/client.py
+@@ -0,0 +1,141 @@
++"""Optional MLflow logging for distributed EnergyPlus generation.
++
++The tracker is enabled when ``MLFLOW_TRACKING_URI`` is set. Connection or
++logging failures never invalidate scientific generation; local manifests
++remain authoritative and the failure is returned as tracking metadata.
++"""
++
++from __future__ import annotations
++
++import os
++from dataclasses import dataclass
++from pathlib import Path
++from typing import Any
++
++from scalebridge.integration.energyplus.manifests.models import (
++    CaseSpec,
++    GenerationResult,
++    TrackingMetadata,
++)
++
++
++@dataclass(frozen=True)
++class MLflowTrackingHandle:
++    """Identifiers for one active or successfully created MLflow run."""
++
++    experiment_name: str
++    run_id: str
++    tracking_uri: str
++
++    def to_metadata(self) -> TrackingMetadata:
++        """Convert the handle to persisted manifest tracking metadata."""
++        return TrackingMetadata(
++            mlflow_experiment=self.experiment_name,
++            mlflow_run_id=self.run_id,
++            mlflow_tracking_uri=self.tracking_uri,
++        )
++
++
++class MLflowGenerationTracker:
++    """Log compact generation metadata to the configured laptop server."""
++
++    def __init__(
++        self,
++        *,
++        experiment_name: str = "scalebridge-p1-data-generation",
++        tracking_uri: str | None = None,
++    ) -> None:
++        self.experiment_name = experiment_name
++        self.tracking_uri = tracking_uri or os.environ.get("MLFLOW_TRACKING_URI")
++
++    @property
++    def enabled(self) -> bool:
++        """Return whether a tracking server URI was configured."""
++        return bool(self.tracking_uri)
++
++    def start(
++        self,
++        *,
++        case_spec: CaseSpec,
++        run_id: str,
++        campaign_id: str | None,
++        machine_id: str,
++    ) -> MLflowTrackingHandle | None:
++        """Create one MLflow run and log immutable case parameters."""
++        if not self.enabled:
++            return None
++        mlflow = _import_mlflow()
++        mlflow.set_tracking_uri(self.tracking_uri)
++        mlflow.set_experiment(self.experiment_name)
++        active = mlflow.start_run(run_name=run_id)
++        mlflow.log_params(
++            {
++                "case_id": case_spec.case_id,
++                "building_type": case_spec.building_type or "",
++                "weather_location": case_spec.weather_location or "",
++                "climate_zone": case_spec.climate_zone or "",
++                "prototype_year": case_spec.prototype_year or "",
++                "timestep_minutes": case_spec.timestep_minutes,
++                "calendar_year": case_spec.run_period.calendar_year or "",
++                "start_date": (
++                    f"{case_spec.run_period.start_month:02d}-"
++                    f"{case_spec.run_period.start_day:02d}"
++                ),
++                "end_date": (
++                    f"{case_spec.run_period.end_month:02d}-"
++                    f"{case_spec.run_period.end_day:02d}"
++                ),
++                "requested_variable_count": len(case_spec.output_variables),
++                "machine_id": machine_id,
++            }
++        )
++        mlflow.set_tags(
++            {
++                "campaign_id": campaign_id or "",
++                "paper": case_spec.tags.get("paper", ""),
++                "case_id": case_spec.case_id,
++            }
++        )
++        return MLflowTrackingHandle(
++            experiment_name=self.experiment_name,
++            run_id=active.info.run_id,
++            tracking_uri=str(self.tracking_uri),
++        )
++
++    def finish(
++        self,
++        *,
++        handle: MLflowTrackingHandle | None,
++        result: GenerationResult,
++        manifest_path: Path,
++    ) -> None:
++        """Log final metrics and the compact run manifest, then close the run."""
++        if handle is None:
++            return
++        mlflow = _import_mlflow()
++        try:
++            mlflow.log_metrics(
++                {
++                    "runtime_seconds": result.runtime_seconds,
++                    "warning_count": float(result.warning_count),
++                    "severe_count": float(result.severe_count),
++                    "fatal_count": float(result.fatal_count),
++                    "produced_signal_count": float(result.produced_signal_count),
++                    "timestep_count": float(result.timestep_count or 0),
++                }
++            )
++            mlflow.set_tag("generation_status", result.status.value)
++            mlflow.log_artifact(str(manifest_path), artifact_path="manifests")
++            mlflow.end_run(status="FINISHED")
++        except Exception:
++            mlflow.end_run(status="FAILED")
++            raise
++
++
++def _import_mlflow() -> Any:
++    """Import MLflow only when remote tracking is configured."""
++    try:
++        import mlflow
++    except ImportError as exc:
++        raise RuntimeError("MLflow tracking is configured but mlflow is absent") from exc
++    return mlflow
+diff --git a/tests/integration/energyplus/test_generation_orchestrator.py b/tests/integration/energyplus/test_generation_orchestrator.py
+index 3de12f3..a83ceba 100644
+--- a/tests/integration/energyplus/test_generation_orchestrator.py
++++ b/tests/integration/energyplus/test_generation_orchestrator.py
+@@ -8,6 +8,7 @@ from types import SimpleNamespace
+ from scalebridge.integration.energyplus import (
+     EnergyPlusGenerationOrchestrator,
+     RunStatus,
++    TrackingMetadata,
+     load_run_manifest,
+ )
+ from scalebridge.integration.energyplus.outputs import CanonicalExtractionError
+@@ -95,6 +96,29 @@ class FakeExtractor:
+         )
+ 
+ 
++class FakeMLflowTracker:
++    """Capture optional MLflow lifecycle calls without importing MLflow."""
++
++    def __init__(self) -> None:
++        self.started = False
++        self.finished = False
++
++    def start(self, **kwargs):
++        """Return a tracking handle compatible with the orchestrator."""
++        self.started = True
++        return SimpleNamespace(
++            to_metadata=lambda: TrackingMetadata(
++                mlflow_experiment="p1",
++                mlflow_run_id="mlflow-run",
++                mlflow_tracking_uri="http://laptop:5000",
++            )
++        )
++
++    def finish(self, **kwargs) -> None:
++        """Record that final metrics and manifest logging were requested."""
++        self.finished = True
++
++
+ def _build_orchestrator(
+     tmp_path: Path,
+     *,
+@@ -185,3 +209,26 @@ def test_orchestrator_marks_extraction_failure_invalid(
+     manifest = load_run_manifest(result.manifest_path)
+     assert manifest.status is RunStatus.INVALID
+     assert manifest.error is not None
++
++
++def test_orchestrator_persists_optional_mlflow_references(
++    tmp_path: Path,
++    case_spec,
++) -> None:
++    """MLflow identifiers must be persisted without owning scientific data."""
++    tracker = FakeMLflowTracker()
++    orchestrator = EnergyPlusGenerationOrchestrator(
++        generated_data_root=tmp_path / "generated",
++        machine_id="test-machine",
++        idf_preparer=FakePreparer(),
++        runner=FakeRunner(),
++        output_extractor=FakeExtractor(),
++        mlflow_tracker=tracker,
++    )
++
++    result = orchestrator.generate(case_spec, run_id="eprun_mlflow")
++
++    manifest = load_run_manifest(result.manifest_path)
++    assert tracker.started
++    assert tracker.finished
++    assert manifest.tracking.mlflow_run_id == "mlflow-run"
+diff --git a/tests/integration/energyplus/test_p1_campaign.py b/tests/integration/energyplus/test_p1_campaign.py
+new file mode 100644
+index 0000000..f9be7be
+--- /dev/null
++++ b/tests/integration/energyplus/test_p1_campaign.py
+@@ -0,0 +1,95 @@
++"""Tests for the locked 64-case P1 EnergyPlus campaign."""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++
++from scalebridge.integration.energyplus.p1 import (
++    P1_BUILDING_TYPES,
++    P1_CLIMATES,
++    P1_REQUIRED_VARIABLE_NAMES,
++    build_p1_case_specs,
++    p1_output_variables,
++    write_p1_campaign_manifest,
++)
++from scalebridge.integration.energyplus.prototypes import (
++    COMMERCIAL_TMY3_BY_LOCATION,
++)
++
++
++def _write_p1_source_library(root: Path) -> None:
++    """Create all prototype and EPW files required by the P1 builder."""
++    prototype_root = root / "Commercial_Prototypes" / "ASHRAE" / "90_1_2013"
++    weather_root = root / "TMY3_WeatherFiles_Commercial"
++    prototype_root.mkdir(parents=True)
++    weather_root.mkdir(parents=True)
++
++    for location in P1_CLIMATES:
++        epw_name = COMMERCIAL_TMY3_BY_LOCATION[location]
++        (weather_root / epw_name).write_text(
++            f"LOCATION,{location}\n",
++            encoding="utf-8",
++        )
++        for building_type in P1_BUILDING_TYPES:
++            idf_path = (
++                prototype_root
++                / f"ASHRAE901_{building_type}_STD2013_{location}.idf"
++            )
++            idf_path.write_text(
++                f"! WeatherFile: {epw_name}\nVersion,9.0;\n",
++                encoding="utf-8",
++            )
++
++
++def test_p1_required_variable_registry_is_locked() -> None:
++    """The factory must include every supplied legacy P1 variable."""
++    requests = p1_output_variables()
++
++    assert len(P1_REQUIRED_VARIABLE_NAMES) == 35
++    assert len(requests) == 35
++    assert all(request.required for request in requests)
++    assert all(request.reporting_frequency == "timestep" for request in requests)
++    assert "Zone Lights Convective Heating Rate" in {
++        request.variable_name for request in requests
++    }
++
++
++def test_build_p1_case_specs_creates_64_annual_cases(tmp_path: Path) -> None:
++    """All 16 buildings and four locked climates must form annual cases."""
++    _write_p1_source_library(tmp_path)
++
++    cases = build_p1_case_specs(external_data_root=tmp_path)
++
++    assert len(cases) == 64
++    assert {(case.building_type, case.weather_location) for case in cases} == {
++        (building, location)
++        for building in P1_BUILDING_TYPES
++        for location in P1_CLIMATES
++    }
++    assert all(case.timestep_minutes == 5 for case in cases)
++    assert all(case.run_period.calendar_year == 2013 for case in cases)
++    assert all(case.run_period.start_month == 1 for case in cases)
++    assert all(case.run_period.end_month == 12 for case in cases)
++    assert all(len(case.output_variables) == 35 for case in cases)
++
++
++def test_write_p1_campaign_manifest_persists_json_and_csv(
++    tmp_path: Path,
++) -> None:
++    """Campaign construction must be inspectable before distributed runs."""
++    source_root = tmp_path / "Data"
++    _write_p1_source_library(source_root)
++    cases = build_p1_case_specs(external_data_root=source_root)
++
++    result = write_p1_campaign_manifest(
++        cases,
++        generated_data_root=tmp_path / "generated",
++    )
++
++    assert result.case_count == 64
++    assert result.json_path.is_file()
++    assert result.csv_path.is_file()
++    payload = json.loads(result.json_path.read_text(encoding="utf-8"))
++    assert payload["case_count"] == 64
++    assert payload["cases"][0]["output_variable_count"] == 35

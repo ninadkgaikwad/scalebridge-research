@@ -1,0 +1,288 @@
+diff --git a/src/scalebridge/integration/energyplus/idf/preparer.py b/src/scalebridge/integration/energyplus/idf/preparer.py
+index 855c9be..ad6cbb5 100644
+--- a/src/scalebridge/integration/energyplus/idf/preparer.py
++++ b/src/scalebridge/integration/energyplus/idf/preparer.py
+@@ -137,14 +137,23 @@ class IdfPreparer:
+         timestep = self._require_single_record(model, "TimeStep")
+         timestep_per_hour = 60 // case_spec.timestep_minutes
+ 
++        run_period_fields = {
++            "begin_month": case_spec.run_period.start_month,
++            "begin_day_of_month": case_spec.run_period.start_day,
++            "end_month": case_spec.run_period.end_month,
++            "end_day_of_month": case_spec.run_period.end_day,
++        }
++        if case_spec.run_period.calendar_year is not None:
++            run_period_fields.update(
++                {
++                    "begin_year": case_spec.run_period.calendar_year,
++                    "end_year": case_spec.run_period.calendar_year,
++                }
++            )
++
+         self._backend.update_record(
+             run_period,
+-            {
+-                "begin_month": case_spec.run_period.start_month,
+-                "begin_day_of_month": case_spec.run_period.start_day,
+-                "end_month": case_spec.run_period.end_month,
+-                "end_day_of_month": case_spec.run_period.end_day,
+-            },
++            run_period_fields,
+         )
+         self._backend.update_record(
+             timestep,
+diff --git a/src/scalebridge/integration/energyplus/outputs/eio.py b/src/scalebridge/integration/energyplus/outputs/eio.py
+index a8d00c3..36454fb 100644
+--- a/src/scalebridge/integration/energyplus/outputs/eio.py
++++ b/src/scalebridge/integration/energyplus/outputs/eio.py
+@@ -74,10 +74,10 @@ def parse_eio(path: str | Path) -> dict[str, EioTable]:
+                 rows[category].append(fields[1:])
+ 
+     return {
+-        category: EioTable(
++        category: _normalize_table(
+             category=category,
+             columns=columns,
+-            rows=tuple(rows.get(category, [])),
++            rows=rows.get(category, []),
+         )
+         for category, columns in headers.items()
+     }
+@@ -90,3 +90,41 @@ def _extract_category(value: str) -> str | None:
+     if start < 0 or end < 0:
+         return None
+     return value[start + 1 : end].strip()
++
++
++def _normalize_table(
++    *,
++    category: str,
++    columns: tuple[str, ...],
++    rows: list[tuple[str, ...]],
++) -> EioTable:
++    """Normalize row widths without discarding non-empty EIO values."""
++    trimmed_rows = [_trim_empty_overflow(row, len(columns)) for row in rows]
++    normalized_width = max(
++        [len(columns), *(len(row) for row in trimmed_rows)],
++    )
++    extra_count = normalized_width - len(columns)
++    normalized_columns = columns + tuple(
++        f"Undeclared Field {index}"
++        for index in range(1, extra_count + 1)
++    )
++    normalized_rows = tuple(
++        row + ("",) * (normalized_width - len(row))
++        for row in trimmed_rows
++    )
++    return EioTable(
++        category=category,
++        columns=normalized_columns,
++        rows=normalized_rows,
++    )
++
++
++def _trim_empty_overflow(
++    row: tuple[str, ...],
++    declared_width: int,
++) -> tuple[str, ...]:
++    """Remove only trailing empty fields beyond the declared table width."""
++    values = list(row)
++    while len(values) > declared_width and values[-1] == "":
++        values.pop()
++    return tuple(values)
+diff --git a/src/scalebridge/integration/energyplus/outputs/extractor.py b/src/scalebridge/integration/energyplus/outputs/extractor.py
+index 76e5189..03fe914 100644
+--- a/src/scalebridge/integration/energyplus/outputs/extractor.py
++++ b/src/scalebridge/integration/energyplus/outputs/extractor.py
+@@ -20,6 +20,7 @@ from __future__ import annotations
+ import json
+ import pickle
+ from collections import defaultdict
++from datetime import datetime
+ from pathlib import Path
+ from typing import Any, Callable
+ 
+@@ -152,13 +153,16 @@ class EnergyPlusOutputExtractor:
+             joined = ", ".join(missing_required)
+             raise CanonicalExtractionError(f"required ESO signals are missing: {joined}")
+ 
++        # Validate simulation metadata before committing canonical artifacts.
++        eio_tables = parse_eio(eio_path)
++        _validate_eio_calendar_year(eio_tables, expected_year=start_year)
++
+         parquet_paths: dict[str, Path] = {}
+         for frequency, frame in frames_by_frequency.items():
+             destination = canonical_root / f"timeseries_{frequency}.parquet"
+             self._parquet_writer(frame, destination)
+             parquet_paths[frequency] = destination
+ 
+-        eio_tables = parse_eio(eio_path)
+         eio_metadata_path = canonical_root / "eio_tables.json"
+         _write_json(
+             eio_metadata_path,
+@@ -349,6 +353,62 @@ def _request_identity(request: OutputVariableRequest) -> str:
+     )
+ 
+ 
++def _validate_eio_calendar_year(
++    tables: dict[str, EioTable],
++    *,
++    expected_year: int,
++) -> None:
++    """Require EIO weather-run-period dates to match the scientific case."""
++    environment_table = tables.get("Environment")
++    if environment_table is None:
++        raise CanonicalExtractionError("EIO is missing the Environment table")
++
++    column_positions = {
++        name.casefold(): index
++        for index, name in enumerate(environment_table.columns)
++    }
++    required_columns = ("Environment Type", "Start Date", "End Date")
++    missing_columns = [
++        name
++        for name in required_columns
++        if name.casefold() not in column_positions
++    ]
++    if missing_columns:
++        joined = ", ".join(missing_columns)
++        raise CanonicalExtractionError(
++            f"EIO Environment table is missing columns: {joined}"
++        )
++
++    weather_rows = [
++        row
++        for row in environment_table.rows
++        if row[column_positions["environment type"]].casefold()
++        == "weatherfilerunperiod"
++    ]
++    if not weather_rows:
++        raise CanonicalExtractionError(
++            "EIO Environment table contains no WeatherFileRunPeriod"
++        )
++
++    reported_years: set[int] = set()
++    for row in weather_rows:
++        for column_name in ("start date", "end date"):
++            raw_date = row[column_positions[column_name]]
++            try:
++                reported_years.add(datetime.strptime(raw_date, "%m/%d/%Y").year)
++            except ValueError as exc:
++                raise CanonicalExtractionError(
++                    f"EIO Environment date has unsupported format: {raw_date!r}"
++                ) from exc
++
++    if reported_years != {expected_year}:
++        reported = ", ".join(str(year) for year in sorted(reported_years))
++        raise CanonicalExtractionError(
++            f"EIO run-period year {reported} does not match "
++            f"CaseSpec calendar year {expected_year}"
++        )
++
++
+ def _write_json(path: Path, payload: dict[str, object]) -> None:
+     """Write deterministic UTF-8 JSON."""
+     path.write_text(
+diff --git a/tests/integration/energyplus/test_idf_preparer.py b/tests/integration/energyplus/test_idf_preparer.py
+index 0ead2b9..6c9006c 100644
+--- a/tests/integration/energyplus/test_idf_preparer.py
++++ b/tests/integration/energyplus/test_idf_preparer.py
+@@ -105,8 +105,10 @@ def source_model() -> dict[str, list[FakeRecord]]:
+             FakeRecord(
+                 begin_month=1,
+                 begin_day_of_month=1,
++                begin_year="",
+                 end_month=12,
+                 end_day_of_month=31,
++                end_year="",
+             )
+         ],
+         "TimeStep": [FakeRecord(number_of_timesteps_per_hour=4)],
+@@ -202,8 +204,10 @@ def test_preparer_applies_complete_case_configuration(
+     prepared = backend.saved_model
+     assert prepared["RunPeriod"][0]["begin_month"] == 3
+     assert prepared["RunPeriod"][0]["begin_day_of_month"] == 2
++    assert prepared["RunPeriod"][0]["begin_year"] == 2013
+     assert prepared["RunPeriod"][0]["end_month"] == 11
+     assert prepared["RunPeriod"][0]["end_day_of_month"] == 30
++    assert prepared["RunPeriod"][0]["end_year"] == 2013
+     assert prepared["TimeStep"][0]["number_of_timesteps_per_hour"] == 12
+ 
+     schedules = {record["name"]: record for record in prepared["Schedule:Compact"]}
+diff --git a/tests/integration/energyplus/test_output_extractor.py b/tests/integration/energyplus/test_output_extractor.py
+index 5064e11..4c2ad76 100644
+--- a/tests/integration/energyplus/test_output_extractor.py
++++ b/tests/integration/energyplus/test_output_extractor.py
+@@ -89,6 +89,8 @@ def _write_raw_outputs(root: Path) -> None:
+     (root / "eplusout.eso").write_text("fake eso\n", encoding="utf-8")
+     (root / "eplusout.eio").write_text(
+         "Program Version,EnergyPlus, Version 9.0.1\n"
++        "! <Environment>,Environment Name,Environment Type,Start Date,End Date\n"
++        "Environment,RUNPERIOD 1,WeatherFileRunPeriod,01/01/2013,01/02/2013\n"
+         "! <Zone Information>,Zone Name,Floor Area {m2}\n"
+         "<Zone Information>,CORE_ZN,100.0\n"
+         "<Zone Information>,PERIMETER_ZN,75.0\n",
+@@ -200,3 +202,62 @@ def test_parse_eio_accepts_bracketed_data_category(tmp_path: Path) -> None:
+     tables = parse_eio(path)
+ 
+     assert tables["Zone Information"].rows == (("CORE_ZN",),)
++
++
++def test_parse_eio_normalizes_short_and_empty_overflow_rows(
++    tmp_path: Path,
++) -> None:
++    """Rows must match declared widths after safe padding and trimming."""
++    path = tmp_path / "eplusout.eio"
++    path.write_text(
++        "! <Example>,First,Second\n"
++        "Example,one\n"
++        "Example,two,three,\n",
++        encoding="utf-8",
++    )
++
++    table = parse_eio(path)["Example"]
++
++    assert table.columns == ("First", "Second")
++    assert table.rows == (("one", ""), ("two", "three"))
++
++
++def test_parse_eio_preserves_nonempty_undeclared_fields(tmp_path: Path) -> None:
++    """Non-empty overflow values must receive explicit generated columns."""
++    path = tmp_path / "eplusout.eio"
++    path.write_text(
++        "! <Example>,First\n"
++        "Example,one,important\n",
++        encoding="utf-8",
++    )
++
++    table = parse_eio(path)["Example"]
++
++    assert table.columns == ("First", "Undeclared Field 1")
++    assert table.rows == (("one", "important"),)
++
++
++def test_extractor_rejects_eio_calendar_year_mismatch(
++    tmp_path: Path,
++    case_spec,
++) -> None:
++    """Reported EIO years must agree with the deterministic case year."""
++    raw_root = tmp_path / "raw"
++    _write_raw_outputs(raw_root)
++    eio_path = raw_root / "eplusout.eio"
++    eio_path.write_text(
++        eio_path.read_text(encoding="utf-8").replace("2013", "2017"),
++        encoding="utf-8",
++    )
++
++    extractor = EnergyPlusOutputExtractor(
++        eso_loader=lambda path: FakeStandardOutput(),
++        parquet_writer=lambda frame, path: path.write_bytes(b"placeholder"),
++    )
++
++    with pytest.raises(CanonicalExtractionError, match="does not match"):
++        extractor.extract(
++            case_spec=case_spec,
++            simulation_directory=raw_root,
++            canonical_directory=tmp_path / "canonical",
++        )

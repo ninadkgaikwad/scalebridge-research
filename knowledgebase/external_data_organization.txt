@@ -1,0 +1,2091 @@
+ScaleBridge External Data Organization
+
+============================================================
+DIRECTORY TREE
+============================================================
+Folder PATH listing for volume OS
+Volume serial number is 6E2A-B104
+C:\USERS\NINAD\DROPBOX\NINADGAIKWAD_PHD\GAIKWAD_RESEARCH\FROM_WSU_ONEDRIVE\BUILDINGMODELINGPROJECT_CONDENSED\DATA
+|   Special.idf
+|   
++---Commercial_Prototypes
+|   +---ASHRAE
+|   |   +---90_1_2013
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Denver.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Dubai.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_NewYork.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Rochester.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Seattle.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Tampa.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Tucson.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Denver.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Dubai.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_NewYork.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Rochester.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Tampa.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Tucson.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Denver.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Dubai.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_Hospital_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_Hospital_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_Hospital_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_Hospital_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_Hospital_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_NewYork.idf
+|   |   |       ASHRAE901_Hospital_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_Hospital_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Rochester.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_Hospital_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Seattle.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Tampa.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_Hospital_STD2013_Tucson.idf
+|   |   |       ASHRAE901_Hospital_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Denver.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Dubai.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_NewYork.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Rochester.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Seattle.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Tampa.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2013_Tucson.idf
+|   |   |       ASHRAE901_HotelLarge_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Denver.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Dubai.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_NewYork.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Rochester.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Seattle.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Tampa.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2013_Tucson.idf
+|   |   |       ASHRAE901_HotelSmall_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Denver.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Dubai.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_NewYork.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Rochester.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Seattle.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Tampa.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Tucson.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Denver.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Dubai.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_NewYork.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Rochester.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Seattle.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Tampa.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Tucson.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Denver.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Dubai.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_NewYork.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Rochester.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Seattle.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Tampa.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Tucson.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Denver.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Dubai.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_NewYork.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Rochester.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Seattle.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Tampa.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Tucson.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Denver.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Dubai.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_NewYork.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Rochester.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Seattle.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Tampa.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Tucson.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Denver.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Dubai.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_NewYork.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Rochester.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Seattle.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Tampa.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Tucson.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Denver.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Dubai.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_NewYork.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Rochester.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Seattle.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Tampa.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Tucson.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Denver.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Dubai.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_NewYork.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Rochester.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Seattle.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Tampa.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Tucson.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Denver.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Dubai.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_NewYork.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Rochester.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Seattle.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Tampa.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Tucson.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Denver.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Dubai.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_NewYork.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Rochester.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Seattle.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Tampa.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Tucson.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2013_Tucson.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Albuquerque.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Albuquerque.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Atlanta.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Atlanta.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Buffalo.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Buffalo.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Denver.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Denver.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Dubai.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Dubai.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_ElPaso.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_ElPaso.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Fairbanks.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Fairbanks.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_GreatFalls.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_GreatFalls.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_HoChiMinh.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Honolulu.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Honolulu.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_InternationalFalls.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_InternationalFalls.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_NewDelhi.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_NewDelhi.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_NewYork.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_NewYork.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_PortAngeles.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_PortAngeles.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Rochester.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Rochester.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_SanDiego.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_SanDiego.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Seattle.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Seattle.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Tampa.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Tampa.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2013_Tucson.idf
+|   |   |       ASHRAE901_Warehouse_STD2013_Tucson.table.htm
+|   |   |       
+|   |   +---90_1_2016
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Denver.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Dubai.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_NewYork.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Rochester.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Seattle.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Tampa.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Tucson.idf
+|   |   |       ASHRAE901_ApartmentHighRise_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Denver.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Dubai.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_NewYork.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Rochester.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Seattle.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Tampa.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Tucson.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Denver.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Dubai.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_Hospital_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_Hospital_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_Hospital_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_Hospital_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_Hospital_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_NewYork.idf
+|   |   |       ASHRAE901_Hospital_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_Hospital_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Rochester.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_Hospital_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Seattle.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Tampa.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_Hospital_STD2016_Tucson.idf
+|   |   |       ASHRAE901_Hospital_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Denver.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Dubai.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_NewYork.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Rochester.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Seattle.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Tampa.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_HotelLarge_STD2016_Tucson.idf
+|   |   |       ASHRAE901_HotelLarge_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Denver.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Dubai.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_NewYork.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Rochester.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Seattle.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Tampa.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_HotelSmall_STD2016_Tucson.idf
+|   |   |       ASHRAE901_HotelSmall_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Denver.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Dubai.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_NewYork.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Rochester.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Seattle.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Tampa.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Tucson.idf
+|   |   |       ASHRAE901_OfficeLarge_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Denver.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Dubai.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_NewYork.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Rochester.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Seattle.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Tampa.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Tucson.idf
+|   |   |       ASHRAE901_OfficeMedium_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Denver.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Dubai.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_NewYork.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Rochester.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Seattle.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Tampa.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Tucson.idf
+|   |   |       ASHRAE901_OfficeSmall_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Denver.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Dubai.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_NewYork.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Rochester.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Seattle.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Tampa.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Tucson.idf
+|   |   |       ASHRAE901_OutPatientHealthCare_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Denver.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Dubai.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_NewYork.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Rochester.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Seattle.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Tampa.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Tucson.idf
+|   |   |       ASHRAE901_RestaurantFastFood_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Denver.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Dubai.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_NewYork.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Rochester.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Seattle.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Tampa.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Tucson.idf
+|   |   |       ASHRAE901_RestaurantSitDown_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Denver.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Dubai.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_NewYork.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Rochester.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Seattle.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Tampa.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Tucson.idf
+|   |   |       ASHRAE901_RetailStandalone_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Denver.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Dubai.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_NewYork.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Rochester.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Seattle.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Tampa.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Tucson.idf
+|   |   |       ASHRAE901_RetailStripmall_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Denver.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Dubai.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_NewYork.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Rochester.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Seattle.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Tampa.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Tucson.idf
+|   |   |       ASHRAE901_SchoolPrimary_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Denver.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Dubai.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_NewYork.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Rochester.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Seattle.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Tampa.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Tucson.idf
+|   |   |       ASHRAE901_SchoolSecondary_STD2016_Tucson.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Albuquerque.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Albuquerque.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Atlanta.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Atlanta.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Buffalo.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Buffalo.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Denver.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Denver.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Dubai.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Dubai.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_ElPaso.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_ElPaso.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Fairbanks.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Fairbanks.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_GreatFalls.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_GreatFalls.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_HoChiMinh.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_HoChiMinh.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Honolulu.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Honolulu.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_InternationalFalls.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_InternationalFalls.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_NewDelhi.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_NewDelhi.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_NewYork.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_NewYork.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_PortAngeles.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_PortAngeles.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Rochester.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Rochester.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_SanDiego.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_SanDiego.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Seattle.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Seattle.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Tampa.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Tampa.table.htm
+|   |   |       ASHRAE901_Warehouse_STD2016_Tucson.idf
+|   |   |       ASHRAE901_Warehouse_STD2016_Tucson.table.htm
+|   |   |       
+|   |   \---90_1_2019
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Albuquerque.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Atlanta.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Buffalo.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Denver.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Denver.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Dubai.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Dubai.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_ElPaso.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Fairbanks.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_GreatFalls.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Honolulu.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_NewDelhi.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_NewYork.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_NewYork.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_PortAngeles.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Rochester.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Rochester.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_SanDiego.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Seattle.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Seattle.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Tampa.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Tampa.table.htm
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Tucson.idf
+|   |           ASHRAE901_ApartmentHighRise_STD2019_Tucson.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Albuquerque.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Atlanta.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Buffalo.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Denver.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Denver.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Dubai.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Dubai.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_ElPaso.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Fairbanks.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_GreatFalls.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Honolulu.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_NewDelhi.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_NewYork.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_NewYork.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_PortAngeles.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Rochester.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Rochester.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_SanDiego.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Seattle.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Seattle.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Tampa.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Tampa.table.htm
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Tucson.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2019_Tucson.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Albuquerque.idf
+|   |           ASHRAE901_Hospital_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Atlanta.idf
+|   |           ASHRAE901_Hospital_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Buffalo.idf
+|   |           ASHRAE901_Hospital_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Denver.idf
+|   |           ASHRAE901_Hospital_STD2019_Denver.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Dubai.idf
+|   |           ASHRAE901_Hospital_STD2019_Dubai.table.htm
+|   |           ASHRAE901_Hospital_STD2019_ElPaso.idf
+|   |           ASHRAE901_Hospital_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Fairbanks.idf
+|   |           ASHRAE901_Hospital_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_Hospital_STD2019_GreatFalls.idf
+|   |           ASHRAE901_Hospital_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_Hospital_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_Hospital_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Honolulu.idf
+|   |           ASHRAE901_Hospital_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_Hospital_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_Hospital_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_Hospital_STD2019_NewDelhi.idf
+|   |           ASHRAE901_Hospital_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_Hospital_STD2019_NewYork.idf
+|   |           ASHRAE901_Hospital_STD2019_NewYork.table.htm
+|   |           ASHRAE901_Hospital_STD2019_PortAngeles.idf
+|   |           ASHRAE901_Hospital_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Rochester.idf
+|   |           ASHRAE901_Hospital_STD2019_Rochester.table.htm
+|   |           ASHRAE901_Hospital_STD2019_SanDiego.idf
+|   |           ASHRAE901_Hospital_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Seattle.idf
+|   |           ASHRAE901_Hospital_STD2019_Seattle.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Tampa.idf
+|   |           ASHRAE901_Hospital_STD2019_Tampa.table.htm
+|   |           ASHRAE901_Hospital_STD2019_Tucson.idf
+|   |           ASHRAE901_Hospital_STD2019_Tucson.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Albuquerque.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Atlanta.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Buffalo.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Denver.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Denver.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Dubai.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Dubai.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_ElPaso.idf
+|   |           ASHRAE901_HotelLarge_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Fairbanks.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_GreatFalls.idf
+|   |           ASHRAE901_HotelLarge_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_HotelLarge_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Honolulu.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_HotelLarge_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_NewDelhi.idf
+|   |           ASHRAE901_HotelLarge_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_NewYork.idf
+|   |           ASHRAE901_HotelLarge_STD2019_NewYork.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_PortAngeles.idf
+|   |           ASHRAE901_HotelLarge_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Rochester.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Rochester.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_SanDiego.idf
+|   |           ASHRAE901_HotelLarge_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Seattle.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Seattle.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Tampa.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Tampa.table.htm
+|   |           ASHRAE901_HotelLarge_STD2019_Tucson.idf
+|   |           ASHRAE901_HotelLarge_STD2019_Tucson.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Albuquerque.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Atlanta.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Buffalo.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Denver.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Denver.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Dubai.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Dubai.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_ElPaso.idf
+|   |           ASHRAE901_HotelSmall_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Fairbanks.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_GreatFalls.idf
+|   |           ASHRAE901_HotelSmall_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_HotelSmall_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Honolulu.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_HotelSmall_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_NewDelhi.idf
+|   |           ASHRAE901_HotelSmall_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_NewYork.idf
+|   |           ASHRAE901_HotelSmall_STD2019_NewYork.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_PortAngeles.idf
+|   |           ASHRAE901_HotelSmall_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Rochester.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Rochester.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_SanDiego.idf
+|   |           ASHRAE901_HotelSmall_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Seattle.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Seattle.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Tampa.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Tampa.table.htm
+|   |           ASHRAE901_HotelSmall_STD2019_Tucson.idf
+|   |           ASHRAE901_HotelSmall_STD2019_Tucson.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Albuquerque.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Atlanta.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Buffalo.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Denver.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Denver.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Dubai.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Dubai.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_ElPaso.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Fairbanks.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_GreatFalls.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Honolulu.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_NewDelhi.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_NewYork.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_NewYork.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_PortAngeles.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Rochester.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Rochester.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_SanDiego.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Seattle.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Seattle.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Tampa.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Tampa.table.htm
+|   |           ASHRAE901_OfficeLarge_STD2019_Tucson.idf
+|   |           ASHRAE901_OfficeLarge_STD2019_Tucson.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Albuquerque.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Atlanta.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Buffalo.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Denver.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Denver.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Dubai.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Dubai.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_ElPaso.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Fairbanks.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_GreatFalls.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Honolulu.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_NewDelhi.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_NewYork.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_NewYork.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_PortAngeles.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Rochester.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Rochester.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_SanDiego.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Seattle.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Seattle.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Tampa.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Tampa.table.htm
+|   |           ASHRAE901_OfficeMedium_STD2019_Tucson.idf
+|   |           ASHRAE901_OfficeMedium_STD2019_Tucson.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Albuquerque.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Atlanta.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Buffalo.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Denver.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Denver.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Dubai.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Dubai.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_ElPaso.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Fairbanks.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_GreatFalls.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Honolulu.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_NewDelhi.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_NewYork.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_NewYork.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_PortAngeles.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Rochester.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Rochester.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_SanDiego.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Seattle.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Seattle.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Tampa.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Tampa.table.htm
+|   |           ASHRAE901_OfficeSmall_STD2019_Tucson.idf
+|   |           ASHRAE901_OfficeSmall_STD2019_Tucson.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Albuquerque.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Atlanta.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Buffalo.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Denver.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Denver.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Dubai.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Dubai.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_ElPaso.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Fairbanks.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_GreatFalls.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Honolulu.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_NewDelhi.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_NewYork.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_NewYork.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_PortAngeles.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Rochester.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Rochester.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_SanDiego.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Seattle.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Seattle.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Tampa.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Tampa.table.htm
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Tucson.idf
+|   |           ASHRAE901_OutPatientHealthCare_STD2019_Tucson.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Albuquerque.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Atlanta.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Buffalo.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Denver.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Denver.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Dubai.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Dubai.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_ElPaso.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Fairbanks.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_GreatFalls.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Honolulu.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_NewDelhi.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_NewYork.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_NewYork.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_PortAngeles.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Rochester.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Rochester.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_SanDiego.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Seattle.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Seattle.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Tampa.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Tampa.table.htm
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Tucson.idf
+|   |           ASHRAE901_RestaurantFastFood_STD2019_Tucson.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Albuquerque.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Atlanta.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Buffalo.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Denver.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Denver.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Dubai.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Dubai.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_ElPaso.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Fairbanks.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_GreatFalls.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Honolulu.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_NewDelhi.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_NewYork.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_NewYork.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_PortAngeles.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Rochester.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Rochester.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_SanDiego.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Seattle.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Seattle.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Tampa.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Tampa.table.htm
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Tucson.idf
+|   |           ASHRAE901_RestaurantSitDown_STD2019_Tucson.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Albuquerque.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Atlanta.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Buffalo.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Denver.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Denver.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Dubai.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Dubai.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_ElPaso.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Fairbanks.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_GreatFalls.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Honolulu.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_NewDelhi.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_NewYork.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_NewYork.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_PortAngeles.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Rochester.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Rochester.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_SanDiego.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Seattle.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Seattle.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Tampa.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Tampa.table.htm
+|   |           ASHRAE901_RetailStandalone_STD2019_Tucson.idf
+|   |           ASHRAE901_RetailStandalone_STD2019_Tucson.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Albuquerque.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Atlanta.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Buffalo.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Denver.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Denver.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Dubai.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Dubai.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_ElPaso.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Fairbanks.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_GreatFalls.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Honolulu.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_NewDelhi.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_NewYork.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_NewYork.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_PortAngeles.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Rochester.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Rochester.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_SanDiego.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Seattle.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Seattle.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Tampa.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Tampa.table.htm
+|   |           ASHRAE901_RetailStripmall_STD2019_Tucson.idf
+|   |           ASHRAE901_RetailStripmall_STD2019_Tucson.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Albuquerque.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Atlanta.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Buffalo.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Denver.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Denver.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Dubai.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Dubai.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_ElPaso.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Fairbanks.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_GreatFalls.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Honolulu.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_NewDelhi.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_NewYork.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_NewYork.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_PortAngeles.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Rochester.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Rochester.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_SanDiego.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Seattle.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Seattle.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Tampa.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Tampa.table.htm
+|   |           ASHRAE901_SchoolPrimary_STD2019_Tucson.idf
+|   |           ASHRAE901_SchoolPrimary_STD2019_Tucson.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Albuquerque.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Atlanta.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Buffalo.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Denver.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Denver.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Dubai.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Dubai.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_ElPaso.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Fairbanks.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_GreatFalls.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Honolulu.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_NewDelhi.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_NewYork.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_NewYork.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_PortAngeles.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Rochester.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Rochester.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_SanDiego.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Seattle.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Seattle.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Tampa.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Tampa.table.htm
+|   |           ASHRAE901_SchoolSecondary_STD2019_Tucson.idf
+|   |           ASHRAE901_SchoolSecondary_STD2019_Tucson.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Albuquerque.idf
+|   |           ASHRAE901_Warehouse_STD2019_Albuquerque.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Atlanta.idf
+|   |           ASHRAE901_Warehouse_STD2019_Atlanta.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Buffalo.idf
+|   |           ASHRAE901_Warehouse_STD2019_Buffalo.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Denver.idf
+|   |           ASHRAE901_Warehouse_STD2019_Denver.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Dubai.idf
+|   |           ASHRAE901_Warehouse_STD2019_Dubai.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_ElPaso.idf
+|   |           ASHRAE901_Warehouse_STD2019_ElPaso.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Fairbanks.idf
+|   |           ASHRAE901_Warehouse_STD2019_Fairbanks.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_GreatFalls.idf
+|   |           ASHRAE901_Warehouse_STD2019_GreatFalls.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_HoChiMinh.idf
+|   |           ASHRAE901_Warehouse_STD2019_HoChiMinh.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Honolulu.idf
+|   |           ASHRAE901_Warehouse_STD2019_Honolulu.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_InternationalFalls.idf
+|   |           ASHRAE901_Warehouse_STD2019_InternationalFalls.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_NewDelhi.idf
+|   |           ASHRAE901_Warehouse_STD2019_NewDelhi.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_NewYork.idf
+|   |           ASHRAE901_Warehouse_STD2019_NewYork.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_PortAngeles.idf
+|   |           ASHRAE901_Warehouse_STD2019_PortAngeles.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Rochester.idf
+|   |           ASHRAE901_Warehouse_STD2019_Rochester.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_SanDiego.idf
+|   |           ASHRAE901_Warehouse_STD2019_SanDiego.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Seattle.idf
+|   |           ASHRAE901_Warehouse_STD2019_Seattle.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Tampa.idf
+|   |           ASHRAE901_Warehouse_STD2019_Tampa.table.htm
+|   |           ASHRAE901_Warehouse_STD2019_Tucson.idf
+|   |           ASHRAE901_Warehouse_STD2019_Tucson.table.htm
+|   |           
+|   \---IECC
+|       +---New1
+|       |       ASHRAE901_ApartmentHighRise_STD2013_Albuquerque.idf
+|       |       ASHRAE901_ApartmentHighRise_STD2013_Atlanta.idf
+|       |       
+|       \---New2
+|               ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|               ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|               
++---HouseThermalModel_Data
+|   +---PostProcessedFiles
+|   |   +---LargeHouse
+|   |   |       Cleaned_h_10406.csv
+|   |   |       Cleaned_h_11116.csv
+|   |   |       Cleaned_h_2916.csv
+|   |   |       Cleaned_h_4121.csv
+|   |   |       Cleaned_h_4156.csv
+|   |   |       Cleaned_h_4746.csv
+|   |   |       Cleaned_h_8281.csv
+|   |   |       Cleaned_h_8341.csv
+|   |   |       Cleaned_h_9251.csv
+|   |   |       Curating.py
+|   |   |       Estimated_Setpoint_Cleaned_h_10406.csv
+|   |   |       Estimated_Setpoint_Cleaned_h_11116.csv
+|   |   |       Estimated_Setpoint_Cleaned_h_2916.csv
+|   |   |       Estimated_Setpoint_Cleaned_h_4121.csv
+|   |   |       Estimated_Setpoint_Cleaned_h_4156.csv
+|   |   |       Estimated_Setpoint_Cleaned_h_4746.csv
+|   |   |       Estimated_Setpoint_Cleaned_h_8281.csv
+|   |   |       Estimated_Setpoint_Cleaned_h_8341.csv
+|   |   |       Estimated_Setpoint_Cleaned_h_9251.csv
+|   |   |       FindingQac_max.py
+|   |   |       HouseThermalData_Gainesville_Baseline_12Months_RatedAC_Current_03172025_QAC1point5.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_12Months_RatedAC_Current_03172025_QAChalved.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_12Months_RatedAC_Current_06092025_QAhalved.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_12Months_RatedAC_Current_06092025_QAonepontfive.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_12Months_RatedAC_Current_06092025_QAonepontfive_18.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_12Months_RatedAC_Current_06092025_QAonepontfive_26.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_12Months_RatedAC_Current_06092025_QAonepontfive_30.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_12Months_RatedAC_Current_06092025_QAoriginal.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_3Months_PVBat1_Bat0_PV0_None0_DC.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_6Months_PVBat1_Bat0_PV0_None0_DC_withAC.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_6Months_PVBat1_Bat0_PV0_None0_DC_withAC_RatedPower.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_6Months_PVBat1_Bat0_PV0_None0_DC_withoutAC.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_6Months_RatedAC_Current_03032025.mat
+|   |   |       HouseThermalData_Gainesville_Baseline_6Months_WithAC_RatedPower_New.mat
+|   |   |       HouseThermal_2017_Export.xlsx
+|   |   |       Inputprint.py
+|   |   |       PecanStreet_Austin_NSRDB_Gainesville_2017_Fall_3Months.mat
+|   |   |       qac_max_per_house_2021-11-25.csv
+|   |   |       Qac_plot.png
+|   |   |       Qihl_plot.png
+|   |   |       Qsolar_plot.png
+|   |   |       
+|   |   \---SmartCommunity
+|   +---PreProcessedFiles
+|   |   +---10minute_data_austin_HouseWise
+|   |   |       House_10_15minTo_10min.csv
+|   |   |       House_11_15minTo_10min.csv
+|   |   |       House_12_15minTo_10min.csv
+|   |   |       House_13_15minTo_10min.csv
+|   |   |       House_14_15minTo_10min.csv
+|   |   |       House_15_15minTo_10min.csv
+|   |   |       House_16_15minTo_10min.csv
+|   |   |       House_17_15minTo_10min.csv
+|   |   |       House_18_15minTo_10min.csv
+|   |   |       House_19_15minTo_10min.csv
+|   |   |       House_1_15minTo_10min.csv
+|   |   |       House_20_15minTo_10min.csv
+|   |   |       House_21_15minTo_10min.csv
+|   |   |       House_22_15minTo_10min.csv
+|   |   |       House_23_15minTo_10min.csv
+|   |   |       House_24_15minTo_10min.csv
+|   |   |       House_25_15minTo_10min.csv
+|   |   |       House_2_15minTo_10min.csv
+|   |   |       House_3_15minTo_10min.csv
+|   |   |       House_4_15minTo_10min.csv
+|   |   |       House_5_15minTo_10min.csv
+|   |   |       House_6_15minTo_10min.csv
+|   |   |       House_7_15minTo_10min.csv
+|   |   |       House_8_15minTo_10min.csv
+|   |   |       House_9_15minTo_10min.csv
+|   |   |       
+|   |   +---10minute_data_california_HouseWise
+|   |   |       House_10_15minTo_10min.csv
+|   |   |       House_11_15minTo_10min.csv
+|   |   |       House_12_15minTo_10min.csv
+|   |   |       House_13_15minTo_10min.csv
+|   |   |       House_14_15minTo_10min.csv
+|   |   |       House_15_15minTo_10min.csv
+|   |   |       House_16_15minTo_10min.csv
+|   |   |       House_17_15minTo_10min.csv
+|   |   |       House_18_15minTo_10min.csv
+|   |   |       House_19_15minTo_10min.csv
+|   |   |       House_1_15minTo_10min.csv
+|   |   |       House_20_15minTo_10min.csv
+|   |   |       House_21_15minTo_10min.csv
+|   |   |       House_22_15minTo_10min.csv
+|   |   |       House_23_15minTo_10min.csv
+|   |   |       House_2_15minTo_10min.csv
+|   |   |       House_3_15minTo_10min.csv
+|   |   |       House_4_15minTo_10min.csv
+|   |   |       House_5_15minTo_10min.csv
+|   |   |       House_6_15minTo_10min.csv
+|   |   |       House_7_15minTo_10min.csv
+|   |   |       House_8_15minTo_10min.csv
+|   |   |       House_9_15minTo_10min.csv
+|   |   |       
+|   |   \---10minute_data_newyork_HouseWise
+|   |           House_10_15minTo_10min.csv
+|   |           House_11_15minTo_10min.csv
+|   |           House_12_15minTo_10min.csv
+|   |           House_13_15minTo_10min.csv
+|   |           House_14_15minTo_10min.csv
+|   |           House_15_15minTo_10min.csv
+|   |           House_16_15minTo_10min.csv
+|   |           House_17_15minTo_10min.csv
+|   |           House_18_15minTo_10min.csv
+|   |           House_19_15minTo_10min.csv
+|   |           House_1_15minTo_10min.csv
+|   |           House_20_15minTo_10min.csv
+|   |           House_21_15minTo_10min.csv
+|   |           House_22_15minTo_10min.csv
+|   |           House_23_15minTo_10min.csv
+|   |           House_24_15minTo_10min.csv
+|   |           House_25_15minTo_10min.csv
+|   |           House_2_15minTo_10min.csv
+|   |           House_3_15minTo_10min.csv
+|   |           House_4_15minTo_10min.csv
+|   |           House_5_15minTo_10min.csv
+|   |           House_6_15minTo_10min.csv
+|   |           House_7_15minTo_10min.csv
+|   |           House_8_15minTo_10min.csv
+|   |           House_9_15minTo_10min.csv
+|   |           
+|   +---RawFiles
+|   |   +---15minute_data_austin
+|   |   |       15minute_data_austin.csv
+|   |   |       15minute_data_austin_readme.txt
+|   |   |       Metadata Column descriptions.pdf
+|   |   |       metadata.csv
+|   |   |       
+|   |   +---15minute_data_california
+|   |   |       15minute_data_california.csv
+|   |   |       15minute_data_california_readme.txt
+|   |   |       Metadata Column descriptions.pdf
+|   |   |       metadata.csv
+|   |   |       
+|   |   \---15minute_data_newyork
+|   |           15minute_data_newyork.csv
+|   |           15minute_data_newyork_readme.txt
+|   |           Metadata Column descriptions.pdf
+|   |           metadata.csv
+|   |           
+|   \---WeatherData
+|           GainesvilleFullYear_2017_To_2017_WeatherData_NSRDB_30minTo5minRes.csv
+|           Gainesville_2017_To_2017_WeatherData_NSRDB_30minTo10minRes.csv
+|           Gainesville_2017_To_2017_WeatherData_NSRDB_30minTo15minRes.csv
+|           Gainesville_2017_To_2017_WeatherData_NSRDB_30minTo20minRes.csv
+|           Gainesville_2017_To_2017_WeatherData_NSRDB_30minTo5minRes.csv
+|           Gainesville_NSRDBWeatherData_PreProcessed_2017.csv
+|           
++---Manufactured_Prototypes
+|   +---Folder 1
+|   |   +---Sub folder 1
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|   |   |       
+|   |   \---Sub folder 2
+|   |           ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|   |           
+|   \---Folder 2
+|       +---Sub folder 1
+|       |       ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|       |       ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|       |       
+|       \---Sub folder 2
+|               ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|               ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|               
++---Residential_Prototypes
+|   +---Folder 1
+|   |   +---Sub folder 1
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|   |   |       ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|   |   |       
+|   |   \---Sub folder 2
+|   |           ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|   |           ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|   |           
+|   \---Folder 2
+|       +---Sub folder 1
+|       |       ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|       |       ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|       |       
+|       \---Sub folder 2
+|               ASHRAE901_ApartmentMidRise_STD2013_HoChiMinh.idf
+|               ASHRAE901_ApartmentMidRise_STD2013_Honolulu.idf
+|               
++---TMY3_WeatherFiles_Commercial
+|       USA_AK_Fairbanks.Intl.AP.702610_TMY3.epw
+|       USA_AZ_Tucson-Davis-Monthan.AFB.722745_TMY3.epw
+|       USA_CA_San.Deigo-Brown.Field.Muni.AP.722904_TMY3.epw
+|       USA_CO_Denver-Aurora-Buckley.AFB.724695_TMY3.epw
+|       USA_FL_Tampa-MacDill.AFB.747880_TMY3.epw
+|       USA_GA_Atlanta-Hartsfield.Jackson.Intl.AP.722190_TMY3.epw
+|       USA_HI_Honolulu.Intl.AP.911820_TMY3.epw
+|       USA_MN_International.Falls.Intl.AP.727470_TMY3.epw
+|       USA_MN_Rochester.Intl.AP.726440_TMY3.epw
+|       USA_MT_Great.Falls.Intl.AP.727750_TMY3.epw
+|       USA_NM_Albuquerque.Intl.Sunport.723650_TMY3.epw
+|       USA_NY_Buffalo.Niagara.Intl.AP.725280_TMY3.epw
+|       USA_NY_New.York-John.F.Kennedy.Intl.AP.744860_TMY3.epw
+|       USA_TX_El.Paso.Intl.AP.722700_TMY3.epw
+|       USA_WA_Port.Angeles-William.R.Fairchild.Intl.AP.727885_TMY3.epw
+|       USA_WA_Seattle-Tacoma.Intl.AP.727930_TMY3.epw
+|       
+\---TMY3_WeatherFiles_Manufactured
+        USA_AK_Fairbanks.Intl.AP.702610_TMY3.epw
+        USA_AZ_Tucson-Davis-Monthan.AFB.722745_TMY3.epw
+        USA_CA_San.Deigo-Brown.Field.Muni.AP.722904_TMY3.epw
+        USA_CO_Denver-Aurora-Buckley.AFB.724695_TMY3.epw
+        USA_FL_Tampa-MacDill.AFB.747880_TMY3.epw
+        USA_GA_Atlanta-Hartsfield.Jackson.Intl.AP.722190_TMY3.epw
+        USA_HI_Honolulu.Intl.AP.911820_TMY3.epw
+        USA_MN_International.Falls.Intl.AP.727470_TMY3.epw
+        USA_MN_Rochester.Intl.AP.726440_TMY3.epw
+        
+
+============================================================
+FILE INVENTORY
+============================================================
+
+Extension Count TotalSizeMB
+--------- ----- -----------
+.idf        933      870.64
+.htm        912     5659.01
+.csv        104     1085.23
+.epw         25       39.01
+.mat         15       47.61
+.pdf          3        0.18
+.py           3        0.01
+.txt          3           0
+.png          3        0.35
+.xlsx         1        5.85
+
+
+

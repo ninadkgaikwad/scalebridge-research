@@ -1,0 +1,842 @@
+diff --git a/pyproject.toml b/pyproject.toml
+index 0a55c29..d5ffb9a 100644
+--- a/pyproject.toml
++++ b/pyproject.toml
+@@ -11,6 +11,7 @@ requires-python = ">=3.10"
+ dependencies = [
+     "numpy",
+     "pandas",
++    "pyarrow>=14",
+     "scikit-learn",
+     "matplotlib",
+     "torch",
+diff --git a/scripts/energyplus/smoke_test_office_small_seattle.py b/scripts/energyplus/smoke_test_office_small_seattle.py
+index 5a85a7b..d957e17 100644
+--- a/scripts/energyplus/smoke_test_office_small_seattle.py
++++ b/scripts/energyplus/smoke_test_office_small_seattle.py
+@@ -25,6 +25,7 @@ from scalebridge.integration.energyplus import (
+     IdfPreparer,
+     OutputVariableRequest,
+     RunPeriod,
++    extract_canonical_outputs,
+     write_case_spec,
+ )
+ from scalebridge.integration.energyplus.prototypes import (
+@@ -141,6 +142,18 @@ def main() -> None:
+         output_directory=raw_root,
+     )
+ 
++    # ----------------------------------------------------------------------
++    # Phase 5: Canonicalize requested ESO signals and structured EIO metadata.
++    # ----------------------------------------------------------------------
++    extraction = None
++    if run_result.completed_successfully:
++        extraction = extract_canonical_outputs(
++            case_spec=case_spec,
++            simulation_directory=run_result.output_directory,
++            canonical_directory=run_root / "canonical",
++            legacy_directory=run_root / "legacy",
++        )
++
+     summary = {
+         "case_id": case_spec.case_id,
+         "energyplus_root": str(energyplus_root),
+@@ -153,6 +166,19 @@ def main() -> None:
+         "fatal_errors": run_result.fatal_count,
+         "runtime_seconds": run_result.runtime_seconds,
+         "failure_message": run_result.failure_message,
++        "canonical_parquet": (
++            {
++                frequency: str(path)
++                for frequency, path in extraction.parquet_paths.items()
++            }
++            if extraction is not None
++            else {}
++        ),
++        "canonical_row_count": extraction.row_count if extraction else 0,
++        "produced_signal_count": (
++            extraction.produced_signal_count if extraction else 0
++        ),
++        "timestep_count": extraction.timestep_count if extraction else 0,
+     }
+     summary_path = run_root / "smoke_test_summary.json"
+     summary_path.write_text(
+diff --git a/src/scalebridge/integration/energyplus/__init__.py b/src/scalebridge/integration/energyplus/__init__.py
+index ec4d6b2..d0499e4 100644
+--- a/src/scalebridge/integration/energyplus/__init__.py
++++ b/src/scalebridge/integration/energyplus/__init__.py
+@@ -57,16 +57,25 @@ from scalebridge.integration.energyplus.prototypes import (
+     resolve_generated_data_root,
+     scan_pnnl_commercial_prototypes,
+ )
++from scalebridge.integration.energyplus.outputs import (
++    CanonicalExtractionError,
++    CanonicalExtractionResult,
++    EnergyPlusOutputExtractor,
++    extract_canonical_outputs,
++)
+ 
+ __all__ = [
+     "ArtifactRecord",
+     "CaseSpec",
++    "CanonicalExtractionError",
++    "CanonicalExtractionResult",
+     "COMMERCIAL_TMY3_BY_LOCATION",
+     "EnergyPlusExecutionError",
+     "EnergyPlusInputError",
+     "EnergyPlusRunResult",
+     "EnergyPlusRunner",
+     "EnergyPlusRunnerError",
++    "EnergyPlusOutputExtractor",
+     "ExecutionMetadata",
+     "GenerationResult",
+     "IdfBackend",
+@@ -89,6 +98,7 @@ __all__ = [
+     "ValidationSummary",
+     "build_case_id",
+     "build_and_write_pnnl_inventory",
++    "extract_canonical_outputs",
+     "load_case_spec",
+     "load_run_manifest",
+     "prepare_idf",
+diff --git a/src/scalebridge/integration/energyplus/outputs/__init__.py b/src/scalebridge/integration/energyplus/outputs/__init__.py
+new file mode 100644
+index 0000000..3fea6a1
+--- /dev/null
++++ b/src/scalebridge/integration/energyplus/outputs/__init__.py
+@@ -0,0 +1,15 @@
++"""Canonical EnergyPlus output extraction and compatibility exports."""
++
++from scalebridge.integration.energyplus.outputs.extractor import (
++    CanonicalExtractionError,
++    CanonicalExtractionResult,
++    EnergyPlusOutputExtractor,
++    extract_canonical_outputs,
++)
++
++__all__ = [
++    "CanonicalExtractionError",
++    "CanonicalExtractionResult",
++    "EnergyPlusOutputExtractor",
++    "extract_canonical_outputs",
++]
+diff --git a/src/scalebridge/integration/energyplus/outputs/eio.py b/src/scalebridge/integration/energyplus/outputs/eio.py
+new file mode 100644
+index 0000000..ce457bc
+--- /dev/null
++++ b/src/scalebridge/integration/energyplus/outputs/eio.py
+@@ -0,0 +1,92 @@
++"""Parse EnergyPlus EIO records into stable structured metadata.
++
++EnergyPlus EIO files contain repeated table headers beginning with ``!`` and
++data records beginning with a category token such as ``<Zone Information>``.
++The legacy generator repeatedly rescanned the complete file for every header.
++This parser performs one CSV-aware pass, preserves all values as emitted, and
++can optionally recreate the legacy dictionary of pandas DataFrames.
++"""
++
++from __future__ import annotations
++
++import csv
++from dataclasses import dataclass
++from pathlib import Path
++
++import pandas as pd
++
++
++class EioParsingError(RuntimeError):
++    """Raised when an EIO file is absent or structurally inconsistent."""
++
++
++@dataclass(frozen=True)
++class EioTable:
++    """One EIO category with its declared columns and emitted data rows."""
++
++    category: str
++    columns: tuple[str, ...]
++    rows: tuple[tuple[str, ...], ...]
++
++    def to_serializable_dict(self) -> dict[str, object]:
++        """Return a lossless JSON-compatible representation."""
++        return {
++            "category": self.category,
++            "columns": list(self.columns),
++            "rows": [list(row) for row in self.rows],
++        }
++
++    def to_dataframe(self) -> pd.DataFrame:
++        """Convert the table to the DataFrame shape used by legacy workflows."""
++        width = len(self.columns)
++        normalized_rows = [
++            (*row[:width], *("" for _ in range(max(0, width - len(row)))))
++            for row in self.rows
++        ]
++        return pd.DataFrame(normalized_rows, columns=self.columns)
++
++
++def parse_eio(path: str | Path) -> dict[str, EioTable]:
++    """Parse an EnergyPlus EIO file into category-keyed tables."""
++    source = Path(path).expanduser().resolve()
++    if not source.is_file():
++        raise EioParsingError(f"EIO file does not exist: {source}")
++
++    headers: dict[str, tuple[str, ...]] = {}
++    rows: dict[str, list[tuple[str, ...]]] = {}
++
++    with source.open("r", encoding="utf-8", errors="replace", newline="") as stream:
++        for parsed_row in csv.reader(stream):
++            fields = tuple(field.strip() for field in parsed_row)
++            if not fields or not fields[0]:
++                continue
++
++            first = fields[0]
++            if first.startswith("!"):
++                category = _extract_category(first[1:].strip())
++                if category is not None:
++                    headers[category] = fields[1:]
++                    rows.setdefault(category, [])
++                continue
++
++            category = _extract_category(first)
++            if category is not None and category in headers:
++                rows[category].append(fields[1:])
++
++    return {
++        category: EioTable(
++            category=category,
++            columns=columns,
++            rows=tuple(rows.get(category, [])),
++        )
++        for category, columns in headers.items()
++    }
++
++
++def _extract_category(value: str) -> str | None:
++    """Extract the text enclosed by the first angle-bracket pair."""
++    start = value.find("<")
++    end = value.find(">", start + 1)
++    if start < 0 or end < 0:
++        return None
++    return value[start + 1 : end].strip()
+diff --git a/src/scalebridge/integration/energyplus/outputs/extractor.py b/src/scalebridge/integration/energyplus/outputs/extractor.py
+new file mode 100644
+index 0000000..76e5189
+--- /dev/null
++++ b/src/scalebridge/integration/energyplus/outputs/extractor.py
+@@ -0,0 +1,392 @@
++"""Extract requested EnergyPlus signals into canonical ScaleBridge artifacts.
++
++The EnergyPlus ``eplusout.csv`` file is retained only as a raw diagnostic.
++Canonical time series are read from ``eplusout.eso`` through opyplus and
++written as typed, compressed Parquet files, one per reporting frequency.
++
++Each Parquet file uses a long-form schema:
++
++``timestamp, environment, reporting_frequency, key_value, variable_name,
++units, semantic_role, value``.
++
++This representation avoids ambiguous CSV column labels, supports selective
++Parquet scans, and preserves the zone/key identity needed by aggregation.
++Optional compatibility pickles reproduce the broad legacy dictionary shape
++without requiring one EnergyPlus simulation per output variable.
++"""
++
++from __future__ import annotations
++
++import json
++import pickle
++from collections import defaultdict
++from pathlib import Path
++from typing import Any, Callable
++
++import pandas as pd
++from pydantic import BaseModel, ConfigDict, Field
++
++from scalebridge.integration.energyplus.manifests.models import (
++    CaseSpec,
++    OutputVariableRequest,
++)
++from scalebridge.integration.energyplus.outputs.eio import EioTable, parse_eio
++
++
++CANONICAL_COLUMNS = (
++    "timestamp",
++    "environment",
++    "reporting_frequency",
++    "key_value",
++    "variable_name",
++    "units",
++    "semantic_role",
++    "value",
++)
++
++
++class CanonicalExtractionError(RuntimeError):
++    """Raised when required simulation outputs cannot be canonicalized."""
++
++
++class CanonicalExtractionResult(BaseModel):
++    """Artifact paths and validation counts from one canonical extraction."""
++
++    model_config = ConfigDict(extra="forbid", frozen=True)
++
++    case_id: str
++    environment: str
++    requested_signal_count: int = Field(ge=0)
++    produced_signal_count: int = Field(ge=0)
++    row_count: int = Field(ge=0)
++    timestep_count: int = Field(ge=0)
++    missing_required_signals: tuple[str, ...] = ()
++    parquet_paths: dict[str, Path]
++    metadata_path: Path
++    eio_metadata_path: Path
++    legacy_output_pickle_path: Path | None = None
++    legacy_eio_pickle_path: Path | None = None
++
++
++class EnergyPlusOutputExtractor:
++    """Canonicalize one completed opyplus simulation.
++
++    Parameters
++    ----------
++    eso_loader:
++        Optional injected loader used by tests. Production uses
++        ``opyplus.StandardOutput``.
++    parquet_writer:
++        Optional injected writer receiving ``(dataframe, destination)``.
++        Production uses pandas with the pyarrow engine.
++    """
++
++    def __init__(
++        self,
++        *,
++        eso_loader: Callable[[Path], Any] | None = None,
++        parquet_writer: Callable[[pd.DataFrame, Path], None] | None = None,
++    ) -> None:
++        self._eso_loader = eso_loader or self._load_eso
++        self._parquet_writer = parquet_writer or self._write_parquet
++
++    def extract(
++        self,
++        *,
++        case_spec: CaseSpec,
++        simulation_directory: str | Path,
++        canonical_directory: str | Path,
++        legacy_directory: str | Path | None = None,
++    ) -> CanonicalExtractionResult:
++        """Extract, validate, and persist requested ESO and EIO outputs."""
++        raw_root = Path(simulation_directory).expanduser().resolve()
++        canonical_root = Path(canonical_directory).expanduser().resolve()
++        legacy_root = (
++            Path(legacy_directory).expanduser().resolve()
++            if legacy_directory is not None
++            else canonical_root.parent / "legacy"
++        )
++
++        eso_path = raw_root / "eplusout.eso"
++        eio_path = raw_root / "eplusout.eio"
++        if not eso_path.is_file():
++            raise CanonicalExtractionError(f"ESO file does not exist: {eso_path}")
++        if not eio_path.is_file():
++            raise CanonicalExtractionError(f"EIO file does not exist: {eio_path}")
++
++        canonical_root.mkdir(parents=True, exist_ok=True)
++        standard_output = self._eso_loader(eso_path)
++        start_year = case_spec.run_period.calendar_year
++        if start_year is None:
++            raise CanonicalExtractionError(
++                "canonical datetime extraction requires run_period.calendar_year"
++            )
++        standard_output.create_datetime_index(start_year)
++
++        environments = standard_output.get_environments()
++        if not environments:
++            raise CanonicalExtractionError("ESO contains no simulation environments")
++        environment = tuple(environments)[-1]
++
++        variable_catalog = standard_output.get_variables()
++        requests_by_frequency = _group_requests(case_spec.output_variables)
++        frames_by_frequency: dict[str, pd.DataFrame] = {}
++        missing_required: list[str] = []
++        produced_signal_count = 0
++
++        for frequency, requests in requests_by_frequency.items():
++            variables = list(variable_catalog.get(frequency, ()))
++            source_frame = standard_output.get_data(environment, frequency=frequency)
++            canonical_frame, missing, produced = _canonicalize_frequency(
++                source_frame=source_frame,
++                environment=environment,
++                frequency=frequency,
++                variables=variables,
++                requests=requests,
++            )
++            frames_by_frequency[frequency] = canonical_frame
++            missing_required.extend(missing)
++            produced_signal_count += produced
++
++        if missing_required:
++            joined = ", ".join(missing_required)
++            raise CanonicalExtractionError(f"required ESO signals are missing: {joined}")
++
++        parquet_paths: dict[str, Path] = {}
++        for frequency, frame in frames_by_frequency.items():
++            destination = canonical_root / f"timeseries_{frequency}.parquet"
++            self._parquet_writer(frame, destination)
++            parquet_paths[frequency] = destination
++
++        eio_tables = parse_eio(eio_path)
++        eio_metadata_path = canonical_root / "eio_tables.json"
++        _write_json(
++            eio_metadata_path,
++            {
++                "schema_version": "0.1.0",
++                "source": str(eio_path),
++                "table_count": len(eio_tables),
++                "tables": {
++                    name: table.to_serializable_dict()
++                    for name, table in eio_tables.items()
++                },
++            },
++        )
++
++        row_count = sum(len(frame) for frame in frames_by_frequency.values())
++        timestep_count = max(
++            (
++                frame["timestamp"].nunique()
++                for frame in frames_by_frequency.values()
++                if not frame.empty
++            ),
++            default=0,
++        )
++        metadata_path = canonical_root / "metadata.json"
++        _write_json(
++            metadata_path,
++            {
++                "schema_version": "0.1.0",
++                "case_id": case_spec.case_id,
++                "environment": environment,
++                "requested_signal_count": len(case_spec.output_variables),
++                "produced_signal_count": produced_signal_count,
++                "row_count": row_count,
++                "timestep_count": timestep_count,
++                "parquet_files": {
++                    frequency: path.name
++                    for frequency, path in sorted(parquet_paths.items())
++                },
++                "canonical_columns": list(CANONICAL_COLUMNS),
++            },
++        )
++
++        legacy_output_path: Path | None = None
++        legacy_eio_path: Path | None = None
++        if case_spec.write_legacy_pickles:
++            legacy_root.mkdir(parents=True, exist_ok=True)
++            legacy_output_path = legacy_root / "IDF_OutputVariables_DictDF.pickle"
++            legacy_eio_path = legacy_root / "Eio_OutputFile.pickle"
++            _write_legacy_output_pickle(frames_by_frequency, legacy_output_path)
++            _write_legacy_eio_pickle(eio_tables, legacy_eio_path)
++
++        return CanonicalExtractionResult(
++            case_id=case_spec.case_id,
++            environment=environment,
++            requested_signal_count=len(case_spec.output_variables),
++            produced_signal_count=produced_signal_count,
++            row_count=row_count,
++            timestep_count=timestep_count,
++            missing_required_signals=(),
++            parquet_paths=parquet_paths,
++            metadata_path=metadata_path,
++            eio_metadata_path=eio_metadata_path,
++            legacy_output_pickle_path=legacy_output_path,
++            legacy_eio_pickle_path=legacy_eio_path,
++        )
++
++    @staticmethod
++    def _load_eso(path: Path) -> Any:
++        """Load an ESO through the public opyplus output API."""
++        import opyplus
++
++        return opyplus.StandardOutput(str(path))
++
++    @staticmethod
++    def _write_parquet(frame: pd.DataFrame, destination: Path) -> None:
++        """Write one compressed typed Parquet artifact."""
++        try:
++            frame.to_parquet(
++                destination,
++                engine="pyarrow",
++                compression="zstd",
++                index=False,
++            )
++        except ImportError as exc:
++            raise CanonicalExtractionError(
++                "pyarrow is required for canonical Parquet output"
++            ) from exc
++
++
++def extract_canonical_outputs(
++    *,
++    case_spec: CaseSpec,
++    simulation_directory: str | Path,
++    canonical_directory: str | Path,
++    legacy_directory: str | Path | None = None,
++) -> CanonicalExtractionResult:
++    """Convenience wrapper for the default production extractor."""
++    return EnergyPlusOutputExtractor().extract(
++        case_spec=case_spec,
++        simulation_directory=simulation_directory,
++        canonical_directory=canonical_directory,
++        legacy_directory=legacy_directory,
++    )
++
++
++def _group_requests(
++    requests: tuple[OutputVariableRequest, ...],
++) -> dict[str, tuple[OutputVariableRequest, ...]]:
++    """Group output requests by normalized reporting frequency."""
++    grouped: dict[str, list[OutputVariableRequest]] = defaultdict(list)
++    for request in requests:
++        grouped[request.reporting_frequency].append(request)
++    return {frequency: tuple(items) for frequency, items in grouped.items()}
++
++
++def _canonicalize_frequency(
++    *,
++    source_frame: pd.DataFrame,
++    environment: str,
++    frequency: str,
++    variables: list[Any],
++    requests: tuple[OutputVariableRequest, ...],
++) -> tuple[pd.DataFrame, list[str], int]:
++    """Select requested variables and convert one frequency to long form."""
++    pieces: list[pd.DataFrame] = []
++    missing_required: list[str] = []
++    produced_refs: set[str] = set()
++    columns_by_casefold = {str(column).casefold(): column for column in source_frame}
++
++    for request in requests:
++        matches = [
++            variable
++            for variable in variables
++            if _variable_matches_request(variable, request)
++        ]
++        available_matches = [
++            variable
++            for variable in matches
++            if str(variable.ref).casefold() in columns_by_casefold
++        ]
++
++        if not available_matches and request.required:
++            missing_required.append(_request_identity(request))
++            continue
++
++        for variable in available_matches:
++            source_column = columns_by_casefold[str(variable.ref).casefold()]
++            piece = pd.DataFrame(
++                {
++                    "timestamp": source_frame.index,
++                    "environment": environment,
++                    "reporting_frequency": frequency,
++                    "key_value": str(variable.key_value),
++                    "variable_name": str(variable.name),
++                    "units": str(variable.unit or ""),
++                    "semantic_role": request.semantic_role,
++                    "value": pd.to_numeric(source_frame[source_column], errors="coerce"),
++                }
++            )
++            pieces.append(piece)
++            produced_refs.add(str(variable.ref).casefold())
++
++    if not pieces:
++        return pd.DataFrame(columns=CANONICAL_COLUMNS), missing_required, 0
++
++    canonical = pd.concat(pieces, ignore_index=True)
++    canonical = canonical.loc[:, CANONICAL_COLUMNS]
++    canonical["timestamp"] = pd.to_datetime(canonical["timestamp"])
++    canonical["value"] = canonical["value"].astype("float64")
++    return canonical, missing_required, len(produced_refs)
++
++
++def _variable_matches_request(variable: Any, request: OutputVariableRequest) -> bool:
++    """Return whether one ESO variable satisfies one declarative request."""
++    if str(variable.name).casefold() != request.variable_name.casefold():
++        return False
++    return (
++        request.key_value == "*"
++        or str(variable.key_value).casefold() == request.key_value.casefold()
++    )
++
++
++def _request_identity(request: OutputVariableRequest) -> str:
++    """Create an actionable identity for validation errors."""
++    return (
++        f"{request.key_value}|{request.variable_name}|"
++        f"{request.reporting_frequency}"
++    )
++
++
++def _write_json(path: Path, payload: dict[str, object]) -> None:
++    """Write deterministic UTF-8 JSON."""
++    path.write_text(
++        json.dumps(payload, indent=2, sort_keys=True) + "\n",
++        encoding="utf-8",
++    )
++
++
++def _write_legacy_output_pickle(
++    frames_by_frequency: dict[str, pd.DataFrame],
++    destination: Path,
++) -> None:
++    """Write variable-keyed DataFrames compatible with legacy aggregation."""
++    combined = pd.concat(frames_by_frequency.values(), ignore_index=True)
++    legacy: dict[str, object] = {
++        "DateTime_List": sorted(combined["timestamp"].dropna().unique().tolist())
++    }
++    for variable_name, variable_frame in combined.groupby(
++        "variable_name",
++        sort=True,
++    ):
++        wide = variable_frame.pivot_table(
++            index="timestamp",
++            columns="key_value",
++            values="value",
++            aggfunc="first",
++        ).reset_index()
++        legacy[str(variable_name).replace(" ", "_")] = wide
++
++    with destination.open("wb") as stream:
++        pickle.dump(legacy, stream, protocol=pickle.HIGHEST_PROTOCOL)
++
++
++def _write_legacy_eio_pickle(
++    tables: dict[str, EioTable],
++    destination: Path,
++) -> None:
++    """Write the legacy EIO category-to-DataFrame dictionary."""
++    payload = {name: table.to_dataframe() for name, table in tables.items()}
++    with destination.open("wb") as stream:
++        pickle.dump(payload, stream, protocol=pickle.HIGHEST_PROTOCOL)
+diff --git a/src/scalebridge/integration/energyplus/simulation/runner.py b/src/scalebridge/integration/energyplus/simulation/runner.py
+index 3553160..5634a45 100644
+--- a/src/scalebridge/integration/energyplus/simulation/runner.py
++++ b/src/scalebridge/integration/energyplus/simulation/runner.py
+@@ -22,6 +22,7 @@ their own modules.
+ from __future__ import annotations
+ 
+ import time
++import warnings
+ from pathlib import Path
+ from typing import Any, Callable
+ 
+@@ -337,8 +338,15 @@ class EnergyPlusRunner:
+     ) -> tuple[str, Path | None]:
+         """Read EnergyPlus ERR content through the opyplus Simulation object."""
+         try:
+-            error_output = simulation.get_out_err()
+-            error_text = str(error_output.get_content())
++            with warnings.catch_warnings():
++                warnings.filterwarnings(
++                    "ignore",
++                    message=".*ChainedAssignmentError.*",
++                    category=FutureWarning,
++                    module=r"opyplus\.err",
++                )
++                error_output = simulation.get_out_err()
++                error_text = str(error_output.get_content())
+         except Exception:
+             return "", None
+ 
+diff --git a/tests/integration/energyplus/test_output_extractor.py b/tests/integration/energyplus/test_output_extractor.py
+new file mode 100644
+index 0000000..1fdc525
+--- /dev/null
++++ b/tests/integration/energyplus/test_output_extractor.py
+@@ -0,0 +1,188 @@
++"""Tests for canonical ESO time-series and EIO metadata extraction."""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from types import SimpleNamespace
++
++import pandas as pd
++import pytest
++
++from scalebridge.integration.energyplus import (
++    CanonicalExtractionError,
++    EnergyPlusOutputExtractor,
++)
++from scalebridge.integration.energyplus.outputs.eio import parse_eio
++
++
++class FakeStandardOutput:
++    """Small opyplus StandardOutput stand-in with two requested variables."""
++
++    def __init__(self, *, omit_temperature: bool = False) -> None:
++        self.start_year: int | None = None
++        self._variables = [
++            SimpleNamespace(
++                ref="CORE_ZN,Zone Air Temperature",
++                key_value="CORE_ZN",
++                name="Zone Air Temperature",
++                unit="C",
++                frequency="timestep",
++            ),
++            SimpleNamespace(
++                ref="PERIMETER_ZN,Zone Air Temperature",
++                key_value="PERIMETER_ZN",
++                name="Zone Air Temperature",
++                unit="C",
++                frequency="timestep",
++            ),
++            SimpleNamespace(
++                ref="ENVIRONMENT,Site Outdoor Air Drybulb Temperature",
++                key_value="ENVIRONMENT",
++                name="Site Outdoor Air Drybulb Temperature",
++                unit="C",
++                frequency="timestep",
++            ),
++        ]
++        columns = {
++            "ENVIRONMENT,Site Outdoor Air Drybulb Temperature": [4.0, 5.0]
++        }
++        if not omit_temperature:
++            columns.update(
++                {
++                    "CORE_ZN,Zone Air Temperature": [21.0, 21.5],
++                    "PERIMETER_ZN,Zone Air Temperature": [20.0, 20.5],
++                }
++            )
++        self._frame = pd.DataFrame(
++            columns,
++            index=pd.to_datetime(["2013-01-01 00:00", "2013-01-01 00:05"]),
++        )
++
++    def create_datetime_index(self, start_year: int) -> None:
++        """Capture the requested calendar year."""
++        self.start_year = start_year
++
++    def get_environments(self) -> dict[str, object]:
++        """Return design-day and run-period environments in simulation order."""
++        return {"winter design day": object(), "run period 1": object()}
++
++    def get_variables(self) -> dict[str, list[object]]:
++        """Return the fake ESO variable catalog."""
++        return {"timestep": self._variables}
++
++    def get_data(
++        self,
++        environment: str,
++        *,
++        frequency: str,
++    ) -> pd.DataFrame:
++        """Return the fake run-period timestep data."""
++        assert environment == "run period 1"
++        assert frequency == "timestep"
++        return self._frame
++
++
++def _write_raw_outputs(root: Path) -> None:
++    """Create minimal ESO and representative EIO files."""
++    root.mkdir(parents=True)
++    (root / "eplusout.eso").write_text("fake eso\n", encoding="utf-8")
++    (root / "eplusout.eio").write_text(
++        "Program Version,EnergyPlus, Version 9.0.1\n"
++        "! <Zone Information>,Zone Name,Floor Area {m2}\n"
++        "<Zone Information>,CORE_ZN,100.0\n"
++        "<Zone Information>,PERIMETER_ZN,75.0\n",
++        encoding="utf-8",
++    )
++
++
++def test_extractor_writes_requested_variables_in_long_form(
++    tmp_path: Path,
++    case_spec,
++) -> None:
++    """Wildcard requests must retain each matching zone as a distinct signal."""
++    raw_root = tmp_path / "raw"
++    canonical_root = tmp_path / "canonical"
++    _write_raw_outputs(raw_root)
++    written_frames: dict[str, pd.DataFrame] = {}
++
++    def capture_parquet(frame: pd.DataFrame, destination: Path) -> None:
++        """Capture canonical data while creating a representative artifact."""
++        written_frames[destination.name] = frame.copy()
++        destination.write_bytes(b"parquet-placeholder")
++
++    fake_output = FakeStandardOutput()
++    result = EnergyPlusOutputExtractor(
++        eso_loader=lambda path: fake_output,
++        parquet_writer=capture_parquet,
++    ).extract(
++        case_spec=case_spec,
++        simulation_directory=raw_root,
++        canonical_directory=canonical_root,
++    )
++
++    frame = written_frames["timeseries_timestep.parquet"]
++    assert tuple(frame.columns) == (
++        "timestamp",
++        "environment",
++        "reporting_frequency",
++        "key_value",
++        "variable_name",
++        "units",
++        "semantic_role",
++        "value",
++    )
++    assert result.produced_signal_count == 3
++    assert result.row_count == 6
++    assert result.timestep_count == 2
++    assert set(frame["key_value"]) == {
++        "CORE_ZN",
++        "PERIMETER_ZN",
++        "ENVIRONMENT",
++    }
++    assert fake_output.start_year == 2013
++
++    metadata = json.loads(result.metadata_path.read_text(encoding="utf-8"))
++    assert metadata["parquet_files"] == {
++        "timestep": "timeseries_timestep.parquet"
++    }
++
++
++def test_extractor_rejects_missing_required_request(
++    tmp_path: Path,
++    case_spec,
++) -> None:
++    """A completed simulation is invalid when a required signal is absent."""
++    raw_root = tmp_path / "raw"
++    _write_raw_outputs(raw_root)
++
++    extractor = EnergyPlusOutputExtractor(
++        eso_loader=lambda path: FakeStandardOutput(omit_temperature=True),
++        parquet_writer=lambda frame, path: None,
++    )
++
++    with pytest.raises(CanonicalExtractionError, match="Zone Air Temperature"):
++        extractor.extract(
++            case_spec=case_spec,
++            simulation_directory=raw_root,
++            canonical_directory=tmp_path / "canonical",
++        )
++
++
++def test_parse_eio_preserves_category_columns_and_rows(tmp_path: Path) -> None:
++    """The one-pass EIO parser must preserve table shape and quoted values."""
++    path = tmp_path / "eplusout.eio"
++    path.write_text(
++        "! <Zone Information>,Zone Name,Description\n"
++        '<Zone Information>,CORE_ZN,"Core, occupied"\n',
++        encoding="utf-8",
++    )
++
++    tables = parse_eio(path)
++
++    assert tables["Zone Information"].columns == ("Zone Name", "Description")
++    assert tables["Zone Information"].rows == (("CORE_ZN", "Core, occupied"),)
++    assert list(tables["Zone Information"].to_dataframe().columns) == [
++        "Zone Name",
++        "Description",
++    ]

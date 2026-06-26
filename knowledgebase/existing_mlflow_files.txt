@@ -1,0 +1,34 @@
+===== src/scalebridge/tracking/__init__.py =====
+
+===== src/scalebridge/tracking/mlflow/__init__.py =====
+ D check_pillow_torchvision_dll.py
+ M pyproject.toml
+ M src/scalebridge.egg-info/SOURCES.txt
+ M src/scalebridge/integration/energyplus/__init__.py
+ M src/scalebridge/integration/energyplus/idf/__init__.py
+ M src/scalebridge/integration/energyplus/simulation/__init__.py
+?? environments/locks/dev_laptop_gpu_full/pillow-torchvision-dll-test.txt
+?? environments/locks/home_pc_gpu_full/
+?? environments/locks/lab_pc_gpu_full/
+?? existing_mlflow_files.txt
+?? knowledgebase/current_repo_organization.txt
+?? knowledgebase/external_data_organization.txt
+?? knowledgebase/office_small_seattle_2013_warnings.txt
+?? knowledgebase/office_small_seattle_outputs.txt
+?? knowledgebase/office_small_seattle_warnings.txt
+?? knowledgebase/opyplus_idd_diagnostic.txt
+?? knowledgebase/scalebridge_target_modules.txt
+?? patches/
+?? scalebridge_energyplus_generation_orchestrator_v01.patch
+?? scalebridge_p1_campaign_mlflow_v01.patch
+?? scalebridge_smoke_legacy_pickles_v01.patch
+?? scripts/energyplus/
+?? src/scalebridge/integration/energyplus/generation/
+?? src/scalebridge/integration/energyplus/idf/backend.py
+?? src/scalebridge/integration/energyplus/idf/opyplus_compat.py
+?? src/scalebridge/integration/energyplus/idf/preparer.py
+?? src/scalebridge/integration/energyplus/manifests/
+?? src/scalebridge/integration/energyplus/outputs/
+?? src/scalebridge/integration/energyplus/prototypes.py
+?? src/scalebridge/integration/energyplus/simulation/runner.py
+?? tests/

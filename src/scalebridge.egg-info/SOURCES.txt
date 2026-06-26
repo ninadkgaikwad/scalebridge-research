@@ -50,6 +50,10 @@ src/scalebridge/integration/__init__.py
 src/scalebridge/integration/energyplus/__init__.py
 src/scalebridge/integration/energyplus/epw/__init__.py
 src/scalebridge/integration/energyplus/idf/__init__.py
+src/scalebridge/integration/energyplus/manifests/__init__.py
+src/scalebridge/integration/energyplus/manifests/identifiers.py
+src/scalebridge/integration/energyplus/manifests/models.py
+src/scalebridge/integration/energyplus/manifests/serialization.py
 src/scalebridge/integration/energyplus/one_zone/__init__.py
 src/scalebridge/integration/energyplus/output_parsing/__init__.py
 src/scalebridge/integration/energyplus/simulation/__init__.py
