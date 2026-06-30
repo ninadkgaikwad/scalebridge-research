@@ -1,0 +1,311 @@
+﻿BLOCK C OFFICESMALL PARALLEL SUCCESS DIAGNOSTIC
+Timestamp local: 2026-06-30 13:29:08
+Repo root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+============================================================================================================================================
+ENVIRONMENT
+============================================================================================================================================
+SCALEBRIDGE_MACHINE_ID=laptop
+MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+SCALEBRIDGE_GENERATED_DATA_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge
+SCALEBRIDGE_EPLUS_WORK_ROOT=C:\ScaleBridge_EPlus_Work
+CASE_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b
+
+============================================================================================================================================
+LATEST RUN POINTER
+============================================================================================================================================
+{
+  "case_id": "epcase_3d9f84a8b90dee1a09e9c71b",
+  "manifest_path": "runs/epvwr_e0fc70b7d1ca/run_manifest.json",
+  "run_id": "epvwr_e0fc70b7d1ca",
+  "status": "completed_with_warnings"
+}
+
+
+============================================================================================================================================
+RUN RESOLUTION
+============================================================================================================================================
+RUN_ID=epvwr_e0fc70b7d1ca
+STATUS=completed_with_warnings
+RUN_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca
+
+============================================================================================================================================
+RUN FILE INVENTORY
+
+FullName                                                                                                                                                                                                                                                                                                                         SizeMB LastWriteTime        
+--------                                                                                                                                                                                                                                                                                                                         ------ -------------        
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\eio_tables.json                                                             0.076  6/30/2026 12:57:57 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\metadata.json                                                               0.001  6/30/2026 12:57:57 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\variable_manifest.csv                                                       0.002  6/30/2026 12:57:57 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\variable_manifest.json                                                      0.002  6/30/2026 12:57:57 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\variables\timestep_facility_total_hvac_electric_demand_power.parquet        0.505  6/30/2026 12:52:11 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\variables\timestep_schedule_value.parquet                                   4.607  6/30/2026 12:56:54 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\inputs\case_spec.json                                                                 0.008  6/30/2026 12:43:59 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\inputs\variable_idfs\timestep_facility_total_hvac_electric_demand_power.idf           0.328  6/30/2026 12:44:57 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\inputs\variable_idfs\timestep_schedule_value.idf                                      0.328  6/30/2026 12:44:54 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\legacy\legacy_manifest.json                                                           0.001  6/30/2026 12:57:57 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\legacy\per_variable_pickle\timestep_facility_total_hvac_electric_demand_power.pickle  2.708  6/30/2026 12:52:15 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\legacy\per_variable_pickle\timestep_schedule_value.pickle                             42.007 6/30/2026 12:57:55 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\raw\eio\timestep_facility_total_hvac_electric_demand_power.eio                        0.054  6/30/2026 12:51:33 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\raw\eio\timestep_schedule_value.eio                                                   0.054  6/30/2026 12:52:02 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\raw\err\timestep_facility_total_hvac_electric_demand_power.err                        0.008  6/30/2026 12:52:05 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\raw\err\timestep_schedule_value.err                                                   0.008  6/30/2026 12:55:28 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\run_manifest.json                                                                     0.018  6/30/2026 12:57:58 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\#opyplus.info        0.000  6/30/2026 12:52:06 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\eplusout.audit       0.002  6/30/2026 12:52:05 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\eplusout.eio         0.054  6/30/2026 12:51:33 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\eplusout.err         0.008  6/30/2026 12:52:05 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\eplusout.mdd         0.004  6/30/2026 12:45:13 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\eplusout.rdd         0.035  6/30/2026 12:45:13 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\opyplus.epw          1.551  3/5/2026 9:22:48 AM  
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\opyplus.idf          0.328  6/30/2026 12:44:57 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_facility_total_hvac_electric_demand_power\opyplus_progress.log 0.008  6/30/2026 12:52:06 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\#opyplus.info                                   0.000  6/30/2026 12:55:29 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\eplusout.audit                                  0.002  6/30/2026 12:55:28 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\eplusout.eio                                    0.054  6/30/2026 12:52:02 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\eplusout.err                                    0.008  6/30/2026 12:55:28 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\eplusout.mdd                                    0.004  6/30/2026 12:45:13 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\eplusout.rdd                                    0.035  6/30/2026 12:45:13 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\opyplus.epw                                     1.551  3/5/2026 9:22:48 AM  
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\opyplus.idf                                     0.328  6/30/2026 12:44:54 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\variable_runs\timestep_schedule_value\opyplus_progress.log                            0.009  6/30/2026 12:55:29 PM
+
+
+
+
+============================================================================================================================================
+EXPECTED ARTIFACT EXISTENCE CHECK
+============================================================================================================================================
+
+============================================================================================================================================
+CANONICAL METADATA.JSON
+============================================================================================================================================
+
+============================================================================================================================================
+CANONICAL VARIABLE_MANIFEST.JSON
+============================================================================================================================================
+{
+  "artifact_count": 2,
+  "artifacts": [
+    {
+      "canonical_parquet_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_64\\generation\\cases\\epcase_3d9f84a8b90dee1a09e9c71b\\runs\\epvwr_e0fc70b7d1ca\\canonical\\variables\\timestep_schedule_value.parquet",
+      "column_count": 50,
+      "legacy_pickle_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_64\\generation\\cases\\epcase_3d9f84a8b90dee1a09e9c71b\\runs\\epvwr_e0fc70b7d1ca\\legacy\\per_variable_pickle\\timestep_schedule_value.pickle",
+      "parent_case_id": "epcase_3d9f84a8b90dee1a09e9c71b",
+      "raw_csv_deleted": true,
+      "raw_csv_path": "",
+      "reporting_frequency": "timestep",
+      "row_count": 5256000,
+      "variable_case_id": "epcase_a7b511c0a884f1419a9e4fe6",
+      "variable_id": "timestep_schedule_value",
+      "variable_name": "Schedule Value"
+    },
+    {
+      "canonical_parquet_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_64\\generation\\cases\\epcase_3d9f84a8b90dee1a09e9c71b\\runs\\epvwr_e0fc70b7d1ca\\canonical\\variables\\timestep_facility_total_hvac_electric_demand_power.parquet",
+      "column_count": 1,
+      "legacy_pickle_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_64\\generation\\cases\\epcase_3d9f84a8b90dee1a09e9c71b\\runs\\epvwr_e0fc70b7d1ca\\legacy\\per_variable_pickle\\timestep_facility_total_hvac_electric_demand_power.pickle",
+      "parent_case_id": "epcase_3d9f84a8b90dee1a09e9c71b",
+      "raw_csv_deleted": true,
+      "raw_csv_path": "",
+      "reporting_frequency": "timestep",
+      "row_count": 105120,
+      "variable_case_id": "epcase_7ca2b18830626c777520d87f",
+      "variable_id": "timestep_facility_total_hvac_electric_demand_power",
+      "variable_name": "Facility Total HVAC Electric Demand Power"
+    }
+  ],
+  "schema_version": "0.1.0"
+}
+
+
+============================================================================================================================================
+CANONICAL VARIABLE_MANIFEST.CSV
+============================================================================================================================================
+
+
+parent_case_id         : epcase_3d9f84a8b90dee1a09e9c71b
+variable_case_id       : epcase_a7b511c0a884f1419a9e4fe6
+variable_id            : timestep_schedule_value
+variable_name          : Schedule Value
+reporting_frequency    : timestep
+raw_csv_path           : 
+canonical_parquet_path : C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\variables\timestep_schedule_value.parquet
+legacy_pickle_path     : C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\legacy\per_variable_pickle\timestep_schedule_value.pickle
+row_count              : 5256000
+column_count           : 50
+raw_csv_deleted        : True
+
+parent_case_id         : epcase_3d9f84a8b90dee1a09e9c71b
+variable_case_id       : epcase_7ca2b18830626c777520d87f
+variable_id            : timestep_facility_total_hvac_electric_demand_power
+variable_name          : Facility Total HVAC Electric Demand Power
+reporting_frequency    : timestep
+raw_csv_path           : 
+canonical_parquet_path : C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\variables\timestep_facility_total_hvac_electric_demand_power.parquet
+legacy_pickle_path     : C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\legacy\per_variable_pickle\timestep_facility_total_hvac_electric_demand_power.pickle
+row_count              : 105120
+column_count           : 1
+raw_csv_deleted        : True
+
+
+
+
+
+============================================================================================================================================
+LEGACY MANIFEST.JSON
+============================================================================================================================================
+{
+  "legacy_layout": "per_variable_pickle",
+  "pickle_count": 2,
+  "pickles": [
+    {
+      "path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_64\\generation\\cases\\epcase_3d9f84a8b90dee1a09e9c71b\\runs\\epvwr_e0fc70b7d1ca\\legacy\\per_variable_pickle\\timestep_schedule_value.pickle",
+      "variable_id": "timestep_schedule_value",
+      "variable_name": "Schedule Value"
+    },
+    {
+      "path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_64\\generation\\cases\\epcase_3d9f84a8b90dee1a09e9c71b\\runs\\epvwr_e0fc70b7d1ca\\legacy\\per_variable_pickle\\timestep_facility_total_hvac_electric_demand_power.pickle",
+      "variable_id": "timestep_facility_total_hvac_electric_demand_power",
+      "variable_name": "Facility Total HVAC Electric Demand Power"
+    }
+  ],
+  "schema_version": "0.1.0"
+}
+
+
+============================================================================================================================================
+RUN MANIFEST SUMMARY
+============================================================================================================================================
+
+============================================================================================================================================
+PARQUET AND LEGACY PICKLE INSPECTION
+============================================================================================================================================
+PARQUET FILES
+count: 2
+
+path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\variables\timestep_facility_total_hvac_electric_demand_power.parquet
+size_mb: 0.5045766830444336
+shape: (105120, 9)
+columns: ['parent_case_id', 'variable_case_id', 'timestamp_raw', 'reporting_frequency', 'key_value', 'variable_name', 'units', 'semantic_role', 'value']
+variable_names: ['Facility Total HVAC Electric Demand Power']
+key_value_count: 1
+head:
+                    parent_case_id  ...        value
+0  epcase_3d9f84a8b90dee1a09e9c71b  ...   571.000000
+1  epcase_3d9f84a8b90dee1a09e9c71b  ...  1145.707924
+2  epcase_3d9f84a8b90dee1a09e9c71b  ...   571.000000
+3  epcase_3d9f84a8b90dee1a09e9c71b  ...   605.493326
+4  epcase_3d9f84a8b90dee1a09e9c71b  ...  2215.822065
+
+[5 rows x 9 columns]
+
+path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\canonical\variables\timestep_schedule_value.parquet
+size_mb: 4.607476234436035
+shape: (5256000, 9)
+columns: ['parent_case_id', 'variable_case_id', 'timestamp_raw', 'reporting_frequency', 'key_value', 'variable_name', 'units', 'semantic_role', 'value']
+variable_names: ['Schedule Value [](TimeStep)']
+key_value_count: 50
+head:
+                    parent_case_id  ...  value
+0  epcase_3d9f84a8b90dee1a09e9c71b  ...  120.0
+1  epcase_3d9f84a8b90dee1a09e9c71b  ...  120.0
+2  epcase_3d9f84a8b90dee1a09e9c71b  ...  120.0
+3  epcase_3d9f84a8b90dee1a09e9c71b  ...  120.0
+4  epcase_3d9f84a8b90dee1a09e9c71b  ...  120.0
+
+[5 rows x 9 columns]
+
+LEGACY PICKLES
+count: 2
+
+path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\legacy\per_variable_pickle\timestep_facility_total_hvac_electric_demand_power.pickle
+size_mb: 2.7080459594726562
+payload_type: <class 'dict'>
+payload_keys: ['variable_name', 'data']
+data_type: <class 'pandas.core.frame.DataFrame'>
+data_shape: (105120, 2)
+data_columns_first_20: ['timestamp_raw', 'Whole Building']
+head:
+key_value     timestamp_raw  Whole Building
+0           01/01  00:05:00      571.000000
+1           01/01  00:10:00     1145.707924
+2           01/01  00:15:00      571.000000
+3           01/01  00:20:00      605.493326
+4           01/01  00:25:00     2215.822065
+
+path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_3d9f84a8b90dee1a09e9c71b\runs\epvwr_e0fc70b7d1ca\legacy\per_variable_pickle\timestep_schedule_value.pickle
+size_mb: 42.007365226745605
+payload_type: <class 'dict'>
+payload_keys: ['variable_name', 'data']
+data_type: <class 'pandas.core.frame.DataFrame'>
+data_shape: (105120, 51)
+data_columns_first_20: ['timestamp_raw', 'ACTIVITY_SCH', 'AIR_VELO_SCH', 'ALWAYS_OFF', 'ALWAYS_ON', 'BINARY OCCUPANCY', 'BLDG_EQUIP_SCH', 'BLDG_LIGHT_SCH', 'BLDG_OCC_SCH', 'BLDG_OCC_SCH_WO_SB', 'BLDG_OCC_SCH_W_SB', 'BLDG_SWH_SCH', 'CLGSETP_SCH_NO_OPTIMUM', 'CLGSETP_SCH_NO_OPTIMUM_W_SB', 'CLGSETP_SCH_NO_SETBACK', 'CLGSETP_SCH_YES_OPTIMUM', 'CLOTHING_SCH', 'COOLINGCOILAVAILSCHED', 'CORE_ZN WATER EQUIPMENT HOT SUPPLY TEMP SCHED', 'CORE_ZN WATER EQUIPMENT LATENT FRACT SCHED']
+head:
+key_value     timestamp_raw  ...  WORK_EFF_SCH
+0           01/01  00:05:00  ...           0.0
+1           01/01  00:10:00  ...           0.0
+2           01/01  00:15:00  ...           0.0
+3           01/01  00:20:00  ...           0.0
+4           01/01  00:25:00  ...           0.0
+
+[5 rows x 51 columns]
+
+============================================================================================================================================
+EXPORT MLFLOW P1 GENERATION RUNS
+============================================================================================================================================
+MLflow export completed
+machine_id: laptop
+tracking_uri: http://127.0.0.1:5000
+output_dir: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_exports\laptop
+experiment_count: 1
+run_count: 7
+
+
+============================================================================================================================================
+MERGE MLFLOW EXPORTS
+============================================================================================================================================
+MLflow exports merged
+exports_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_exports
+output_dir: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\experiment_registry
+included_export_count: 3
+run_count_raw: 12
+run_count_merged: 12
+machine_ids: ['home-pc', 'lab-pc', 'laptop']
+experiment_names: ['p1_ashrae2013_one_zone_64_generation', 'scalebridge_connectivity_test']
+
+
+============================================================================================================================================
+LATEST P1 MLFLOW ROWS
+============================================================================================================================================
+
+============================================================================================================================================
+SHORT WORK ROOT AFTER RUN
+============================================================================================================================================
+
+============================================================================================================================================
+GIT STATUS
+============================================================================================================================================
+ M scripts/energyplus/run_p1_campaign.py
+ M src/scalebridge/integration/energyplus/generation/__init__.py
+ M src/scalebridge/integration/energyplus/generation/orchestrator.py
+ M src/scalebridge/tracking/mlflow/__init__.py
+ M src/scalebridge/tracking/mlflow/generation.py
+?? block_c_officesmall_parallel_success_diagnostic.txt
+?? block_c_variable_wise_failure_deep_diagnostic.txt
+?? block_c_variable_wise_success_diagnostic.txt
+?? environments/locks/dev_laptop_gpu_full/pillow-torchvision-dll-test.txt
+?? environments/locks/home_pc_gpu_full/
+?? environments/locks/lab_pc_gpu_full/
+?? knowledgebase/block_b_energyplus_mlflow_audit.txt
+?? knowledgebase/block_b_run_p1_campaign_current.txt
+?? knowledgebase/block_c_energyplus_integration_full_contents.txt
+?? knowledgebase/block_c_variable_wise_legacy_smoke_diagnostic.txt
+?? scripts/mlflow/export_mlflow_runs.py
+?? scripts/mlflow/merge_mlflow_exports.py
+?? src/scalebridge/integration/energyplus/generation/variable_wise.py
+
+
+============================================================================================================================================
+DIAGNOSTIC COMPLETE
+============================================================================================================================================
+Output file: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\block_c_officesmall_parallel_success_diagnostic.txt

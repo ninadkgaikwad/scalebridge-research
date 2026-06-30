@@ -1,0 +1,1045 @@
+﻿BLOCK B ENERGYPLUS + MLFLOW AUDIT
+Timestamp local: 2026-06-29 11:49:14
+Repo root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+========================================================================================================================
+MLFLOW_TRACKING_URI = http://127.0.0.1:5000
+SCALEBRIDGE_EXTERNAL_DATA_ROOT = C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data
+CONDA_PREFIX = C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu
+PYTHONPATH = 
+
+========================================================================================================================
+PYTHON + PACKAGE VERSIONS
+========================================================================================================================
+python: C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\python.exe
+mlflow: 3.13.0
+pandas: 2.3.3
+
+
+========================================================================================================================
+GIT STATUS
+========================================================================================================================
+
+========================================================================================================================
+GIT RECENT LOG
+========================================================================================================================
+ab1d891 (HEAD -> main, origin/main, origin/HEAD) EnergyPlus Data Generation and MLFlow setup update
+fcc1f1b Created Knowledgebase folder
+561a10c Update gitignore
+57a1124 environment lock for laptop
+8d8d4e1 Update gitignore
+3fc9111 Update gitignore
+2e340cb Add GPU baseline environment locks
+b8c1e19 Base GPU Torch Env Tests
+cb6f227 Environment Files Update
+4fbd00b Organize ScaleBridge environment files
+4e9597f Initial commit
+
+
+========================================================================================================================
+REPO TOP-LEVEL LISTING
+========================================================================================================================
+
+Name                                Mode   Length LastWriteTime        
+----                                ----   ------ -------------        
+.pytest_cache                       da---l        6/23/2026 1:26:48 PM 
+configs                             da---l        5/28/2026 4:12:44 PM 
+data                                da---l        5/28/2026 4:12:44 PM 
+docs                                da---l        6/8/2026 7:20:22 PM  
+environments                        da---l        6/10/2026 10:41:28 AM
+experiments                         da---l        5/28/2026 4:12:44 PM 
+knowledgebase                       da---l        6/25/2026 5:04:35 PM 
+legacy_reference                    da---l        5/28/2026 4:12:44 PM 
+notebooks                           da---l        5/28/2026 4:12:44 PM 
+outputs                             da---l        6/9/2026 4:04:48 PM  
+patches                             da---l        6/23/2026 11:10:46 PM
+scripts                             da---l        6/23/2026 3:42:15 PM 
+src                                 da---l        6/9/2026 12:52:40 PM 
+tests                               da---l        5/28/2026 4:12:44 PM 
+.env.example                        -a---l 185    5/28/2026 4:12:44 PM 
+.gitattributes                      -a---l 66     5/31/2026 11:50:46 AM
+.gitignore                          -a---l 4191   6/11/2026 10:03:21 AM
+block_b_energyplus_mlflow_audit.txt -a---l 2227   6/29/2026 11:49:27 AM
+LICENSE                             -a---l 1096   5/31/2026 11:50:46 AM
+notepad                             -a---l 0      6/25/2026 1:26:10 PM 
+pyproject.toml                      -a---l 874    6/23/2026 5:48:24 PM 
+README.md                           -a---l 653    5/28/2026 4:12:44 PM 
+
+
+
+
+========================================================================================================================
+DIRECTORY LISTING: scripts\energyplus
+========================================================================================================================
+
+FullName                                                                                                                                                                                       Length LastWriteTime        
+--------                                                                                                                                                                                       ------ -------------        
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\energyplus\build_p1_campaign.py                  582 6/23/2026 9:53:49 PM 
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\energyplus\build_pnnl_inventory.py              1037 6/23/2026 3:42:15 PM 
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\energyplus\P1_CAMPAIGN_COMMANDS.md              2368 6/23/2026 11:05:12 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\energyplus\run_p1_campaign.py                   5626 6/23/2026 10:59:58 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\energyplus\smoke_test_office_small_seattle.py   7684 6/23/2026 8:13:42 PM 
+
+
+
+
+========================================================================================================================
+DIRECTORY LISTING: scripts\mlflow
+========================================================================================================================
+
+========================================================================================================================
+DIRECTORY LISTING: src\scalebridge\tracking
+========================================================================================================================
+
+========================================================================================================================
+DIRECTORY LISTING: src\scalebridge\integration\energyplus
+========================================================================================================================
+
+FullName                                                                                                                                                                                                   Length LastWriteTime       
+--------                                                                                                                                                                                                   ------ -------------       
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\p1.py                        9957 6/23/2026 9:53:49 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\prototypes.py               17865 6/23/2026 9:53:49 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\__init__.py                  3817 6/23/2026 9:53:49 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\epw\__init__.py                 0 5/28/2026 4:12:44 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\generation\orchestrator.py  15290 6/23/2026 9:53:49 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\generation\__init__.py        317 6/23/2026 8:13:42 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\backend.py               9139 6/23/2026 3:52:48 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\opyplus_compat.py        2684 6/23/2026 3:52:48 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\preparer.py             11609 6/23/2026 8:13:42 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\__init__.py               948 6/23/2026 3:52:48 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\manifests\identifiers.py     3104 6/23/2026 1:32:13 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\manifests\models.py         13305 6/23/2026 1:32:13 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\manifests\serialization.py   2196 6/23/2026 1:32:13 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\manifests\__init__.py        1277 6/23/2026 1:32:13 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\one_zone\__init__.py            0 5/28/2026 4:12:44 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\outputs\eio.py               4347 6/23/2026 6:07:42 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\outputs\extractor.py        16839 6/23/2026 6:07:42 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\outputs\__init__.py           426 6/23/2026 5:48:24 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\output_parsing\__init__.py      0 5/28/2026 4:12:44 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\simulation\runner.py        14901 6/23/2026 5:48:24 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\simulation\__init__.py        973 6/23/2026 2:04:00 PM
+
+
+
+
+========================================================================================================================
+CODE REFERENCES: MLflowGenerationTracker
+========================================================================================================================
+
+
+========================================================================================================================
+CODE REFERENCES: TrackingMetadata
+========================================================================================================================
+
+
+========================================================================================================================
+CODE REFERENCES: MLFLOW_TRACKING_URI
+========================================================================================================================
+
+Path                                                                                                                                                                          LineNumber Line                                                                              
+----                                                                                                                                                                          ---------- ----                                                                              
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\mlflow\export_mlflow_runs.py         33     uri = default or os.environ.get("MLFLOW_TRACKING_URI")                        
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\mlflow\export_mlflow_runs.py        244         help="MLflow tracking URI. Defaults to MLFLOW_TRACKING_URI or localhost.",
+
+
+
+
+========================================================================================================================
+CODE REFERENCES: set_experiment
+========================================================================================================================
+
+
+========================================================================================================================
+CODE REFERENCES: start_run
+========================================================================================================================
+
+========================================================================================================================
+FILE CONTENT: src\scalebridge\tracking\mlflow\generation.py
+========================================================================================================================
+
+========================================================================================================================
+FILE CONTENT: src\scalebridge\tracking\mlflow\semantic.py
+========================================================================================================================
+from __future__ import annotations
+
+import os
+import socket
+import subprocess
+from pathlib import Path
+from typing import Any
+
+import mlflow
+from mlflow.tracking import MlflowClient
+
+
+def get_generated_data_root() -> Path:
+    """Return the configured ScaleBridge generated-data root."""
+    value = os.environ.get("SCALEBRIDGE_GENERATED_DATA_ROOT")
+    if not value:
+        raise RuntimeError("SCALEBRIDGE_GENERATED_DATA_ROOT is not configured.")
+    return Path(value).resolve()
+
+
+def get_machine_id() -> str:
+    """Return the ScaleBridge machine id used for run metadata."""
+    return (
+        os.environ.get("SCALEBRIDGE_MACHINE_ID")
+        or os.environ.get("COMPUTERNAME")
+        or socket.gethostname()
+    )
+
+
+def get_git_commit() -> str:
+    """Return the current git commit hash, or 'unknown' outside a git checkout."""
+    try:
+        result = subprocess.run(
+            ["git", "rev-parse", "HEAD"],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        return result.stdout.strip()
+    except Exception:
+        return "unknown"
+
+
+def configure_mlflow_tracking() -> str:
+    """
+    Configure MLflow tracking URI.
+
+    Local-server default:
+        http://127.0.0.1:5000
+    """
+    tracking_uri = os.environ.get("MLFLOW_TRACKING_URI", "http://127.0.0.1:5000")
+    mlflow.set_tracking_uri(tracking_uri)
+    return tracking_uri
+
+
+def semantic_artifact_uri(artifact_subdir: str) -> str:
+    """
+    Return a semantic artifact URI under:
+
+        SCALEBRIDGE_GENERATED_DATA_ROOT/mlflow_artifacts/<artifact_subdir>
+    """
+    artifact_dir = get_generated_data_root() / "mlflow_artifacts" / artifact_subdir
+    artifact_dir.mkdir(parents=True, exist_ok=True)
+    return artifact_dir.as_uri()
+
+
+def get_or_create_semantic_experiment(
+    experiment_name: str,
+    artifact_subdir: str | None = None,
+) -> str:
+    """
+    Create or select an MLflow experiment with semantic artifact organization.
+
+    Example:
+        experiment_name = "p1_ann_baselines"
+        artifact_subdir = "p1_ann_baselines"
+
+    Artifacts go to:
+        Data/ScaleBridge/mlflow_artifacts/p1_ann_baselines/
+    """
+    configure_mlflow_tracking()
+
+    artifact_name = artifact_subdir or experiment_name
+    artifact_uri = semantic_artifact_uri(artifact_name)
+
+    client = MlflowClient()
+    experiment = client.get_experiment_by_name(experiment_name)
+
+    if experiment is None:
+        experiment_id = client.create_experiment(
+            name=experiment_name,
+            artifact_location=artifact_uri,
+        )
+    else:
+        experiment_id = experiment.experiment_id
+
+    mlflow.set_experiment(experiment_name)
+    return experiment_id
+
+
+def set_standard_tags(
+    *,
+    campaign_id: str | None = None,
+    case_id: str | None = None,
+    model_family: str | None = None,
+    extra_tags: dict[str, Any] | None = None,
+) -> None:
+    """Attach standard ScaleBridge provenance tags to the active MLflow run."""
+    tags: dict[str, Any] = {
+        "machine_id": get_machine_id(),
+        "hostname": socket.gethostname(),
+        "git_commit": get_git_commit(),
+        "tracking_uri": mlflow.get_tracking_uri(),
+    }
+
+    if campaign_id is not None:
+        tags["campaign_id"] = campaign_id
+    if case_id is not None:
+        tags["case_id"] = case_id
+    if model_family is not None:
+        tags["model_family"] = model_family
+    if extra_tags:
+        tags.update(extra_tags)
+
+    for key, value in tags.items():
+        mlflow.set_tag(key, str(value))
+
+========================================================================================================================
+FILE CONTENT: src\scalebridge\tracking\mlflow\client.py
+========================================================================================================================
+
+========================================================================================================================
+FILE CONTENT: src\scalebridge\tracking\mlflow\__init__.py
+========================================================================================================================
+
+========================================================================================================================
+from __future__ import annotations
+
+import argparse
+import csv
+import json
+import os
+import socket
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+import mlflow
+from mlflow.entities import ViewType
+from mlflow.tracking import MlflowClient
+
+
+def _safe_machine_id() -> str:
+    return (
+        os.environ.get("SCALEBRIDGE_MACHINE_ID")
+        or os.environ.get("COMPUTERNAME")
+        or socket.gethostname()
+    )
+
+
+def _generated_data_root() -> Path:
+    value = os.environ.get("SCALEBRIDGE_GENERATED_DATA_ROOT")
+    if not value:
+        raise RuntimeError("SCALEBRIDGE_GENERATED_DATA_ROOT is not configured.")
+    return Path(value).resolve()
+
+
+def _tracking_uri(default: str | None = None) -> str:
+    uri = default or os.environ.get("MLFLOW_TRACKING_URI")
+    if not uri:
+        uri = "http://127.0.0.1:5000"
+    mlflow.set_tracking_uri(uri)
+    return uri
+
+
+def _ms_to_iso(ms: int | None) -> str:
+    if ms is None:
+        return ""
+    return datetime.fromtimestamp(ms / 1000.0, tz=timezone.utc).isoformat()
+
+
+def _flatten_run(
+    *,
+    machine_id: str,
+    tracking_uri: str,
+    experiment_name: str,
+    experiment_id: str,
+    run: Any,
+) -> dict[str, Any]:
+    row: dict[str, Any] = {
+        "machine_id": machine_id,
+        "hostname": socket.gethostname(),
+        "tracking_uri": tracking_uri,
+        "experiment_name": experiment_name,
+        "experiment_id": experiment_id,
+        "run_id": run.info.run_id,
+        "run_name": run.data.tags.get("mlflow.runName", ""),
+        "status": run.info.status,
+        "lifecycle_stage": run.info.lifecycle_stage,
+        "start_time_ms": run.info.start_time,
+        "end_time_ms": run.info.end_time,
+        "start_time_utc": _ms_to_iso(run.info.start_time),
+        "end_time_utc": _ms_to_iso(run.info.end_time),
+        "artifact_uri": run.info.artifact_uri,
+    }
+
+    for key, value in sorted(run.data.params.items()):
+        row[f"param.{key}"] = value
+
+    for key, value in sorted(run.data.metrics.items()):
+        row[f"metric.{key}"] = value
+
+    for key, value in sorted(run.data.tags.items()):
+        row[f"tag.{key}"] = value
+
+    return row
+
+
+def _write_csv(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not rows:
+        path.write_text("", encoding="utf-8")
+        return
+
+    fieldnames: list[str] = []
+    seen: set[str] = set()
+
+    for row in rows:
+        for key in row.keys():
+            if key not in seen:
+                seen.add(key)
+                fieldnames.append(key)
+
+    with path.open("w", newline="", encoding="utf-8") as file:
+        writer = csv.DictWriter(file, fieldnames=fieldnames, extrasaction="ignore")
+        writer.writeheader()
+        for row in rows:
+            writer.writerow(row)
+
+
+def _write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as file:
+        for row in rows:
+            file.write(json.dumps(row, sort_keys=True, default=str) + "\n")
+
+
+def _search_runs_all_pages(
+    client: MlflowClient,
+    experiment_id: str,
+    max_results_per_page: int,
+) -> list[Any]:
+    runs: list[Any] = []
+    page_token: str | None = None
+
+    while True:
+        page = client.search_runs(
+            experiment_ids=[experiment_id],
+            filter_string="",
+            run_view_type=ViewType.ALL,
+            max_results=max_results_per_page,
+            order_by=["attributes.start_time DESC"],
+            page_token=page_token,
+        )
+
+        runs.extend(list(page))
+
+        page_token = getattr(page, "token", None)
+        if not page_token:
+            break
+
+    return runs
+
+
+def export_mlflow_runs(
+    *,
+    tracking_uri: str | None,
+    machine_id: str | None,
+    output_dir: Path | None,
+    experiment_names: list[str] | None,
+    max_results_per_page: int,
+) -> dict[str, Any]:
+    resolved_tracking_uri = _tracking_uri(tracking_uri)
+    resolved_machine_id = machine_id or _safe_machine_id()
+
+    if output_dir is None:
+        output_dir = (
+            _generated_data_root()
+            / "mlflow_exports"
+            / resolved_machine_id
+        )
+    output_dir = output_dir.resolve()
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    client = MlflowClient(tracking_uri=resolved_tracking_uri)
+
+    all_experiments = list(client.search_experiments(view_type=ViewType.ALL))
+
+    if experiment_names:
+        wanted = set(experiment_names)
+        experiments = [exp for exp in all_experiments if exp.name in wanted]
+    else:
+        experiments = all_experiments
+
+    experiment_rows: list[dict[str, Any]] = []
+    run_rows: list[dict[str, Any]] = []
+
+    for exp in experiments:
+        experiment_rows.append(
+            {
+                "machine_id": resolved_machine_id,
+                "tracking_uri": resolved_tracking_uri,
+                "experiment_id": exp.experiment_id,
+                "experiment_name": exp.name,
+                "lifecycle_stage": exp.lifecycle_stage,
+                "artifact_location": exp.artifact_location,
+            }
+        )
+
+        runs = _search_runs_all_pages(
+            client=client,
+            experiment_id=exp.experiment_id,
+            max_results_per_page=max_results_per_page,
+        )
+
+        for run in runs:
+            run_rows.append(
+                _flatten_run(
+                    machine_id=resolved_machine_id,
+                    tracking_uri=resolved_tracking_uri,
+                    experiment_name=exp.name,
+                    experiment_id=exp.experiment_id,
+                    run=run,
+                )
+            )
+
+    export_timestamp = datetime.now(tz=timezone.utc).isoformat()
+
+    experiments_csv = output_dir / "experiments.csv"
+    runs_csv = output_dir / "runs.csv"
+    runs_jsonl = output_dir / "runs.jsonl"
+    manifest_json = output_dir / "export_manifest.json"
+
+    _write_csv(experiments_csv, experiment_rows)
+    _write_csv(runs_csv, run_rows)
+    _write_jsonl(runs_jsonl, run_rows)
+
+    manifest = {
+        "export_timestamp_utc": export_timestamp,
+        "machine_id": resolved_machine_id,
+        "hostname": socket.gethostname(),
+        "tracking_uri": resolved_tracking_uri,
+        "output_dir": str(output_dir),
+        "experiment_count": len(experiment_rows),
+        "run_count": len(run_rows),
+        "experiment_names": [row["experiment_name"] for row in experiment_rows],
+        "files": {
+            "experiments_csv": str(experiments_csv),
+            "runs_csv": str(runs_csv),
+            "runs_jsonl": str(runs_jsonl),
+        },
+    }
+
+    manifest_json.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
+
+    return manifest
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description="Export local MLflow experiments/runs to CSV and JSONL."
+    )
+    parser.add_argument(
+        "--tracking-uri",
+        default=None,
+        help="MLflow tracking URI. Defaults to MLFLOW_TRACKING_URI or localhost.",
+    )
+    parser.add_argument(
+        "--machine-id",
+        default=None,
+        help="Machine ID. Defaults to SCALEBRIDGE_MACHINE_ID or hostname.",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default=None,
+        help=(
+            "Output directory. Defaults to "
+            "SCALEBRIDGE_GENERATED_DATA_ROOT/mlflow_exports/<machine_id>."
+        ),
+    )
+    parser.add_argument(
+        "--experiment-name",
+        action="append",
+        default=None,
+        help=(
+            "Experiment name to export. Can be repeated. "
+            "If omitted, all experiments are exported."
+        ),
+    )
+    parser.add_argument(
+        "--max-results-per-page",
+        type=int,
+        default=1000,
+        help="MLflow search_runs page size.",
+    )
+    return parser.parse_args()
+
+
+def main() -> None:
+    args = parse_args()
+
+    output_dir = Path(args.output_dir).resolve() if args.output_dir else None
+
+    manifest = export_mlflow_runs(
+        tracking_uri=args.tracking_uri,
+        machine_id=args.machine_id,
+        output_dir=output_dir,
+        experiment_names=args.experiment_name,
+        max_results_per_page=args.max_results_per_page,
+    )
+
+    print("MLflow export completed")
+    print(f"machine_id: {manifest['machine_id']}")
+    print(f"tracking_uri: {manifest['tracking_uri']}")
+    print(f"output_dir: {manifest['output_dir']}")
+    print(f"experiment_count: {manifest['experiment_count']}")
+    print(f"run_count: {manifest['run_count']}")
+
+
+if __name__ == "__main__":
+    main()
+
+========================================================================================================================
+FILE CONTENT: scripts\mlflow\merge_mlflow_exports.py
+========================================================================================================================
+
+========================================================================================================================
+FILE CONTENT: scripts\mlflow\start_local_tracking_server.ps1
+========================================================================================================================
+
+FILE CONTENT: scripts\mlflow\ssl_safe_mlflow.py
+========================================================================================================================
+
+========================================================================================================================
+FILE CONTENT: scripts\mlflow\sitecustomize.py
+========================================================================================================================
+
+FILE CONTENT: scripts\energyplus\build_p1_campaign.py
+========================================================================================================================
+"""Build the locked 64-case P1 campaign without running EnergyPlus."""
+
+from scalebridge.integration.energyplus.p1 import (
+    build_p1_case_specs,
+    write_p1_campaign_manifest,
+)
+
+
+def main() -> None:
+    """Validate source files and write portable P1 campaign manifests."""
+    cases = build_p1_case_specs()
+    result = write_p1_campaign_manifest(cases)
+    print(f"Campaign: {result.campaign_id}")
+    print(f"Cases: {result.case_count}")
+    print(f"JSON: {result.json_path}")
+    print(f"CSV: {result.csv_path}")
+
+
+if __name__ == "__main__":
+    main()
+
+========================================================================================================================
+FILE CONTENT: scripts\energyplus\run_p1_campaign.py
+========================================================================================================================
+
+========================================================================================================================
+FILE CONTENT: scripts\energyplus\P1_CAMPAIGN_COMMANDS.md
+========================================================================================================================
+
+========================================================================================================================
+FILE CONTENT: src\scalebridge\integration\energyplus\manifests\models.py
+========================================================================================================================
+"""Validated contracts for EnergyPlus generation cases and execution records.
+
+The models in this module define the boundary between campaign orchestration,
+EnergyPlus execution, artifact storage, and downstream data processing.
+
+The central distinction is:
+
+``CaseSpec``
+    Immutable scientific intent shared across machines and execution systems.
+
+``RunManifest``
+    Persistent provenance for one execution attempt of a case.
+
+``GenerationResult``
+    Compact in-memory result returned to loops, workers, or schedulers.
+
+All models reject unknown fields and are immutable after validation. This
+prevents configuration drift after a deterministic case identifier is created.
+"""
+
+from __future__ import annotations
+
+from datetime import date, datetime, timezone
+from enum import Enum
+from pathlib import Path, PureWindowsPath
+from typing import Any, Literal
+
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    computed_field,
+    field_validator,
+    model_validator,
+)
+
+
+SHA256_PATTERN = r"^[0-9a-f]{64}$"
+REPORTING_FREQUENCIES = {
+    "detailed",
+    "timestep",
+    "hourly",
+    "daily",
+    "monthly",
+    "runperiod",
+    "environment",
+    "annual",
+}
+
+
+class FrozenModel(BaseModel):
+    """Base class for immutable, strict manifest models."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True, str_strip_whitespace=True)
+
+
+class RunPeriod(FrozenModel):
+    """Calendar boundaries applied to the EnergyPlus ``RunPeriod`` object."""
+
+    start_month: int = Field(ge=1, le=12)
+    start_day: int = Field(ge=1, le=31)
+    end_month: int = Field(ge=1, le=12)
+    end_day: int = Field(ge=1, le=31)
+    calendar_year: int | None = Field(default=None, ge=1)
+
+    @model_validator(mode="after")
+    def validate_dates(self) -> RunPeriod:
+        """Validate real calendar dates and ordered dated-year periods."""
+        validation_year = self.calendar_year or 2000
+        start = date(validation_year, self.start_month, self.start_day)
+        end = date(validation_year, self.end_month, self.end_day)
+        if self.calendar_year is not None and end < start:
+            raise ValueError("end date must not precede start date when calendar_year is set")
+        return self
+
+
+class OutputVariableRequest(FrozenModel):
+    """Declarative request for one EnergyPlus ``Output:Variable`` object."""
+
+    variable_name: str = Field(min_length=1)
+    key_value: str = Field(default="*", min_length=1)
+    reporting_frequency: str = "timestep"
+    required: bool = True
+    semantic_role: str | None = None
+
+    @field_validator("reporting_frequency")
+    @classmethod
+    def normalize_reporting_frequency(cls, value: str) -> str:
+        """Normalize and validate an EnergyPlus reporting frequency."""
+        normalized = value.casefold()
+        if normalized not in REPORTING_FREQUENCIES:
+            allowed = ", ".join(sorted(REPORTING_FREQUENCIES))
+            raise ValueError(f"unsupported reporting frequency; expected one of: {allowed}")
+        return normalized
+
+
+class ScheduleOperation(FrozenModel):
+    """Declarative mutation applied to a schedule while preparing an IDF."""
+
+    operation: Literal["replace_fields", "add", "delete", "rename"]
+    object_type: str = Field(default="Schedule:Compact", min_length=1)
+    schedule_name: str = Field(min_length=1)
+    fields: dict[str, Any] = Field(default_factory=dict)
+
+    @model_validator(mode="after")
+    def validate_operation_fields(self) -> ScheduleOperation:
+        """Ensure each operation contains the fields required by its action."""
+        if self.operation in {"replace_fields", "add", "rename"} and not self.fields:
+            raise ValueError(f"{self.operation} requires at least one field")
+        if self.operation == "delete" and self.fields:
+            raise ValueError("delete must not define fields")
+        if self.operation == "rename" and set(self.fields) != {"name"}:
+            raise ValueError("rename requires exactly one field named 'name'")
+        return self
+
+
+class CaseSpec(FrozenModel):
+    """Immutable scientific specification for one EnergyPlus simulation case.
+
+    Input paths locate files on the current machine but do not define case
+    identity. Their SHA-256 values, simulation settings, output requests, and
+    schedule operations define the deterministic ``case_id``.
+    """
+
+    schema_version: str = "0.1.0"
+    case_name: str = Field(min_length=1)
+
+    building_type: str | None = None
+    prototype_standard: str | None = None
+    prototype_year: str | None = None
+    climate_zone: str | None = None
+    weather_location: str | None = None
+
+    idf_path: Path
+    epw_path: Path
+    idf_sha256: str = Field(pattern=SHA256_PATTERN)
+    epw_sha256: str = Field(pattern=SHA256_PATTERN)
+
+    run_period: RunPeriod
+    timestep_minutes: int = Field(gt=0, le=60)
+    output_variables: tuple[OutputVariableRequest, ...] = Field(min_length=1)
+    schedule_operations: tuple[ScheduleOperation, ...] = ()
+    request_variable_dictionary: bool = True
+    energyplus_version: str | None = None
+
+    write_legacy_pickles: bool = True
+    preserve_raw_outputs: bool = True
+    tags: dict[str, str] = Field(default_factory=dict)
+
+    @field_validator("idf_sha256", "epw_sha256")
+    @classmethod
+    def normalize_sha256(cls, value: str) -> str:
+        """Normalize hexadecimal file digests to lowercase."""
+        return value.casefold()
+
+    @field_validator("timestep_minutes")
+    @classmethod
+    def validate_timestep(cls, value: int) -> int:
+        """Require a whole number of simulation timesteps per hour."""
+        if 60 % value != 0:
+            raise ValueError("timestep_minutes must divide evenly into 60")
+        return value
+
+    @model_validator(mode="after")
+    def validate_unique_output_requests(self) -> CaseSpec:
+        """Reject duplicate variable, key, and frequency combinations."""
+        identities = [
+            (
+                request.variable_name.casefold(),
+                request.key_value.casefold(),
+                request.reporting_frequency,
+            )
+            for request in self.output_variables
+        ]
+        if len(identities) != len(set(identities)):
+            raise ValueError("output_variables contains duplicate requests")
+        return self
+
+    @computed_field
+    @property
+    def case_id(self) -> str:
+        """Return the deterministic identifier for this scientific case."""
+        from scalebridge.integration.energyplus.manifests.identifiers import build_case_id
+
+        return build_case_id(self)
+
+
+class RunStatus(str, Enum):
+    """Lifecycle state for one generation attempt."""
+
+    PREPARED = "prepared"
+    RUNNING = "running"
+    COMPLETED = "completed"
+    COMPLETED_WITH_WARNINGS = "completed_with_warnings"
+    FAILED = "failed"
+    CANCELLED = "cancelled"
+    INVALID = "invalid"
+
+
+class ArtifactRecord(FrozenModel):
+    """Metadata for one artifact stored beneath a run directory."""
+
+    role: str = Field(min_length=1)
+    relative_path: Path
+    media_type: str = Field(min_length=1)
+    sha256: str | None = Field(default=None, pattern=SHA256_PATTERN)
+    size_bytes: int | None = Field(default=None, ge=0)
+    required: bool = True
+
+    @field_validator("sha256")
+    @classmethod
+    def normalize_optional_sha256(cls, value: str | None) -> str | None:
+        """Normalize an optional artifact digest to lowercase."""
+        return value.casefold() if value is not None else None
+
+    @field_validator("relative_path")
+    @classmethod
+    def require_relative_path(cls, value: Path) -> Path:
+        """Prevent artifact references from escaping the run directory."""
+        raw = str(value)
+        if value.is_absolute() or PureWindowsPath(raw).is_absolute() or raw.startswith(("/", "\\")):
+            raise ValueError("artifact paths must be relative to the run directory")
+        if ".." in value.parts:
+            raise ValueError("artifact paths must not escape the run directory")
+        return value
+
+
+class ExecutionMetadata(FrozenModel):
+    """Machine, scheduler, and timing information for one execution attempt."""
+
+    machine_id: str = Field(min_length=1)
+    hostname: str = Field(min_length=1)
+    platform: str = Field(min_length=1)
+    worker_id: str | None = None
+    slurm_job_id: str | None = None
+    started_at: datetime
+    completed_at: datetime | None = None
+    runtime_seconds: float | None = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def validate_timing(self) -> ExecutionMetadata:
+        """Reject execution completion times earlier than their start."""
+        if self.completed_at is not None and self.completed_at < self.started_at:
+            raise ValueError("completed_at must not precede started_at")
+        return self
+
+
+class SoftwareMetadata(FrozenModel):
+    """Software versions associated with a generation attempt."""
+
+    scalebridge_version: str
+    git_commit: str | None = None
+    energyplus_version: str | None = None
+    opyplus_version: str | None = None
+    python_version: str | None = None
+
+
+class ValidationSummary(FrozenModel):
+    """Post-run EnergyPlus, signal, and timestep validation summary."""
+
+    exit_code: int | None = None
+    warnings: int = Field(default=0, ge=0)
+    severe_errors: int = Field(default=0, ge=0)
+    fatal_errors: int = Field(default=0, ge=0)
+    requested_signals: int = Field(default=0, ge=0)
+    produced_signals: int = Field(default=0, ge=0)
+    missing_required_signals: tuple[str, ...] = ()
+    timestep_count: int | None = Field(default=None, ge=0)
+
+
+class TrackingMetadata(FrozenModel):
+    """Optional MLflow references associated with an execution attempt."""
+
+    mlflow_experiment: str | None = None
+    mlflow_run_id: str | None = None
+    mlflow_tracking_uri: str | None = None
+
+
+class ErrorRecord(FrozenModel):
+    """Serializable failure details for failed or invalid runs."""
+
+    error_type: str
+    message: str
+    traceback_path: Path | None = None
+
+
+class RunManifest(FrozenModel):
+    """Authoritative persisted provenance for one execution attempt."""
+
+    schema_version: str = "0.1.0"
+    case_id: str
+    run_id: str = Field(min_length=1)
+    campaign_id: str | None = None
+    status: RunStatus
+    case_spec: CaseSpec
+    execution: ExecutionMetadata
+    software: SoftwareMetadata
+    validation: ValidationSummary = Field(default_factory=ValidationSummary)
+    artifacts: tuple[ArtifactRecord, ...] = ()
+    tracking: TrackingMetadata = Field(default_factory=TrackingMetadata)
+    error: ErrorRecord | None = None
+
+    @model_validator(mode="after")
+    def validate_manifest_consistency(self) -> RunManifest:
+        """Validate case identity and status-dependent error information."""
+        if self.case_id != self.case_spec.case_id:
+            raise ValueError("case_id does not match the embedded case_spec")
+
+        failure_statuses = {RunStatus.FAILED, RunStatus.INVALID}
+        if self.status in failure_statuses and self.error is None:
+            raise ValueError(f"{self.status.value} manifests require an error record")
+        if self.status not in failure_statuses and self.error is not None:
+            raise ValueError("error records are only valid for failed or invalid manifests")
+        return self
+
+
+class GenerationResult(FrozenModel):
+    """Compact in-memory outcome returned by a generation worker.
+
+    Batch orchestration can inspect this object without loading the complete
+    persisted manifest or any generated time-series artifacts.
+    """
+
+    case_id: str
+    run_id: str
+    status: RunStatus
+    artifact_root: Path
+    manifest_path: Path
+    raw_output_paths: dict[str, Path] = Field(default_factory=dict)
+    canonical_output_paths: dict[str, Path] = Field(default_factory=dict)
+    compatibility_output_paths: dict[str, Path] = Field(default_factory=dict)
+    started_at: datetime
+    completed_at: datetime
+    runtime_seconds: float = Field(ge=0)
+    energyplus_exit_code: int | None = None
+    warning_count: int = Field(default=0, ge=0)
+    severe_count: int = Field(default=0, ge=0)
+    fatal_count: int = Field(default=0, ge=0)
+    requested_signal_count: int = Field(default=0, ge=0)
+    produced_signal_count: int = Field(default=0, ge=0)
+    missing_required_signals: tuple[str, ...] = ()
+    timestep_count: int | None = Field(default=None, ge=0)
+    error_type: str | None = None
+    error_message: str | None = None
+
+    @model_validator(mode="after")
+    def validate_result(self) -> GenerationResult:
+        """Validate timing and paired error fields."""
+        if self.completed_at < self.started_at:
+            raise ValueError("completed_at must not precede started_at")
+        if (self.error_type is None) != (self.error_message is None):
+            raise ValueError("error_type and error_message must be provided together")
+        return self
+
+
+def utc_now() -> datetime:
+    """Return a timezone-aware UTC timestamp for manifest creation."""
+    return datetime.now(timezone.utc)
+
+========================================================================================================================
+FILE CONTENT: src\scalebridge\integration\energyplus\manifests\__init__.py
+========================================================================================================================
+
+========================================================================================================================
+ENERGYPLUS SCRIPT HELP CHECKS
+========================================================================================================================
+Campaign: p1_ashrae2013_one_zone_64
+Cases: 64
+JSON: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\case_specs.json
+CSV: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\case_specs.csv
+usage: run_p1_campaign.py [-h] [--machine-number {1,2,3,4}] --machine-id
+                          MACHINE_ID [--case-limit CASE_LIMIT] [--dry-run]
+                          [--rerun-completed] [--write-legacy-pickles]
+
+Run all P1 cases or one machine's fixed share of the campaign. Without
+``--machine-number``, one machine executes all 64 cases. When the option is
+set to 1, 2, 3, or 4, the machine executes its 16 non-overlapping cases. All
+execution is sequential and uses no distributed-computing framework, central
+scheduler, or worker service.
+
+options:
+  -h, --help            show this help message and exit
+  --machine-number {1,2,3,4}
+                        Run share 1, 2, 3, or 4; omit to run all 64 cases.
+  --machine-id MACHINE_ID
+                        Stable descriptive name such as laptop or home-pc.
+  --case-limit CASE_LIMIT
+                        Run only the first N selected cases for controlled
+                        testing.
+  --dry-run             Print selected cases without running EnergyPlus.
+  --rerun-completed     Run cases again even when their latest attempt
+                        succeeded.
+  --write-legacy-pickles
+                        Also create the two legacy aggregation pickle files.
+
+
+========================================================================================================================
+AUDIT COMPLETE
+========================================================================================================================

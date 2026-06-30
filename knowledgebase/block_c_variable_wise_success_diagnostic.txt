@@ -1,0 +1,299 @@
+﻿BLOCK C VARIABLE-WISE SUCCESS DIAGNOSTIC
+Timestamp local: 2026-06-30 10:38:31
+
+============================================================================================================================================
+ENVIRONMENT
+============================================================================================================================================
+SCALEBRIDGE_MACHINE_ID=laptop
+MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+SCALEBRIDGE_GENERATED_DATA_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge
+SCALEBRIDGE_EPLUS_WORK_ROOT=C:\ScaleBridge_EPlus_Work
+CASE_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152
+
+============================================================================================================================================
+LATEST RUN POINTER
+============================================================================================================================================
+{
+  "case_id": "epcase_ada9782fbecbfcd3325da152",
+  "manifest_path": "runs/epvwr_f80134ce5a28/run_manifest.json",
+  "run_id": "epvwr_f80134ce5a28",
+  "status": "completed_with_warnings"
+}
+
+
+============================================================================================================================================
+============================================================================================================================================
+RUN_ID=epvwr_f80134ce5a28
+STATUS=completed_with_warnings
+RUN_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f80134ce5a28
+
+============================================================================================================================================
+RUN FILE INVENTORY
+============================================================================================================================================
+
+============================================================================================================================================
+EXPECTED ARTIFACT EXISTENCE CHECK
+============================================================================================================================================
+EXISTS : canonical\variables\timestep_schedule_value.parquet
+EXISTS : canonical\variable_manifest.json
+EXISTS : canonical\variable_manifest.csv
+EXISTS : canonical\metadata.json
+EXISTS : canonical\eio_tables.json
+EXISTS : legacy\per_variable_pickle\timestep_schedule_value.pickle
+EXISTS : legacy\legacy_manifest.json
+EXISTS : run_manifest.json
+
+RAW CSV SHOULD BE DELETED:
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f80134ce5a28\raw\variable_csv\timestep_schedule_value.csv
+RAW CSV EXISTS: False
+
+
+============================================================================================================================================
+CANONICAL METADATA.JSON
+============================================================================================================================================
+{
+  "canonical_variable_parquet_count": 1,
+  "case_id": "epcase_ada9782fbecbfcd3325da152",
+  "generation_mode": "variable-wise",
+  "produced_signal_count": 1,
+  "raw_csv_deleted_count": 1,
+  "requested_signal_count": 35,
+  "schema_version": "0.1.0",
+  "variable_manifest_csv": "variable_manifest.csv",
+  "variable_manifest_json": "variable_manifest.json",
+  "variables": [
+    {
+      "canonical_parquet_path": "timestep_schedule_value.parquet",
+      "column_count": 60,
+      "legacy_pickle_path": "timestep_schedule_value.pickle",
+      "raw_csv_deleted": true,
+      "reporting_frequency": "timestep",
+      "row_count": 6307200,
+      "variable_id": "timestep_schedule_value",
+      "variable_name": "Schedule Value"
+    }
+  ]
+}
+
+
+============================================================================================================================================
+============================================================================================================================================
+
+============================================================================================================================================
+LEGACY MANIFEST.JSON
+============================================================================================================================================
+{
+  "legacy_layout": "per_variable_pickle",
+  "pickle_count": 1,
+  "pickles": [
+    {
+      "path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_64\\generation\\cases\\epcase_ada9782fbecbfcd3325da152\\runs\\epvwr_f80134ce5a28\\legacy\\per_variable_pickle\\timestep_schedule_value.pickle",
+      "variable_id": "timestep_schedule_value",
+      "variable_name": "Schedule Value"
+    }
+  ],
+  "schema_version": "0.1.0"
+}
+
+
+============================================================================================================================================
+RUN MANIFEST SUMMARY
+============================================================================================================================================
+
+============================================================================================================================================
+PARQUET AND LEGACY PICKLE INSPECTION
+PARQUET
+path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f80134ce5a28\canonical\variables\timestep_schedule_value.parquet
+exists: True
+size_mb: 5.49066162109375
+shape: (6307200, 9)
+columns: ['parent_case_id', 'variable_case_id', 'timestamp_raw', 'reporting_frequency', 'key_value', 'variable_name', 'units', 'semantic_role', 'value']
+head:
+                    parent_case_id  ... value
+0  epcase_ada9782fbecbfcd3325da152  ...  95.0
+1  epcase_ada9782fbecbfcd3325da152  ...  95.0
+2  epcase_ada9782fbecbfcd3325da152  ...  95.0
+3  epcase_ada9782fbecbfcd3325da152  ...  95.0
+4  epcase_ada9782fbecbfcd3325da152  ...  95.0
+
+[5 rows x 9 columns]
+tail:
+                          parent_case_id  ... value
+6307195  epcase_ada9782fbecbfcd3325da152  ...   4.0
+6307196  epcase_ada9782fbecbfcd3325da152  ...   4.0
+6307197  epcase_ada9782fbecbfcd3325da152  ...   4.0
+6307198  epcase_ada9782fbecbfcd3325da152  ...   4.0
+6307199  epcase_ada9782fbecbfcd3325da152  ...   4.0
+
+[5 rows x 9 columns]
+
+LEGACY PICKLE
+path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f80134ce5a28\legacy\per_variable_pickle\timestep_schedule_value.pickle
+exists: True
+size_mb: 50.02746868133545
+payload_type: <class 'dict'>
+payload_keys: ['variable_name', 'data']
+data_type: <class 'pandas.core.frame.DataFrame'>
+data_shape: (105120, 61)
+data_columns: ['timestamp_raw', 'ACTIVITY SCHEDULE', 'ALL OFF', 'ALL ON', 'ALLON_EXCEPT_DD', 'ALWAYS_ON', 'AMBIENT TEMP SCHEDULE', 'APT_DHW_SCH', 'BLDG_ELEVATORS', 'CLGSETP_APT_SCH', 'CLGSETP_DESIGN_OFF_SCH', 'CLGSETP_OFF_SCH_NO_OPTIMUM', 'CLGSETP_OFF_SCH_NO_SETBACK', 'CLGSETP_OFF_SCH_YES_OPTIMUM', 'CLGSETP_OFF_SCH_YES_OPTIMUM_ORIGINAL', 'CLGSETP_OFF_SCH_YES_OPTIMUM_W_SB', 'COMPACT HVAC-ALWAYS 0', 'COMPACT HVAC-ALWAYS 1', 'COMPACT HVAC-ALWAYS 4', 'ELEV_LIGHT_FAN_SCH_24_7', 'ELEV_LIGHT_FAN_SCH_ADD_DF', 'EQP_APT_SCH', 'EQP_OFF_SCH', 'EXTERIOR_LGT_ALWAYS_ON', 'EXTERIOR_LTG_SCH', 'HTGSETP_APT_SCH', 'HTGSETP_DESIGN_OFF_SCH', 'HTGSETP_OFF_SCH_NO_OPTIMUM', 'HTGSETP_OFF_SCH_YES_OPTIMUM', 'HTGSETP_OFF_SCH_YES_OPTIMUM_ORIGINAL', 'HTGSETP_OFF_SCH_YES_OPTIMUM_W_SB', 'INFIL_DOOR_OPENING_SCH', 'INF_APT_SCH', 'INF_COR_SCH', 'INF_OFF_SCH', 'LTG_APT_SCH', 'LTG_COR_SCH', 'LTG_OFF_SCH', 'N CLGSETP_APT_SCH', 'N HTGSETP_APT_SCH', 'OCC_APT_SCH', 'OCC_OFF_SCH', 'OCC_OFF_W_SB_SCH', 'PLANT LOOP HIGH TEMP SCHEDULE', 'PLANT LOOP LOW TEMP SCHEDULE', 'PLANTCOOLINGONSCHED', 'PLANTHEATINGONSCHED', 'PLANTONSCHED', 'S CLGSETP_APT_SCH', 'S HTGSETP_APT_SCH', 'SHW LATENT FRACT SCHED', 'SHW SENSIBLE FRACT SCHED', 'SHW SUPPLY TEMP SCHED', 'SHW TARGET TEMP SCHED', 'SHWSYS1 WATER HEATER AMBIENT TEMPERATURE SCHEDULE', 'SHWSYS1 WATER HEATER SETPOINT TEMPERATURE SCHEDULE', 'SHWSYS1-LOOP-TEMP-SCHEDULE', 'SLIDING_DOORS_VENTILATION_AVAILABILITY_SCH', 'SUPPLYFANSCH', 'SUPPLYFAN_W_SB_SCH', 'ZONE CONTROL TYPE SCHED']
+head:
+key_value     timestamp_raw  ...  ZONE CONTROL TYPE SCHED
+0           01/01  00:05:00  ...                      4.0
+1           01/01  00:10:00  ...                      4.0
+2           01/01  00:15:00  ...                      4.0
+3           01/01  00:20:00  ...                      4.0
+4           01/01  00:25:00  ...                      4.0
+
+[5 rows x 61 columns]
+
+
+============================================================================================================================================
+EXPORT MLFLOW P1 GENERATION RUNS
+============================================================================================================================================
+MLflow export completed
+machine_id: laptop
+tracking_uri: http://127.0.0.1:5000
+output_dir: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_exports\laptop
+experiment_count: 1
+run_count: 5
+
+
+============================================================================================================================================
+MERGE MLFLOW EXPORTS
+============================================================================================================================================
+MLflow exports merged
+exports_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_exports
+output_dir: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\experiment_registry
+included_export_count: 3
+run_count_raw: 10
+run_count_merged: 10
+machine_ids: ['home-pc', 'lab-pc', 'laptop']
+experiment_names: ['p1_ashrae2013_one_zone_64_generation', 'scalebridge_connectivity_test']
+
+
+============================================================================================================================================
+LATEST P1 MLFLOW ROWS
+============================================================================================================================================
+
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : 86d5ca6f307e407f9f72a14ac13c6e9d
+run_name                      : epvwr_f5d9724587df
+status                        : RUNNING
+metric.runtime_seconds        : 92.71200020000106
+metric.requested_signal_count : 1.0
+metric.produced_signal_count  : 0.0
+metric.warning_count          : 0.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : failed
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : epvwr_f5d9724587df
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/86d5ca6f307e407f9f72a14ac13c6e9d/artifacts
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : 27b686cd81fe48e18d56dbbf32a2815e
+run_name                      : epvwr_f80134ce5a28
+status                        : FINISHED
+metric.runtime_seconds        : 15311.172122800002
+metric.requested_signal_count : 1.0
+metric.produced_signal_count  : 1.0
+metric.warning_count          : 19509.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : completed_with_warnings
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : epvwr_f80134ce5a28
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/27b686cd81fe48e18d56dbbf32a2815e/artifacts
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : 86b8d6d5ec814ac0aa254478a80a0093
+run_name                      : epvwr_d01ce57797bf
+status                        : FAILED
+metric.runtime_seconds        : 61.66674270000294
+metric.requested_signal_count : 1.0
+metric.produced_signal_count  : 0.0
+metric.warning_count          : 0.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : failed
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : epvwr_d01ce57797bf
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/86b8d6d5ec814ac0aa254478a80a0093/artifacts
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : ec10d08d6e774b8e81d813991527366a
+run_name                      : eprun_25f8f9e968b1
+status                        : FAILED
+metric.runtime_seconds        : 11342.38273
+metric.requested_signal_count : 35.0
+metric.produced_signal_count  : 0.0
+metric.warning_count          : 19510.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : failed
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : eprun_25f8f9e968b1
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/ec10d08d6e774b8e81d813991527366a/artifacts
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : 582a711f2e1545da89f18119853b2183
+run_name                      : eprun_25f8f9e968b1
+status                        : FAILED
+metric.runtime_seconds        : 11342.38273
+metric.requested_signal_count : 35.0
+metric.produced_signal_count  : 0.0
+metric.warning_count          : 19510.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : failed
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : eprun_25f8f9e968b1
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/582a711f2e1545da89f18119853b2183/artifacts
+
+
+
+
+
+============================================================================================================================================
+SHORT WORK ROOT AFTER RUN
+============================================================================================================================================
+
+FullName                                     Mode   SizeMB LastWriteTime       
+--------                                     ----   ------ -------------       
+C:\ScaleBridge_EPlus_Work\epvwr_f80134ce5a28 d-----        6/30/2026 1:21:38 AM
+
+
+
+
+============================================================================================================================================
+GIT STATUS
+============================================================================================================================================
+ M scripts/energyplus/run_p1_campaign.py
+ M src/scalebridge/integration/energyplus/generation/__init__.py
+ M src/scalebridge/integration/energyplus/generation/orchestrator.py
+ M src/scalebridge/tracking/mlflow/__init__.py
+ M src/scalebridge/tracking/mlflow/generation.py
+?? block_c_variable_wise_failure_deep_diagnostic.txt
+?? block_c_variable_wise_success_diagnostic.txt
+?? environments/locks/dev_laptop_gpu_full/pillow-torchvision-dll-test.txt
+?? environments/locks/home_pc_gpu_full/
+?? environments/locks/lab_pc_gpu_full/
+?? knowledgebase/block_b_energyplus_mlflow_audit.txt
+?? knowledgebase/block_b_run_p1_campaign_current.txt
+?? knowledgebase/block_c_energyplus_integration_full_contents.txt
+?? knowledgebase/block_c_variable_wise_legacy_smoke_diagnostic.txt
+?? scripts/mlflow/export_mlflow_runs.py
+?? scripts/mlflow/merge_mlflow_exports.py
+?? src/scalebridge/integration/energyplus/generation/variable_wise.py
+
+
+============================================================================================================================================
+DIAGNOSTIC COMPLETE
+============================================================================================================================================
+Output file: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\block_c_variable_wise_success_diagnostic.txt

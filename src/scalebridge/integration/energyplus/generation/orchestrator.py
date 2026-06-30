@@ -271,8 +271,17 @@ class EnergyPlusGenerationOrchestrator:
                     result=result,
                     manifest_path=manifest_path,
                 )
-            except Exception:
-                pass
+            except Exception as exc:
+                try:
+                    self._mlflow_tracker.fail(
+                        handle=tracking_handle,
+                        error=exc,
+                    )
+                except Exception:
+                    pass
+
+                if getattr(self._mlflow_tracker, "strict", False):
+                    raise
         return result
 
 

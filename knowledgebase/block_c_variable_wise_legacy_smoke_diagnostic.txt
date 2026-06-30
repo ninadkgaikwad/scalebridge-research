@@ -1,0 +1,328 @@
+﻿BLOCK C VARIABLE-WISE LEGACY SMOKE DIAGNOSTIC
+Timestamp local: 2026-06-29 18:50:20
+Repo root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+============================================================================================================================================
+ENVIRONMENT
+============================================================================================================================================
+SCALEBRIDGE_MACHINE_ID=laptop
+MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+SCALEBRIDGE_GENERATED_DATA_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge
+CONDA_PREFIX=C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu
+CASE_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152
+
+============================================================================================================================================
+GIT STATUS BEFORE RUN
+ M scripts/energyplus/run_p1_campaign.py
+ M src/scalebridge/integration/energyplus/generation/__init__.py
+ M src/scalebridge/tracking/mlflow/__init__.py
+ M src/scalebridge/tracking/mlflow/generation.py
+?? block_c_energyplus_integration_full_contents.txt
+?? block_c_variable_wise_legacy_smoke_diagnostic.txt
+?? environments/locks/dev_laptop_gpu_full/pillow-torchvision-dll-test.txt
+?? environments/locks/home_pc_gpu_full/
+?? environments/locks/lab_pc_gpu_full/
+?? knowledgebase/block_b_energyplus_mlflow_audit.txt
+?? knowledgebase/block_b_run_p1_campaign_current.txt
+?? scripts/mlflow/export_mlflow_runs.py
+?? scripts/mlflow/merge_mlflow_exports.py
+?? src/scalebridge/integration/energyplus/generation/variable_wise.py
+
+
+============================================================================================================================================
+PYTHON / PACKAGE IMPORT CHECKS
+============================================================================================================================================
+imports OK
+
+
+============================================================================================================================================
+COMPILE CHECK
+============================================================================================================================================
+Listing 'scripts\\energyplus'...
+Listing 'src\\scalebridge\\integration\\energyplus'...
+Listing 'src\\scalebridge\\integration\\energyplus\\epw'...
+Listing 'src\\scalebridge\\integration\\energyplus\\generation'...
+Listing 'src\\scalebridge\\integration\\energyplus\\idf'...
+Listing 'src\\scalebridge\\integration\\energyplus\\manifests'...
+Listing 'src\\scalebridge\\integration\\energyplus\\one_zone'...
+Listing 'src\\scalebridge\\integration\\energyplus\\output_parsing'...
+Listing 'src\\scalebridge\\integration\\energyplus\\outputs'...
+Listing 'src\\scalebridge\\integration\\energyplus\\simulation'...
+Listing 'src\\scalebridge\\tracking\\mlflow'...
+
+
+MLFLOW SERVER HEALTH
+============================================================================================================================================
+curl.exe :   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+At line:2 char:5
++     curl.exe http://127.0.0.1:5000/health
++     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (  % Total    % ... Time   Current:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+                                 Dload  Upload  Total   Spent   Left   Speed
+
+  0      0   0      0   0      0      0      0                              0
+100      2 100      2   0      0     19      0                              0
+100      2 100      2   0      0     19      0                              0
+100      2 100      2   0      0     19      0                              0
+OK
+
+
+============================================================================================================================================
+RUN VARIABLE-WISE LEGACY SMOKE TEST - 1 CASE / 1 VARIABLE
+============================================================================================================================================
+Campaign: p1_ashrae2013_one_zone_64
+Allocation: all cases on one machine
+Machine ID: laptop
+Selected cases: 1
+Generated root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge
+Generation mode: variable-wise
+Variable limit: 1
+MLflow generation tracking: enabled
+[1/1] RUN: ApartmentHighRise/Seattle
+[1/1] FAILED: epcase_ada9782fbecbfcd3325da152 (92.7 seconds)
+Summary:
+  failed: 1
+
+
+============================================================================================================================================
+LATEST RUN RESOLUTION
+============================================================================================================================================
+latest_run.json path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\latest_run.json
+
+{
+  "case_id": "epcase_ada9782fbecbfcd3325da152",
+  "manifest_path": "runs/epvwr_f5d9724587df/run_manifest.json",
+  "run_id": "epvwr_f5d9724587df",
+  "status": "failed"
+}
+
+RUN_ROOT=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f5d9724587df
+RUN_ID=epvwr_f5d9724587df
+STATUS=failed
+
+============================================================================================================================================
+RUN FILE INVENTORY
+============================================================================================================================================
+
+============================================================================================================================================
+EXPECTED ARTIFACT EXISTENCE CHECK
+============================================================================================================================================
+MISSING : canonical\variables\timestep_schedule_value.parquet
+MISSING : canonical\variable_manifest.json
+MISSING : canonical\variable_manifest.csv
+MISSING : canonical\metadata.json
+MISSING : canonical\eio_tables.json
+MISSING : legacy\per_variable_pickle\timestep_schedule_value.pickle
+MISSING : legacy\legacy_manifest.json
+EXISTS : run_manifest.json
+
+RAW CSV SHOULD BE DELETED: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f5d9724587df\raw\variable_csv\timestep_schedule_value.csv
+RAW CSV EXISTS: False
+
+
+============================================================================================================================================
+CANONICAL METADATA.JSON
+============================================================================================================================================
+MISSING: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f5d9724587df\canonical\variable_manifest.json
+
+
+============================================================================================================================================
+CANONICAL VARIABLE_MANIFEST.CSV
+============================================================================================================================================
+
+============================================================================================================================================
+LEGACY MANIFEST.JSON
+============================================================================================================================================
+MISSING: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f5d9724587df\legacy\legacy_manifest.json
+
+============================================================================================================================================
+RUN MANIFEST SUMMARY
+============================================================================================================================================
+schema_version=0.1.0
+case_id=epcase_ada9782fbecbfcd3325da152
+run_id=epvwr_f5d9724587df
+campaign_id=p1_ashrae2013_one_zone_64
+status=failed
+
+Execution:
+
+
+machine_id      : laptop
+hostname        : NKG-Win-Laptop
+platform        : Windows-10-10.0.26200-SP0
+started_at      : 2026-06-30T01:56:22.116575Z
+completed_at    : 2026-06-30T01:57:54.828308Z
+runtime_seconds : 92.71200020000106
+
+
+
+
+Validation:
+
+
+warnings                 : 0
+severe_errors            : 0
+fatal_errors             : 0
+requested_signals        : 1
+produced_signals         : 0
+missing_required_signals : {*|Schedule Value|timestep}
+
+
+
+
+Tracking:
+
+
+mlflow_experiment   : p1_ashrae2013_one_zone_64_generation
+mlflow_run_id       : 86d5ca6f307e407f9f72a14ac13c6e9d
+mlflow_tracking_uri : http://127.0.0.1:5000
+
+
+
+
+Error:
+
+
+error_type     : EnergyPlusExecutionError
+message        : opyplus could not execute EnergyPlus for IDF C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f5d9724587df\inputs\variable_idfs\timestep_schedule_value.idf
+traceback_path : traceback.txt
+
+
+
+
+Artifact count:
+6
+
+
+============================================================================================================================================
+PARQUET AND LEGACY PICKLE INSPECTION
+============================================================================================================================================
+PARQUET
+path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f5d9724587df\canonical\variables\timestep_schedule_value.parquet
+exists: False
+
+LEGACY PICKLE
+path: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_64\generation\cases\epcase_ada9782fbecbfcd3325da152\runs\epvwr_f5d9724587df\legacy\per_variable_pickle\timestep_schedule_value.pickle
+exists: False
+
+
+============================================================================================================================================
+EXPORT MLFLOW P1 GENERATION RUNS
+============================================================================================================================================
+MLflow export completed
+machine_id: laptop
+tracking_uri: http://127.0.0.1:5000
+output_dir: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_exports\laptop
+experiment_count: 1
+run_count: 4
+
+
+============================================================================================================================================
+MERGE MLFLOW EXPORTS
+============================================================================================================================================
+MLflow exports merged
+exports_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_exports
+output_dir: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\experiment_registry
+included_export_count: 3
+run_count_raw: 9
+run_count_merged: 9
+machine_ids: ['home-pc', 'lab-pc', 'laptop']
+experiment_names: ['p1_ashrae2013_one_zone_64_generation', 'scalebridge_connectivity_test']
+
+
+============================================================================================================================================
+P1 MLFLOW ROWS FROM MERGED REGISTRY
+============================================================================================================================================
+
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : ec10d08d6e774b8e81d813991527366a
+run_name                      : eprun_25f8f9e968b1
+status                        : FAILED
+metric.runtime_seconds        : 11342.38273
+metric.requested_signal_count : 35.0
+metric.produced_signal_count  : 0.0
+metric.warning_count          : 19510.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : failed
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : eprun_25f8f9e968b1
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/ec10d08d6e774b8e81d813991527366a/artifacts
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : 582a711f2e1545da89f18119853b2183
+run_name                      : eprun_25f8f9e968b1
+status                        : FAILED
+metric.runtime_seconds        : 11342.38273
+metric.requested_signal_count : 35.0
+metric.produced_signal_count  : 0.0
+metric.warning_count          : 19510.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : failed
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : eprun_25f8f9e968b1
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/582a711f2e1545da89f18119853b2183/artifacts
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : 86b8d6d5ec814ac0aa254478a80a0093
+run_name                      : epvwr_d01ce57797bf
+status                        : FAILED
+metric.runtime_seconds        : 61.66674270000294
+metric.requested_signal_count : 1.0
+metric.produced_signal_count  : 0.0
+metric.warning_count          : 0.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : failed
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : epvwr_d01ce57797bf
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/86b8d6d5ec814ac0aa254478a80a0093/artifacts
+
+machine_id                    : laptop
+experiment_name               : p1_ashrae2013_one_zone_64_generation
+run_id                        : 86d5ca6f307e407f9f72a14ac13c6e9d
+run_name                      : epvwr_f5d9724587df
+status                        : RUNNING
+metric.runtime_seconds        : 92.71200020000106
+metric.requested_signal_count : 1.0
+metric.produced_signal_count  : 0.0
+metric.warning_count          : 0.0
+metric.severe_count           : 0.0
+metric.fatal_count            : 0.0
+tag.generation_status         : failed
+tag.case_id                   : epcase_ada9782fbecbfcd3325da152
+tag.run_id                    : epvwr_f5d9724587df
+artifact_uri                  : file:///C:/Users/ninad/Dropbox/NinadGaikwad_PhD/Gaikwad_Research/From_WSU_OneDrive/BuildingModelingProject_Condensed/Data/ScaleBridge/mlflow_artifacts/p1_ashrae2013_one_zone_64/86d5ca6f307e407f9f72a14ac13c6e9d/artifacts
+
+
+
+
+============================================================================================================================================
+GIT STATUS AFTER RUN
+ M scripts/energyplus/run_p1_campaign.py
+ M src/scalebridge/integration/energyplus/generation/__init__.py
+ M src/scalebridge/tracking/mlflow/__init__.py
+ M src/scalebridge/tracking/mlflow/generation.py
+?? block_c_energyplus_integration_full_contents.txt
+?? block_c_variable_wise_legacy_smoke_diagnostic.txt
+?? environments/locks/dev_laptop_gpu_full/pillow-torchvision-dll-test.txt
+?? environments/locks/home_pc_gpu_full/
+?? environments/locks/lab_pc_gpu_full/
+?? knowledgebase/block_b_energyplus_mlflow_audit.txt
+?? knowledgebase/block_b_run_p1_campaign_current.txt
+?? scripts/mlflow/export_mlflow_runs.py
+?? scripts/mlflow/merge_mlflow_exports.py
+?? src/scalebridge/integration/energyplus/generation/variable_wise.py
+
+
+============================================================================================================================================
+DIAGNOSTIC COMPLETE
+============================================================================================================================================
+Output file: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\block_c_variable_wise_legacy_smoke_diagnostic.txt

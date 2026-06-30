@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 from collections import Counter
 from pathlib import Path
 
@@ -20,6 +21,12 @@ from scalebridge.integration.energyplus import (
     build_p1_case_specs,
     resolve_generated_data_root,
 )
+from scalebridge.integration.energyplus.generation.variable_wise import (
+    generate_variable_wise_case,
+    resolve_parallel_variable_workers,
+    safe_variable_id,
+)
+from scalebridge.tracking.mlflow import MLflowGenerationTracker
 
 
 MACHINE_COUNT = 4
@@ -35,6 +42,17 @@ def main() -> int:
     all_cases = build_p1_case_specs(
         write_legacy_pickles=arguments.write_legacy_pickles
     )
+    all_cases = _filter_cases(
+        all_cases,
+        building_type=arguments.building_type,
+        weather_location=arguments.weather_location,
+    )
+    if not all_cases:
+        raise SystemExit(
+            "No cases matched the requested filters: "
+            f"building_type={arguments.building_type!r}, "
+            f"weather_location={arguments.weather_location!r}"
+        )
     if arguments.machine_number is None:
         selected_cases = all_cases
         allocation = "all cases on one machine"
@@ -54,6 +72,21 @@ def main() -> int:
     print(f"Machine ID: {arguments.machine_id}")
     print(f"Selected cases: {len(selected_cases)}")
     print(f"Generated root: {generated_root}")
+    print(f"Generation mode: {arguments.generation_mode}")
+    if arguments.variable_limit is not None:
+        print(f"Variable limit: {arguments.variable_limit}")
+
+    if arguments.generation_mode == "variable-wise":
+        preview_requests = _selected_output_variables(
+            selected_cases[0].output_variables,
+            variable_limit=arguments.variable_limit,
+        ) if selected_cases else ()
+        resolved_workers = resolve_parallel_variable_workers(
+            machine_id=arguments.machine_id,
+            requested=arguments.parallel_variable_workers,
+            variable_count=len(preview_requests),
+        )
+        print(f"Parallel variable workers: {resolved_workers}")
 
     if arguments.dry_run:
         for case in selected_cases:
@@ -61,12 +94,37 @@ def main() -> int:
                 f"DRY RUN: {case.case_id} "
                 f"{case.building_type}/{case.weather_location}"
             )
+            if arguments.generation_mode == "variable-wise":
+                requests = _selected_output_variables(
+                    case.output_variables,
+                    variable_limit=arguments.variable_limit,
+                )
+                for index, request in enumerate(requests, start=1):
+                    print(
+                        f"  VARIABLE {index}: "
+                        f"{safe_variable_id(request)} | "
+                        f"{request.variable_name} | "
+                        f"{request.reporting_frequency}"
+                    )
         return 0
+
+    mlflow_tracker = MLflowGenerationTracker(
+        experiment_name=arguments.mlflow_experiment_name,
+        artifact_subdir=arguments.mlflow_artifact_subdir,
+        enabled=not arguments.disable_mlflow,
+        strict=arguments.mlflow_strict,
+    )
+
+    print(
+        "MLflow generation tracking: "
+        + ("enabled" if mlflow_tracker.enabled else "disabled")
+    )
 
     orchestrator = EnergyPlusGenerationOrchestrator(
         generated_data_root=generated_root,
         case_collection_name=f"campaigns/{P1_CAMPAIGN_ID}/generation",
         machine_id=arguments.machine_id,
+        mlflow_tracker=mlflow_tracker,
     )
     status_counts: Counter[str] = Counter()
 
@@ -84,8 +142,27 @@ def main() -> int:
             f"[{position}/{len(selected_cases)}] RUN: "
             f"{case.building_type}/{case.weather_location}"
         )
-        result = orchestrator.generate(case, campaign_id=P1_CAMPAIGN_ID)
+
+        if arguments.generation_mode == "standard":
+            result = orchestrator.generate(case, campaign_id=P1_CAMPAIGN_ID)
+        else:
+            result = generate_variable_wise_case(
+                case,
+                generated_data_root=generated_root,
+                case_collection_name=f"campaigns/{P1_CAMPAIGN_ID}/generation",
+                machine_id=arguments.machine_id,
+                campaign_id=P1_CAMPAIGN_ID,
+                selected_output_variables=_selected_output_variables(
+                    case.output_variables,
+                    variable_limit=arguments.variable_limit,
+                ),
+                delete_raw_csv=True,
+                mlflow_tracker=mlflow_tracker,
+                short_work_root=os.environ.get("SCALEBRIDGE_EPLUS_WORK_ROOT"),
+                parallel_variable_workers=arguments.parallel_variable_workers,
+            )
         status_counts[result.status.value] += 1
+
         print(
             f"[{position}/{len(selected_cases)}] "
             f"{result.status.value.upper()}: {result.case_id} "
@@ -123,6 +200,20 @@ def _parse_arguments() -> argparse.Namespace:
         help="Run only the first N selected cases for controlled testing.",
     )
     parser.add_argument(
+        "--building-type",
+        help=(
+            "Optional case filter, for example OfficeSmall. "
+            "Case-sensitive match against CaseSpec.building_type."
+        ),
+    )
+    parser.add_argument(
+        "--weather-location",
+        help=(
+            "Optional case filter, for example Seattle. "
+            "Case-sensitive match against CaseSpec.weather_location."
+        ),
+    )
+    parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Print selected cases without running EnergyPlus.",
@@ -137,11 +228,106 @@ def _parse_arguments() -> argparse.Namespace:
         action="store_true",
         help="Also create the two legacy aggregation pickle files.",
     )
+    parser.add_argument(
+        "--disable-mlflow",
+        action="store_true",
+        help="Disable MLflow generation tracking for this run.",
+    )
+    parser.add_argument(
+        "--mlflow-strict",
+        action="store_true",
+        help="Fail the campaign if MLflow logging fails.",
+    )
+    parser.add_argument(
+        "--mlflow-experiment-name",
+        default=f"{P1_CAMPAIGN_ID}_generation",
+        help="MLflow experiment name for P1 generation runs.",
+    )
+    parser.add_argument(
+        "--mlflow-artifact-subdir",
+        default=P1_CAMPAIGN_ID,
+        help=(
+            "Semantic artifact subdirectory under "
+            "SCALEBRIDGE_GENERATED_DATA_ROOT/mlflow_artifacts."
+        ),
+    )
+    parser.add_argument(
+        "--generation-mode",
+        choices=("standard", "variable-wise"),
+        default="standard",
+        help=(
+            "Generation strategy. Use standard for one all-variable EnergyPlus "
+            "run per case, or variable-wise for one EnergyPlus run per requested "
+            "output variable."
+        ),
+    )
+    parser.add_argument(
+        "--variable-limit",
+        type=int,
+        help=(
+            "For variable-wise generation, run only the first N requested "
+            "variables. Intended for smoke testing."
+        ),
+    )
+    parser.add_argument(
+        "--parallel-variable-workers",
+        type=int,
+        help=(
+            "Number of concurrent EnergyPlus variable-wise workers. "
+            "If omitted, a machine-aware default is used."
+        ),
+    )
     arguments = parser.parse_args()
     if arguments.case_limit is not None and arguments.case_limit < 1:
         parser.error("--case-limit must be at least 1")
+    if arguments.variable_limit is not None and arguments.variable_limit < 1:
+        parser.error("--variable-limit must be at least 1")
+    if arguments.variable_limit is not None and arguments.generation_mode != "variable-wise":
+        parser.error("--variable-limit requires --generation-mode variable-wise")
+    if (
+        arguments.parallel_variable_workers is not None
+        and arguments.parallel_variable_workers < 1
+    ):
+        parser.error("--parallel-variable-workers must be at least 1")
+    if (
+        arguments.parallel_variable_workers is not None
+        and arguments.generation_mode != "variable-wise"
+    ):
+        parser.error(
+            "--parallel-variable-workers requires --generation-mode variable-wise"
+        )
     return arguments
 
+def _filter_cases(
+    cases,
+    *,
+    building_type: str | None,
+    weather_location: str | None,
+):
+    """Filter campaign cases before machine allocation."""
+    filtered = tuple(cases)
+
+    if building_type:
+        filtered = tuple(
+            case for case in filtered if case.building_type == building_type
+        )
+
+    if weather_location:
+        filtered = tuple(
+            case for case in filtered if case.weather_location == weather_location
+        )
+
+    return filtered
+
+def _selected_output_variables(
+    output_variables,
+    *,
+    variable_limit: int | None,
+):
+    """Return the output-variable subset used by the selected generation mode."""
+    if variable_limit is None:
+        return tuple(output_variables)
+    return tuple(output_variables[:variable_limit])
 
 def _case_root(generated_root: Path, case_id: str) -> Path:
     """Return the shared case directory used by the orchestrator."""
