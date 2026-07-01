@@ -1,0 +1,2067 @@
+﻿ScaleBridge Block E Variable-Wise Hardening Code Audit
+Repo root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+============================================================================================================================================
+GIT STATUS
+============================================================================================================================================
+?? block_e_variable_wise_hardening_code_audit.txt
+?? environments/locks/dev_laptop_gpu_full/pillow-torchvision-dll-test.txt
+?? environments/locks/home_pc_gpu_full/
+?? environments/locks/lab_pc_gpu_full/
+?? knowledgebase/block_d_officesmall_parallel_success_diagnostic.txt
+
+
+============================================================================================================================================
+GIT LOG LAST 5
+============================================================================================================================================
+cfcdda1 Updated EnergyPlus Generation with variable wise and parallel worker
+ab1d891 EnergyPlus Data Generation and MLFlow setup update
+fcc1f1b Created Knowledgebase folder
+561a10c Update gitignore
+57a1124 environment lock for laptop
+
+
+============================================================================================================================================
+VARIABLE WISE FILE
+============================================================================================================================================
+"""Variable-wise EnergyPlus generation strategy.
+
+This module implements the scalable P1 output strategy:
+
+    one EnergyPlus run per requested Output:Variable
+
+The goal is to avoid one enormous all-variable eplusout.csv/eso artifact.
+Each variable run produces a small raw CSV, which is immediately converted to
+a canonical per-variable Parquet file. Raw variable CSV files can then be
+deleted after successful canonical and compatibility export.
+
+This module is intentionally introduced as a separate generation strategy.
+The existing standard orchestrator remains available for small smoke tests and
+ordinary all-variable EnergyPlus runs.
+"""
+
+from __future__ import annotations
+
+import json
+import pickle
+import re
+import shutil
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Iterable
+
+import pandas as pd
+
+import os
+import platform
+import socket
+import sys
+import time
+import traceback
+from datetime import datetime, timezone
+from importlib import metadata
+from uuid import uuid4
+
+import tempfile
+
+from concurrent.futures import ThreadPoolExecutor, as_completed
+
+from scalebridge.integration.energyplus.manifests.models import (
+    CaseSpec,
+    OutputVariableRequest,
+)
+from scalebridge.integration.energyplus.idf import IdfPreparer
+from scalebridge.integration.energyplus.manifests.models import (
+    ArtifactRecord,
+    ErrorRecord,
+    ExecutionMetadata,
+    GenerationResult,
+    RunManifest,
+    RunStatus,
+    SoftwareMetadata,
+    TrackingMetadata,
+    ValidationSummary,
+)
+from scalebridge.integration.energyplus.manifests.serialization import (
+    write_case_spec,
+    write_run_manifest,
+)
+from scalebridge.integration.energyplus.outputs.eio import parse_eio
+from scalebridge.integration.energyplus.simulation import EnergyPlusRunner
+
+DATE_TIME_COLUMN = "Date/Time"
+
+
+@dataclass(frozen=True)
+class VariableWiseArtifact:
+    """Artifacts produced for one EnergyPlus output variable."""
+
+    parent_case_id: str
+    variable_case_id: str
+    variable_id: str
+    variable_name: str
+    reporting_frequency: str
+    raw_csv_path: Path | None
+    canonical_parquet_path: Path
+    legacy_pickle_path: Path | None
+    row_count: int
+    column_count: int
+    raw_csv_deleted: bool
+
+@dataclass(frozen=True)
+class VariableWiseTaskResult:
+    """Result from one variable-wise EnergyPlus task."""
+
+    variable_index: int
+    artifact: VariableWiseArtifact
+    warning_count: int
+    severe_count: int
+    fatal_count: int
+
+def safe_variable_id(request: OutputVariableRequest) -> str:
+    """Create a stable filesystem-safe identifier for one output request."""
+    base = f"{request.reporting_frequency}__{request.key_value}__{request.variable_name}"
+    normalized = re.sub(r"[^A-Za-z0-9]+", "_", base.strip()).strip("_").lower()
+    return normalized or "output_variable"
+
+
+def one_variable_case_spec(
+    parent_case_spec: CaseSpec,
+    request: OutputVariableRequest,
+) -> CaseSpec:
+    """Return a temporary one-variable CaseSpec used only for IDF preparation.
+
+    The resulting ``case_id`` differs from the parent case because output
+    variables are part of the scientific case identity. Variable-wise generation
+    should store both identifiers:
+        - parent_case_id: original P1 case identity
+        - variable_case_id: one-variable preparation/execution identity
+    """
+    return parent_case_spec.model_copy(
+        update={
+            "output_variables": (request,),
+            "preserve_raw_outputs": True,
+        }
+    )
+
+
+def convert_variable_csv_to_parquet(
+    *,
+    csv_path: str | Path,
+    parquet_path: str | Path,
+    request: OutputVariableRequest,
+    parent_case_spec: CaseSpec,
+    variable_case_spec: CaseSpec,
+    chunksize: int = 100_000,
+) -> tuple[int, int]:
+    """Convert one variable-wise EnergyPlus CSV to canonical long-form Parquet.
+
+    The conversion is chunked so even a large variable CSV is not fully loaded
+    into memory. The resulting Parquet schema is long-form:
+
+        parent_case_id, variable_case_id, timestamp_raw, reporting_frequency,
+        key_value, variable_name, units, semantic_role, value
+
+    Returns
+    -------
+    tuple[int, int]
+        ``(row_count, column_count)`` after canonical conversion.
+    """
+    source = Path(csv_path).expanduser().resolve()
+    destination = Path(parquet_path).expanduser().resolve()
+    destination.parent.mkdir(parents=True, exist_ok=True)
+
+    if not source.is_file():
+        raise FileNotFoundError(f"variable CSV does not exist: {source}")
+
+    try:
+        import pyarrow as pa
+        import pyarrow.parquet as pq
+    except ImportError as exc:
+        raise RuntimeError("pyarrow is required for variable-wise Parquet output") from exc
+
+    writer: pq.ParquetWriter | None = None
+    total_rows = 0
+    total_columns = 0
+
+    try:
+        for chunk in pd.read_csv(source, chunksize=chunksize):
+            if DATE_TIME_COLUMN not in chunk.columns:
+                raise ValueError(
+                    f"EnergyPlus CSV is missing required column {DATE_TIME_COLUMN!r}: "
+                    f"{source}"
+                )
+
+            value_columns = [column for column in chunk.columns if column != DATE_TIME_COLUMN]
+            total_columns = max(total_columns, len(value_columns))
+
+            pieces: list[pd.DataFrame] = []
+            for column in value_columns:
+                key_value, variable_name, units = parse_energyplus_csv_column(
+                    column,
+                    fallback_variable_name=request.variable_name,
+                )
+                pieces.append(
+                    pd.DataFrame(
+                        {
+                            "parent_case_id": parent_case_spec.case_id,
+                            "variable_case_id": variable_case_spec.case_id,
+                            "timestamp_raw": chunk[DATE_TIME_COLUMN].astype(str),
+                            "reporting_frequency": request.reporting_frequency,
+                            "key_value": key_value,
+                            "variable_name": variable_name,
+                            "units": units,
+                            "semantic_role": request.semantic_role,
+                            "value": pd.to_numeric(chunk[column], errors="coerce"),
+                        }
+                    )
+                )
+
+            if not pieces:
+                continue
+
+            long_chunk = pd.concat(pieces, ignore_index=True)
+            table = pa.Table.from_pandas(long_chunk, preserve_index=False)
+
+            if writer is None:
+                writer = pq.ParquetWriter(
+                    destination,
+                    table.schema,
+                    compression="zstd",
+                )
+            writer.write_table(table)
+            total_rows += len(long_chunk)
+
+    finally:
+        if writer is not None:
+            writer.close()
+
+    return total_rows, total_columns
+
+
+def parse_energyplus_csv_column(
+    column_name: str,
+    *,
+    fallback_variable_name: str,
+) -> tuple[str, str, str]:
+    """Parse one EnergyPlus CSV output column label.
+
+    EnergyPlus labels commonly look like:
+
+        ZONE ONE:Zone Air Temperature [C](TimeStep)
+
+    This parser keeps the original key and variable names when available and
+    falls back safely when a column does not follow the expected convention.
+    """
+    text = str(column_name).strip()
+
+    units = ""
+    unit_match = re.search(r"\[([^\]]+)\]", text)
+    if unit_match:
+        units = unit_match.group(1).strip()
+
+    without_suffix = re.sub(r"\[[^\]]+\].*$", "", text).strip()
+
+    if ":" in without_suffix:
+        key_value, variable_name = without_suffix.split(":", 1)
+        key_value = key_value.strip()
+        variable_name = variable_name.strip() or fallback_variable_name
+    else:
+        key_value = "*"
+        variable_name = without_suffix or fallback_variable_name
+
+    return key_value, variable_name, units
+
+
+def write_per_variable_legacy_pickle(
+    *,
+    parquet_path: str | Path,
+    pickle_path: str | Path,
+) -> Path:
+    """Write one per-variable compatibility pickle.
+
+    This intentionally writes one pickle per variable instead of one giant
+    legacy dictionary. That preserves legacy-style DataFrame access while
+    avoiding a full campaign/case dictionary in memory.
+    """
+    source = Path(parquet_path).expanduser().resolve()
+    destination = Path(pickle_path).expanduser().resolve()
+    destination.parent.mkdir(parents=True, exist_ok=True)
+
+    frame = pd.read_parquet(source)
+
+    if frame.empty:
+        legacy_frame = pd.DataFrame()
+        variable_name = source.stem
+    else:
+        variable_name = str(frame["variable_name"].iloc[0]).replace(" ", "_")
+        legacy_frame = frame.pivot_table(
+            index="timestamp_raw",
+            columns="key_value",
+            values="value",
+            aggfunc="first",
+        ).reset_index()
+
+    payload = {
+        "variable_name": variable_name,
+        "data": legacy_frame,
+    }
+
+    with destination.open("wb") as stream:
+        pickle.dump(payload, stream, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return destination
+
+
+def write_variable_manifest(
+    *,
+    artifacts: Iterable[VariableWiseArtifact],
+    json_path: str | Path,
+    csv_path: str | Path,
+) -> tuple[Path, Path]:
+    """Write JSON and CSV manifests for variable-wise generation artifacts."""
+    artifact_rows = [
+        {
+            "parent_case_id": artifact.parent_case_id,
+            "variable_case_id": artifact.variable_case_id,
+            "variable_id": artifact.variable_id,
+            "variable_name": artifact.variable_name,
+            "reporting_frequency": artifact.reporting_frequency,
+            "raw_csv_path": str(artifact.raw_csv_path) if artifact.raw_csv_path else "",
+            "canonical_parquet_path": str(artifact.canonical_parquet_path),
+            "legacy_pickle_path": (
+                str(artifact.legacy_pickle_path)
+                if artifact.legacy_pickle_path is not None
+                else ""
+            ),
+            "row_count": artifact.row_count,
+            "column_count": artifact.column_count,
+            "raw_csv_deleted": artifact.raw_csv_deleted,
+        }
+        for artifact in artifacts
+    ]
+
+    json_destination = Path(json_path).expanduser().resolve()
+    csv_destination = Path(csv_path).expanduser().resolve()
+    json_destination.parent.mkdir(parents=True, exist_ok=True)
+    csv_destination.parent.mkdir(parents=True, exist_ok=True)
+
+    json_destination.write_text(
+        json.dumps(
+            {
+                "schema_version": "0.1.0",
+                "artifact_count": len(artifact_rows),
+                "artifacts": artifact_rows,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    pd.DataFrame(artifact_rows).to_csv(csv_destination, index=False)
+    return json_destination, csv_destination
+
+
+def delete_raw_csv_after_success(path: str | Path) -> bool:
+    """Delete one raw variable CSV after successful canonical/legacy creation."""
+    target = Path(path).expanduser().resolve()
+    if not target.exists():
+        return False
+    target.unlink()
+    return True
+
+
+def move_energyplus_variable_outputs(
+    *,
+    simulation_output_directory: str | Path,
+    raw_variable_csv_path: str | Path,
+    raw_eio_path: str | Path | None = None,
+    raw_err_path: str | Path | None = None,
+) -> None:
+    """Move selected EnergyPlus output files from one variable run.
+
+    This function moves the current run's ``eplusout.csv`` into the persistent
+    variable-wise raw CSV folder. EIO and ERR files are optionally retained for
+    diagnostics.
+    """
+    source_root = Path(simulation_output_directory).expanduser().resolve()
+    csv_source = source_root / "eplusout.csv"
+
+    if not csv_source.is_file():
+        raise FileNotFoundError(f"EnergyPlus variable run did not produce {csv_source}")
+
+    csv_destination = Path(raw_variable_csv_path).expanduser().resolve()
+    csv_destination.parent.mkdir(parents=True, exist_ok=True)
+    shutil.move(str(csv_source), str(csv_destination))
+
+    if raw_eio_path is not None:
+        eio_source = source_root / "eplusout.eio"
+        if eio_source.is_file():
+            eio_destination = Path(raw_eio_path).expanduser().resolve()
+            eio_destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(eio_source, eio_destination)
+
+    if raw_err_path is not None:
+        err_source = source_root / "eplusout.err"
+        if err_source.is_file():
+            err_destination = Path(raw_err_path).expanduser().resolve()
+            err_destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(err_source, err_destination)
+
+def generate_variable_wise_case(
+    case_spec: CaseSpec,
+    *,
+    generated_data_root: str | Path,
+    case_collection_name: str,
+    machine_id: str,
+    campaign_id: str | None = None,
+    selected_output_variables: tuple[OutputVariableRequest, ...] | None = None,
+    run_id: str | None = None,
+    delete_raw_csv: bool = True,
+    mlflow_tracker=None,
+    short_work_root: str | Path | None = None,
+    parallel_variable_workers: int | None = None,
+) -> GenerationResult:
+    """Generate one case using one EnergyPlus run per output variable."""
+    started_at = datetime.now(timezone.utc)
+    started_counter = time.perf_counter()
+    attempt_id = run_id or f"epvwr_{uuid4().hex[:12]}"
+
+    root = (
+        Path(generated_data_root).expanduser().resolve()
+        / case_collection_name
+        / "cases"
+        / case_spec.case_id
+    )
+    run_root = root / "runs" / attempt_id
+
+    inputs_root = run_root / "inputs"
+    variable_idf_root = inputs_root / "variable_idfs"
+    raw_variable_csv_root = run_root / "raw" / "variable_csv"
+    raw_eio_root = run_root / "raw" / "eio"
+    raw_err_root = run_root / "raw" / "err"
+    diagnostic_variable_run_root = run_root / "variable_runs"
+    short_work_base = _resolve_short_work_root(
+        short_work_root=short_work_root,
+        attempt_id=attempt_id,
+    )
+    canonical_root = run_root / "canonical"
+    canonical_variable_root = canonical_root / "variables"
+    legacy_root = run_root / "legacy"
+    legacy_variable_root = legacy_root / "per_variable_pickle"
+
+    manifest_path = run_root / "run_manifest.json"
+    case_spec_path = inputs_root / "case_spec.json"
+    traceback_path = run_root / "traceback.txt"
+
+    inputs_root.mkdir(parents=True, exist_ok=False)
+    variable_idf_root.mkdir(parents=True, exist_ok=True)
+    raw_variable_csv_root.mkdir(parents=True, exist_ok=True)
+    raw_eio_root.mkdir(parents=True, exist_ok=True)
+    raw_err_root.mkdir(parents=True, exist_ok=True)
+    diagnostic_variable_run_root.mkdir(parents=True, exist_ok=True)
+    short_work_base.mkdir(parents=True, exist_ok=True)
+    canonical_variable_root.mkdir(parents=True, exist_ok=True)
+
+    write_case_spec(case_spec, case_spec_path)
+
+    # requests = selected_output_variables or case_spec.output_variables
+    # idf_preparer = IdfPreparer()
+    # runner = EnergyPlusRunner(beat_frequency_seconds=5)
+
+    requests = tuple(selected_output_variables or case_spec.output_variables)
+    worker_count = resolve_parallel_variable_workers(
+        machine_id=machine_id,
+        requested=parallel_variable_workers,
+        variable_count=len(requests),
+    )
+
+    artifacts: list[VariableWiseArtifact] = []
+    warning_count = 0
+    severe_count = 0
+    fatal_count = 0
+    error: ErrorRecord | None = None
+    status = RunStatus.FAILED
+    tracking_metadata = TrackingMetadata()
+    tracking_handle = None
+
+    if mlflow_tracker is not None:
+        try:
+            tracking_handle = mlflow_tracker.start(
+                case_spec=case_spec,
+                run_id=attempt_id,
+                campaign_id=campaign_id,
+                machine_id=machine_id,
+            )
+            if tracking_handle is not None:
+                tracking_metadata = tracking_handle.to_metadata()
+        except Exception:
+            tracking_handle = None
+
+    try:
+        # for variable_index, request in enumerate(requests, start=1):
+        #     variable_id = safe_variable_id(request)
+        #     variable_case_spec = one_variable_case_spec(case_spec, request)
+
+        #     variable_idf_path = variable_idf_root / f"{variable_id}.idf"
+        #     variable_output_root = short_work_base / f"v{variable_index:03d}"
+        #     diagnostic_output_root = diagnostic_variable_run_root / variable_id
+
+        #     preparation = idf_preparer.prepare(
+        #         variable_case_spec,
+        #         variable_idf_path,
+        #     )
+        #     run_result = runner.run(
+        #         idf_path=preparation.prepared_idf_path,
+        #         epw_path=case_spec.epw_path,
+        #         output_directory=variable_output_root,
+        #     )
+
+        #     _copy_variable_run_diagnostics(
+        #         source_directory=run_result.output_directory,
+        #         destination_directory=diagnostic_output_root,
+        #     )
+
+        #     warning_count += run_result.warning_count
+        #     severe_count += run_result.severe_count
+        #     fatal_count += run_result.fatal_count
+
+        #     if not run_result.completed_successfully:
+        #         raise RuntimeError(
+        #             run_result.failure_message
+        #             or f"EnergyPlus variable run failed for {variable_id}"
+        #         )
+
+        #     raw_csv_path = raw_variable_csv_root / f"{variable_id}.csv"
+        #     raw_eio_path = raw_eio_root / f"{variable_id}.eio"
+        #     raw_err_path = raw_err_root / f"{variable_id}.err"
+
+        #     move_energyplus_variable_outputs(
+        #         simulation_output_directory=run_result.output_directory,
+        #         raw_variable_csv_path=raw_csv_path,
+        #         raw_eio_path=raw_eio_path,
+        #         raw_err_path=raw_err_path,
+        #     )
+
+        #     canonical_parquet_path = canonical_variable_root / f"{variable_id}.parquet"
+        #     row_count, column_count = convert_variable_csv_to_parquet(
+        #         csv_path=raw_csv_path,
+        #         parquet_path=canonical_parquet_path,
+        #         request=request,
+        #         parent_case_spec=case_spec,
+        #         variable_case_spec=variable_case_spec,
+        #     )
+
+        #     legacy_pickle_path: Path | None = None
+        #     if case_spec.write_legacy_pickles:
+        #         legacy_pickle_path = legacy_variable_root / f"{variable_id}.pickle"
+        #         write_per_variable_legacy_pickle(
+        #             parquet_path=canonical_parquet_path,
+        #             pickle_path=legacy_pickle_path,
+        #         )
+
+        #     raw_csv_deleted = False
+        #     stored_raw_csv_path: Path | None = raw_csv_path
+        #     if delete_raw_csv:
+        #         raw_csv_deleted = delete_raw_csv_after_success(raw_csv_path)
+        #         if raw_csv_deleted:
+        #             stored_raw_csv_path = None
+
+        #     shutil.rmtree(variable_output_root, ignore_errors=True)
+
+        #     artifacts.append(
+        #         VariableWiseArtifact(
+        #             parent_case_id=case_spec.case_id,
+        #             variable_case_id=variable_case_spec.case_id,
+        #             variable_id=variable_id,
+        #             variable_name=request.variable_name,
+        #             reporting_frequency=request.reporting_frequency,
+        #             raw_csv_path=stored_raw_csv_path,
+        #             canonical_parquet_path=canonical_parquet_path,
+        #             legacy_pickle_path=legacy_pickle_path,
+        #             row_count=row_count,
+        #             column_count=column_count,
+        #             raw_csv_deleted=raw_csv_deleted,
+        #         )
+        #     )
+
+        task_specs = tuple(enumerate(requests, start=1))
+
+        if worker_count == 1:
+            task_results = [
+                _generate_one_variable_artifact(
+                    case_spec=case_spec,
+                    request=request,
+                    variable_index=variable_index,
+                    variable_idf_root=variable_idf_root,
+                    raw_variable_csv_root=raw_variable_csv_root,
+                    raw_eio_root=raw_eio_root,
+                    raw_err_root=raw_err_root,
+                    diagnostic_variable_run_root=diagnostic_variable_run_root,
+                    canonical_variable_root=canonical_variable_root,
+                    legacy_variable_root=legacy_variable_root,
+                    short_work_base=short_work_base,
+                    delete_raw_csv=delete_raw_csv,
+                )
+                for variable_index, request in task_specs
+            ]
+        else:
+            task_results = []
+            with ThreadPoolExecutor(max_workers=worker_count) as executor:
+                futures = [
+                    executor.submit(
+                        _generate_one_variable_artifact,
+                        case_spec=case_spec,
+                        request=request,
+                        variable_index=variable_index,
+                        variable_idf_root=variable_idf_root,
+                        raw_variable_csv_root=raw_variable_csv_root,
+                        raw_eio_root=raw_eio_root,
+                        raw_err_root=raw_err_root,
+                        diagnostic_variable_run_root=diagnostic_variable_run_root,
+                        canonical_variable_root=canonical_variable_root,
+                        legacy_variable_root=legacy_variable_root,
+                        short_work_base=short_work_base,
+                        delete_raw_csv=delete_raw_csv,
+                    )
+                    for variable_index, request in task_specs
+                ]
+
+                for future in as_completed(futures):
+                    task_results.append(future.result())
+
+        for task_result in sorted(task_results, key=lambda item: item.variable_index):
+            warning_count += task_result.warning_count
+            severe_count += task_result.severe_count
+            fatal_count += task_result.fatal_count
+            artifacts.append(task_result.artifact)
+
+        variable_manifest_json, variable_manifest_csv = write_variable_manifest(
+            artifacts=artifacts,
+            json_path=canonical_root / "variable_manifest.json",
+            csv_path=canonical_root / "variable_manifest.csv",
+        )
+
+        _write_variable_wise_metadata(
+            case_spec=case_spec,
+            artifacts=artifacts,
+            metadata_path=canonical_root / "metadata.json",
+            variable_manifest_json=variable_manifest_json,
+            variable_manifest_csv=variable_manifest_csv,
+        )
+        _write_variable_wise_eio_tables(
+            eio_directory=raw_eio_root,
+            destination=canonical_root / "eio_tables.json",
+        )
+
+        if case_spec.write_legacy_pickles:
+            _write_variable_wise_legacy_manifest(
+                artifacts=artifacts,
+                destination=legacy_root / "legacy_manifest.json",
+            )
+
+        status = (
+            RunStatus.COMPLETED_WITH_WARNINGS
+            if warning_count
+            else RunStatus.COMPLETED
+        )
+
+    except Exception as exc:
+        status = RunStatus.FAILED
+        traceback_path.write_text(traceback.format_exc(), encoding="utf-8")
+        error = ErrorRecord(
+            error_type=type(exc).__name__,
+            message=str(exc),
+            traceback_path=traceback_path.relative_to(run_root),
+        )
+
+    completed_at = datetime.now(timezone.utc)
+    runtime_seconds = time.perf_counter() - started_counter
+
+    produced_signal_count = len(artifacts)
+    missing_required = tuple(
+        _request_identity_for_variable_wise(request)
+        for request in requests
+        if request.required
+        and safe_variable_id(request) not in {artifact.variable_id for artifact in artifacts}
+    )
+
+    validation = ValidationSummary(
+        exit_code=0 if status in {RunStatus.COMPLETED, RunStatus.COMPLETED_WITH_WARNINGS} else None,
+        warnings=warning_count,
+        severe_errors=severe_count,
+        fatal_errors=fatal_count,
+        requested_signals=len(requests),
+        produced_signals=produced_signal_count,
+        missing_required_signals=missing_required,
+        timestep_count=None,
+    )
+
+    manifest = RunManifest(
+        case_id=case_spec.case_id,
+        run_id=attempt_id,
+        campaign_id=campaign_id,
+        status=status,
+        case_spec=case_spec,
+        execution=ExecutionMetadata(
+            machine_id=machine_id,
+            hostname=socket.gethostname(),
+            platform=platform.platform(),
+            worker_id=os.environ.get("SCALEBRIDGE_WORKER_ID"),
+            slurm_job_id=os.environ.get("SLURM_JOB_ID"),
+            started_at=started_at,
+            completed_at=completed_at,
+            runtime_seconds=runtime_seconds,
+        ),
+        software=_variable_wise_software_metadata(case_spec),
+        validation=validation,
+        artifacts=_inventory_variable_wise_artifacts(
+            run_root,
+            manifest_path=manifest_path,
+        ),
+        tracking=tracking_metadata,
+        error=error,
+    )
+    write_run_manifest(manifest, manifest_path)
+    _write_variable_wise_latest_pointer(
+        root=root,
+        case_id=case_spec.case_id,
+        run_id=attempt_id,
+        status=status,
+        manifest_path=manifest_path,
+    )
+
+    result = GenerationResult(
+        case_id=case_spec.case_id,
+        run_id=attempt_id,
+        status=status,
+        artifact_root=run_root,
+        manifest_path=manifest_path,
+        raw_output_paths=_relative_file_paths(run_root / "raw"),
+        canonical_output_paths=_relative_file_paths(canonical_root),
+        compatibility_output_paths=_relative_file_paths(legacy_root),
+        started_at=started_at,
+        completed_at=completed_at,
+        runtime_seconds=runtime_seconds,
+        energyplus_exit_code=validation.exit_code,
+        warning_count=validation.warnings,
+        severe_count=validation.severe_errors,
+        fatal_count=validation.fatal_errors,
+        requested_signal_count=validation.requested_signals,
+        produced_signal_count=validation.produced_signals,
+        missing_required_signals=validation.missing_required_signals,
+        timestep_count=validation.timestep_count,
+        error_type=error.error_type if error else None,
+        error_message=error.message if error else None,
+    )
+
+    if mlflow_tracker is not None and tracking_handle is not None:
+        try:
+            mlflow_tracker.finish(
+                handle=tracking_handle,
+                result=result,
+                manifest_path=manifest_path,
+            )
+        except Exception as exc:
+            try:
+                mlflow_tracker.fail(
+                    handle=tracking_handle,
+                    error=exc,
+                )
+            except Exception:
+                pass
+
+            if getattr(mlflow_tracker, "strict", False):
+                raise
+
+    return result
+
+
+def _request_identity_for_variable_wise(request: OutputVariableRequest) -> str:
+    """Return a compact requested-variable identity."""
+    return (
+        f"{request.key_value}|{request.variable_name}|"
+        f"{request.reporting_frequency}"
+    )
+
+
+def _write_variable_wise_metadata(
+    *,
+    case_spec: CaseSpec,
+    artifacts: list[VariableWiseArtifact],
+    metadata_path: Path,
+    variable_manifest_json: Path,
+    variable_manifest_csv: Path,
+) -> None:
+    """Write canonical metadata for variable-wise generation."""
+    metadata_path.write_text(
+        json.dumps(
+            {
+                "schema_version": "0.1.0",
+                "generation_mode": "variable-wise",
+                "case_id": case_spec.case_id,
+                "requested_signal_count": len(case_spec.output_variables),
+                "produced_signal_count": len(artifacts),
+                "canonical_variable_parquet_count": len(artifacts),
+                "raw_csv_deleted_count": sum(
+                    1 for artifact in artifacts if artifact.raw_csv_deleted
+                ),
+                "variable_manifest_json": variable_manifest_json.name,
+                "variable_manifest_csv": variable_manifest_csv.name,
+                "variables": [
+                    {
+                        "variable_id": artifact.variable_id,
+                        "variable_name": artifact.variable_name,
+                        "reporting_frequency": artifact.reporting_frequency,
+                        "canonical_parquet_path": artifact.canonical_parquet_path.name,
+                        "legacy_pickle_path": (
+                            artifact.legacy_pickle_path.name
+                            if artifact.legacy_pickle_path is not None
+                            else None
+                        ),
+                        "row_count": artifact.row_count,
+                        "column_count": artifact.column_count,
+                        "raw_csv_deleted": artifact.raw_csv_deleted,
+                    }
+                    for artifact in artifacts
+                ],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _write_variable_wise_eio_tables(
+    *,
+    eio_directory: Path,
+    destination: Path,
+) -> None:
+    """Write EIO metadata using the first available variable-run EIO file."""
+    eio_files = sorted(eio_directory.glob("*.eio"))
+    if not eio_files:
+        destination.write_text(
+            json.dumps(
+                {
+                    "schema_version": "0.1.0",
+                    "source": None,
+                    "table_count": 0,
+                    "tables": {},
+                },
+                indent=2,
+                sort_keys=True,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        return
+
+    source = eio_files[0]
+    tables = parse_eio(source)
+    destination.write_text(
+        json.dumps(
+            {
+                "schema_version": "0.1.0",
+                "source": str(source),
+                "table_count": len(tables),
+                "tables": {
+                    name: table.to_serializable_dict()
+                    for name, table in tables.items()
+                },
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _write_variable_wise_legacy_manifest(
+    *,
+    artifacts: list[VariableWiseArtifact],
+    destination: Path,
+) -> None:
+    """Write a manifest for per-variable compatibility pickles."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_text(
+        json.dumps(
+            {
+                "schema_version": "0.1.0",
+                "legacy_layout": "per_variable_pickle",
+                "pickle_count": sum(
+                    1 for artifact in artifacts if artifact.legacy_pickle_path is not None
+                ),
+                "pickles": [
+                    {
+                        "variable_id": artifact.variable_id,
+                        "variable_name": artifact.variable_name,
+                        "path": (
+                            str(artifact.legacy_pickle_path)
+                            if artifact.legacy_pickle_path is not None
+                            else None
+                        ),
+                    }
+                    for artifact in artifacts
+                ],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+
+def _variable_wise_software_metadata(case_spec: CaseSpec) -> SoftwareMetadata:
+    """Collect portable software versions for variable-wise generation."""
+    try:
+        scalebridge_version = metadata.version("scalebridge")
+    except metadata.PackageNotFoundError:
+        scalebridge_version = "0.1.0"
+    try:
+        opyplus_version = metadata.version("opyplus")
+    except metadata.PackageNotFoundError:
+        opyplus_version = None
+
+    return SoftwareMetadata(
+        scalebridge_version=scalebridge_version,
+        energyplus_version=case_spec.energyplus_version,
+        opyplus_version=opyplus_version,
+        python_version=sys.version.split()[0],
+    )
+
+
+def _inventory_variable_wise_artifacts(
+    run_root: Path,
+    *,
+    manifest_path: Path,
+) -> tuple[ArtifactRecord, ...]:
+    """Inventory variable-wise files without hashing large artifacts."""
+    records: list[ArtifactRecord] = []
+    for path in sorted(run_root.rglob("*")):
+        if not path.is_file() or path == manifest_path:
+            continue
+        relative = path.relative_to(run_root)
+        records.append(
+            ArtifactRecord(
+                role=f"{relative.parts[0]}_{path.stem}".casefold(),
+                relative_path=relative,
+                media_type=_variable_wise_media_type(path),
+                sha256=None,
+                size_bytes=path.stat().st_size,
+            )
+        )
+    return tuple(records)
+
+
+def _variable_wise_media_type(path: Path) -> str:
+    """Return a compact media type for variable-wise artifacts."""
+    return {
+        ".json": "application/json",
+        ".csv": "text/csv",
+        ".parquet": "application/vnd.apache.parquet",
+        ".pickle": "application/python-pickle",
+        ".idf": "text/plain",
+        ".eio": "text/plain",
+        ".err": "text/plain",
+        ".log": "text/plain",
+    }.get(path.suffix.casefold(), "application/octet-stream")
+
+
+def _relative_file_paths(directory: Path) -> dict[str, Path]:
+    """Return file paths beneath a directory, keyed by relative POSIX path."""
+    if not directory.is_dir():
+        return {}
+    return {
+        path.relative_to(directory).as_posix(): path
+        for path in sorted(directory.rglob("*"))
+        if path.is_file()
+    }
+
+
+def _write_variable_wise_latest_pointer(
+    *,
+    root: Path,
+    case_id: str,
+    run_id: str,
+    status: RunStatus,
+    manifest_path: Path,
+) -> None:
+    """Write latest-run pointer for the case directory."""
+    payload = {
+        "case_id": case_id,
+        "run_id": run_id,
+        "status": status.value,
+        "manifest_path": manifest_path.relative_to(root).as_posix(),
+    }
+    (root / "latest_run.json").write_text(
+        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+
+def _resolve_short_work_root(
+    *,
+    short_work_root: str | Path | None,
+    attempt_id: str,
+) -> Path:
+    """Return a short local work directory for opyplus/EnergyPlus subprocesses."""
+    configured = (
+        short_work_root
+        or os.environ.get("SCALEBRIDGE_EPLUS_WORK_ROOT")
+        or Path(tempfile.gettempdir()) / "scalebridge_eplus"
+    )
+    root = Path(configured).expanduser().resolve() / attempt_id
+    root.mkdir(parents=True, exist_ok=True)
+    return root
+
+
+def _copy_variable_run_diagnostics(
+    *,
+    source_directory: str | Path,
+    destination_directory: str | Path,
+) -> None:
+    """Copy small diagnostic files from the short EnergyPlus work directory."""
+    source = Path(source_directory).expanduser().resolve()
+    destination = Path(destination_directory).expanduser().resolve()
+    destination.mkdir(parents=True, exist_ok=True)
+
+    if not source.is_dir():
+        return
+
+    for name in (
+        "#opyplus.info",
+        "opyplus.idf",
+        "opyplus.epw",
+        "eplusout.err",
+        "eplusout.eio",
+        "eplusout.rdd",
+        "eplusout.mdd",
+        "eplusout.audit",
+        "opyplus_progress.log",
+    ):
+        candidate = source / name
+        if candidate.is_file():
+            shutil.copy2(candidate, destination / name)
+
+def resolve_parallel_variable_workers(
+    *,
+    machine_id: str | None,
+    requested: int | None,
+    variable_count: int | None = None,
+) -> int:
+    """Resolve variable-wise worker count from CLI/function/env/machine default."""
+    if requested is not None:
+        workers = requested
+    else:
+        env_value = os.environ.get("SCALEBRIDGE_EPLUS_PARALLEL_VARIABLE_WORKERS")
+        if env_value:
+            workers = int(env_value)
+        else:
+            normalized = (machine_id or get_machine_id_from_environment()).strip().lower()
+            defaults = {
+                "laptop": 2,
+                "home-pc": 2,
+                "home_pc": 2,
+                "homepc": 2,
+                "lab-pc": 2,
+                "lab_pc": 2,
+                "labpc": 2,
+                "kamiak": 1,
+            }
+            workers = defaults.get(normalized, 1)
+
+    workers = max(1, int(workers))
+    if variable_count is not None and variable_count > 0:
+        workers = min(workers, variable_count)
+    return workers
+
+
+def get_machine_id_from_environment() -> str:
+    """Return machine id from common ScaleBridge environment variables."""
+    return (
+        os.environ.get("SCALEBRIDGE_MACHINE_ID")
+        or os.environ.get("COMPUTERNAME")
+        or socket.gethostname()
+    )
+
+
+def _generate_one_variable_artifact(
+    *,
+    case_spec: CaseSpec,
+    request: OutputVariableRequest,
+    variable_index: int,
+    variable_idf_root: Path,
+    raw_variable_csv_root: Path,
+    raw_eio_root: Path,
+    raw_err_root: Path,
+    diagnostic_variable_run_root: Path,
+    canonical_variable_root: Path,
+    legacy_variable_root: Path,
+    short_work_base: Path,
+    delete_raw_csv: bool,
+) -> VariableWiseTaskResult:
+    """Run, canonicalize, and optionally legacy-export one variable."""
+    variable_id = safe_variable_id(request)
+    variable_case_spec = one_variable_case_spec(case_spec, request)
+
+    variable_idf_path = variable_idf_root / f"{variable_id}.idf"
+    variable_output_root = short_work_base / f"v{variable_index:03d}"
+    diagnostic_output_root = diagnostic_variable_run_root / variable_id
+
+    idf_preparer = IdfPreparer()
+    runner = EnergyPlusRunner(beat_frequency_seconds=5)
+
+    preparation = idf_preparer.prepare(
+        variable_case_spec,
+        variable_idf_path,
+    )
+    run_result = runner.run(
+        idf_path=preparation.prepared_idf_path,
+        epw_path=case_spec.epw_path,
+        output_directory=variable_output_root,
+    )
+
+    _copy_variable_run_diagnostics(
+        source_directory=run_result.output_directory,
+        destination_directory=diagnostic_output_root,
+    )
+
+    if not run_result.completed_successfully:
+        raise RuntimeError(
+            run_result.failure_message
+            or f"EnergyPlus variable run failed for {variable_id}"
+        )
+
+    raw_csv_path = raw_variable_csv_root / f"{variable_id}.csv"
+    raw_eio_path = raw_eio_root / f"{variable_id}.eio"
+    raw_err_path = raw_err_root / f"{variable_id}.err"
+
+    move_energyplus_variable_outputs(
+        simulation_output_directory=run_result.output_directory,
+        raw_variable_csv_path=raw_csv_path,
+        raw_eio_path=raw_eio_path,
+        raw_err_path=raw_err_path,
+    )
+
+    canonical_parquet_path = canonical_variable_root / f"{variable_id}.parquet"
+    row_count, column_count = convert_variable_csv_to_parquet(
+        csv_path=raw_csv_path,
+        parquet_path=canonical_parquet_path,
+        request=request,
+        parent_case_spec=case_spec,
+        variable_case_spec=variable_case_spec,
+    )
+
+    legacy_pickle_path: Path | None = None
+    if case_spec.write_legacy_pickles:
+        legacy_pickle_path = legacy_variable_root / f"{variable_id}.pickle"
+        write_per_variable_legacy_pickle(
+            parquet_path=canonical_parquet_path,
+            pickle_path=legacy_pickle_path,
+        )
+
+    raw_csv_deleted = False
+    stored_raw_csv_path: Path | None = raw_csv_path
+    if delete_raw_csv:
+        raw_csv_deleted = delete_raw_csv_after_success(raw_csv_path)
+        if raw_csv_deleted:
+            stored_raw_csv_path = None
+
+    shutil.rmtree(variable_output_root, ignore_errors=True)
+
+    artifact = VariableWiseArtifact(
+        parent_case_id=case_spec.case_id,
+        variable_case_id=variable_case_spec.case_id,
+        variable_id=variable_id,
+        variable_name=request.variable_name,
+        reporting_frequency=request.reporting_frequency,
+        raw_csv_path=stored_raw_csv_path,
+        canonical_parquet_path=canonical_parquet_path,
+        legacy_pickle_path=legacy_pickle_path,
+        row_count=row_count,
+        column_count=column_count,
+        raw_csv_deleted=raw_csv_deleted,
+    )
+
+    return VariableWiseTaskResult(
+        variable_index=variable_index,
+        artifact=artifact,
+        warning_count=run_result.warning_count,
+        severe_count=run_result.severe_count,
+        fatal_count=run_result.fatal_count,
+    )
+
+
+============================================================================================================================================
+GENERATION INIT FILE
+
+============================================================================================================================================
+RUN P1 CAMPAIGN FILE
+============================================================================================================================================
+"""Run all P1 cases or one machine's fixed share of the campaign.
+
+Without ``--machine-number``, one machine executes all 64 cases. When the
+option is set to 1, 2, 3, or 4, the machine executes its 16 non-overlapping
+cases. All execution is sequential and uses no distributed-computing
+framework, central scheduler, or worker service.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import os
+from collections import Counter
+from pathlib import Path
+
+from scalebridge.integration.energyplus import (
+    EnergyPlusGenerationOrchestrator,
+    P1_CAMPAIGN_ID,
+    RunStatus,
+    build_p1_case_specs,
+    resolve_generated_data_root,
+)
+from scalebridge.integration.energyplus.generation.variable_wise import (
+    generate_variable_wise_case,
+    resolve_parallel_variable_workers,
+    safe_variable_id,
+)
+from scalebridge.tracking.mlflow import MLflowGenerationTracker
+
+
+MACHINE_COUNT = 4
+SUCCESS_STATUSES = {
+    RunStatus.COMPLETED.value,
+    RunStatus.COMPLETED_WITH_WARNINGS.value,
+}
+
+
+def main() -> int:
+    """Run all cases or one machine's share and summarize their outcomes."""
+    arguments = _parse_arguments()
+    all_cases = build_p1_case_specs(
+        write_legacy_pickles=arguments.write_legacy_pickles
+    )
+    all_cases = _filter_cases(
+        all_cases,
+        building_type=arguments.building_type,
+        weather_location=arguments.weather_location,
+    )
+    if not all_cases:
+        raise SystemExit(
+            "No cases matched the requested filters: "
+            f"building_type={arguments.building_type!r}, "
+            f"weather_location={arguments.weather_location!r}"
+        )
+    if arguments.machine_number is None:
+        selected_cases = all_cases
+        allocation = "all cases on one machine"
+    else:
+        selected_cases = all_cases[
+            arguments.machine_number - 1 :: MACHINE_COUNT
+        ]
+        allocation = (
+            f"machine {arguments.machine_number}/{MACHINE_COUNT}"
+        )
+    if arguments.case_limit is not None:
+        selected_cases = selected_cases[: arguments.case_limit]
+
+    generated_root = resolve_generated_data_root()
+    print(f"Campaign: {P1_CAMPAIGN_ID}")
+    print(f"Allocation: {allocation}")
+    print(f"Machine ID: {arguments.machine_id}")
+    print(f"Selected cases: {len(selected_cases)}")
+    print(f"Generated root: {generated_root}")
+    print(f"Generation mode: {arguments.generation_mode}")
+    if arguments.variable_limit is not None:
+        print(f"Variable limit: {arguments.variable_limit}")
+
+    if arguments.generation_mode == "variable-wise":
+        preview_requests = _selected_output_variables(
+            selected_cases[0].output_variables,
+            variable_limit=arguments.variable_limit,
+        ) if selected_cases else ()
+        resolved_workers = resolve_parallel_variable_workers(
+            machine_id=arguments.machine_id,
+            requested=arguments.parallel_variable_workers,
+            variable_count=len(preview_requests),
+        )
+        print(f"Parallel variable workers: {resolved_workers}")
+
+    if arguments.dry_run:
+        for case in selected_cases:
+            print(
+                f"DRY RUN: {case.case_id} "
+                f"{case.building_type}/{case.weather_location}"
+            )
+            if arguments.generation_mode == "variable-wise":
+                requests = _selected_output_variables(
+                    case.output_variables,
+                    variable_limit=arguments.variable_limit,
+                )
+                for index, request in enumerate(requests, start=1):
+                    print(
+                        f"  VARIABLE {index}: "
+                        f"{safe_variable_id(request)} | "
+                        f"{request.variable_name} | "
+                        f"{request.reporting_frequency}"
+                    )
+        return 0
+
+    mlflow_tracker = MLflowGenerationTracker(
+        experiment_name=arguments.mlflow_experiment_name,
+        artifact_subdir=arguments.mlflow_artifact_subdir,
+        enabled=not arguments.disable_mlflow,
+        strict=arguments.mlflow_strict,
+    )
+
+    print(
+        "MLflow generation tracking: "
+        + ("enabled" if mlflow_tracker.enabled else "disabled")
+    )
+
+    orchestrator = EnergyPlusGenerationOrchestrator(
+        generated_data_root=generated_root,
+        case_collection_name=f"campaigns/{P1_CAMPAIGN_ID}/generation",
+        machine_id=arguments.machine_id,
+        mlflow_tracker=mlflow_tracker,
+    )
+    status_counts: Counter[str] = Counter()
+
+    for position, case in enumerate(selected_cases, start=1):
+        case_root = _case_root(generated_root, case.case_id)
+        if not arguments.rerun_completed and _latest_run_succeeded(case_root):
+            status_counts["skipped_completed"] += 1
+            print(
+                f"[{position}/{len(selected_cases)}] SKIP: "
+                f"{case.building_type}/{case.weather_location}"
+            )
+            continue
+
+        print(
+            f"[{position}/{len(selected_cases)}] RUN: "
+            f"{case.building_type}/{case.weather_location}"
+        )
+
+        if arguments.generation_mode == "standard":
+            result = orchestrator.generate(case, campaign_id=P1_CAMPAIGN_ID)
+        else:
+            result = generate_variable_wise_case(
+                case,
+                generated_data_root=generated_root,
+                case_collection_name=f"campaigns/{P1_CAMPAIGN_ID}/generation",
+                machine_id=arguments.machine_id,
+                campaign_id=P1_CAMPAIGN_ID,
+                selected_output_variables=_selected_output_variables(
+                    case.output_variables,
+                    variable_limit=arguments.variable_limit,
+                ),
+                delete_raw_csv=True,
+                mlflow_tracker=mlflow_tracker,
+                short_work_root=os.environ.get("SCALEBRIDGE_EPLUS_WORK_ROOT"),
+                parallel_variable_workers=arguments.parallel_variable_workers,
+            )
+        status_counts[result.status.value] += 1
+
+        print(
+            f"[{position}/{len(selected_cases)}] "
+            f"{result.status.value.upper()}: {result.case_id} "
+            f"({result.runtime_seconds:.1f} seconds)"
+        )
+
+    print("Summary:")
+    for status, count in sorted(status_counts.items()):
+        print(f"  {status}: {count}")
+
+    unsuccessful = (
+        status_counts[RunStatus.FAILED.value]
+        + status_counts[RunStatus.INVALID.value]
+    )
+    return 1 if unsuccessful else 0
+
+
+def _parse_arguments() -> argparse.Namespace:
+    """Parse the small command interface used on one or four machines."""
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument(
+        "--machine-number",
+        type=int,
+        choices=range(1, MACHINE_COUNT + 1),
+        help="Run share 1, 2, 3, or 4; omit to run all 64 cases.",
+    )
+    parser.add_argument(
+        "--machine-id",
+        required=True,
+        help="Stable descriptive name such as laptop or home-pc.",
+    )
+    parser.add_argument(
+        "--case-limit",
+        type=int,
+        help="Run only the first N selected cases for controlled testing.",
+    )
+    parser.add_argument(
+        "--building-type",
+        help=(
+            "Optional case filter, for example OfficeSmall. "
+            "Case-sensitive match against CaseSpec.building_type."
+        ),
+    )
+    parser.add_argument(
+        "--weather-location",
+        help=(
+            "Optional case filter, for example Seattle. "
+            "Case-sensitive match against CaseSpec.weather_location."
+        ),
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Print selected cases without running EnergyPlus.",
+    )
+    parser.add_argument(
+        "--rerun-completed",
+        action="store_true",
+        help="Run cases again even when their latest attempt succeeded.",
+    )
+    parser.add_argument(
+        "--write-legacy-pickles",
+        action="store_true",
+        help="Also create the two legacy aggregation pickle files.",
+    )
+    parser.add_argument(
+        "--disable-mlflow",
+        action="store_true",
+        help="Disable MLflow generation tracking for this run.",
+    )
+    parser.add_argument(
+        "--mlflow-strict",
+        action="store_true",
+        help="Fail the campaign if MLflow logging fails.",
+    )
+    parser.add_argument(
+        "--mlflow-experiment-name",
+        default=f"{P1_CAMPAIGN_ID}_generation",
+        help="MLflow experiment name for P1 generation runs.",
+    )
+    parser.add_argument(
+        "--mlflow-artifact-subdir",
+        default=P1_CAMPAIGN_ID,
+        help=(
+            "Semantic artifact subdirectory under "
+            "SCALEBRIDGE_GENERATED_DATA_ROOT/mlflow_artifacts."
+        ),
+    )
+    parser.add_argument(
+        "--generation-mode",
+        choices=("standard", "variable-wise"),
+        default="standard",
+        help=(
+            "Generation strategy. Use standard for one all-variable EnergyPlus "
+            "run per case, or variable-wise for one EnergyPlus run per requested "
+            "output variable."
+        ),
+    )
+    parser.add_argument(
+        "--variable-limit",
+        type=int,
+        help=(
+            "For variable-wise generation, run only the first N requested "
+            "variables. Intended for smoke testing."
+        ),
+    )
+    parser.add_argument(
+        "--parallel-variable-workers",
+        type=int,
+        help=(
+            "Number of concurrent EnergyPlus variable-wise workers. "
+            "If omitted, a machine-aware default is used."
+        ),
+    )
+    arguments = parser.parse_args()
+    if arguments.case_limit is not None and arguments.case_limit < 1:
+        parser.error("--case-limit must be at least 1")
+    if arguments.variable_limit is not None and arguments.variable_limit < 1:
+        parser.error("--variable-limit must be at least 1")
+    if arguments.variable_limit is not None and arguments.generation_mode != "variable-wise":
+        parser.error("--variable-limit requires --generation-mode variable-wise")
+    if (
+        arguments.parallel_variable_workers is not None
+        and arguments.parallel_variable_workers < 1
+    ):
+        parser.error("--parallel-variable-workers must be at least 1")
+    if (
+        arguments.parallel_variable_workers is not None
+        and arguments.generation_mode != "variable-wise"
+    ):
+        parser.error(
+            "--parallel-variable-workers requires --generation-mode variable-wise"
+        )
+    return arguments
+
+def _filter_cases(
+    cases,
+    *,
+    building_type: str | None,
+    weather_location: str | None,
+):
+    """Filter campaign cases before machine allocation."""
+    filtered = tuple(cases)
+
+    if building_type:
+        filtered = tuple(
+            case for case in filtered if case.building_type == building_type
+        )
+
+    if weather_location:
+        filtered = tuple(
+            case for case in filtered if case.weather_location == weather_location
+        )
+
+    return filtered
+
+def _selected_output_variables(
+    output_variables,
+    *,
+    variable_limit: int | None,
+):
+    """Return the output-variable subset used by the selected generation mode."""
+    if variable_limit is None:
+        return tuple(output_variables)
+    return tuple(output_variables[:variable_limit])
+
+def _case_root(generated_root: Path, case_id: str) -> Path:
+    """Return the shared case directory used by the orchestrator."""
+    return (
+        generated_root
+        / "campaigns"
+        / P1_CAMPAIGN_ID
+        / "generation"
+        / "cases"
+        / case_id
+    )
+
+
+def _latest_run_succeeded(case_root: Path) -> bool:
+    """Return whether the latest persisted run completed successfully."""
+    pointer_path = case_root / "latest_run.json"
+    if not pointer_path.is_file():
+        return False
+    try:
+        payload = json.loads(pointer_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError):
+        return False
+    return payload.get("status") in SUCCESS_STATUSES
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+
+
+============================================================================================================================================
+MLFLOW GENERATION TRACKER FILE
+============================================================================================================================================
+
+============================================================================================================================================
+SEARCH LATEST RUN WRITES
+============================================================================================================================================
+
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:29:import time
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:30:import traceback
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:31:from datetime import datetime, timezone
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:32:from importlib import metadata
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:33:from pathlib import Path
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:34:from typing import Any
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:35:from uuid import uuid4
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:39:    ArtifactRecord,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:40:    CaseSpec,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:41:    ErrorRecord,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:42:    ExecutionMetadata,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:43:    GenerationResult,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:44:    RunManifest,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:45:    RunStatus,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:46:    SoftwareMetadata,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:47:    TrackingMetadata,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:48:    ValidationSummary,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:49:)
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:50:from scalebridge.integration.energyplus.manifests.serialization import (
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:51:    write_case_spec,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:52:    write_run_manifest,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:53:)
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:54:from scalebridge.integration.energyplus.outputs import (
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:55:    CanonicalExtractionError,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:112:        campaign_id: str | None = None,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:113:        run_id: str | None = None,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:114:        case_root: str | Path | None = None,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:115:        tracking: TrackingMetadata | None = None,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:116:    ) -> GenerationResult:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:117:        """Execute one case and always return a persisted attempt result."""
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:118:        started_at = datetime.now(timezone.utc)
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:131:        raw_root = run_root / "raw"
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:132:        canonical_root = run_root / "canonical"
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:133:        legacy_root = run_root / "legacy"
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:134:        manifest_path = run_root / "run_manifest.json"
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:135:        case_spec_path = inputs_root / "case_spec.json"
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:136:        prepared_idf_path = inputs_root / "prepared.idf"
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:137:        traceback_path = run_root / "traceback.txt"
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:144:        extraction: Any | None = None
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:145:        status = RunStatus.FAILED
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:146:        error: ErrorRecord | None = None
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:147:        tracking_metadata = tracking or TrackingMetadata()
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:148:        tracking_handle = None
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:149:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:150:        if tracking is None and self._mlflow_tracker is not None:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:156:                    machine_id=self._machine_id,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:157:                )
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:158:                if tracking_handle is not None:
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:159:                    tracking_metadata = tracking_handle.to_metadata()
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:160:            except Exception:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:161:                tracking_handle = None
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:162:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:213:            campaign_id=campaign_id,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:214:            status=status,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:215:            case_spec=case_spec,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:216:            execution=ExecutionMetadata(
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:217:                machine_id=self._machine_id,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:218:                hostname=socket.gethostname(),
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:219:                platform=platform.platform(),
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:223:                completed_at=completed_at,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:224:                runtime_seconds=runtime_seconds,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:225:            ),
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:226:            software=_software_metadata(case_spec),
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:227:            validation=validation,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:228:            artifacts=artifacts,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:229:            tracking=tracking_metadata,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:230:            error=error,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:231:        )
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:232:        write_run_manifest(manifest, manifest_path)
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:233:        _write_latest_pointer(
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:234:            root=root,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:235:            case_id=case_spec.case_id,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:257:            warning_count=validation.warnings,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:258:            severe_count=validation.severe_errors,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:259:            fatal_count=validation.fatal_errors,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:260:            requested_signal_count=validation.requested_signals,
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:261:            produced_signal_count=validation.produced_signals,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:262:            missing_required_signals=validation.missing_required_signals,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:263:            timestep_count=validation.timestep_count,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:264:            error_type=error.error_type if error else None,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:317:        warnings=getattr(run_result, "warning_count", 0),
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:318:        severe_errors=getattr(run_result, "severe_count", 0),
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:319:        fatal_errors=getattr(run_result, "fatal_count", 0),
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:320:        requested_signals=len(case_spec.output_variables),
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:321:        produced_signals=getattr(extraction, "produced_signal_count", 0),
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:322:        missing_required_signals=getattr(
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:323:            extraction,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:324:            "missing_required_signals",
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:392:    }
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:393:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:394:
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:395:def _software_metadata(case_spec: CaseSpec) -> SoftwareMetadata:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:396:    """Collect portable software versions without invoking external commands."""
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:397:    try:
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:398:        scalebridge_version = metadata.version("scalebridge")
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:399:    except metadata.PackageNotFoundError:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:400:        scalebridge_version = "0.1.0"
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:401:    try:
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:402:        opyplus_version = metadata.version("opyplus")
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:403:    except metadata.PackageNotFoundError:
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:404:        opyplus_version = None
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:405:    return SoftwareMetadata(
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:406:        scalebridge_version=scalebridge_version,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:407:        energyplus_version=case_spec.energyplus_version,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:408:        opyplus_version=opyplus_version,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:425:        "status": status.value,
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:426:        "manifest_path": manifest_path.relative_to(root).as_posix(),
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:427:    }
+> src\scalebridge\integration\energyplus\generation\orchestrator.py:428:    (root / "latest_run.json").write_text(
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:429:        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:430:        encoding="utf-8",
+  src\scalebridge\integration\energyplus\generation\orchestrator.py:431:    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:33:import time
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:34:import traceback
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:35:from datetime import datetime, timezone
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:36:from importlib import metadata
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:37:from uuid import uuid4
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:38:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:39:import tempfile
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:48:from scalebridge.integration.energyplus.manifests.models import (
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:49:    ArtifactRecord,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:50:    ErrorRecord,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:51:    ExecutionMetadata,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:52:    GenerationResult,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:53:    RunManifest,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:54:    RunStatus,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:55:    SoftwareMetadata,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:56:    TrackingMetadata,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:57:    ValidationSummary,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:58:)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:59:from scalebridge.integration.energyplus.manifests.serialization import (
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:60:    write_case_spec,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:61:    write_run_manifest,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:62:)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:63:from scalebridge.integration.energyplus.outputs.eio import parse_eio
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:64:from scalebridge.integration.energyplus.simulation import EnergyPlusRunner
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:287:    return destination
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:288:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:289:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:290:def write_variable_manifest(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:291:    *,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:292:    artifacts: Iterable[VariableWiseArtifact],
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:293:    json_path: str | Path,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:395:    run_id: str | None = None,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:396:    delete_raw_csv: bool = True,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:397:    mlflow_tracker=None,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:398:    short_work_root: str | Path | None = None,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:399:    parallel_variable_workers: int | None = None,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:400:) -> GenerationResult:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:401:    """Generate one case using one EnergyPlus run per output variable."""
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:402:    started_at = datetime.now(timezone.utc)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:417:    raw_eio_root = run_root / "raw" / "eio"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:418:    raw_err_root = run_root / "raw" / "err"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:419:    diagnostic_variable_run_root = run_root / "variable_runs"
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:420:    short_work_base = _resolve_short_work_root(
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:421:        short_work_root=short_work_root,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:422:        attempt_id=attempt_id,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:423:    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:424:    canonical_root = run_root / "canonical"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:426:    legacy_root = run_root / "legacy"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:427:    legacy_variable_root = legacy_root / "per_variable_pickle"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:428:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:429:    manifest_path = run_root / "run_manifest.json"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:430:    case_spec_path = inputs_root / "case_spec.json"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:431:    traceback_path = run_root / "traceback.txt"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:432:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:436:    raw_eio_root.mkdir(parents=True, exist_ok=True)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:437:    raw_err_root.mkdir(parents=True, exist_ok=True)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:438:    diagnostic_variable_run_root.mkdir(parents=True, exist_ok=True)
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:439:    short_work_base.mkdir(parents=True, exist_ok=True)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:440:    canonical_variable_root.mkdir(parents=True, exist_ok=True)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:441:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:442:    write_case_spec(case_spec, case_spec_path)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:446:    # runner = EnergyPlusRunner(beat_frequency_seconds=5)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:447:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:448:    requests = tuple(selected_output_variables or case_spec.output_variables)
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:449:    worker_count = resolve_parallel_variable_workers(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:450:        machine_id=machine_id,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:451:        requested=parallel_variable_workers,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:452:        variable_count=len(requests),
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:453:    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:454:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:458:    fatal_count = 0
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:459:    error: ErrorRecord | None = None
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:460:    status = RunStatus.FAILED
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:461:    tracking_metadata = TrackingMetadata()
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:462:    tracking_handle = None
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:463:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:464:    if mlflow_tracker is not None:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:470:                machine_id=machine_id,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:471:            )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:472:            if tracking_handle is not None:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:473:                tracking_metadata = tracking_handle.to_metadata()
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:474:        except Exception:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:475:            tracking_handle = None
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:476:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:480:        #     variable_case_spec = one_variable_case_spec(case_spec, request)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:481:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:482:        #     variable_idf_path = variable_idf_root / f"{variable_id}.idf"
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:483:        #     variable_output_root = short_work_base / f"v{variable_index:03d}"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:484:        #     diagnostic_output_root = diagnostic_variable_run_root / variable_id
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:485:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:486:        #     preparation = idf_preparer.prepare(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:576:                    diagnostic_variable_run_root=diagnostic_variable_run_root,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:577:                    canonical_variable_root=canonical_variable_root,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:578:                    legacy_variable_root=legacy_variable_root,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:579:                    short_work_base=short_work_base,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:580:                    delete_raw_csv=delete_raw_csv,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:581:                )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:582:                for variable_index, request in task_specs
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:597:                        diagnostic_variable_run_root=diagnostic_variable_run_root,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:598:                        canonical_variable_root=canonical_variable_root,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:599:                        legacy_variable_root=legacy_variable_root,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:600:                        short_work_base=short_work_base,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:601:                        delete_raw_csv=delete_raw_csv,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:602:                    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:603:                    for variable_index, request in task_specs
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:612:            fatal_count += task_result.fatal_count
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:613:            artifacts.append(task_result.artifact)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:614:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:615:        variable_manifest_json, variable_manifest_csv = write_variable_manifest(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:616:            artifacts=artifacts,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:617:            json_path=canonical_root / "variable_manifest.json",
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:618:            csv_path=canonical_root / "variable_manifest.csv",
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:619:        )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:620:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:621:        _write_variable_wise_metadata(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:622:            case_spec=case_spec,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:623:            artifacts=artifacts,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:624:            metadata_path=canonical_root / "metadata.json",
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:625:            variable_manifest_json=variable_manifest_json,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:626:            variable_manifest_csv=variable_manifest_csv,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:627:        )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:628:        _write_variable_wise_eio_tables(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:629:            eio_directory=raw_eio_root,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:654:    completed_at = datetime.now(timezone.utc)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:655:    runtime_seconds = time.perf_counter() - started_counter
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:656:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:657:    produced_signal_count = len(artifacts)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:658:    missing_required = tuple(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:659:        _request_identity_for_variable_wise(request)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:660:        for request in requests
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:667:        warnings=warning_count,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:668:        severe_errors=severe_count,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:669:        fatal_errors=fatal_count,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:670:        requested_signals=len(requests),
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:671:        produced_signals=produced_signal_count,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:672:        missing_required_signals=missing_required,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:673:        timestep_count=None,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:674:    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:679:        campaign_id=campaign_id,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:680:        status=status,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:681:        case_spec=case_spec,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:682:        execution=ExecutionMetadata(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:683:            machine_id=machine_id,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:684:            hostname=socket.gethostname(),
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:685:            platform=platform.platform(),
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:689:            completed_at=completed_at,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:690:            runtime_seconds=runtime_seconds,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:691:        ),
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:692:        software=_variable_wise_software_metadata(case_spec),
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:693:        validation=validation,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:694:        artifacts=_inventory_variable_wise_artifacts(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:695:            run_root,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:696:            manifest_path=manifest_path,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:697:        ),
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:698:        tracking=tracking_metadata,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:699:        error=error,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:700:    )
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:701:    write_run_manifest(manifest, manifest_path)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:702:    _write_variable_wise_latest_pointer(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:703:        root=root,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:704:        case_id=case_spec.case_id,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:723:        warning_count=validation.warnings,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:724:        severe_count=validation.severe_errors,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:725:        fatal_count=validation.fatal_errors,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:726:        requested_signal_count=validation.requested_signals,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:727:        produced_signal_count=validation.produced_signals,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:728:        missing_required_signals=validation.missing_required_signals,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:729:        timestep_count=validation.timestep_count,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:730:        error_type=error.error_type if error else None,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:761:    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:762:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:763:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:764:def _write_variable_wise_metadata(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:765:    *,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:766:    case_spec: CaseSpec,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:767:    artifacts: list[VariableWiseArtifact],
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:768:    metadata_path: Path,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:769:    variable_manifest_json: Path,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:770:    variable_manifest_csv: Path,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:771:) -> None:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:772:    """Write canonical metadata for variable-wise generation."""
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:773:    metadata_path.write_text(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:774:        json.dumps(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:775:            {
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:776:                "schema_version": "0.1.0",
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:777:                "generation_mode": "variable-wise",
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:778:                "case_id": case_spec.case_id,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:779:                "requested_signal_count": len(case_spec.output_variables),
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:780:                "produced_signal_count": len(artifacts),
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:781:                "canonical_variable_parquet_count": len(artifacts),
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:782:                "raw_csv_deleted_count": sum(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:783:                    1 for artifact in artifacts if artifact.raw_csv_deleted
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:784:                ),
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:785:                "variable_manifest_json": variable_manifest_json.name,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:786:                "variable_manifest_csv": variable_manifest_csv.name,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:787:                "variables": [
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:788:                    {
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:789:                        "variable_id": artifact.variable_id,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:815:    eio_directory: Path,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:816:    destination: Path,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:817:) -> None:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:818:    """Write EIO metadata using the first available variable-run EIO file."""
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:819:    eio_files = sorted(eio_directory.glob("*.eio"))
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:820:    if not eio_files:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:821:        destination.write_text(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:891:    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:892:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:893:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:894:def _variable_wise_software_metadata(case_spec: CaseSpec) -> SoftwareMetadata:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:895:    """Collect portable software versions for variable-wise generation."""
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:896:    try:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:897:        scalebridge_version = metadata.version("scalebridge")
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:898:    except metadata.PackageNotFoundError:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:899:        scalebridge_version = "0.1.0"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:900:    try:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:901:        opyplus_version = metadata.version("opyplus")
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:902:    except metadata.PackageNotFoundError:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:903:        opyplus_version = None
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:904:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:905:    return SoftwareMetadata(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:906:        scalebridge_version=scalebridge_version,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:907:        energyplus_version=case_spec.energyplus_version,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:908:        opyplus_version=opyplus_version,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:973:        "status": status.value,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:974:        "manifest_path": manifest_path.relative_to(root).as_posix(),
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:975:    }
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:976:    (root / "latest_run.json").write_text(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:977:        json.dumps(payload, indent=2, sort_keys=True) + "\n",
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:978:        encoding="utf-8",
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:979:    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:980:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:981:def _resolve_short_work_root(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:982:    *,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:983:    short_work_root: str | Path | None,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:984:    attempt_id: str,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:985:) -> Path:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:986:    """Return a short local work directory for opyplus/EnergyPlus subprocesses."""
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:987:    configured = (
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:988:        short_work_root
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:989:        or os.environ.get("SCALEBRIDGE_EPLUS_WORK_ROOT")
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:990:        or Path(tempfile.gettempdir()) / "scalebridge_eplus"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:991:    )
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1022:        if candidate.is_file():
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1023:            shutil.copy2(candidate, destination / name)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1024:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:1025:def resolve_parallel_variable_workers(
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1026:    *,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1027:    machine_id: str | None,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1028:    requested: int | None,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1032:    if requested is not None:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1033:        workers = requested
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1034:    else:
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:1035:        env_value = os.environ.get("SCALEBRIDGE_EPLUS_PARALLEL_VARIABLE_WORKERS")
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1036:        if env_value:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1037:            workers = int(env_value)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1038:        else:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1076:    diagnostic_variable_run_root: Path,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1077:    canonical_variable_root: Path,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1078:    legacy_variable_root: Path,
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:1079:    short_work_base: Path,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1080:    delete_raw_csv: bool,
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1081:) -> VariableWiseTaskResult:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1082:    """Run, canonicalize, and optionally legacy-export one variable."""
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1084:    variable_case_spec = one_variable_case_spec(case_spec, request)
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1085:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1086:    variable_idf_path = variable_idf_root / f"{variable_id}.idf"
+> src\scalebridge\integration\energyplus\generation\variable_wise.py:1087:    variable_output_root = short_work_base / f"v{variable_index:03d}"
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1088:    diagnostic_output_root = diagnostic_variable_run_root / variable_id
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1089:
+  src\scalebridge\integration\energyplus\generation\variable_wise.py:1090:    idf_preparer = IdfPreparer()
+  src\scalebridge\integration\energyplus\generation\__init__.py:14:    parse_energyplus_csv_column,
+  src\scalebridge\integration\energyplus\generation\__init__.py:15:    safe_variable_id,
+  src\scalebridge\integration\energyplus\generation\__init__.py:16:    write_per_variable_legacy_pickle,
+> src\scalebridge\integration\energyplus\generation\__init__.py:17:    write_variable_manifest,
+> src\scalebridge\integration\energyplus\generation\__init__.py:18:    resolve_parallel_variable_workers,
+  src\scalebridge\integration\energyplus\generation\__init__.py:19:)
+  src\scalebridge\integration\energyplus\generation\__init__.py:20:
+  src\scalebridge\integration\energyplus\generation\__init__.py:21:__all__ = [
+  src\scalebridge\integration\energyplus\generation\__init__.py:30:    "parse_energyplus_csv_column",
+  src\scalebridge\integration\energyplus\generation\__init__.py:31:    "safe_variable_id",
+  src\scalebridge\integration\energyplus\generation\__init__.py:32:    "write_per_variable_legacy_pickle",
+> src\scalebridge\integration\energyplus\generation\__init__.py:33:    "write_variable_manifest",
+> src\scalebridge\integration\energyplus\generation\__init__.py:34:    "resolve_parallel_variable_workers",
+  src\scalebridge\integration\energyplus\generation\__init__.py:35:]
+  scripts\energyplus\run_p1_campaign.py:23:)
+  scripts\energyplus\run_p1_campaign.py:24:from scalebridge.integration.energyplus.generation.variable_wise import (
+  scripts\energyplus\run_p1_campaign.py:25:    generate_variable_wise_case,
+> scripts\energyplus\run_p1_campaign.py:26:    resolve_parallel_variable_workers,
+  scripts\energyplus\run_p1_campaign.py:27:    safe_variable_id,
+  scripts\energyplus\run_p1_campaign.py:28:)
+  scripts\energyplus\run_p1_campaign.py:29:from scalebridge.tracking.mlflow import MLflowGenerationTracker
+  scripts\energyplus\run_p1_campaign.py:81:            selected_cases[0].output_variables,
+  scripts\energyplus\run_p1_campaign.py:82:            variable_limit=arguments.variable_limit,
+  scripts\energyplus\run_p1_campaign.py:83:        ) if selected_cases else ()
+> scripts\energyplus\run_p1_campaign.py:84:        resolved_workers = resolve_parallel_variable_workers(
+  scripts\energyplus\run_p1_campaign.py:85:            machine_id=arguments.machine_id,
+> scripts\energyplus\run_p1_campaign.py:86:            requested=arguments.parallel_variable_workers,
+  scripts\energyplus\run_p1_campaign.py:87:            variable_count=len(preview_requests),
+  scripts\energyplus\run_p1_campaign.py:88:        )
+  scripts\energyplus\run_p1_campaign.py:89:        print(f"Parallel variable workers: {resolved_workers}")
+  scripts\energyplus\run_p1_campaign.py:130:
+  scripts\energyplus\run_p1_campaign.py:131:    for position, case in enumerate(selected_cases, start=1):
+  scripts\energyplus\run_p1_campaign.py:132:        case_root = _case_root(generated_root, case.case_id)
+> scripts\energyplus\run_p1_campaign.py:133:        if not arguments.rerun_completed and _latest_run_succeeded(case_root):
+  scripts\energyplus\run_p1_campaign.py:134:            status_counts["skipped_completed"] += 1
+  scripts\energyplus\run_p1_campaign.py:135:            print(
+  scripts\energyplus\run_p1_campaign.py:136:                f"[{position}/{len(selected_cases)}] SKIP: "
+  scripts\energyplus\run_p1_campaign.py:158:                ),
+  scripts\energyplus\run_p1_campaign.py:159:                delete_raw_csv=True,
+  scripts\energyplus\run_p1_campaign.py:160:                mlflow_tracker=mlflow_tracker,
+> scripts\energyplus\run_p1_campaign.py:161:                short_work_root=os.environ.get("SCALEBRIDGE_EPLUS_WORK_ROOT"),
+> scripts\energyplus\run_p1_campaign.py:162:                parallel_variable_workers=arguments.parallel_variable_workers,
+  scripts\energyplus\run_p1_campaign.py:163:            )
+  scripts\energyplus\run_p1_campaign.py:164:        status_counts[result.status.value] += 1
+  scripts\energyplus\run_p1_campaign.py:165:
+  scripts\energyplus\run_p1_campaign.py:285:    if arguments.variable_limit is not None and arguments.generation_mode != "variable-wise":
+  scripts\energyplus\run_p1_campaign.py:286:        parser.error("--variable-limit requires --generation-mode variable-wise")
+  scripts\energyplus\run_p1_campaign.py:287:    if (
+> scripts\energyplus\run_p1_campaign.py:288:        arguments.parallel_variable_workers is not None
+> scripts\energyplus\run_p1_campaign.py:289:        and arguments.parallel_variable_workers < 1
+  scripts\energyplus\run_p1_campaign.py:290:    ):
+  scripts\energyplus\run_p1_campaign.py:291:        parser.error("--parallel-variable-workers must be at least 1")
+  scripts\energyplus\run_p1_campaign.py:292:    if (
+> scripts\energyplus\run_p1_campaign.py:293:        arguments.parallel_variable_workers is not None
+  scripts\energyplus\run_p1_campaign.py:294:        and arguments.generation_mode != "variable-wise"
+  scripts\energyplus\run_p1_campaign.py:295:    ):
+  scripts\energyplus\run_p1_campaign.py:296:        parser.error(
+  scripts\energyplus\run_p1_campaign.py:341:    )
+  scripts\energyplus\run_p1_campaign.py:342:
+  scripts\energyplus\run_p1_campaign.py:343:
+> scripts\energyplus\run_p1_campaign.py:344:def _latest_run_succeeded(case_root: Path) -> bool:
+  scripts\energyplus\run_p1_campaign.py:345:    """Return whether the latest persisted run completed successfully."""
+> scripts\energyplus\run_p1_campaign.py:346:    pointer_path = case_root / "latest_run.json"
+  scripts\energyplus\run_p1_campaign.py:347:    if not pointer_path.is_file():
+  scripts\energyplus\run_p1_campaign.py:348:        return False
+  scripts\energyplus\run_p1_campaign.py:349:    try:
+  scripts\energyplus\smoke_test_office_small_seattle.py:6:- the matching Seattle TMY3 EPW;
+  scripts\energyplus\smoke_test_office_small_seattle.py:7:- EnergyPlus 9.0.1 discovered by opyplus 2.0.7;
+  scripts\energyplus\smoke_test_office_small_seattle.py:8:- the complete ScaleBridge generation orchestrator;
+> scripts\energyplus\smoke_test_office_small_seattle.py:9:- canonical Parquet and EIO metadata extraction; and
+  scripts\energyplus\smoke_test_office_small_seattle.py:10:- optional legacy pickle compatibility output.
+  scripts\energyplus\smoke_test_office_small_seattle.py:11:
+  scripts\energyplus\smoke_test_office_small_seattle.py:12:The source files remain unchanged. Outputs are written beneath
+  scripts\energyplus\smoke_test_office_small_seattle.py:134:    # ----------------------------------------------------------------------
+  scripts\energyplus\smoke_test_office_small_seattle.py:135:    # Phase 4: Print a compact human-readable smoke-test summary.
+  scripts\energyplus\smoke_test_office_small_seattle.py:136:    # ----------------------------------------------------------------------
+> scripts\energyplus\smoke_test_office_small_seattle.py:137:    metadata_path = result.canonical_output_paths.get("metadata.json")
+> scripts\energyplus\smoke_test_office_small_seattle.py:138:    canonical_metadata = (
+> scripts\energyplus\smoke_test_office_small_seattle.py:139:        json.loads(metadata_path.read_text(encoding="utf-8"))
+> scripts\energyplus\smoke_test_office_small_seattle.py:140:        if metadata_path is not None
+  scripts\energyplus\smoke_test_office_small_seattle.py:141:        else {}
+  scripts\energyplus\smoke_test_office_small_seattle.py:142:    )
+  scripts\energyplus\smoke_test_office_small_seattle.py:143:    completed_statuses = {
+  scripts\energyplus\smoke_test_office_small_seattle.py:163:            for name, path in result.canonical_output_paths.items()
+  scripts\energyplus\smoke_test_office_small_seattle.py:164:            if path.suffix.casefold() == ".parquet"
+  scripts\energyplus\smoke_test_office_small_seattle.py:165:        },
+> scripts\energyplus\smoke_test_office_small_seattle.py:166:        "canonical_row_count": canonical_metadata.get("row_count", 0),
+> scripts\energyplus\smoke_test_office_small_seattle.py:167:        "produced_signal_count": result.produced_signal_count,
+  scripts\energyplus\smoke_test_office_small_seattle.py:168:        "timestep_count": result.timestep_count or 0,
+  scripts\energyplus\smoke_test_office_small_seattle.py:169:        "legacy_output_pickle": _optional_path_string(
+  scripts\energyplus\smoke_test_office_small_seattle.py:170:            result.compatibility_output_paths.get(
+
+
+
+============================================================================================================================================
+COMPILE CHECK
+============================================================================================================================================
+Listing 'scripts\\energyplus'...
+Listing 'src\\scalebridge\\integration\\energyplus'...
+Listing 'src\\scalebridge\\integration\\energyplus\\epw'...
+Listing 'src\\scalebridge\\integration\\energyplus\\generation'...
+Listing 'src\\scalebridge\\integration\\energyplus\\idf'...
+Listing 'src\\scalebridge\\integration\\energyplus\\manifests'...
+Listing 'src\\scalebridge\\integration\\energyplus\\one_zone'...
+Listing 'src\\scalebridge\\integration\\energyplus\\output_parsing'...
+Listing 'src\\scalebridge\\integration\\energyplus\\outputs'...
+Listing 'src\\scalebridge\\integration\\energyplus\\simulation'...
+Listing 'src\\scalebridge\\tracking\\mlflow'...
+
+
+============================================================================================================================================
+AUDIT COMPLETE
+============================================================================================================================================
+Output file: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\block_e_variable_wise_hardening_code_audit.txt

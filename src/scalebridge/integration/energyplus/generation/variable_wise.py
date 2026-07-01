@@ -1,4 +1,4 @@
-"""Variable-wise EnergyPlus generation strategy.
+﻿"""Variable-wise EnergyPlus generation strategy.
 
 This module implements the scalable P1 output strategy:
 
@@ -91,6 +91,7 @@ class VariableWiseTaskResult:
     warning_count: int
     severe_count: int
     fatal_count: int
+    runtime_seconds: float
 
 def safe_variable_id(request: OutputVariableRequest) -> str:
     """Create a stable filesystem-safe identifier for one output request."""
@@ -606,11 +607,18 @@ def generate_variable_wise_case(
                 for future in as_completed(futures):
                     task_results.append(future.result())
 
-        for task_result in sorted(task_results, key=lambda item: item.variable_index):
+        ordered_task_results = sorted(task_results, key=lambda item: item.variable_index)
+
+        for task_result in ordered_task_results:
             warning_count += task_result.warning_count
             severe_count += task_result.severe_count
             fatal_count += task_result.fatal_count
             artifacts.append(task_result.artifact)
+
+        variable_timing_manifest = _write_variable_timing_manifest(
+            task_results=ordered_task_results,
+            destination=canonical_root / "variable_timing_manifest.json",
+        )
 
         variable_manifest_json, variable_manifest_csv = write_variable_manifest(
             artifacts=artifacts,
@@ -620,10 +628,13 @@ def generate_variable_wise_case(
 
         _write_variable_wise_metadata(
             case_spec=case_spec,
+            selected_output_variables=requests,
             artifacts=artifacts,
             metadata_path=canonical_root / "metadata.json",
             variable_manifest_json=variable_manifest_json,
             variable_manifest_csv=variable_manifest_csv,
+            variable_timing_manifest=variable_timing_manifest,
+            parallel_variable_workers=worker_count,
         )
         _write_variable_wise_eio_tables(
             eio_directory=raw_eio_root,
@@ -706,6 +717,7 @@ def generate_variable_wise_case(
         status=status,
         manifest_path=manifest_path,
     )
+    _cleanup_short_work_base(short_work_base)
 
     result = GenerationResult(
         case_id=case_spec.case_id,
@@ -764,10 +776,13 @@ def _request_identity_for_variable_wise(request: OutputVariableRequest) -> str:
 def _write_variable_wise_metadata(
     *,
     case_spec: CaseSpec,
+    selected_output_variables: tuple[OutputVariableRequest, ...],
     artifacts: list[VariableWiseArtifact],
     metadata_path: Path,
     variable_manifest_json: Path,
     variable_manifest_csv: Path,
+    variable_timing_manifest: Path,
+    parallel_variable_workers: int,
 ) -> None:
     """Write canonical metadata for variable-wise generation."""
     metadata_path.write_text(
@@ -776,14 +791,18 @@ def _write_variable_wise_metadata(
                 "schema_version": "0.1.0",
                 "generation_mode": "variable-wise",
                 "case_id": case_spec.case_id,
-                "requested_signal_count": len(case_spec.output_variables),
+                "parent_output_variable_count": len(case_spec.output_variables),
+                "selected_output_variable_count": len(selected_output_variables),
+                "requested_signal_count": len(selected_output_variables),
                 "produced_signal_count": len(artifacts),
+                "parallel_variable_workers": parallel_variable_workers,
                 "canonical_variable_parquet_count": len(artifacts),
                 "raw_csv_deleted_count": sum(
                     1 for artifact in artifacts if artifact.raw_csv_deleted
                 ),
                 "variable_manifest_json": variable_manifest_json.name,
                 "variable_manifest_csv": variable_manifest_csv.name,
+                "variable_timing_manifest_json": variable_timing_manifest.name,
                 "variables": [
                     {
                         "variable_id": artifact.variable_id,
@@ -853,6 +872,48 @@ def _write_variable_wise_eio_tables(
         + "\n",
         encoding="utf-8",
     )
+
+
+def _write_variable_timing_manifest(
+    *,
+    task_results: list[VariableWiseTaskResult],
+    destination: Path,
+) -> Path:
+    """Write per-variable runtime and warning diagnostics."""
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    rows = [
+        {
+            "variable_index": result.variable_index,
+            "variable_id": result.artifact.variable_id,
+            "variable_name": result.artifact.variable_name,
+            "reporting_frequency": result.artifact.reporting_frequency,
+            "runtime_seconds": result.runtime_seconds,
+            "warning_count": result.warning_count,
+            "severe_count": result.severe_count,
+            "fatal_count": result.fatal_count,
+            "row_count": result.artifact.row_count,
+            "column_count": result.artifact.column_count,
+            "raw_csv_deleted": result.artifact.raw_csv_deleted,
+        }
+        for result in task_results
+    ]
+    destination.write_text(
+        json.dumps(
+            {
+                "schema_version": "0.1.0",
+                "variable_count": len(rows),
+                "total_variable_runtime_seconds": sum(
+                    row["runtime_seconds"] for row in rows
+                ),
+                "variables": rows,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return destination
 
 
 def _write_variable_wise_legacy_manifest(
@@ -978,6 +1039,19 @@ def _write_variable_wise_latest_pointer(
         encoding="utf-8",
     )
 
+def _cleanup_short_work_base(short_work_base: Path) -> bool:
+    """Remove the short work attempt directory when all variable dirs are gone.
+
+    The function intentionally removes only an empty directory. If unexpected
+    files remain, the directory is preserved for debugging.
+    """
+    try:
+        short_work_base.rmdir()
+        return True
+    except OSError:
+        return False
+
+
 def _resolve_short_work_root(
     *,
     short_work_root: str | Path | None,
@@ -1080,6 +1154,7 @@ def _generate_one_variable_artifact(
     delete_raw_csv: bool,
 ) -> VariableWiseTaskResult:
     """Run, canonicalize, and optionally legacy-export one variable."""
+    started_counter = time.perf_counter()
     variable_id = safe_variable_id(request)
     variable_case_spec = one_variable_case_spec(case_spec, request)
 
@@ -1168,4 +1243,5 @@ def _generate_one_variable_artifact(
         warning_count=run_result.warning_count,
         severe_count=run_result.severe_count,
         fatal_count=run_result.fatal_count,
+        runtime_seconds=time.perf_counter() - started_counter,
     )
