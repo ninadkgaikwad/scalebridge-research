@@ -1,0 +1,83 @@
+﻿Compact 4-Building Smoke Failure Diagnostic
+Timestamp: 06/30/2026 22:58:12
+
+===== SUMMARY TXT =====
+P1 Compact Seattle 1-Day opyplus Smoke Test
+================================================================================
+Output root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke
+Summary CSV: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke\summary.csv
+
+RestaurantFastFood: completed | warnings=33 | severe=0 | fatal=0 | runtime_s=66.993083
+OfficeSmall: completed | warnings=19 | severe=0 | fatal=0 | runtime_s=46.631931
+SchoolPrimary: completed | warnings=59200 | severe=16 | fatal=0 | runtime_s=280.556622
+ApartmentMidRise: exception | warnings= | severe= | fatal= | runtime_s=8.968053
+  message: IdfPreparationError: could not prepare IDF for case epcase_2beac1a5e7b449ed9ad7f48d: opyplus could not load IDF: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\Commercial_Prototypes\ASHRAE\90_1_2013\ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+
+===== SUMMARY CSV =====
+building_type,weather_location,status,exit_code,warnings,severe_errors,fatal_errors,runtime_seconds,prepared_idf,output_dir,err_file,csv_file_exists,eso_file_exists,message
+RestaurantFastFood,Seattle,completed,,33,0,0,66.993083,scratch\p1_compact_seattle_1day_opyplus_smoke\01_RestaurantFastFood\inputs\prepared_1day.idf,scratch\p1_compact_seattle_1day_opyplus_smoke\01_RestaurantFastFood\opyplus_output,scratch\p1_compact_seattle_1day_opyplus_smoke\01_RestaurantFastFood\opyplus_output\eplusout.err,True,True,
+OfficeSmall,Seattle,completed,,19,0,0,46.631931,scratch\p1_compact_seattle_1day_opyplus_smoke\02_OfficeSmall\inputs\prepared_1day.idf,scratch\p1_compact_seattle_1day_opyplus_smoke\02_OfficeSmall\opyplus_output,scratch\p1_compact_seattle_1day_opyplus_smoke\02_OfficeSmall\opyplus_output\eplusout.err,True,True,
+SchoolPrimary,Seattle,completed,,59200,16,0,280.556622,scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\inputs\prepared_1day.idf,scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output,scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err,True,True,
+ApartmentMidRise,Seattle,exception,,,,,8.968053,scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\inputs\prepared_1day.idf,scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\opyplus_output,scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\opyplus_output\eplusout.err,,,IdfPreparationError: could not prepare IDF for case epcase_2beac1a5e7b449ed9ad7f48d: opyplus could not load IDF: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\Commercial_Prototypes\ASHRAE\90_1_2013\ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+
+===== SCHOOLPRIMARY ERR FILE =====
+Exists: True
+
+===== SCHOOLPRIMARY SEVERE/FATAL LINES =====
+
+===== APARTMENTMIDRISE TRACEBACK =====
+Path: scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\traceback.txt
+Traceback (most recent call last):
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\backend.py", line 123, in load
+    return epm_class.from_idf(str(source_path), **kwargs)
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epm.py", line 123, in from_idf
+    return cls().from_epstf(
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\epgm.py", line 520, in from_epstf
+    return cls._create_from_buffer_or_path(
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\epgm.py", line 172, in _create_from_buffer_or_path
+    return cls(
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epm.py", line 74, in __init__
+    super().__init__(
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\epgm.py", line 152, in __init__
+    self._dev_populate_from_json_data(json_data)
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\epgm.py", line 219, in _dev_populate_from_json_data
+    r._dev_activate_links()
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\record.py", line 209, in _dev_activate_links
+    v.activate(self)
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\link.py", line 76, in activate
+    self.relations_manager.register_link(self)
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\relations_manager.py", line 137, in register_link
+    raise FieldValidationError(
+opyplus.exceptions.FieldValidationError: No object found with any of given references : (('ScheduleTypeLimitsNames', 'control type'),). Table: Schedule:Compact, index: 1, ref: schedule_type_limits_name, value: control type.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\preparer.py", line 103, in prepare
+    model = self._backend.load(source_path)
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\backend.py", line 125, in load
+    raise IdfBackendError(f"opyplus could not load IDF: {source_path}") from exc
+scalebridge.integration.energyplus.idf.backend.IdfBackendError: opyplus could not load IDF: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\Commercial_Prototypes\ASHRAE\90_1_2013\ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\_smoke_p1_compact_seattle_1day_opyplus.py", line 142, in main
+    preparation = idf_preparer.prepare(
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\preparer.py", line 113, in prepare
+    raise IdfPreparationError(
+scalebridge.integration.energyplus.idf.preparer.IdfPreparationError: could not prepare IDF for case epcase_2beac1a5e7b449ed9ad7f48d: opyplus could not load IDF: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\Commercial_Prototypes\ASHRAE\90_1_2013\ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+
+===== APARTMENTMIDRISE INPUT FOLDER TREE =====
+
+FullName                                                                                                                                                                                                                  Mode   Length LastWriteTime       
+--------                                                                                                                                                                                                                  ----   ------ -------------       
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\inputs         da---l        6/30/2026 9:12:59 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\opyplus_output da---l        6/30/2026 9:12:59 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\traceback.txt  -a---l 3944   6/30/2026 9:13:09 PM
+
+
+
+
+===== DONE =====
+Output file: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\block_f_compact_4building_smoke_failure_diagnostic.txt

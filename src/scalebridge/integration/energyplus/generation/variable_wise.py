@@ -1,4 +1,4 @@
-﻿"""Variable-wise EnergyPlus generation strategy.
+"""Variable-wise EnergyPlus generation strategy.
 
 This module implements the scalable P1 output strategy:
 

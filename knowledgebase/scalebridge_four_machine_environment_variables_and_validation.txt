@@ -1,0 +1,592 @@
+ScaleBridge Four-Machine Environment Variables and Validation
+============================================================
+
+Purpose
+-------
+This document defines the environment-variable contract for ScaleBridge across:
+
+    1. dev-laptop
+    2. home-pc
+    3. lab-pc
+    4. Kamiak / WSU HPC
+
+The key design rule is:
+
+    Environment variables should be derived relative to the repo root wherever possible.
+
+This avoids hard-coding machine-specific Dropbox drive letters or absolute paths in
+scripts. The only intentionally absolute path is the short EnergyPlus work root on
+Windows machines, because it is used to avoid long-path issues during EnergyPlus runs.
+
+Core directory layout assumption
+--------------------------------
+The ScaleBridge repo is located under:
+
+    <PROJECT_ROOT>\NewOrg\scalebridge-research
+
+The shared data folder is located two levels above the repo root:
+
+    <PROJECT_ROOT>\Data
+
+Therefore, from repo root:
+
+    SCALEBRIDGE_DATA_ROOT = ..\..\Data
+    SCALEBRIDGE_GENERATED_DATA_ROOT = ..\..\Data\ScaleBridge
+
+Example laptop layout:
+
+    <PROJECT_ROOT> =
+        C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed
+
+    repo root =
+        C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+    SCALEBRIDGE_DATA_ROOT =
+        C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data
+
+    SCALEBRIDGE_GENERATED_DATA_ROOT =
+        C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge
+
+Machine roles
+-------------
+dev-laptop:
+    Main coding and validation machine.
+    Uses Dropbox-backed repo and data.
+    EnergyPlus v9.0.1.
+    MLflow local UI at http://127.0.0.1:5000.
+
+home-pc:
+    Windows GPU compute machine.
+    Repo/data may be on another drive, but relative rule should still hold:
+        repo root -> ..\..\Data
+        repo root -> ..\..\Data\ScaleBridge
+
+lab-pc:
+    Windows GPU compute machine.
+    Repo/data may be on another drive, but relative rule should still hold:
+        repo root -> ..\..\Data
+        repo root -> ..\..\Data\ScaleBridge
+
+Kamiak / WSU HPC:
+    Linux/SLURM compute machine.
+    Repo path and data path may differ from Windows/Dropbox.
+    Prefer setting SCALEBRIDGE_DATA_ROOT and SCALEBRIDGE_GENERATED_DATA_ROOT explicitly
+    in the SLURM job script if the relative layout is not identical.
+    If the same layout is created on Kamiak, use:
+        repo root/../../Data
+        repo root/../../Data/ScaleBridge
+
+Primary environment variables
+-----------------------------
+
+1. SCALEBRIDGE_DATA_ROOT
+
+Meaning:
+    General project data root.
+
+Relative definition from repo root:
+    ..\..\Data                  on Windows PowerShell
+    ../../Data                  on Linux/Kamiak
+
+Use for:
+    Source datasets.
+    Commercial prototype IDFs.
+    Weather files.
+    Parent data folder.
+
+2. SCALEBRIDGE_GENERATED_DATA_ROOT
+
+Meaning:
+    ScaleBridge generated artifact root.
+
+Relative definition from repo root:
+    ..\..\Data\ScaleBridge      on Windows PowerShell
+    ../../Data/ScaleBridge      on Linux/Kamiak
+
+Use for:
+    Campaign outputs.
+    EnergyPlus run artifacts.
+    Canonical parquet files.
+    Per-variable manifests.
+    Normalized IDFs.
+    latest_run.json pointers.
+    MLflow-linked artifact references if applicable.
+
+Expected campaign structure:
+    %SCALEBRIDGE_GENERATED_DATA_ROOT%\campaigns\<campaign_id>\generation\cases\<case_id>\...
+    %SCALEBRIDGE_GENERATED_DATA_ROOT%\campaigns\<campaign_id>\normalization\idfs\<case_id>\normalized.idf
+
+Compact campaign example:
+    campaigns\p1_ashrae2013_one_zone_compact_4b4c\generation\cases\...
+    campaigns\p1_ashrae2013_one_zone_compact_4b4c\normalization\idfs\...
+
+3. SCALEBRIDGE_EPLUS_WORK_ROOT
+
+Meaning:
+    Short temporary EnergyPlus work root.
+
+Windows recommended values:
+    dev-laptop:
+        C:\ScaleBridge_EPlus_Work
+
+    home-pc:
+        C:\ScaleBridge_EPlus_Work
+
+    lab-pc:
+        C:\ScaleBridge_EPlus_Work
+
+Kamiak recommended value:
+    Use node-local scratch if available, otherwise a project scratch folder.
+
+    Example:
+        $TMPDIR/ScaleBridge_EPlus_Work
+
+    or:
+        /tmp/$USER/ScaleBridge_EPlus_Work
+
+Policy:
+    Temporary execution folders only.
+    Not canonical data.
+    Not committed.
+    Not Dropbox-synced unless deliberately debugging.
+    Safe to clean when no EnergyPlus jobs are running.
+
+4. MLFLOW_TRACKING_URI
+
+Meaning:
+    MLflow tracking server URI.
+
+Laptop local default:
+    http://127.0.0.1:5000
+
+Windows local command:
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+
+Kamiak:
+    For local file-based tracking, set a file URI or disable MLflow if appropriate.
+    For a remote MLflow server, set the server URI explicitly.
+
+Example:
+    export MLFLOW_TRACKING_URI=http://127.0.0.1:5000
+
+Current expected laptop MLflow experiment:
+    p1_ashrae2013_one_zone_compact_4b4c_generation
+
+5. SCALEBRIDGE_MACHINE_ID
+
+Meaning:
+    Human-readable machine label.
+
+Suggested values:
+    laptop
+    home-pc
+    lab-pc
+    kamiak
+
+Current scripts:
+    Most scripts still require:
+        --machine-id laptop
+        --machine-id home-pc
+        --machine-id lab-pc
+        --machine-id kamiak
+
+The environment variable is useful for future defaults and validation scripts.
+
+Windows PowerShell setup: repo-relative
+---------------------------------------
+Run from the repo root:
+
+    $repoRoot = (Resolve-Path ".").Path
+
+    $env:SCALEBRIDGE_DATA_ROOT = (Resolve-Path (Join-Path $repoRoot "..\..\Data")).Path
+    $env:SCALEBRIDGE_GENERATED_DATA_ROOT = (Resolve-Path (Join-Path $repoRoot "..\..\Data\ScaleBridge")).Path
+    $env:SCALEBRIDGE_EPLUS_WORK_ROOT = "C:\ScaleBridge_EPlus_Work"
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+    $env:SCALEBRIDGE_MACHINE_ID = "laptop"
+
+For home-pc:
+
+    $repoRoot = (Resolve-Path ".").Path
+
+    $env:SCALEBRIDGE_DATA_ROOT = (Resolve-Path (Join-Path $repoRoot "..\..\Data")).Path
+    $env:SCALEBRIDGE_GENERATED_DATA_ROOT = (Resolve-Path (Join-Path $repoRoot "..\..\Data\ScaleBridge")).Path
+    $env:SCALEBRIDGE_EPLUS_WORK_ROOT = "C:\ScaleBridge_EPlus_Work"
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+    $env:SCALEBRIDGE_MACHINE_ID = "home-pc"
+
+For lab-pc:
+
+    $repoRoot = (Resolve-Path ".").Path
+
+    $env:SCALEBRIDGE_DATA_ROOT = (Resolve-Path (Join-Path $repoRoot "..\..\Data")).Path
+    $env:SCALEBRIDGE_GENERATED_DATA_ROOT = (Resolve-Path (Join-Path $repoRoot "..\..\Data\ScaleBridge")).Path
+    $env:SCALEBRIDGE_EPLUS_WORK_ROOT = "C:\ScaleBridge_EPlus_Work"
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+    $env:SCALEBRIDGE_MACHINE_ID = "lab-pc"
+
+If C:\ScaleBridge_EPlus_Work is not desired on home-pc or lab-pc, use another
+short local path, for example:
+
+    D:\ScaleBridge_EPlus_Work
+
+but keep it outside the repo and outside generated data.
+
+Linux/Kamiak setup: repo-relative
+---------------------------------
+Run from the repo root:
+
+    export SCALEBRIDGE_DATA_ROOT="$(realpath ../../Data)"
+    export SCALEBRIDGE_GENERATED_DATA_ROOT="$(realpath ../../Data/ScaleBridge)"
+    export SCALEBRIDGE_EPLUS_WORK_ROOT="${TMPDIR:-/tmp/$USER}/ScaleBridge_EPlus_Work"
+    export MLFLOW_TRACKING_URI="http://127.0.0.1:5000"
+    export SCALEBRIDGE_MACHINE_ID="kamiak"
+
+If ../../Data does not exist on Kamiak, explicitly set project storage paths:
+
+    export SCALEBRIDGE_DATA_ROOT="/path/to/BuildingModelingProject_Condensed/Data"
+    export SCALEBRIDGE_GENERATED_DATA_ROOT="/path/to/BuildingModelingProject_Condensed/Data/ScaleBridge"
+    export SCALEBRIDGE_EPLUS_WORK_ROOT="${TMPDIR:-/tmp/$USER}/ScaleBridge_EPlus_Work"
+    export SCALEBRIDGE_MACHINE_ID="kamiak"
+
+Windows validation: environment roots
+-------------------------------------
+Run from repo root after setting environment variables:
+
+    $out = "block_env_root_validation.txt"
+
+    "ScaleBridge Environment Root Validation" | Set-Content $out -Encoding UTF8
+    "Timestamp: $(Get-Date)" | Add-Content $out
+    "Repo root: $(Get-Location)" | Add-Content $out
+
+    "`n===== ENVIRONMENT VARIABLES =====" | Add-Content $out
+    "SCALEBRIDGE_DATA_ROOT=$env:SCALEBRIDGE_DATA_ROOT" | Add-Content $out
+    "SCALEBRIDGE_GENERATED_DATA_ROOT=$env:SCALEBRIDGE_GENERATED_DATA_ROOT" | Add-Content $out
+    "SCALEBRIDGE_EPLUS_WORK_ROOT=$env:SCALEBRIDGE_EPLUS_WORK_ROOT" | Add-Content $out
+    "MLFLOW_TRACKING_URI=$env:MLFLOW_TRACKING_URI" | Add-Content $out
+    "SCALEBRIDGE_MACHINE_ID=$env:SCALEBRIDGE_MACHINE_ID" | Add-Content $out
+
+    "`n===== RELATIVE PATH CHECK =====" | Add-Content $out
+    $repoRoot = Resolve-Path "."
+    $expectedDataRoot = Resolve-Path "..\..\Data"
+    $expectedGeneratedDataRoot = Resolve-Path "..\..\Data\ScaleBridge"
+
+    "repoRoot=$repoRoot" | Add-Content $out
+    "expectedDataRoot=..\..\Data -> $expectedDataRoot" | Add-Content $out
+    "expectedGeneratedDataRoot=..\..\Data\ScaleBridge -> $expectedGeneratedDataRoot" | Add-Content $out
+
+    "`n===== EXISTENCE CHECK =====" | Add-Content $out
+    "SCALEBRIDGE_DATA_ROOT exists: $(Test-Path $env:SCALEBRIDGE_DATA_ROOT)" | Add-Content $out
+    "SCALEBRIDGE_GENERATED_DATA_ROOT exists: $(Test-Path $env:SCALEBRIDGE_GENERATED_DATA_ROOT)" | Add-Content $out
+    "SCALEBRIDGE_EPLUS_WORK_ROOT exists: $(Test-Path $env:SCALEBRIDGE_EPLUS_WORK_ROOT)" | Add-Content $out
+
+    "`n===== PATH EQUALITY CHECK =====" | Add-Content $out
+    $dataEnvResolved = if ($env:SCALEBRIDGE_DATA_ROOT -and (Test-Path $env:SCALEBRIDGE_DATA_ROOT)) { Resolve-Path $env:SCALEBRIDGE_DATA_ROOT } else { "" }
+    $genEnvResolved = if ($env:SCALEBRIDGE_GENERATED_DATA_ROOT -and (Test-Path $env:SCALEBRIDGE_GENERATED_DATA_ROOT)) { Resolve-Path $env:SCALEBRIDGE_GENERATED_DATA_ROOT } else { "" }
+
+    "SCALEBRIDGE_DATA_ROOT matches ..\..\Data: $($dataEnvResolved -eq $expectedDataRoot)" | Add-Content $out
+    "SCALEBRIDGE_GENERATED_DATA_ROOT matches ..\..\Data\ScaleBridge: $($genEnvResolved -eq $expectedGeneratedDataRoot)" | Add-Content $out
+
+    "`n===== CREATE ROOTS IF MISSING =====" | Add-Content $out
+    New-Item -ItemType Directory -Force -Path $env:SCALEBRIDGE_GENERATED_DATA_ROOT | Out-Null
+    New-Item -ItemType Directory -Force -Path $env:SCALEBRIDGE_EPLUS_WORK_ROOT | Out-Null
+
+    $compactCampaignRoot = Join-Path $env:SCALEBRIDGE_GENERATED_DATA_ROOT "campaigns\p1_ashrae2013_one_zone_compact_4b4c"
+    $compactGenerationRoot = Join-Path $compactCampaignRoot "generation"
+    $compactNormalizationRoot = Join-Path $compactCampaignRoot "normalization\idfs"
+
+    New-Item -ItemType Directory -Force -Path $compactGenerationRoot | Out-Null
+    New-Item -ItemType Directory -Force -Path $compactNormalizationRoot | Out-Null
+
+    "compactCampaignRoot=$compactCampaignRoot" | Add-Content $out
+    "compactGenerationRoot=$compactGenerationRoot" | Add-Content $out
+    "compactNormalizationRoot=$compactNormalizationRoot" | Add-Content $out
+    "compactGenerationRoot exists: $(Test-Path $compactGenerationRoot)" | Add-Content $out
+    "compactNormalizationRoot exists: $(Test-Path $compactNormalizationRoot)" | Add-Content $out
+
+    "`n===== GIT STATUS =====" | Add-Content $out
+    git status --short | Add-Content $out
+
+    "`n===== DONE =====" | Add-Content $out
+    "Output file: $((Resolve-Path $out).Path)" | Add-Content $out
+
+    Write-Output "Validation written to: $((Resolve-Path $out).Path)"
+
+Python validation: environment roots
+------------------------------------
+Run from repo root:
+
+    $py = @'
+    from __future__ import annotations
+
+    import os
+    from pathlib import Path
+
+    repo_root = Path.cwd().resolve()
+    expected_data_root = (repo_root.parent.parent / "Data").resolve()
+    expected_generated_data_root = (expected_data_root / "ScaleBridge").resolve()
+
+    env_data_root = Path(os.environ["SCALEBRIDGE_DATA_ROOT"]).expanduser().resolve()
+    env_generated_data_root = Path(os.environ["SCALEBRIDGE_GENERATED_DATA_ROOT"]).expanduser().resolve()
+    env_work_root = Path(os.environ["SCALEBRIDGE_EPLUS_WORK_ROOT"]).expanduser().resolve()
+    machine_id = os.environ.get("SCALEBRIDGE_MACHINE_ID", "")
+    mlflow_uri = os.environ.get("MLFLOW_TRACKING_URI", "")
+
+    print("=" * 100)
+    print("ScaleBridge Python Environment Validation")
+    print("=" * 100)
+    print(f"repo_root: {repo_root}")
+    print(f"expected_data_root: {expected_data_root}")
+    print(f"expected_generated_data_root: {expected_generated_data_root}")
+    print(f"env_data_root: {env_data_root}")
+    print(f"env_generated_data_root: {env_generated_data_root}")
+    print(f"env_work_root: {env_work_root}")
+    print(f"machine_id: {machine_id}")
+    print(f"mlflow_uri: {mlflow_uri}")
+
+    assert env_data_root == expected_data_root, (
+        f"SCALEBRIDGE_DATA_ROOT mismatch: {env_data_root} != {expected_data_root}"
+    )
+    assert env_generated_data_root == expected_generated_data_root, (
+        f"SCALEBRIDGE_GENERATED_DATA_ROOT mismatch: "
+        f"{env_generated_data_root} != {expected_generated_data_root}"
+    )
+
+    env_data_root.mkdir(parents=True, exist_ok=True)
+    env_generated_data_root.mkdir(parents=True, exist_ok=True)
+    env_work_root.mkdir(parents=True, exist_ok=True)
+
+    compact_campaign_id = "p1_ashrae2013_one_zone_compact_4b4c"
+    compact_campaign_root = env_generated_data_root / "campaigns" / compact_campaign_id
+    compact_generation_root = compact_campaign_root / "generation"
+    compact_normalization_root = compact_campaign_root / "normalization" / "idfs"
+
+    compact_generation_root.mkdir(parents=True, exist_ok=True)
+    compact_normalization_root.mkdir(parents=True, exist_ok=True)
+
+    print()
+    print("Campaign roots:")
+    print(f"compact_campaign_root: {compact_campaign_root}")
+    print(f"compact_generation_root: {compact_generation_root}")
+    print(f"compact_normalization_root: {compact_normalization_root}")
+
+    assert compact_generation_root.exists()
+    assert compact_normalization_root.exists()
+
+    print()
+    print("Validation passed.")
+    '@
+
+    $py | Set-Content "_validate_scalebridge_env.py" -Encoding UTF8
+    python "_validate_scalebridge_env.py"
+    Remove-Item "_validate_scalebridge_env.py"
+
+Compile validation
+------------------
+After adding or modifying source files, run compileall from the repo root:
+
+    python -m compileall src scripts
+
+For a smaller focused compile check:
+
+    python -m py_compile `
+      src\scalebridge\integration\energyplus\idf\pre_opyplus_normalization.py `
+      scripts\energyplus\run_p1_compact_campaign.py
+
+Compact campaign dry-run validation
+-----------------------------------
+After compileall succeeds, run a dry-run compact campaign validation with:
+
+    2 variable-wise workers
+    2 output variables
+    no EnergyPlus launch
+
+Command:
+
+    python scripts\energyplus\run_p1_compact_campaign.py `
+      --machine-id laptop `
+      --dry-run `
+      --variable-limit 2 `
+      --parallel-variable-workers 2
+
+Expected:
+    campaign_id:
+        p1_ashrae2013_one_zone_compact_4b4c
+
+    selected buildings:
+        RestaurantFastFood
+        OfficeSmall
+        RetailStripmall
+        ApartmentMidRise
+
+    selected case count:
+        16 cases if all four weather locations are present
+
+    variable count per case:
+        2
+
+    parallel variable workers:
+        2
+
+    normalized IDF root:
+        %SCALEBRIDGE_GENERATED_DATA_ROOT%\campaigns\p1_ashrae2013_one_zone_compact_4b4c\normalization\idfs
+
+    generation root:
+        %SCALEBRIDGE_GENERATED_DATA_ROOT%\campaigns\p1_ashrae2013_one_zone_compact_4b4c\generation\cases
+
+Dry-run validation capture
+--------------------------
+Use this to capture compileall and compact dry-run output:
+
+    $out = "block_compact_campaign_compileall_dryrun_validation.txt"
+
+    "Compact Campaign Compileall + Dry Run Validation" | Set-Content $out -Encoding UTF8
+    "Timestamp: $(Get-Date)" | Add-Content $out
+    "Repo root: $(Get-Location)" | Add-Content $out
+
+    "`n===== ENVIRONMENT VARIABLES =====" | Add-Content $out
+    "SCALEBRIDGE_DATA_ROOT=$env:SCALEBRIDGE_DATA_ROOT" | Add-Content $out
+    "SCALEBRIDGE_GENERATED_DATA_ROOT=$env:SCALEBRIDGE_GENERATED_DATA_ROOT" | Add-Content $out
+    "SCALEBRIDGE_EPLUS_WORK_ROOT=$env:SCALEBRIDGE_EPLUS_WORK_ROOT" | Add-Content $out
+    "MLFLOW_TRACKING_URI=$env:MLFLOW_TRACKING_URI" | Add-Content $out
+    "SCALEBRIDGE_MACHINE_ID=$env:SCALEBRIDGE_MACHINE_ID" | Add-Content $out
+
+    "`n===== COMPILEALL: src scripts =====" | Add-Content $out
+    python -m compileall src scripts 2>&1 | Out-String -Width 500 | Add-Content $out
+    $compileExit = $LASTEXITCODE
+    "compileall_exit_code=$compileExit" | Add-Content $out
+
+    "`n===== COMPACT CAMPAIGN DRY RUN: 2 WORKERS, 2 VARIABLES =====" | Add-Content $out
+    python scripts\energyplus\run_p1_compact_campaign.py `
+      --machine-id $env:SCALEBRIDGE_MACHINE_ID `
+      --dry-run `
+      --variable-limit 2 `
+      --parallel-variable-workers 2 2>&1 |
+      Out-String -Width 800 |
+      Add-Content $out
+
+    $dryRunExit = $LASTEXITCODE
+    "dry_run_exit_code=$dryRunExit" | Add-Content $out
+
+    "`n===== GIT STATUS =====" | Add-Content $out
+    git status --short | Add-Content $out
+
+    "`n===== DONE =====" | Add-Content $out
+    "Output file: $((Resolve-Path $out).Path)" | Add-Content $out
+
+    Write-Output "Validation written to: $((Resolve-Path $out).Path)"
+
+Pass criteria:
+    compileall_exit_code = 0
+    dry_run_exit_code = 0
+    selected_case_count = 16
+    variable_limit = 2
+    parallel_variable_workers = 2
+    no repo-root scratch path appears
+    normalized paths are under SCALEBRIDGE_GENERATED_DATA_ROOT\campaigns\...
+
+One real smoke after dry-run passes
+-----------------------------------
+After the dry-run passes:
+
+    python scripts\energyplus\run_p1_compact_campaign.py `
+      --machine-id laptop `
+      --case-limit 1 `
+      --variable-limit 2 `
+      --parallel-variable-workers 2 `
+      --write-legacy-pickles `
+      --mlflow-strict
+
+Full first compact case after smoke passes
+------------------------------------------
+After the 2-variable smoke passes:
+
+    python scripts\energyplus\run_p1_compact_campaign.py `
+      --machine-id laptop `
+      --case-limit 1 `
+      --parallel-variable-workers 2 `
+      --write-legacy-pickles `
+      --mlflow-strict `
+      --rerun-completed
+
+MLflow validation
+-----------------
+Laptop:
+
+    Start-Process powershell -ArgumentList "mlflow ui --host 127.0.0.1 --port 5000"
+
+Open:
+
+    http://127.0.0.1:5000
+
+Expected compact campaign experiment:
+    p1_ashrae2013_one_zone_compact_4b4c_generation
+
+Expected run metadata:
+    campaign_id = p1_ashrae2013_one_zone_compact_4b4c
+    machine_id = laptop / home-pc / lab-pc / kamiak
+    generation_mode = variable-wise
+    selected_output_variable_count = 2 for smoke, all variables for full run
+    parallel_variable_workers = 2 if run with 2 workers
+
+Important path policy
+---------------------
+Do not write generated campaign artifacts under the repo root.
+
+Avoid:
+    scalebridge-research\scratch\...
+    scalebridge-research\data\...
+    scalebridge-research\outputs\...
+
+Use:
+    %SCALEBRIDGE_GENERATED_DATA_ROOT%\campaigns\...
+
+Short temporary EnergyPlus work is allowed only under:
+    %SCALEBRIDGE_EPLUS_WORK_ROOT%
+
+Git policy
+----------
+Commit:
+    source code
+    scripts
+    knowledgebase files
+    small validation txt files if useful
+
+Do not commit:
+    generated campaign outputs
+    normalized IDF copies
+    parquet data
+    pickle files
+    EnergyPlus raw outputs
+    MLflow artifacts
+    temporary work folders
+
+Relevant files
+--------------
+Environment variable knowledgebase:
+    knowledgebase/scalebridge_four_machine_environment_variables_and_validation.txt
+
+Compact campaign selection notes:
+    knowledgebase/p1_compact_campaign_selection_notes.txt
+
+Pre-opyplus normalization module:
+    src/scalebridge/integration/energyplus/idf/pre_opyplus_normalization.py
+
+Compact campaign runner:
+    scripts/energyplus/run_p1_compact_campaign.py
+
+Init-file note
+--------------
+No mandatory __init__.py update is required for the compact runner.
+
+The runner imports directly:
+
+    from scalebridge.integration.energyplus.idf.pre_opyplus_normalization import (
+        normalize_idf_before_opyplus,
+    )
+
+Optional future improvement:
+    Export normalize_idf_before_opyplus from:
+
+        src/scalebridge/integration/energyplus/idf/__init__.py
+
+    This is optional and not needed for current validation.

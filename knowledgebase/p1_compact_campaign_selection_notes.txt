@@ -1,0 +1,184 @@
+P1 Compact Campaign Selection Notes
+===================================
+
+Campaign ID
+-----------
+p1_ashrae2013_one_zone_compact_4b4c
+
+Final selected compact building set
+-----------------------------------
+1. RestaurantFastFood
+2. OfficeSmall
+3. RetailStripmall
+4. ApartmentMidRise
+
+Rationale
+---------
+The full P1 EnergyPlus campaign includes 16 ASHRAE 90.1-2013 PNNL prototype
+commercial buildings across 4 selected weather/climate locations. The compact
+campaign is a first controlled campaign intended to cover a small but diverse
+subset before launching the complete 64 building-weather campaign.
+
+The final compact set gives the following progression:
+
+    3 zones  -> RestaurantFastFood -> food service / high internal gains
+    6 zones  -> OfficeSmall        -> simple office baseline
+    10 zones -> RetailStripmall    -> retail / schedule and lighting diversity
+    27 zones -> ApartmentMidRise   -> multifamily residential-like diversity
+
+Data-root policy
+----------------
+The compact campaign runner does not write repo-root scratch folders.
+
+The expected generated-data root is:
+
+    C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge
+
+Use:
+
+    $env:SCALEBRIDGE_GENERATED_DATA_ROOT = "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge"
+
+Generated campaign data is written under:
+
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>\campaigns\p1_ashrae2013_one_zone_compact_4b4c\generation\cases\...
+
+Normalized pre-opyplus IDFs are written under:
+
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>\campaigns\p1_ashrae2013_one_zone_compact_4b4c\normalization\idfs\<case_id>\normalized.idf
+
+Original DOE/PNNL source IDFs are never modified.
+
+Local IDF object-count audit
+----------------------------
+
+BuildingType            Zones  People  Lights  ElectricEquipment  Thermostats
+Warehouse               3      1       3       2                  3
+RestaurantFastFood      3      2       2       4                  2
+RestaurantSitDown       3      2       2       4                  2
+RetailStandalone        5      5       5       4                  5
+OfficeSmall             6      5       5       5                  5
+RetailStripmall         10     10      20      10                 10
+OfficeMedium            18     15      15      17                 15
+HotelLarge              22     18      22      22                 22
+OfficeLarge             23     16      20      20                 20
+SchoolPrimary           25     23      25      27                 25
+ApartmentMidRise        27     24      50      26                 24
+SchoolSecondary         46     42      46      50                 46
+Hospital                55     55      55      50                 55
+HotelSmall              67     67      67      68                 54
+ApartmentHighRise       90     80      169     82                 80
+OutPatientHealthCare    118    59      118     119                118
+
+Seattle one-day smoke-test results
+----------------------------------
+
+RestaurantFastFood
+    status: completed
+    warnings: 33
+    severe: 0
+    fatal: 0
+    runtime_seconds: 66.99
+    decision: keep
+
+OfficeSmall
+    status: completed
+    warnings: 19
+    severe: 0
+    fatal: 0
+    runtime_seconds: 46.63
+    decision: keep
+
+RetailStandalone
+    status: completed
+    warnings: 19
+    severe: 0
+    fatal: 0
+    runtime_seconds: 105.04
+    decision: safe, but less diverse than RetailStripmall
+
+RetailStripmall
+    status: completed
+    warnings: 883
+    severe: 0
+    fatal: 0
+    runtime_seconds: 129.16
+    decision: keep; higher warnings but clean severe/fatal result
+
+ApartmentMidRise
+    first result: opyplus preparation exception
+    root cause:
+        Schedule:Compact object referenced Schedule Type Limits Name = Control Type,
+        but ScheduleTypeLimits, Control Type was missing.
+    fix:
+        insert ScheduleTypeLimits, Control Type before opyplus loads the IDF.
+    patched result:
+        status: completed
+        warnings: 27
+        severe: 0
+        fatal: 0
+        runtime_seconds: 108.62
+    decision: keep with pre-opyplus normalization
+
+SchoolPrimary
+    status: completed
+    warnings: 59200
+    severe: 16
+    fatal: 0
+    root cause:
+        severe warmup convergence failures in multiple zones.
+    decision:
+        avoid first compact campaign
+
+HotelLarge
+    status: completed
+    warnings: 33
+    severe: 10
+    fatal: 0
+    runtime_seconds: 1513.31
+    decision:
+        avoid first compact campaign due to severe errors and very slow one-day smoke
+
+Rejected or deferred buildings
+------------------------------
+SchoolPrimary:
+    Runs but produces 16 severe warmup convergence errors.
+
+HotelLarge:
+    Runs but produces 10 severe errors and is very slow even for one-day smoke.
+
+ApartmentHighRise:
+    Very high zone/object count.
+
+OutPatientHealthCare:
+    Extreme object count.
+
+Hospital:
+    High complexity; not needed for first compact campaign.
+
+HotelSmall:
+    Surprisingly high zone/object count compared with HotelLarge.
+
+Required source-code support
+----------------------------
+A reusable pre-opyplus IDF normalization module was added:
+
+    src/scalebridge/integration/energyplus/idf/pre_opyplus_normalization.py
+
+The compact runner uses it to normalize selected source IDFs into the ScaleBridge
+data root before calling the variable-wise EnergyPlus generation pipeline.
+
+Original DOE/PNNL IDFs are never modified.
+
+Init-file note
+--------------
+No mandatory __init__.py update is required.
+
+The runner imports the normalization module directly:
+
+    from scalebridge.integration.energyplus.idf.pre_opyplus_normalization import (
+        normalize_idf_before_opyplus,
+    )
+
+If desired later, the normalization function can be exported from
+src/scalebridge/integration/energyplus/idf/__init__.py, but it is not required
+for the compact runner.

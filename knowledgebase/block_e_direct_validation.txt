@@ -1,0 +1,511 @@
+﻿Compact 4-Building Smoke Failure Diagnostic
+Timestamp: 06/30/2026 22:54:11
+Repo root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+===== SUMMARY TXT =====
+P1 Compact Seattle 1-Day opyplus Smoke Test
+================================================================================
+Output root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke
+Summary CSV: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke\summary.csv
+
+RestaurantFastFood: completed | warnings=33 | severe=0 | fatal=0 | runtime_s=66.993083
+OfficeSmall: completed | warnings=19 | severe=0 | fatal=0 | runtime_s=46.631931
+SchoolPrimary: completed | warnings=59200 | severe=16 | fatal=0 | runtime_s=280.556622
+ApartmentMidRise: exception | warnings= | severe= | fatal= | runtime_s=8.968053
+  message: IdfPreparationError: could not prepare IDF for case epcase_2beac1a5e7b449ed9ad7f48d: opyplus could not load IDF: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\Commercial_Prototypes\ASHRAE\90_1_2013\ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+
+===== SUMMARY CSV =====
+building_type,weather_location,status,exit_code,warnings,severe_errors,fatal_errors,runtime_seconds,prepared_idf,output_dir,err_file,csv_file_exists,eso_file_exists,message
+RestaurantFastFood,Seattle,completed,,33,0,0,66.993083,scratch\p1_compact_seattle_1day_opyplus_smoke\01_RestaurantFastFood\inputs\prepared_1day.idf,scratch\p1_compact_seattle_1day_opyplus_smoke\01_RestaurantFastFood\opyplus_output,scratch\p1_compact_seattle_1day_opyplus_smoke\01_RestaurantFastFood\opyplus_output\eplusout.err,True,True,
+OfficeSmall,Seattle,completed,,19,0,0,46.631931,scratch\p1_compact_seattle_1day_opyplus_smoke\02_OfficeSmall\inputs\prepared_1day.idf,scratch\p1_compact_seattle_1day_opyplus_smoke\02_OfficeSmall\opyplus_output,scratch\p1_compact_seattle_1day_opyplus_smoke\02_OfficeSmall\opyplus_output\eplusout.err,True,True,
+SchoolPrimary,Seattle,completed,,59200,16,0,280.556622,scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\inputs\prepared_1day.idf,scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output,scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err,True,True,
+ApartmentMidRise,Seattle,exception,,,,,8.968053,scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\inputs\prepared_1day.idf,scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\opyplus_output,scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\opyplus_output\eplusout.err,,,IdfPreparationError: could not prepare IDF for case epcase_2beac1a5e7b449ed9ad7f48d: opyplus could not load IDF: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\Commercial_Prototypes\ASHRAE\90_1_2013\ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+
+===== SCHOOLPRIMARY ERR FILE =====
+Path: scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err
+Exists: True
+Program Version,EnergyPlus, Version 9.0.1-bb7ca4f0da, YMD=2026.06.30 21:08,
+   ** Warning ** Sizing:Parameters: note Timesteps in Averaging Window entered value=[6] is less than 1 hour (i.e., 12 timesteps).
+   ************* Beginning Zone Sizing Calculations
+   ** Warning ** CheckUsedConstructions: There are 23 nominally unused constructions in input.
+   **   ~~~   ** For explicit details on each unused construction, use Output:Diagnostics,DisplayExtraWarnings;
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CAFETERIA_ZN_1_FLR_1", only 0.50 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="COMPUTER_CLASS_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_1_POD_1_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_1_POD_2_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_1_POD_3_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_2_POD_1_ZN_1_FLR_1", only 0.78 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_2_POD_2_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_2_POD_3_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="LIBRARY_MEDIA_CENTER_ZN_1_FLR_1", only 0.44 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="LOBBY_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_1_POD_1_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_1_POD_2_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_1_POD_3_ZN_1_FLR_1", only 0.28 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_2_POD_1_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_2_POD_2_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_2_POD_3_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="OFFICES_ZN_1_FLR_1", only 0.42 of the zone is controlled.
+   ** Warning ** Calculated design heating load for zone=KITCHEN_ZN_1_FLR_1 is zero.
+   **   ~~~   ** Check Sizing:Zone and ZoneControl:Thermostat inputs.
+   ************* Beginning System Sizing Calculations
+   ** Warning ** Fan:ZoneExhaust="LIBRARY_MEDIA_CENTER_ZN_1_FLR_1 DUMMY EXHAUST FAN" has specified 0.0 max air flow rate. It will not be used in the simulation.
+   ************* Beginning Plant Sizing Calculations
+   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+   ** Warning ** Sizing: Coil:Cooling:DX:MultiSpeed "PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL": Rated air volume flow rate per watt of rated total cooling capacity is out of range at speed 1
+   **   ~~~   ** Min Rated Vol Flow Per Watt=[4.027E-005], Rated Vol Flow Per Watt=[6.658E-005], Max Rated Vol Flow Per Watt=[6.041E-005]. See Input Output Reference Manual for valid range.
+   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_2:5_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_2:5_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+   ** Warning ** Sizing: Coil:Cooling:DX:MultiSpeed "PSZ-AC_2:5_UNITARY_PACKAGE_COOLCOIL": Rated air volume flow rate per watt of rated total cooling capacity is out of range at speed 1
+   **   ~~~   ** Min Rated Vol Flow Per Watt=[4.027E-005], Rated Vol Flow Per Watt=[6.590E-005], Max Rated Vol Flow Per Watt=[6.041E-005]. See Input Output Reference Manual for valid range.
+   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_2:7_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_2:7_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+   ** Warning ** Sizing: Coil:Cooling:DX:MultiSpeed "PSZ-AC_2:7_UNITARY_PACKAGE_COOLCOIL": Rated air volume flow rate per watt of rated total cooling capacity is out of range at speed 1
+   **   ~~~   ** Min Rated Vol Flow Per Watt=[4.027E-005], Rated Vol Flow Per Watt=[6.320E-005], Max Rated Vol Flow Per Watt=[6.041E-005]. See Input Output Reference Manual for valid range.
+   ** Warning ** Controller:MechanicalVentilation = "VAV_OTHER_DCV", Zone="MAIN_CORRIDOR_ZN_1_FLR_1".
+   **   ~~~   ** No "PEOPLE" object has been specified in the idf for this zone, but the ventilation rate is > 0 in this Controller:MechanicalVentilation Object.
+   **   ~~~   ** Check ventilation rate in Controller:MechanicalVentilation object.  Simulation will continue.
+   ** Warning ** Controller:MechanicalVentilation = "VAV_OTHER_DCV", Zone="LOBBY_ZN_1_FLR_1".
+   **   ~~~   ** No "PEOPLE" object has been specified in the idf for this zone, but the ventilation rate is > 0 in this Controller:MechanicalVentilation Object.
+   **   ~~~   ** Check ventilation rate in Controller:MechanicalVentilation object.  Simulation will continue.
+   ** Warning ** For zone=KITCHEN_ZN_1_FLR_1 return air cooling by refrigerated cases will be applied to the zone air.
+   **   ~~~   **   This zone has no return air or is served by an on/off HVAC system.
+   ** Warning ** DetermineMeterIPUnits: Meter units not recognized for IP Units conversion=[].
+   **   ~~~   ** ..on Meter:Custom="WIRED_LTG_ELECTRICITY".
+   **   ~~~   ** ..requests for IP units from this meter will be ignored.
+   ************* Testing Individual Branch Integrity
+   ************* All Branches passed integrity testing
+   ************* Testing Individual Supply Air Path Integrity
+   ************* All Supply Air Paths passed integrity testing
+   ************* Testing Individual Return Air Path Integrity
+   ************* All Return Air Paths passed integrity testing
+   ************* No node connection errors were found.
+   ************* Beginning Simulation
+   ** Warning ** Coil:Cooling:DX:MultiSpeed "PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL" - Air volume flow rate per watt of rated total cooling capacity is out of range at speed 1.
+   **   ~~~   **  During Warmup, Environment=RUNPERIOD 1, at Simulation time=01/01 06:25 - 06:30
+   **   ~~~   ** Expected range for VolumeFlowPerRatedTotalCapacity=[2.684E-005--6.713E-005] Current value is 7.044E-005 m3/s/W
+   **   ~~~   ** Possible causes include inconsistent air flow rates in system components or
+   **   ~~~   ** inconsistent supply air fan operation modes in coil and unitary system objects.
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_1_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** See Warmup Convergence Information in .eio file for details.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 8.98E-004 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 1.39E-002 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 7.6232E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_1_POD_2_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 7.95E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 9.07E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 6.0382E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 2.6754E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_1_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 3.93E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 6.17E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.6988 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_2_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 3.22E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 1.49E-002 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 5.4328E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_2_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 3.86E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 7.43E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.7067 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORRIDOR_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 4.05E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 3.46E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.1239 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORRIDOR_POD_2_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 6.54E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 3.08E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 4.1991E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORRIDOR_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 5.92E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 4.99E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.7962 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="LIBRARY_MEDIA_CENTER_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 3.37E-002 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 2.10E-002 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.3631 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 1.3610E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="LOBBY_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 7.58E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 8.30E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.7832 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_1_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 1.93E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 4.50E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 4.5201E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 1.5099E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_1_POD_2_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 6.70E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 1.76E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 9.1014E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 1.2467E-003 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_1_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 4.29E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 2.83E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.8565 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 1.3030E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_2_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 5.54E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 5.89E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.1849 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 2.5853E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_2_POD_2_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 7.18E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 3.61E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.1426 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 2.5122E-003 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_2_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+   **   ~~~   ** ..Max Temp Comparison = 3.54E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Min Temp Comparison = 4.09E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+   **   ~~~   ** ..Max Heat Load Comparison = 0.6447 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+   **   ~~~   ** ..Max Cool Load Comparison = 1.7369E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+   ** Warning ** Processing Monthly Tabular Reports: Variable names not valid for this simulation
+   **   ~~~   ** ...use Output:Diagnostics,DisplayExtraWarnings; to show more details on individual variables.
+   ** Warning ** Coil control failed for AirLoopHVAC:UnitarySystem:PSZ-AC_1:6_UNITARY_PACKAGE_DX
+   **   ~~~   **   sensible part-load ratio determined to be outside the range of 0-1.
+   **   ~~~   ** Sensible load to be met = -19545.53 (watts), and the simulation continues.
+   **   ~~~   **  Environment=RUNPERIOD 1, at Simulation time=01/01 11:33 - 11:35
+   ************* Simulation Error Summary *************
+   ************* There are 35 unused schedules in input.
+   ************* Use Output:Diagnostics,DisplayUnusedSchedules; to see them.
+   *************
+   ************* ===== Recurring Error Summary =====
+   ************* The following recurring error messages occurred.
+   *************
+   *************  ** Warning ** Coil:Cooling:DX:MultiSpeed "PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL" - Air volume flow rate per watt of rated total cooling capacity is out of range at speed 1 error continues...
+   *************  **   ~~~   **   This error occurred 59162 total times;
+   *************  **   ~~~   **   during Warmup 57126 times;
+   *************  **   ~~~   **   during Sizing 0 times.
+   *************  **   ~~~   **   Max=7.533629E-005  Min=6.923435E-005
+   *************
+   *************  ** Warning ** AirLoopHVAC:UnitarySystem "PSZ-AC_1:6_UNITARY_PACKAGE_DX" - sensible part-load ratio out of range error continues. Sensible load statistics:
+   *************  **   ~~~   **   This error occurred 3 total times;
+   *************  **   ~~~   **   during Warmup 0 times;
+   *************  **   ~~~   **   during Sizing 0 times.
+   *************  **   ~~~   **   Max=-19545.53666  Min=-19545.53666
+   *************
+   *************
+   ************* ===== Final Error Summary =====
+   ************* The following error categories occurred.  Consider correcting or noting.
+   ************* Loads Initialization did not Converge
+   ************* ..1) very high thermal mass such as very thick concrete (solution: increase max number of warmup
+   ************* ..   days in the BUILDING object);
+   ************* ..2) moderate mass and inadequate space conditioning such that the building keeps getting warmer
+   ************* ..   and warmer on successive days (solution: add HVAC, check building thermal properties,
+   ************* ..   check if infiltration is included, make sure HVAC properly controlled);
+   ************* ..3) a soil layer modeled below the concrete slab - (solution remove this layer and read about
+   ************* ..   ground temperatures in the Auxiliary Programs document).
+   ************* ..4) unreasonable (too small) limits in the BUILDING object for temperature (.4 default) or
+   ************* ..   loads tolerances (.04 default)
+   ************* Nominally Unused Constructions
+   ************* ..The nominally unused constructions warning is provided to alert you to potential conditions that can cause
+   ************* ..extra time during simulation. Each construction is calculated by the algorithm indicated in the HeatBalanceAlgorithm
+   ************* ..object. You may remove the constructions indicated (when you use the DisplayExtraWarnings option).
+   *************
+   ************* EnergyPlus Warmup Error Summary. During Warmup: 0 Warning; 16 Severe Errors.
+   ************* EnergyPlus Sizing Error Summary. During Sizing: 21 Warning; 0 Severe Errors.
+   ************* EnergyPlus Completed Successfully-- 59200 Warning; 16 Severe Errors; Elapsed Time=00hr 04min 22.90sec
+
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:1:Program Version,EnergyPlus, Version 9.0.1-bb7ca4f0da, YMD=2026.06.30 21:08,
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:2:   ** Warning ** Sizing:Parameters: note Timesteps in Averaging Window entered value=[6] is less than 1 hour (i.e., 12 timesteps).
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:3:   ************* Beginning Zone Sizing Calculations
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:4:   ** Warning ** CheckUsedConstructions: There are 23 nominally unused constructions in input.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:5:   **   ~~~   ** For explicit details on each unused construction, use Output:Diagnostics,DisplayExtraWarnings;
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:6:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:7:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CAFETERIA_ZN_1_FLR_1", only 0.50 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:8:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:9:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="COMPUTER_CLASS_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:10:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:11:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_1_POD_1_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:12:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:13:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_1_POD_2_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:14:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:15:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_1_POD_3_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:16:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:17:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_2_POD_1_ZN_1_FLR_1", only 0.78 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:18:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:19:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_2_POD_2_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:20:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:21:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="CORNER_CLASS_2_POD_3_ZN_1_FLR_1", only 0.76 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:22:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:23:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="LIBRARY_MEDIA_CENTER_ZN_1_FLR_1", only 0.44 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:24:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:25:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="LOBBY_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:26:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:27:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_1_POD_1_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:28:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:29:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_1_POD_2_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:30:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:31:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_1_POD_3_ZN_1_FLR_1", only 0.28 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:32:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:33:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_2_POD_1_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:34:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:35:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_2_POD_2_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:36:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:37:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="MULT_CLASS_2_POD_3_ZN_1_FLR_1", only 0.56 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:38:   ** Warning ** GetDaylightingControls: Fraction of Zone controlled by the Daylighting reference points is < 1.0.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:39:   **   ~~~   ** ..discovered in "Daylighting:Controls" for Zone="OFFICES_ZN_1_FLR_1", only 0.42 of the zone is controlled.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:40:   ** Warning ** Calculated design heating load for zone=KITCHEN_ZN_1_FLR_1 is zero.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:41:   **   ~~~   ** Check Sizing:Zone and ZoneControl:Thermostat inputs.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:42:   ************* Beginning System Sizing Calculations
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:43:   ** Warning ** Fan:ZoneExhaust="LIBRARY_MEDIA_CENTER_ZN_1_FLR_1 DUMMY EXHAUST FAN" has specified 0.0 max air flow rate. It will not be used in the simulation.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:44:   ************* Beginning Plant Sizing Calculations
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:45:   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:46:   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:47:   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:48:   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:49:   ** Warning ** Sizing: Coil:Cooling:DX:MultiSpeed "PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL": Rated air volume flow rate per watt of rated total cooling capacity is out of range at speed 1
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:50:   **   ~~~   ** Min Rated Vol Flow Per Watt=[4.027E-005], Rated Vol Flow Per Watt=[6.658E-005], Max Rated Vol Flow Per Watt=[6.041E-005]. See Input Output Reference Manual for valid range.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:51:   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_2:5_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:52:   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:53:   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_2:5_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:54:   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:55:   ** Warning ** Sizing: Coil:Cooling:DX:MultiSpeed "PSZ-AC_2:5_UNITARY_PACKAGE_COOLCOIL": Rated air volume flow rate per watt of rated total cooling capacity is out of range at speed 1
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:56:   **   ~~~   ** Min Rated Vol Flow Per Watt=[4.027E-005], Rated Vol Flow Per Watt=[6.590E-005], Max Rated Vol Flow Per Watt=[6.041E-005]. See Input Output Reference Manual for valid range.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:57:   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_2:7_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:58:   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:59:   ** Warning ** The Standard Ratings is calculated for Coil:Cooling:DX:MultiSpeed = PSZ-AC_2:7_UNITARY_PACKAGE_COOLCOIL but not at the AHRI test condition due to curve out of bound.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:60:   **   ~~~   **  Review the Standard Ratings calculations in the Engineering Reference for this coil type. Also, use Output:Diagnostics, DisplayExtraWarnings for further guidance.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:61:   ** Warning ** Sizing: Coil:Cooling:DX:MultiSpeed "PSZ-AC_2:7_UNITARY_PACKAGE_COOLCOIL": Rated air volume flow rate per watt of rated total cooling capacity is out of range at speed 1
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:62:   **   ~~~   ** Min Rated Vol Flow Per Watt=[4.027E-005], Rated Vol Flow Per Watt=[6.320E-005], Max Rated Vol Flow Per Watt=[6.041E-005]. See Input Output Reference Manual for valid range.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:63:   ** Warning ** Controller:MechanicalVentilation = "VAV_OTHER_DCV", Zone="MAIN_CORRIDOR_ZN_1_FLR_1".
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:64:   **   ~~~   ** No "PEOPLE" object has been specified in the idf for this zone, but the ventilation rate is > 0 in this Controller:MechanicalVentilation Object.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:65:   **   ~~~   ** Check ventilation rate in Controller:MechanicalVentilation object.  Simulation will continue.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:66:   ** Warning ** Controller:MechanicalVentilation = "VAV_OTHER_DCV", Zone="LOBBY_ZN_1_FLR_1".
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:67:   **   ~~~   ** No "PEOPLE" object has been specified in the idf for this zone, but the ventilation rate is > 0 in this Controller:MechanicalVentilation Object.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:68:   **   ~~~   ** Check ventilation rate in Controller:MechanicalVentilation object.  Simulation will continue.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:69:   ** Warning ** For zone=KITCHEN_ZN_1_FLR_1 return air cooling by refrigerated cases will be applied to the zone air.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:70:   **   ~~~   **   This zone has no return air or is served by an on/off HVAC system.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:71:   ** Warning ** DetermineMeterIPUnits: Meter units not recognized for IP Units conversion=[].
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:72:   **   ~~~   ** ..on Meter:Custom="WIRED_LTG_ELECTRICITY".
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:73:   **   ~~~   ** ..requests for IP units from this meter will be ignored.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:78:   ************* Testing Individual Return Air Path Integrity
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:79:   ************* All Return Air Paths passed integrity testing
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:80:   ************* No node connection errors were found.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:81:   ************* Beginning Simulation
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:82:   ** Warning ** Coil:Cooling:DX:MultiSpeed "PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL" - Air volume flow rate per watt of rated total cooling capacity is out of range at speed 1.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:83:   **   ~~~   **  During Warmup, Environment=RUNPERIOD 1, at Simulation time=01/01 06:25 - 06:30
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:84:   **   ~~~   ** Expected range for VolumeFlowPerRatedTotalCapacity=[2.684E-005--6.713E-005] Current value is 7.044E-005 m3/s/W
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:85:   **   ~~~   ** Possible causes include inconsistent air flow rates in system components or
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:86:   **   ~~~   ** inconsistent supply air fan operation modes in coil and unitary system objects.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:87:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_1_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:88:   **   ~~~   ** See Warmup Convergence Information in .eio file for details.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:89:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:92:   **   ~~~   ** ..Max Heat Load Comparison = 7.6232E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:93:   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:94:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_1_POD_2_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:95:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:96:   **   ~~~   ** ..Max Temp Comparison = 7.95E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:98:   **   ~~~   ** ..Max Heat Load Comparison = 6.0382E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:99:   **   ~~~   ** ..Max Cool Load Comparison = 2.6754E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:100:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_1_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:101:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:102:   **   ~~~   ** ..Max Temp Comparison = 3.93E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:104:   **   ~~~   ** ..Max Heat Load Comparison = 0.6988 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:105:   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:106:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_2_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:107:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:108:   **   ~~~   ** ..Max Temp Comparison = 3.22E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:110:   **   ~~~   ** ..Max Heat Load Comparison = 5.4328E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:111:   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:112:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORNER_CLASS_2_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:113:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:114:   **   ~~~   ** ..Max Temp Comparison = 3.86E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:116:   **   ~~~   ** ..Max Heat Load Comparison = 0.7067 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:117:   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:118:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORRIDOR_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:119:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:120:   **   ~~~   ** ..Max Temp Comparison = 4.05E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:122:   **   ~~~   ** ..Max Heat Load Comparison = 0.1239 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:123:   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:124:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORRIDOR_POD_2_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:125:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:126:   **   ~~~   ** ..Max Temp Comparison = 6.54E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:128:   **   ~~~   ** ..Max Heat Load Comparison = 4.1991E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:129:   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:130:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="CORRIDOR_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:131:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:132:   **   ~~~   ** ..Max Temp Comparison = 5.92E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:134:   **   ~~~   ** ..Max Heat Load Comparison = 0.7962 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:135:   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:136:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="LIBRARY_MEDIA_CENTER_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:137:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:138:   **   ~~~   ** ..Max Temp Comparison = 3.37E-002 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:140:   **   ~~~   ** ..Max Heat Load Comparison = 0.3631 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:141:   **   ~~~   ** ..Max Cool Load Comparison = 1.3610E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:142:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="LOBBY_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:143:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:144:   **   ~~~   ** ..Max Temp Comparison = 7.58E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:146:   **   ~~~   ** ..Max Heat Load Comparison = 0.7832 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:147:   **   ~~~   ** ..Max Cool Load Comparison = 0.0000 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:148:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_1_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:149:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:150:   **   ~~~   ** ..Max Temp Comparison = 1.93E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:152:   **   ~~~   ** ..Max Heat Load Comparison = 4.5201E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:153:   **   ~~~   ** ..Max Cool Load Comparison = 1.5099E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:154:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_1_POD_2_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:155:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:156:   **   ~~~   ** ..Max Temp Comparison = 6.70E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:158:   **   ~~~   ** ..Max Heat Load Comparison = 9.1014E-002 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:159:   **   ~~~   ** ..Max Cool Load Comparison = 1.2467E-003 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:160:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_1_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:161:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:162:   **   ~~~   ** ..Max Temp Comparison = 4.29E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:164:   **   ~~~   ** ..Max Heat Load Comparison = 0.8565 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:165:   **   ~~~   ** ..Max Cool Load Comparison = 1.3030E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:166:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_2_POD_1_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:167:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:168:   **   ~~~   ** ..Max Temp Comparison = 5.54E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:170:   **   ~~~   ** ..Max Heat Load Comparison = 0.1849 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:171:   **   ~~~   ** ..Max Cool Load Comparison = 2.5853E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:172:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_2_POD_2_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:173:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:174:   **   ~~~   ** ..Max Temp Comparison = 7.18E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:176:   **   ~~~   ** ..Max Heat Load Comparison = 0.1426 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:177:   **   ~~~   ** ..Max Cool Load Comparison = 2.5122E-003 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:178:   ** Severe  ** CheckWarmupConvergence: Loads Initialization, Zone="MULT_CLASS_2_POD_3_ZN_1_FLR_1" did not converge after 25 warmup days.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:179:   **   ~~~   ** ...Environment(RunPeriod)="RUNPERIOD 1"
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:180:   **   ~~~   ** ..Max Temp Comparison = 3.54E-003 vs Temperature Convergence Tolerance=0.20 - Pass Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:182:   **   ~~~   ** ..Max Heat Load Comparison = 0.6447 vs Loads Convergence Tolerance=4.00E-002 - Fail Convergence
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:183:   **   ~~~   ** ..Max Cool Load Comparison = 1.7369E-002 vs Loads Convergence Tolerance=4.00E-002 - Pass Convergence
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:184:   ** Warning ** Processing Monthly Tabular Reports: Variable names not valid for this simulation
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:185:   **   ~~~   ** ...use Output:Diagnostics,DisplayExtraWarnings; to show more details on individual variables.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:186:   ** Warning ** Coil control failed for AirLoopHVAC:UnitarySystem:PSZ-AC_1:6_UNITARY_PACKAGE_DX
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:187:   **   ~~~   **   sensible part-load ratio determined to be outside the range of 0-1.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:188:   **   ~~~   ** Sensible load to be met = -19545.53 (watts), and the simulation continues.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:189:   **   ~~~   **  Environment=RUNPERIOD 1, at Simulation time=01/01 11:33 - 11:35
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:190:   ************* Simulation Error Summary *************
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:191:   ************* There are 35 unused schedules in input.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:192:   ************* Use Output:Diagnostics,DisplayUnusedSchedules; to see them.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:193:   *************
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:194:   ************* ===== Recurring Error Summary =====
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:195:   ************* The following recurring error messages occurred.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:196:   *************
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:197:   *************  ** Warning ** Coil:Cooling:DX:MultiSpeed "PSZ-AC_1:6_UNITARY_PACKAGE_COOLCOIL" - Air volume flow rate per watt of rated total cooling capacity is out of range at speed 1 error continues...
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:198:   *************  **   ~~~   **   This error occurred 59162 total times;
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:199:   *************  **   ~~~   **   during Warmup 57126 times;
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:200:   *************  **   ~~~   **   during Sizing 0 times.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:201:   *************  **   ~~~   **   Max=7.533629E-005  Min=6.923435E-005
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:202:   *************
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:203:   *************  ** Warning ** AirLoopHVAC:UnitarySystem "PSZ-AC_1:6_UNITARY_PACKAGE_DX" - sensible part-load ratio out of range error continues. Sensible load statistics:
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:204:   *************  **   ~~~   **   This error occurred 3 total times;
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:205:   *************  **   ~~~   **   during Warmup 0 times;
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:206:   *************  **   ~~~   **   during Sizing 0 times.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:208:   *************
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:209:   *************
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:210:   ************* ===== Final Error Summary =====
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:211:   ************* The following error categories occurred.  Consider correcting or noting.
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:212:   ************* Loads Initialization did not Converge
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:213:   ************* ..1) very high thermal mass such as very thick concrete (solution: increase max number of warmup
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:221:   ************* ..   loads tolerances (.04 default)
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:222:   ************* Nominally Unused Constructions
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:223:   ************* ..The nominally unused constructions warning is provided to alert you to potential conditions that can cause
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:224:   ************* ..extra time during simulation. Each construction is calculated by the algorithm indicated in the HeatBalanceAlgorithm
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:225:   ************* ..object. You may remove the constructions indicated (when you use the DisplayExtraWarnings option).
+  scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:226:   *************
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:227:   ************* EnergyPlus Warmup Error Summary. During Warmup: 0 Warning; 16 Severe Errors.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:228:   ************* EnergyPlus Sizing Error Summary. During Sizing: 21 Warning; 0 Severe Errors.
+> scratch\p1_compact_seattle_1day_opyplus_smoke\03_SchoolPrimary\opyplus_output\eplusout.err:229:   ************* EnergyPlus Completed Successfully-- 59200 Warning; 16 Severe Errors; Elapsed Time=00hr 04min 22.90sec
+
+
+
+Path: scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\traceback.txt
+Exists: True
+Traceback (most recent call last):
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\backend.py", line 123, in load
+    return epm_class.from_idf(str(source_path), **kwargs)
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epm.py", line 123, in from_idf
+    return cls().from_epstf(
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\epgm.py", line 520, in from_epstf
+    return cls._create_from_buffer_or_path(
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\epgm.py", line 172, in _create_from_buffer_or_path
+    return cls(
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epm.py", line 74, in __init__
+    super().__init__(
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\epgm.py", line 152, in __init__
+    self._dev_populate_from_json_data(json_data)
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\epgm.py", line 219, in _dev_populate_from_json_data
+    r._dev_activate_links()
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\record.py", line 209, in _dev_activate_links
+    v.activate(self)
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\link.py", line 76, in activate
+    self.relations_manager.register_link(self)
+  File "C:\Users\ninad\anaconda3\envs\scalebridge-dev-gpu\lib\site-packages\opyplus\epgm\relations_manager.py", line 137, in register_link
+    raise FieldValidationError(
+opyplus.exceptions.FieldValidationError: No object found with any of given references : (('ScheduleTypeLimitsNames', 'control type'),). Table: Schedule:Compact, index: 1, ref: schedule_type_limits_name, value: control type.
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\preparer.py", line 103, in prepare
+    model = self._backend.load(source_path)
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\backend.py", line 125, in load
+    raise IdfBackendError(f"opyplus could not load IDF: {source_path}") from exc
+scalebridge.integration.energyplus.idf.backend.IdfBackendError: opyplus could not load IDF: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\Commercial_Prototypes\ASHRAE\90_1_2013\ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\_smoke_p1_compact_seattle_1day_opyplus.py", line 142, in main
+    preparation = idf_preparer.prepare(
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\idf\preparer.py", line 113, in prepare
+    raise IdfPreparationError(
+scalebridge.integration.energyplus.idf.preparer.IdfPreparationError: could not prepare IDF for case epcase_2beac1a5e7b449ed9ad7f48d: opyplus could not load IDF: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\Commercial_Prototypes\ASHRAE\90_1_2013\ASHRAE901_ApartmentMidRise_STD2013_Seattle.idf
+
+FullName                                                                                                                                                                                                                  Mode   Length LastWriteTime       
+--------                                                                                                                                                                                                                  ----   ------ -------------       
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\inputs         da---l        6/30/2026 9:12:59 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\opyplus_output da---l        6/30/2026 9:12:59 PM
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scratch\p1_compact_seattle_1day_opyplus_smoke\04_ApartmentMidRise\traceback.txt  -a---l 3944   6/30/2026 9:13:09 PM
+
+
+
+Output file: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\block_e_direct_validation.txt

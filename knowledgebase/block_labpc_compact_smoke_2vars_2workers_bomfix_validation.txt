@@ -1,0 +1,97 @@
+﻿ScaleBridge Lab-PC Compact Smoke BOM Fix + Retry
+Repo root: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+first_bytes_before=EF BB BF 22 22 22 56 61
+bom_fix_exit_code=0
+first_bytes_after=22 22 22 56 61 72 69 61
+WARNING: could not remove src\scalebridge\integration\energyplus\generation\__pycache__
+The process cannot access the file 'F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\integration\energyplus\generation\__pycache__' because it is being used by another process.
+campaignRoot=F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_v1
+generationRoot=F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_v1\generation
+normalizationRoot=F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_v1\normalization\idfs
+
+===== NO-PYC SYNTAX VALIDATION =====
+checking: src\scalebridge\integration\energyplus\idf\pre_opyplus_normalization.py
+  PASS: src\scalebridge\integration\energyplus\idf\pre_opyplus_normalization.py
+checking: src\scalebridge\integration\energyplus\generation\variable_wise.py
+  PASS: src\scalebridge\integration\energyplus\generation\variable_wise.py
+checking: src\scalebridge\integration\energyplus\generation\orchestrator.py
+  PASS: src\scalebridge\integration\energyplus\generation\orchestrator.py
+checking: scripts\energyplus\run_p1_compact_campaign.py
+  PASS: scripts\energyplus\run_p1_compact_campaign.py
+
+syntax_validation_exit_code=0
+
+===== COMPACT CAMPAIGN REAL SMOKE: 1 CASE, 2 VARIABLES, 2 WORKERS, LEGACY PICKLES =====
+compact_smoke_exit_code=-1
+
+FullName                                                                                                                                                                                    Length LastWriteTime       
+--------                                                                                                                                                                                    ------ -------------       
+F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_v1\generation                7/2/2026 12:44:46 PM
+F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_v1\normalization             7/2/2026 12:44:46 PM
+F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_v1\normalization\idfs        7/2/2026 12:44:46 PM
+
+
+
+
+===== LATEST RUN FILES =====
+No latest_run.json files found.
+
+===== CANONICAL METADATA FILES =====
+No canonical metadata.json files found.
+
+===== VARIABLE MANIFEST FILES =====
+
+===== RAW CSV CHECK =====
+PASS: no raw variable CSV files found under raw\variable_csv.
+
+===== LEGACY PICKLE CHECK =====
+
+===== MLFLOW EXPORT AFTER RUN =====
+MLflow export completed
+machine_id: lab-pc
+tracking_uri: http://127.0.0.1:5000
+output_dir: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_exports\lab-pc
+experiment_count: 0
+run_count: 0
+
+mlflow_export_exit_code=0
+
+===== MLFLOW MERGE AFTER RUN =====
+MLflow exports merged
+exports_root: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_exports
+output_dir: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\experiment_registry
+included_export_count: 3
+run_count_raw: 10
+run_count_merged: 10
+machine_ids: ['home-pc', 'laptop']
+experiment_names: ['p1_ashrae2013_one_zone_64_generation', 'scalebridge_connectivity_test']
+
+
+===== SHORT WORK ROOT SNAPSHOT AFTER RUN =====
+
+
+===== GIT STATUS AFTER RUN =====
+ M README.md
+ D block_e_direct_validation.txt
+ M src/scalebridge/integration/energyplus/generation/variable_wise.py
+?? _validate_syntax_no_pyc.py
+?? block_labpc_compact_smoke_2vars_2workers_bomfix_validation.txt
+?? block_labpc_compact_smoke_2vars_2workers_retry_validation.txt
+?? block_labpc_compact_smoke_2vars_2workers_validation.txt
+?? environments/locks/dev_laptop_gpu_full/pillow-torchvision-dll-test.txt
+?? environments/locks/home_pc_gpu_full/
+?? environments/locks/lab_pc_gpu_full/
+?? experiments/block_f_compact_4building_smoke_failure_diagnostic.txt
+?? experiments/block_f_schoolprimary_apartmentmidrise_deep_diagnostic.txt
+?? knowledgebase/block_compact_campaign_compileall_dryrun_validation.txt
+?? knowledgebase/block_e_direct_validation.txt
+?? knowledgebase/p1_compact_campaign_selection_notes.txt
+?? knowledgebase/scalebridge_four_machine_environment_variables_and_validation.txt
+?? scripts/energyplus/run_p1_compact_campaign.py
+?? src/scalebridge/integration/energyplus/idf/pre_opyplus_normalization.py
+?? tests/smoke/
+
+bom_fix_exit_code=0
+compact_smoke_exit_code=-1
+mlflow_merge_exit_code=0
+Output file: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\block_labpc_compact_smoke_2vars_2workers_bomfix_validation.txt
