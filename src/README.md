@@ -3,7 +3,7 @@
 **Repository:** `scalebridge-research`  
 **Python package:** `scalebridge`  
 **Project context:** PhD_Code_Framework / ScaleBridge research software stack  
-**Primary current focus:** P1 compact EnergyPlus generation completed; Stage B aggregation now supports a 5-level custom aggregation ladder, exact matrix execution, memory-safe System Node Mass Flow Rate streaming, and one-parquet-at-a-time aggregation; next execution is the full 240-plan compact aggregation matrix  
+**Primary current focus:** P1 compact EnergyPlus generation completed; next stage is aggregation  
 **Current date context:** July 2026  
 
 ScaleBridge is a professional research-software framework for scalable building thermal modeling, EnergyPlus data generation, one-zone commercial building datasets, grey-box and Bayesian estimation, scientific machine learning, PyTorch baselines, MLflow experiment tracking, automated hyperparameter tuning, and later building-grid co-simulation and control experiments.
@@ -16,7 +16,7 @@ The repository is being developed to support the PhD paper/dissertation workflow
 
 ## 1. Current Development Snapshot
 
-The current validated milestones are **Stage A: P1 compact EnergyPlus variable-wise generation** and **Stage B: multi-level custom aggregation through the full 16-case L1 equal smoke run**.
+The current validated milestone is **Stage A: P1 compact EnergyPlus variable-wise generation**.
 
 The validated full compact campaign is:
 
@@ -64,7 +64,7 @@ The latest validated code state includes:
 - Pre-opyplus IDF normalization for `ApartmentMidRise`
 - Full compact 4-building x 4-climate lab-PC campaign validation
 
-The next major execution stage is the **full 240-plan Stage B aggregation matrix** on `p1_compact_4b4c_labpc_1w_v1`, using exact matrix plan selection, one-parquet-at-a-time aggregation, memory-safe system-node mass-flow streaming, legacy pickle writing, and MLflow tracking/export/merge.
+The next major development stage is **Stage B aggregation**, which must consume the validated variable-wise outputs and must not assume every case has all 35 requested variables.
 
 ---
 
@@ -1052,11 +1052,6 @@ Remove-Item -Recurse -Force scratch
 | `src/scalebridge/tracking/mlflow/semantic.py` | Semantic MLflow utilities |
 | `scripts/mlflow/export_mlflow_runs.py` | Export machine MLflow runs |
 | `scripts/mlflow/merge_mlflow_exports.py` | Merge MLflow exports |
-| `scripts/aggregation/run_p1_aggregation.py` | Production Stage B aggregation runner |
-| `scripts/aggregation/build_p1_aggregation_plan.py` | Build P1 aggregation plans |
-| `src/scalebridge/data/aggregation/engine.py` | Production aggregation engine |
-| `src/scalebridge/data/aggregation/rules.py` | Cleaned legacy_v1 aggregation rules |
-| `src/scalebridge/tracking/mlflow/aggregation.py` | Aggregation MLflow tracking helpers |
 | `knowledgebase/p1_compact_campaign_selection_notes.txt` | Compact campaign rationale |
 | `knowledgebase/scalebridge_four_machine_environment_variables_and_validation.txt` | Four-machine environment contract |
 
@@ -1080,379 +1075,56 @@ A new development chat should follow these rules:
 
 ---
 
----
+## 22. Next Development Stage: Stage B Aggregation
 
-## 22. Stage B Aggregation Status
+Stage A generation is complete for the compact P1 campaign.
 
-Stage B aggregation has been implemented and validated through single-case production runs.
-The aggregation pipeline consumes the variable-wise Stage A generation outputs and produces one-zone building-level time-series outputs for downstream regression, dataset construction, and modeling.
-
-Validated smoke campaign/case:
+Next stage:
 
 ```text
-campaign_id: p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
-case_id: epcase_827ca4812c0199221d031e59
-source_generation_run_id: epvwr_a8695a44ed3f
-building: RestaurantFastFood
-weather: Buffalo
-strategy: all_thermal_zones_to_one
-aggregate zone: Aggregated_Zone_1
-source zones: DINING + KITCHEN
-excluded zone: ATTIC
+Stage B aggregation
 ```
 
-Validated aggregation output shape:
+Stage B objective:
+
+Convert the case-wise variable parquet outputs into aggregated one-zone building-level timeseries suitable for downstream regression/modeling.
+
+Stage B inputs:
 
 ```text
-5-minute annual timestamps: 105,120
-aggregated time-series variables: 32
-long-format rows: 3,363,840
-wide preview shape: 100 rows × 33 columns
+<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/p1_compact_4b4c_labpc_1w_v1/generation/cases/<case_id>/latest_run.json
+<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/p1_compact_4b4c_labpc_1w_v1/generation/cases/<case_id>/rdd_probe/rdd_variable_intersection.json
+<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/p1_compact_4b4c_labpc_1w_v1/generation/cases/<case_id>/runs/<run_id>/canonical/variables/*.parquet
+<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/p1_compact_4b4c_labpc_1w_v1/generation/cases/<case_id>/runs/<run_id>/canonical/variable_manifest.json
 ```
 
-The row count is correct because:
+Stage B non-negotiable rule:
 
 ```text
-365 days × 24 hours/day × 12 samples/hour = 105,120 timestamps
-105,120 timestamps × 32 variables = 3,363,840 long rows
+Use RDD/manifest availability. Never assume all 35 requested variables exist.
 ```
 
-Validated weighting modes:
+Recommended first aggregation smoke:
 
 ```text
-equal
-floor_area
-volume
+RestaurantFastFood / Buffalo
 ```
 
-Validated static equipment outputs for the RestaurantFastFood/Buffalo smoke case:
-
-```text
-People_Level              46.9000
-Lights_Level            1162.9275
-ElectricEquipment_Level 11515.8835
-GasEquipment_Level      91932.6010
-```
-
-Validated diagnostics are expected and not failures:
-
-```text
-DINING missing gas-equipment convective heating key
-DINING missing gas-equipment radiant heating key
-OtherEquipment schedule not present
-HotWaterEquipment schedule not present
-SteamEquipment schedule not present
-```
+Then run all 16 compact cases after schema and logic are validated.
 
 ---
 
-## 23. Aggregation Modules and Scripts
+## 23. Current Status Statement
 
-Reusable aggregation modules:
+ScaleBridge has completed the P1 compact Stage A EnergyPlus generation milestone. The generation pipeline now includes case-specific RDD probing, requested-variable intersection, variable-wise EnergyPlus generation, strict artifact validation, MLflow tracking, MLflow export/merge, short-path Windows execution, and pre-opyplus normalization for `ApartmentMidRise`.
 
-| File | Purpose |
-|---|---|
-| `src/scalebridge/data/aggregation/models.py` | Shared dataclasses/enums for generation refs, RDD intersections, aggregation strategies, weight modes, rule sets, and plans |
-| `src/scalebridge/data/aggregation/discovery.py` | Campaign root resolution, generation run discovery, optional RDD manifest loading |
-| `src/scalebridge/data/aggregation/eio.py` | EIO zone information and schedule/equipment mapping extraction |
-| `src/scalebridge/data/aggregation/audit.py` | Audits generation outputs for aggregation readiness |
-| `src/scalebridge/data/aggregation/plans.py` | Builds aggregation plans and zone mappings |
-| `src/scalebridge/data/aggregation/loaders.py` | Loads canonical variable-wise Parquet outputs |
-| `src/scalebridge/data/aggregation/rules.py` | Cleaned `legacy_v1` aggregation rules |
-| `src/scalebridge/data/aggregation/writers.py` | JSON/CSV/Parquet/provenance writers |
-| `src/scalebridge/data/aggregation/engine.py` | Production aggregation campaign runner |
-| `src/scalebridge/tracking/mlflow/aggregation.py` | Aggregation MLflow tracking helpers |
-
-Aggregation scripts:
-
-| Script | Purpose |
-|---|---|
-| `scripts/aggregation/audit_generation_run_for_aggregation.py` | Audit generation runs before aggregation |
-| `scripts/aggregation/build_p1_aggregation_plan.py` | Build P1 aggregation plans |
-| `scripts/aggregation/probe_aggregation_variable_loader.py` | Probe canonical variable loading |
-| `scripts/aggregation/probe_aggregation_rules.py` | Probe aggregation rules before production writes |
-| `scripts/aggregation/run_p1_aggregation.py` | Production aggregation runner |
-
----
-
-## 24. Aggregation Inputs and Outputs
-
-Primary aggregation inputs:
-
-```text
-<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/<campaign_id>/generation/cases/<case_id>/latest_run.json
-<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/<campaign_id>/generation/cases/<case_id>/rdd_probe/rdd_variable_intersection.json
-<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/<campaign_id>/generation/cases/<case_id>/runs/<run_id>/canonical/variables/*.parquet
-<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/<campaign_id>/generation/cases/<case_id>/runs/<run_id>/canonical/variable_manifest.json
-<SCALEBRIDGE_GENERATED_DATA_ROOT>/campaigns/<campaign_id>/generation/cases/<case_id>/runs/<run_id>/canonical/eio_tables.json
-```
-
-Production aggregation output layout:
-
-```text
-<campaign_root>/aggregation/cases/<case_id>/runs/<aggregation_run_id>/
-  aggregation_manifest.json
-  inputs/
-    aggregation_plan.json
-    zone_mapping.csv
-    source_run_manifest.json
-    source_generation_run.json
-  diagnostics/
-    loaded_variables.csv
-    rule_summary.csv
-    rule_diagnostics.csv
-    schedule_equipment_mapping_used.csv
-    equipment_contributions.csv
-  zones/
-    Aggregated_Zone_1/
-      aggregated_timeseries_wide.parquet
-      aggregated_timeseries_wide_preview.csv
-      aggregated_timeseries_long.parquet
-      aggregated_timeseries_long_preview.csv
-      aggregated_static_equipment.parquet
-      aggregated_static_equipment.csv
-      equipment_contributions.csv
-      equipment_contributions.parquet
-      zone_mapping.csv
-  legacy/
-    Aggregation_Dict_1Zone.pickle
-```
-
-Campaign-level output layout:
-
-```text
-<campaign_root>/aggregation/campaign_runs/<aggregation_campaign_run_id>/
-  aggregation_campaign_manifest.json
-  aggregation_case_runs.csv
-  aggregation_outputs.csv
-  discovery_missing_rows.csv
-```
-
----
-
-## 25. Aggregation Rule Behavior
-
-Aggregation strategies:
-
-| Strategy | Meaning |
-|---|---|
-| `all_thermal_zones_to_one` | All included thermal zones map to `Aggregated_Zone_1`; default P1 mode |
-| `identity` | Each included source zone maps to its own aggregate zone |
-| `custom_groups` | Reserved for future user-defined grouping |
-
-Thermal-zone discovery:
-
-```text
-Source: canonical/eio_tables.json → Zone Information
-Include: Part of Total Building Area == Yes
-Exclude: non-building-area zones such as ATTIC
-```
-
-Weight modes:
-
-| Mode | Meaning |
-|---|---|
-| `equal` | Equal averaging across source zones |
-| `floor_area` | Floor-area weighted averaging |
-| `volume` | Volume weighted averaging |
-
-Rule families:
-
-| Family | Behavior |
-|---|---|
-| `Site` / `Facility` | Copy signal directly into each aggregate zone |
-| `Zone` | Exact source-zone key matching and weighted aggregation |
-| `Surface` | Safe source-zone surface matching; prevents excluded-zone leakage such as `ATTIC-FLOOR-KITCHEN` |
-| `System` | Token-safe source-zone matching plus `DIRECT AIR INLET NODE` pattern |
-| `Schedule` | EIO schedule/equipment mapping with exact-normalized schedule matching |
-
-Schedule aggregation produces equipment-specific schedule columns such as:
-
-```text
-Schedule_Value_People
-Schedule_Value_Lights
-Schedule_Value_ElectricEquipment
-Schedule_Value_GasEquipment
-```
-
-It also writes `equipment_contributions.csv`, which exposes every contributing EIO equipment object before scalar reduction.
-
----
-
-## 26. Aggregation Commands
-
-Compile:
-
-```powershell
-python -m compileall src scripts
-```
-
-Build aggregation plans for a campaign:
-
-```powershell
-python scripts\aggregation\build_p1_aggregation_plan.py `
-  --campaign-id p1_compact_4b4c_labpc_1w_v1 `
-  --weight-mode equal
-```
-
-```powershell
-python scripts\aggregation\build_p1_aggregation_plan.py `
-  --campaign-id p1_compact_4b4c_labpc_1w_v1 `
-  --weight-mode floor_area
-```
-
-```powershell
-python scripts\aggregation\build_p1_aggregation_plan.py `
-  --campaign-id p1_compact_4b4c_labpc_1w_v1 `
-  --weight-mode volume
-```
-
-Run production aggregation with MLflow:
-
-```powershell
-python scripts\aggregation\run_p1_aggregation.py `
-  --campaign-id p1_compact_4b4c_labpc_1w_v1 `
-  --weight-mode equal `
-  --continue-on-error `
-  --write-legacy-pickle `
-  --mlflow `
-  --mlflow-experiment-name ScaleBridge_P1_Aggregation_4b4c_1w
-```
-
-After equal passes, repeat with:
-
-```text
---weight-mode floor_area
---weight-mode volume
-```
-
-Export aggregation MLflow runs on lab-PC:
-
-```powershell
-python scripts\mlflow\export_mlflow_runs.py `
-  --experiment-name ScaleBridge_P1_Aggregation_4b4c_1w `
-  --machine-id lab-pc
-```
-
-Merge MLflow exports:
-
-```powershell
-python scripts\mlflow\merge_mlflow_exports.py
-```
-
-PowerShell path note:
-
-```text
-Use $env:SCALEBRIDGE_GENERATED_DATA_ROOT in PowerShell.
-Do not use %SCALEBRIDGE_GENERATED_DATA_ROOT%, which is cmd.exe syntax.
-```
-
----
-
-## 27. Aggregation MLflow Tracking
-
-Aggregation tracking helper:
-
-```text
-src/scalebridge/tracking/mlflow/aggregation.py
-```
-
-Validated test experiment:
-
-```text
-ScaleBridge_P1_Aggregation_Test
-```
-
-Recommended 4×4 compact aggregation experiment:
-
-```text
-ScaleBridge_P1_Aggregation_4b4c_1w
-```
-
-Aggregation MLflow logs:
-
-```text
-params:
-  campaign_id
-  strategy
-  rule_set
-  weight_mode
-  case_count
-  write_legacy_pickle
-  continue_on_error
-
-metrics:
-  case_count
-  successful_case_count
-  failed_case_count
-  per-case loaded_variable_count
-  per-case aggregate_zone_count
-  per-case aggregated_long_rows
-  per-case static_equipment_rows
-  per-case equipment_contribution_rows
-  per-case diagnostic_rows
-  per-case runtime_seconds
-
-artifacts:
-  aggregation_campaign_summary/
-  aggregation_cases/<case_id>/
-```
-
-Validated MLflow export/merge after the aggregation smoke test:
-
-```text
-laptop aggregation test export:
-  experiment_name: ScaleBridge_P1_Aggregation_Test
-  machine_id: laptop
-  experiment_count: 1
-  run_count: 2
-
-merged registry:
-  included_export_count: 3
-  run_count_raw: 21
-  run_count_merged: 21
-  machine_ids: home-pc, lab-pc, laptop
-```
-
----
-
-## 28. Immediate Next Step
-
-The next step is campaign-scale Stage B aggregation for:
-
-```text
-campaign_id: p1_compact_4b4c_labpc_1w_v1
-```
-
-Run on lab-PC:
-
-1. Build equal, floor_area, and volume aggregation plans.
-2. Run equal aggregation with MLflow first.
-3. Inspect campaign-level aggregation summary files.
-4. If all 16 cases pass, run floor_area and volume.
-5. Export and merge MLflow aggregation runs.
-
-After equal run, inspect/upload first:
-
-```text
-<campaign_root>/aggregation/campaign_runs/<aggregation_campaign_run_id>/aggregation_campaign_manifest.json
-<campaign_root>/aggregation/campaign_runs/<aggregation_campaign_run_id>/aggregation_case_runs.csv
-<campaign_root>/aggregation/campaign_runs/<aggregation_campaign_run_id>/aggregation_outputs.csv
-```
-
----
-
-## 29. Previous Updated Current Status Statement
-
-ScaleBridge has completed the P1 compact Stage A EnergyPlus generation milestone and has developed/validated the Stage B aggregation pipeline through single-case production runs.
-
-Validated Stage A campaign:
+The validated campaign is:
 
 ```text
 p1_compact_4b4c_labpc_1w_v1
 ```
 
-Validated Stage A outputs:
+It produced:
 
 ```text
 16 successful cases
@@ -1462,430 +1134,27 @@ Validated Stage A outputs:
 0 tracebacks
 ```
 
-Validated Stage B smoke results:
-
-```text
-29 loaded variables
-1 aggregate zone
-32 aggregated time-series variables
-105,120 timestamps
-3,363,840 long rows
-4 static equipment rows
-9 equipment contribution rows
-5 expected diagnostics
-equal/floor_area/volume modes validated
-MLflow aggregation export/merge validated
-```
-
-Current next focus:
-
-```text
-Run campaign-wide Stage B aggregation on p1_compact_4b4c_labpc_1w_v1.
-```
+The next development focus is **Stage B aggregation**.
 
 ---
 
-## 30. July 12 Stage B Update: Multi-Level Compact Aggregation
+## 24. Useful Handoff Files
 
-The Stage B aggregation pipeline has now moved beyond single-case all-to-one aggregation. It supports a paper-ready multi-resolution aggregation ladder for the compact P1 campaign:
-
-```text
-campaign_id: p1_compact_4b4c_labpc_1w_v1
-buildings: 4
-weather/climate cases: 16
-aggregation levels: 5
-weight modes: 3
-full matrix size: 240 aggregation plans/runs
-```
-
-Final aggregation levels:
-
-| Aggregation ID | Label | Meaning |
-|---|---:|---|
-| `p1_l01_all_to_one` | L1 | Whole-building response |
-| `p1_l02_functional` | L2 | Major functional/use grouping |
-| `p1_l03_intermediate` | L3 | Coarse spatial/function grouping |
-| `p1_l04_spatial_detailed` | L4 | Fine spatial grouping |
-| `p1_l05_identity` | L5 | No aggregation / approved-zone identity |
-
-Weight modes:
+The following historical handoffs and reports support this README and broader project context:
 
 ```text
-equal
-floor_area
-volume
+Scalebridge-Main-Context-Latest.txt
+scalebridge_energyplus_variable_wise_handoff_2026-06-30.txt
+scalebridge_week1_day1_data_pipeline_execution_context.txt
+scalebridge_week1_master_data_pipeline_context.txt
+scalebridge_week0_master_coding_context_2026-05-28.txt
+scalebridge_week0_environment_folder_reorg_2026-05-31.txt
+scalebridge_week0_environment_source_inspection_2026-05-31.txt
+scalebridge_week0_github_setup_verification_2026-05-31.txt
+scalebridge_week0_step2_created_missing_files_2026-05-31.txt
+scalebridge_week0_step2_create_missing_files_commands_2026-05-31.txt
+scalebridge_week0_final_repo_inspection_2026-05-31.txt
+scalebridge_structure_week0_final_2026-05-31.txt
+scalebridge_next_day_coding_context_2026-05-29.txt
+ScaleBridge_Week0_End_of_Week_Report.txt
 ```
-
-Final aggregation experiment:
-
-```text
-ScaleBridge_P1_Aggregation_4b4c_1w
-```
-
----
-
-## 31. Approved Zones and Aggregation Ladder
-
-Approved source-zone counts in the compact campaign:
-
-| Building | Approved source zones |
-|---|---:|
-| `RestaurantFastFood` | 2 |
-| `OfficeSmall` | 5 |
-| `RetailStripmall` | 10 |
-| `ApartmentMidRise` | 27 |
-
-High-level ladder:
-
-| Level | RestaurantFastFood | OfficeSmall | RetailStripmall | ApartmentMidRise |
-|---|---|---|---|---|
-| L1 | All zones | All zones | All stores | All zones |
-| L2 | Dining; kitchen | Core; perimeter | Left block; right block | Residential; common/non-residential |
-| L3 | Identity | Core; two perimeter pairs | Five adjacent store pairs | Office; corridors; floor residential groups |
-| L4 | Identity | Identity | Identity | Office, individual corridors, floor-by-row residential groups |
-| L5 | Identity | Identity | Identity | Identity |
-
-A Google-Sheets-ready grouping record was created with:
-
-```text
-Aggregation_Groups_Detailed
-Constituent_Long
-Building_Level_Summary
-Approved_Source_Zones
-```
-
-The detailed grouping table records every aggregate zone and its constituent source zones.
-
----
-
-## 32. Custom Grouping and Plan Building
-
-The compact 4x4 aggregation ladder is generated by:
-
-```text
-scripts/aggregation/build_p1_4b4c_custom_grouping_csv.py
-```
-
-It writes:
-
-```text
-<campaign_root>/aggregation/custom_grouping_levels/p1_4b4c_custom_groups.csv
-<campaign_root>/aggregation/custom_grouping_levels/p1_4b4c_custom_groups_case_summary.csv
-<campaign_root>/aggregation/custom_grouping_levels/p1_4b4c_custom_groups_manifest.json
-```
-
-The plan builder now supports custom groupings:
-
-```powershell
-python scripts\aggregation\build_p1_aggregation_plan.py `
-  --campaign-id p1_compact_4b4c_labpc_1w_v1 `
-  --strategy custom_groups `
-  --rule-set legacy_v1 `
-  --weight-mode equal `
-  --custom-zone-groups "$env:SCALEBRIDGE_GENERATED_DATA_ROOT\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\custom_grouping_levels\p1_4b4c_custom_groups.csv"
-```
-
-Repeat with:
-
-```text
---weight-mode floor_area
---weight-mode volume
-```
-
-Validated plan-build result per weight mode:
-
-```text
-plan_count: 80
-zone_mapping_row_count: 880
-included_thermal_zone_row_count: 176
-excluded_zone_row_count: 8
-missing_plan_input_row_count: 0
-```
-
-Total formal compact aggregation plans:
-
-```text
-80 plans/weight × 3 weights = 240 plans
-```
-
----
-
-## 33. Aggregation Matrix Runner
-
-The preferred runner for the full compact aggregation is:
-
-```text
-scripts/aggregation/run_p1_aggregation_matrix.py
-```
-
-It selects exact `aggregation_plan.json` paths from `plan_build_*` folders and runs combinations over:
-
-```text
-case_id × aggregation_id × weight_mode
-```
-
-It writes:
-
-```text
-<campaign_root>/aggregation/matrix_runs/<matrix_run_id>/
-  selected_aggregation_plans.csv
-  aggregation_matrix_case_runs.csv
-  aggregation_matrix_outputs.csv
-  missing_generation_rows.csv
-  aggregation_matrix_manifest.json
-```
-
-Full lab-PC matrix command with legacy pickles:
-
-```powershell
-python scripts\aggregation\run_p1_aggregation_matrix.py `
-  --campaign-id p1_compact_4b4c_labpc_1w_v1 `
-  --aggregation-id p1_l01_all_to_one `
-  --aggregation-id p1_l02_functional `
-  --aggregation-id p1_l03_intermediate `
-  --aggregation-id p1_l04_spatial_detailed `
-  --aggregation-id p1_l05_identity `
-  --weight-mode equal `
-  --weight-mode floor_area `
-  --weight-mode volume `
-  --continue-on-error `
-  --write-legacy-pickle `
-  --mlflow `
-  --mlflow-experiment-name ScaleBridge_P1_Aggregation_4b4c_1w `
-  --mlflow-run-name p1_4b4c_all_levels_all_weights_one_parquet_with_pickle_labpc
-```
-
-Expected full matrix:
-
-```text
-selected_plan_count: 240
-successful_plan_count: 240
-failed_plan_count: 0
-```
-
----
-
-## 34. Memory-Safe System Node Mass Flow Rate Handling
-
-`System Node Mass Flow Rate` is downstream-important and is not skipped.
-
-New module:
-
-```text
-src/scalebridge/data/aggregation/system_node_mass_flow.py
-```
-
-Why it exists:
-
-- `System Node Mass Flow Rate` is node-level, not directly zone-level.
-- ApartmentMidRise mass-flow files are very large, around 47.3 million rows per climate case.
-- Loading it as a normal pandas dataframe after many other variables caused memory pressure.
-
-Memory-safe behavior:
-
-```text
-read only required columns
-stream parquet in pyarrow batches
-map node key_value to source zone using normalized prefix rules
-map source zone to aggregate zone using the aggregation plan
-sum mass flow by timestamp and aggregate zone
-write mapping and unmapped-node diagnostics
-```
-
-Currently supported node naming conventions:
-
-```text
-<Approved Zone Name> DIRECT AIR INLET NODE NAME
-<Approved Zone Name> ZONE EQUIP INLET
-```
-
-Examples:
-
-| Node key | Source zone |
-|---|---|
-| `CORE_ZN DIRECT AIR INLET NODE NAME` | `Core_ZN` |
-| `LGSTORE1 DIRECT AIR INLET NODE NAME` | `LGstore1` |
-| `DINING DIRECT AIR INLET NODE NAME` | `Dining` |
-| `G N1 APARTMENT ZONE EQUIP INLET` | `G N1 Apartment` |
-
-If an approved zone has no mapped mass-flow node, the aggregation still succeeds. The thermal variables remain present and diagnostics record the missing node mapping.
-
-New diagnostics:
-
-```text
-diagnostics/system_node_mass_flow_summary.csv
-diagnostics/system_node_mass_flow_mapping.csv
-diagnostics/system_node_mass_flow_unmapped_nodes.csv
-```
-
----
-
-## 35. One-Parquet-at-a-Time Aggregation Engine
-
-The aggregation engine was updated to reduce memory pressure.
-
-Updated file:
-
-```text
-src/scalebridge/data/aggregation/engine.py
-```
-
-Old behavior:
-
-```text
-load all canonical variable parquet files into memory
-then apply aggregation rules once
-```
-
-New behavior:
-
-```text
-for each variable:
-  load one parquet
-  aggregate that one variable
-  merge compact aggregated output into accumulator
-  delete raw dataframe
-  garbage collect
-  move to next parquet
-```
-
-Special handling:
-
-```text
-System Node Mass Flow Rate is streamed through system_node_mass_flow.py
-instead of loaded as a normal dataframe.
-```
-
-The engine should now hold at most:
-
-```text
-one normal raw parquet dataframe
-+ accumulated aggregated outputs
-```
-
-instead of all raw variables at once.
-
-Validated smoke command:
-
-```powershell
-python scripts\aggregation\run_p1_aggregation_matrix.py `
-  --campaign-id p1_compact_4b4c_labpc_1w_v1 `
-  --aggregation-id p1_l01_all_to_one `
-  --weight-mode equal `
-  --continue-on-error `
-  --write-legacy-pickle `
-  --mlflow `
-  --mlflow-experiment-name ScaleBridge_P1_Aggregation_4b4c_1w `
-  --mlflow-run-name p1_4b4c_smoke_l01_equal_one_parquet_labpc
-```
-
-Validated smoke result:
-
-```text
-selected_plan_count: 16
-successful_plan_count: 16
-failed_plan_count: 0
-```
-
-This validated:
-
-- one-parquet-at-a-time aggregation
-- System Node Mass Flow Rate streaming
-- all four ApartmentMidRise cases
-- all four OfficeSmall cases
-- all four RestaurantFastFood cases
-- all four RetailStripmall cases
-- legacy pickle writing
-- MLflow matrix tracking
-
----
-
-## 36. Storage and Machine Data Policy
-
-Observed L1 equal smoke storage:
-
-```text
-approximately 1 GB for 16 cases, one aggregation level, one weight mode, with legacy pickles
-```
-
-Full matrix estimate:
-
-| Estimate type | Approximate storage |
-|---|---:|
-| Run-count lower bound | ~15 GB |
-| Aggregate-zone scaled estimate | ~70–80 GB |
-| Conservative practical estimate | ~100–120 GB |
-| Safe free-space target | ~150 GB |
-
-Machine policy:
-
-| Machine | Data role |
-|---|---|
-| `lab-pc` | Full generation and aggregation storage; preferred full matrix execution |
-| `home-pc` | Also has enough space for full aggregation outputs |
-| `laptop` | Code development only; Dropbox data folder should remain online-only |
-| `kamiak` | Later ANN/ML training target after curated dataset copy |
-
-Recommended later Kamiak export:
-
-```text
-<SCALEBRIDGE_GENERATED_DATA_ROOT>/training_exports/p1_4b4c_1w_aggregation_v1/
-```
-
-That export should contain model-training artifacts only, for example:
-
-```text
-aggregated_timeseries_wide.parquet
-aggregation_manifest.json
-zone_mapping.csv
-selected provenance/diagnostics
-```
-
-Do not copy all previews, diagnostics, and legacy pickles to Kamiak unless required.
-
----
-
-## 37. Current Status After July 12 Stage B Work
-
-Current validated state:
-
-```text
-Stage A compact EnergyPlus generation: complete
-Stage B custom grouping ladder: complete
-Stage B custom plan building: complete for 240 plans
-Stage B matrix runner: implemented
-Stage B MLflow matrix logging: implemented
-System Node Mass Flow Rate streaming: implemented
-one-parquet-at-a-time engine: implemented
-L1 equal 16-case smoke: passed
-```
-
-Latest validated smoke:
-
-```text
-campaign_id: p1_compact_4b4c_labpc_1w_v1
-aggregation_id: p1_l01_all_to_one
-weight_mode: equal
-selected_plan_count: 16
-successful_plan_count: 16
-failed_plan_count: 0
-write_legacy_pickle: true
-mlflow: true
-```
-
-Current next execution:
-
-```text
-Run the full 240-plan compact Stage B aggregation matrix on lab-PC.
-```
-
-After full run, export and merge MLflow:
-
-```powershell
-python scripts\mlflow\export_mlflow_runs.py `
-  --experiment-name ScaleBridge_P1_Aggregation_4b4c_1w `
-  --machine-id lab-pc
-
-python scripts\mlflow\merge_mlflow_exports.py
-```
-

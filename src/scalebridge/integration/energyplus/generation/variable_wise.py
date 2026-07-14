@@ -339,13 +339,41 @@ def write_variable_manifest(
     return json_destination, csv_destination
 
 
-def delete_raw_csv_after_success(path: str | Path) -> bool:
-    """Delete one raw variable CSV after successful canonical/legacy creation."""
-    target = Path(path).expanduser().resolve()
-    if not target.exists():
-        return False
-    target.unlink()
-    return True
+def delete_raw_csv_after_success(
+    raw_csv_path: Path,
+    *,
+    retries: int = 5,
+    delay_seconds: float = 1.0,
+) -> bool:
+    """
+    Delete raw EnergyPlus CSV after canonical outputs were successfully written.
+
+    This cleanup must never invalidate an otherwise successful variable artifact.
+    On Windows/Dropbox machines, a recently written CSV can remain temporarily
+    locked by the writer, Dropbox sync, antivirus, or indexing. In that case,
+    retry a few times and then keep the raw CSV instead of raising.
+
+    Returns
+    -------
+    bool
+        True if the raw CSV is absent after cleanup.
+        False if it still exists because deletion was blocked.
+    """
+    target = Path(raw_csv_path)
+
+    for attempt in range(1, retries + 1):
+        try:
+            target.unlink()
+            return True
+        except FileNotFoundError:
+            return True
+        except PermissionError:
+            if attempt < retries:
+                time.sleep(delay_seconds)
+                continue
+            return False
+
+    return not target.exists()
 
 
 def move_energyplus_variable_outputs(

@@ -1,0 +1,85 @@
+SCALEBRIDGE P1 AGGREGATION MATRIX VALIDATION REPORT
+================================================================================
+created_at_utc: 2026-07-14T18:30:01.114010+00:00
+repo_root: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+campaign_id: p1_compact_4b4c_labpc_1w_v1
+campaign_root: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1
+matrix_run_dir: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\matrix_runs\aggregation_matrix_20260712_215839
+expect_plan_count: 240
+expect_legacy_pickle: True
+
+1. MATRIX-LEVEL FILES
+--------------------------------------------------------------------------------
+aggregation_matrix_manifest: FOUND | F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\matrix_runs\aggregation_matrix_20260712_215839\aggregation_matrix_manifest.json
+aggregation_matrix_case_runs: FOUND | F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\matrix_runs\aggregation_matrix_20260712_215839\aggregation_matrix_case_runs.csv
+aggregation_matrix_outputs: FOUND | F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\matrix_runs\aggregation_matrix_20260712_215839\aggregation_matrix_outputs.csv
+aggregation_matrix_failures: not present | F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\matrix_runs\aggregation_matrix_20260712_215839\aggregation_matrix_failures.csv
+
+2. MATRIX SUMMARY
+--------------------------------------------------------------------------------
+manifest.selected_plan_count: 240
+manifest.successful_plan_count: 240
+manifest.failed_plan_count: 0
+case_run_rows: 240
+output_rows: 240
+failure_rows: 0
+status_counts: {'completed': 240}
+
+3. COVERAGE
+--------------------------------------------------------------------------------
+building_counts: {'ApartmentMidRise': 60, 'OfficeSmall': 60, 'RestaurantFastFood': 60, 'RetailStripmall': 60}
+weather_counts: {'Buffalo': 60, 'Seattle': 60, 'Tampa': 60, 'Tucson': 60}
+aggregation_id_counts: {'p1_l01_all_to_one': 48, 'p1_l02_functional': 48, 'p1_l03_intermediate': 48, 'p1_l04_spatial_detailed': 48, 'p1_l05_identity': 48}
+weight_mode_counts: {'equal': 80, 'floor_area': 80, 'volume': 80}
+unique_case_level_weight_combos: 240
+
+4. PER-RUN OUTPUT CHECKS
+--------------------------------------------------------------------------------
+run_roots_seen: 240
+missing_run_roots: 0
+missing_manifests: 0
+manifest_status_counts: {'completed': 240}
+aggregate_zone_counts: {'1': 48, '10': 36, '2': 84, '27': 12, '3': 12, '5': 48}
+missing_diagnostics: {}
+missing_zone_files: {}
+missing_legacy_pickles: 0
+
+5. SHARED NODE-MAPPING CHECKS
+--------------------------------------------------------------------------------
+System Node Temperature:
+  summary_file_count: 240
+  mapping_file_count: 240
+  unmapped_file_count: 240
+  total_source_key_count: 33120
+  total_mapped_key_count: 2460
+  total_unmapped_key_count: 30660
+  total_mapped_row_count: 258595200
+  total_skipped_row_count: 4181673600
+  runs_with_zero_mapped_keys: 0
+  matched_suffix_counts: {'DIRECT AIR INLET NODE NAME': 1020, 'ZONE EQUIP INLET': 1440}
+System Node Mass Flow Rate:
+  summary_file_count: 240
+  mapping_file_count: 240
+  unmapped_file_count: 240
+  total_source_key_count: 33120
+  total_mapped_key_count: 2460
+  total_unmapped_key_count: 30660
+  total_mapped_row_count: 258595200
+  total_skipped_row_count: 4181673600
+  runs_with_zero_mapped_keys: 0
+  matched_suffix_counts: {'DIRECT AIR INLET NODE NAME': 1020, 'ZONE EQUIP INLET': 1440}
+
+6. WIDE PARQUET SAMPLE COLUMN CHECK
+--------------------------------------------------------------------------------
+wide_parquet_total_found: 1176
+wide_parquet_sample_count: 50
+accepted_node_column_aliases: {'System Node Temperature': ('System_Node_Temperature', 'System_Node_Temperature_'), 'System Node Mass Flow Rate': ('System_Node_Mass_Flow_Rate', 'System_Node_Mass_Flow_Rate_')}
+missing_required_node_columns_in_sample: {}
+
+7. RESULT
+--------------------------------------------------------------------------------
+status: PASS
+error_count: 0
+warning_count: 0
+
+END OF REPORT

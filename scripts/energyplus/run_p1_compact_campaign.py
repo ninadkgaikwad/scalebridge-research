@@ -74,7 +74,13 @@ from scalebridge.integration.energyplus.generation.variable_wise import (
 from scalebridge.integration.energyplus.idf.pre_opyplus_normalization import (
     normalize_idf_before_opyplus,
 )
-
+from scalebridge.integration.energyplus.generation.rdd import (
+    filter_requested_variables_by_rdd,
+    get_requested_variable_name,
+)
+from scalebridge.integration.energyplus.generation.rdd_probe import (
+    run_energyplus_rdd_probe,
+)
 
 DEFAULT_CAMPAIGN_ID = "p1_ashrae2013_one_zone_compact_4b4c"
 
@@ -284,18 +290,74 @@ def main(argv: Sequence[str] | None = None) -> int:
         )
 
         try:
+
+            requested_output_variables = list(selected_variables)
+
+            rdd_probe_root = case_root / "rdd_probe"
+
+            rdd_probe_result = run_energyplus_rdd_probe(
+                source_idf_path=record.normalized_idf_path,
+                weather_path=case_weather_path(case_spec),
+                output_dir=rdd_probe_root,
+            )
+
+            available_output_variables, unavailable_output_variables = (
+                filter_requested_variables_by_rdd(
+                    requested_output_variables,
+                    rdd_probe_result.rdd_path,
+                    variable_name_attr="variable_name",
+                )
+            )
+
+            write_rdd_intersection_manifest(
+                output_path=rdd_probe_root / "rdd_variable_intersection.json",
+                case_id=str(case_spec.case_id),
+                rdd_path=rdd_probe_result.rdd_path,
+                requested_variables=requested_output_variables,
+                available_variables=available_output_variables,
+                unavailable_variables=unavailable_output_variables,
+            )
+
+            print()
+            print("RDD variable filtering:")
+            print(f"requested_variable_count: {len(requested_output_variables)}")
+            print(f"rdd_available_variable_count: {len(available_output_variables)}")
+            print(f"rdd_unavailable_variable_count: {len(unavailable_output_variables)}")
+
+            if unavailable_output_variables:
+                print("RDD-unavailable variables skipped:")
+                for variable in unavailable_output_variables:
+                    print(f"  - {get_requested_variable_name(variable)}")
+
+            if not available_output_variables:
+                raise RuntimeError(
+                    "RDD filtering produced zero available output variables.\n"
+                    f"case_id: {case_spec.case_id}\n"
+                    f"rdd_path: {rdd_probe_result.rdd_path}\n"
+                    f"requested_variable_count: {len(requested_output_variables)}"
+                )
+
             generate_variable_wise_case(
-                                            case_spec=case_spec,
-                                            generated_data_root=generated_data_root,
-                                            campaign_id=campaign_id,
-                                            case_collection_name=case_collection_name,
-                                            machine_id=args.machine_id,
-                                            selected_output_variables=selected_variables,
-                                            delete_raw_csv=True,
-                                            mlflow_tracker=mlflow_tracker,
-                                            short_work_root=os.environ.get("SCALEBRIDGE_EPLUS_WORK_ROOT"),
-                                            parallel_variable_workers=args.parallel_variable_workers,
-                                        )
+                case_spec=case_spec,
+                generated_data_root=generated_data_root,
+                campaign_id=campaign_id,
+                case_collection_name=case_collection_name,
+                machine_id=args.machine_id,
+                selected_output_variables=available_output_variables,
+                delete_raw_csv=True,
+                mlflow_tracker=mlflow_tracker,
+                short_work_root=os.environ.get("SCALEBRIDGE_EPLUS_WORK_ROOT"),
+                parallel_variable_workers=args.parallel_variable_workers,
+            )
+
+            expected_variable_count = len(available_output_variables)
+
+            validate_case_generation_outputs(
+                case_root=case_root,
+                expected_variable_count=expected_variable_count,
+                require_legacy_pickles=args.write_legacy_pickles,
+            )
+
             completed_count += 1
 
         except Exception as exc:
@@ -589,6 +651,141 @@ def print_compact_campaign_plan(
             f"{patches}"
         )
 
+def validate_case_generation_outputs(
+    *,
+    case_root: Path,
+    expected_variable_count: int,
+    require_legacy_pickles: bool,
+) -> None:
+    """
+    Validate that the latest case run produced the expected final artifacts.
+
+    This is intentionally strict. A case is not complete simply because the
+    campaign loop reached the end. It is complete only when the latest run has
+    all expected canonical parquet files, all expected legacy pickle files when
+    requested, and no traceback files.
+    """
+    latest_run_path = case_root / "latest_run.json"
+    if not latest_run_path.exists():
+        raise RuntimeError(f"Missing latest_run.json for case root: {case_root}")
+
+    latest_run = json.loads(latest_run_path.read_text(encoding="utf-8"))
+    run_id = latest_run.get("run_id")
+    if not run_id:
+        raise RuntimeError(f"latest_run.json does not contain run_id: {latest_run_path}")
+
+    run_root = case_root / "runs" / str(run_id)
+    if not run_root.exists():
+        raise RuntimeError(f"Latest run folder does not exist: {run_root}")
+
+    parquet_root = run_root / "canonical" / "variables"
+    pickle_root = run_root / "legacy" / "per_variable_pickle"
+
+    parquet_count = (
+        len(list(parquet_root.glob("*.parquet")))
+        if parquet_root.exists()
+        else 0
+    )
+
+    pickle_count = (
+        len(list(pickle_root.glob("*.pickle")))
+        if pickle_root.exists()
+        else 0
+    )
+
+    traceback_files = [
+        path
+        for path in run_root.rglob("*")
+        if path.is_file()
+        and path.suffix.lower() in {".txt", ".log"}
+        and "trace" in path.name.lower()
+    ]
+
+    failures: list[str] = []
+
+    if parquet_count != expected_variable_count:
+        failures.append(
+            f"canonical parquet count mismatch: "
+            f"expected {expected_variable_count}, found {parquet_count}"
+        )
+
+    if require_legacy_pickles and pickle_count != expected_variable_count:
+        failures.append(
+            f"legacy pickle count mismatch: "
+            f"expected {expected_variable_count}, found {pickle_count}"
+        )
+
+    if traceback_files:
+        failures.append(
+            "traceback files found: "
+            + ", ".join(str(path) for path in traceback_files[:5])
+            + (" ..." if len(traceback_files) > 5 else "")
+        )
+
+    if failures:
+        raise RuntimeError(
+            "Case generation output validation failed.\n"
+            f"case_root: {case_root}\n"
+            f"run_id: {run_id}\n"
+            + "\n".join(f"- {item}" for item in failures)
+        )
+
+def case_weather_path(case_spec: object) -> Path:
+    """
+    Extract the weather/EPW path from a compact campaign case spec.
+
+    Different source-case dataclasses may use different attribute names.
+    This helper keeps the campaign code robust.
+    """
+    for attr_name in ("weather_path", "epw_path", "weather_file", "epw_file"):
+        value = getattr(case_spec, attr_name, None)
+        if value:
+            return Path(value)
+
+    raise AttributeError(
+        "Could not find weather/EPW path on case_spec. "
+        "Expected one of: weather_path, epw_path, weather_file, epw_file. "
+        f"case_spec type: {type(case_spec).__name__}"
+    )
+
+def write_rdd_intersection_manifest(
+    *,
+    output_path: Path,
+    case_id: str,
+    rdd_path: Path,
+    requested_variables: list[object],
+    available_variables: list[object],
+    unavailable_variables: list[object],
+) -> None:
+    """
+    Write a case-level manifest describing RDD-based variable filtering.
+
+    This records that the original P1 list is a maximum desired vocabulary,
+    while the effective generation list is case-specific and based on the
+    variables EnergyPlus says it can produce in eplusout.rdd.
+    """
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    manifest = {
+        "case_id": str(case_id),
+        "rdd_path": str(rdd_path),
+        "requested_variable_count": len(requested_variables),
+        "rdd_available_variable_count": len(available_variables),
+        "rdd_unavailable_variable_count": len(unavailable_variables),
+        "available_variables": [
+            get_requested_variable_name(variable)
+            for variable in available_variables
+        ],
+        "unavailable_variables": [
+            get_requested_variable_name(variable)
+            for variable in unavailable_variables
+        ],
+    }
+
+    output_path.write_text(
+        json.dumps(manifest, indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
 
 if __name__ == "__main__":
     raise SystemExit(main(sys.argv[1:]))
