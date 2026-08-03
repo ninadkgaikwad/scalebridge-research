@@ -1,0 +1,23 @@
+﻿SCALEBRIDGE ENERGYPLUS SCRIPTS TREE
+Generated: 2026-08-01 12:35:51
+Repository: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+Folder PATH listing for volume OS
+Volume serial number is 00000201 6E2A:B104
+C:\USERS\NINAD\DROPBOX\NINADGAIKWAD_PHD\GAIKWAD_RESEARCH\FROM_WSU_ONEDRIVE\BUILDINGMODELINGPROJECT_CONDENSED\NEWORG\SCALEBRIDGE-RESEARCH\SCRIPTS\ENERGYPLUS
+|   build_p1_campaign.py
+|   build_pnnl_inventory.py
+|   extract_building_geometry.py
+|   extract_building_geometry_upgraded.py
+|   P1_CAMPAIGN_COMMANDS.md
+|   run_p1_campaign.py
+|   run_p1_compact_campaign.py
+|   smoke_test_office_small_seattle.py
+|   
+\---__pycache__
+        build_p1_campaign.cpython-310.pyc
+        build_pnnl_inventory.cpython-310.pyc
+        run_p1_campaign.cpython-310.pyc
+        run_p1_compact_campaign.cpython-310.pyc
+        smoke_test_office_small_seattle.cpython-310.pyc
+        

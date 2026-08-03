@@ -1,0 +1,638 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260722205232
+Username: NKG-WIN-LAPTOP\ninad
+RunAs User: NKG-WIN-LAPTOP\ninad
+Configuration Name: 
+Machine: NKG-WIN-LAPTOP (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\ninad\AppData\Local\Programs\Microsoft VS Code\1b6a188127\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 35456
+PSVersion: 5.1.26100.8875
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8875
+BuildVersion: 10.0.26100.8875
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\C1_to_C8_C2Fix_Full_Run_20260722_205232.txt
+
+====================================================================================================
+SOURCE SYNTAX CHECK (NO BYTECODE)
+====================================================================================================
+python_source_file_count: 72
+[1/72] PASS src\scalebridge\data\heat_input_regression\__init__.py
+[2/72] PASS src\scalebridge\data\heat_input_regression\alignment.py
+[3/72] PASS src\scalebridge\data\heat_input_regression\dataset_validation.py
+[4/72] PASS src\scalebridge\data\heat_input_regression\datasets.py
+[5/72] PASS src\scalebridge\data\heat_input_regression\discovery.py
+[6/72] PASS src\scalebridge\data\heat_input_regression\feature_engineering.py
+[7/72] PASS src\scalebridge\data\heat_input_regression\hvac.py
+[8/72] PASS src\scalebridge\data\heat_input_regression\models.py
+[9/72] PASS src\scalebridge\data\heat_input_regression\schedules.py
+[10/72] PASS src\scalebridge\data\heat_input_regression\signal_catalog.py
+[11/72] PASS src\scalebridge\data\heat_input_regression\solar.py
+[12/72] PASS src\scalebridge\data\heat_input_regression\source_detection.py
+[13/72] PASS src\scalebridge\data\heat_input_regression\split_validation.py
+[14/72] PASS src\scalebridge\data\heat_input_regression\splitting.py
+[15/72] PASS src\scalebridge\data\heat_input_regression\validation.py
+[16/72] PASS src\scalebridge\models\heat_input_regression\__init__.py
+[17/72] PASS src\scalebridge\models\heat_input_regression\base.py
+[18/72] PASS src\scalebridge\models\heat_input_regression\factory.py
+[19/72] PASS src\scalebridge\models\heat_input_regression\inference.py
+[20/72] PASS src\scalebridge\models\heat_input_regression\linear_closed_form.py
+[21/72] PASS src\scalebridge\models\heat_input_regression\linear_pytorch.py
+[22/72] PASS src\scalebridge\models\heat_input_regression\registry.py
+[23/72] PASS src\scalebridge\models\heat_input_regression\serialization.py
+[24/72] PASS src\scalebridge\models\heat_input_regression\specifications.py
+[25/72] PASS src\scalebridge\training\__init__.py
+[26/72] PASS src\scalebridge\training\callbacks\__init__.py
+[27/72] PASS src\scalebridge\training\checkpointing\__init__.py
+[28/72] PASS src\scalebridge\training\dataloaders\__init__.py
+[29/72] PASS src\scalebridge\training\datasets\__init__.py
+[30/72] PASS src\scalebridge\training\heat_input_regression\__init__.py
+[31/72] PASS src\scalebridge\training\heat_input_regression\trainer.py
+[32/72] PASS src\scalebridge\training\heat_input_regression\validation.py
+[33/72] PASS src\scalebridge\training\losses\__init__.py
+[34/72] PASS src\scalebridge\training\optimizers\__init__.py
+[35/72] PASS src\scalebridge\training\schedulers\__init__.py
+[36/72] PASS src\scalebridge\training\trainers\__init__.py
+[37/72] PASS src\scalebridge\training\trainers\supervised.py
+[38/72] PASS src\scalebridge\evaluation\__init__.py
+[39/72] PASS src\scalebridge\evaluation\benchmarking\__init__.py
+[40/72] PASS src\scalebridge\evaluation\diagnostics\__init__.py
+[41/72] PASS src\scalebridge\evaluation\heat_input_regression\__init__.py
+[42/72] PASS src\scalebridge\evaluation\heat_input_regression\evaluator.py
+[43/72] PASS src\scalebridge\evaluation\heat_input_regression\validation.py
+[44/72] PASS src\scalebridge\evaluation\metrics\__init__.py
+[45/72] PASS src\scalebridge\evaluation\metrics\thermal.py
+[46/72] PASS src\scalebridge\evaluation\reports\__init__.py
+[47/72] PASS src\scalebridge\evaluation\tables\__init__.py
+[48/72] PASS src\scalebridge\evaluation\visualization\__init__.py
+[49/72] PASS src\scalebridge\inference\__init__.py
+[50/72] PASS src\scalebridge\inference\heat_input_regression\__init__.py
+[51/72] PASS src\scalebridge\inference\heat_input_regression\annual_inference.py
+[52/72] PASS src\scalebridge\inference\heat_input_regression\validation.py
+[53/72] PASS scripts\heat_input_regression\audit_aggregation_for_heat_input_regression.py
+[54/72] PASS scripts\heat_input_regression\audit_heat_input_regression_inference_missing_values.py
+[55/72] PASS scripts\heat_input_regression\audit_heat_input_regression_residual_gaps.py
+[56/72] PASS scripts\heat_input_regression\build_heat_input_regression_datasets.py
+[57/72] PASS scripts\heat_input_regression\build_heat_input_regression_features.py
+[58/72] PASS scripts\heat_input_regression\build_heat_input_regression_splits.py
+[59/72] PASS scripts\heat_input_regression\evaluate_heat_input_regression_models.py
+[60/72] PASS scripts\heat_input_regression\run_heat_input_regression_full_year_inference.py
+[61/72] PASS scripts\heat_input_regression\train_heat_input_regression_models.py
+[62/72] PASS scripts\heat_input_regression\validate_heat_input_regression_canonical_timestamps.py
+[63/72] PASS scripts\heat_input_regression\validate_heat_input_regression_datasets.py
+[64/72] PASS scripts\heat_input_regression\validate_heat_input_regression_evaluation.py
+[65/72] PASS scripts\heat_input_regression\validate_heat_input_regression_features.py
+[66/72] PASS scripts\heat_input_regression\validate_heat_input_regression_features_canonical_aware.py
+[67/72] PASS scripts\heat_input_regression\validate_heat_input_regression_full_year_inference.py
+[68/72] PASS scripts\heat_input_regression\validate_heat_input_regression_model_api.py
+[69/72] PASS scripts\heat_input_regression\validate_heat_input_regression_splits.py
+[70/72] PASS scripts\heat_input_regression\validate_heat_input_regression_timestamp_coalescence.py
+[71/72] PASS scripts\heat_input_regression\validate_heat_input_regression_training.py
+[72/72] PASS scripts\heat_input_regression\validate_python_source_syntax.py
+====================================================================================================
+SOURCE SYNTAX CHECK SUMMARY
+====================================================================================================
+checked_file_count: 72
+passed_file_count: 72
+failed_file_count: 0
+status: passed
+
+====================================================================================================
+C1 AUDIT
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION READINESS AUDIT
+====================================================================================================
+campaign_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+audit_run_id: heat_input_audit_c2fix_20260722_205232
+selected_aggregation_zone_count: 3
+[1/3] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | equal | RestaurantFastFood_All
+[2/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Dining
+[3/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Kitchen
+====================================================================================================
+AUDIT SUMMARY
+====================================================================================================
+successful_zone_count: 3
+failed_zone_count: 0
+output_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\audit_runs\heat_input_audit_c2fix_20260722_205232
+
+====================================================================================================
+C2 BUILD WITH CANONICAL TIMESTAMPS
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION FEATURE BUILDER
+====================================================================================================
+campaign_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+audit_run_id: heat_input_audit_c2fix_20260722_205232
+matrix_run_id: aggregation_matrix_20260715_114242
+feature_run_id: heat_input_features_c2fix_20260722_205232
+selected_aggregation_zone_count: 3
+internal_gain_predictor_method: aggregate_average
+hvac_target_method: signed_zone_sensible
+
+[1/3] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | equal | RestaurantFastFood_All
+[2/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Dining
+[3/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Kitchen
+
+====================================================================================================
+FEATURE BUILD SUMMARY
+====================================================================================================
+successful_zone_count: 3
+failed_zone_count: 0
+output_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232
+
+====================================================================================================
+C2 STANDARD + CANONICAL-AWARE VALIDATION
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION FEATURE VALIDATION
+====================================================================================================
+feature_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232
+selected_aggregation_zone_count: 3
+
+[1/3] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All
+[2/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining
+[3/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen
+
+====================================================================================================
+FEATURE VALIDATION SUMMARY
+====================================================================================================
+passed_zone_count: 0
+failed_zone_count: 3
+feature_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232
+====================================================================================================
+SCALEBRIDGE C2 STANDARD + CANONICAL-AWARE VALIDATION
+====================================================================================================
+feature_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232
+Running legacy standard validator with original arguments...
+
+
+====================================================================================================
+CANONICAL-AWARE VALIDATION SUMMARY
+====================================================================================================
+legacy_failed_zone_count: 3
+canonical_aware_passed_zone_count: 3
+canonical_aware_failed_zone_count: 0
+results: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232\canonical_aware_feature_validation_results.csv
+manifest: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232\canonical_aware_feature_validation_manifest.json
+validation_status: passed
+
+====================================================================================================
+C2 CANONICAL TIMESTAMP VALIDATION
+====================================================================================================
+====================================================================================================
+C2 CANONICAL TIMESTAMP VALIDATION
+====================================================================================================
+     aggregate_zone_id  row_count  unparsed_timestamp_count  duplicate_timestamp_count  timestamp_monotonic  noncanonical_cadence_count  removed_duplicate_row_count status
+RestaurantFastFood_All     105120                         0                          0                 True                           0                           14 passed
+                Dining     105120                         0                          0                 True                           0                           13 passed
+               Kitchen     105120                         0                          0                 True                           0                           14 passed
+output: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232\canonical_timestamp_validation.csv
+passed_zone_count: 3
+failed_zone_count: 0
+
+====================================================================================================
+C2 TIMESTAMP COALESCENCE VALIDATION
+====================================================================================================
+====================================================================================================
+C2 TIMESTAMP COALESCENCE VALIDATION
+====================================================================================================
+     aggregate_zone_id  row_count  missing_source_value_count  coalesced_source_value_count  complementary_duplicate_timestamp_count  conflicting_source_value_count status failed_checks                                                                                                                                                                                                                                                                                                                                                                                                                               manifest
+RestaurantFastFood_All     105120                           0                            20                                       14                               0 passed               C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232\cases\epcase_827ca4812c0199221d031e59\aggr_20260715_114247_0001_a8695a44_smoke_l01_all_to_one_equal\RestaurantFastFood_All\zone_feature_manifest.json
+                Dining     105120                           0                            17                                       13                               0 passed                                 C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232\cases\epcase_827ca4812c0199221d031e59\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\Dining\zone_feature_manifest.json
+               Kitchen     105120                           0                            20                                       14                               0 passed                                C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232\cases\epcase_827ca4812c0199221d031e59\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\Kitchen\zone_feature_manifest.json
+passed_zone_count: 3
+failed_zone_count: 0
+output: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232\timestamp_coalescence_validation.csv
+validation_status: passed
+
+====================================================================================================
+C3 BUILD
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION SPLIT BUILDER
+====================================================================================================
+campaign_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+matrix_run_id: aggregation_matrix_20260715_114242
+feature_run_id: heat_input_features_c2fix_20260722_205232
+split_run_id: heat_input_splits_c2fix_20260722_205232
+selected_aggregation_zone_count: 3
+split_strategy: monthly_distributed_holdout
+fractions: train=0.7, validation=0.15, test=0.15
+
+[1/3] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | equal | RestaurantFastFood_All
+[2/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Dining
+[3/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Kitchen
+
+====================================================================================================
+SPLIT BUILD SUMMARY
+====================================================================================================
+successful_zone_count: 3
+failed_zone_count: 0
+output_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\split_runs\heat_input_splits_c2fix_20260722_205232
+
+====================================================================================================
+C3 VALIDATION
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION SPLIT VALIDATION
+====================================================================================================
+feature_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260722_205232
+split_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\split_runs\heat_input_splits_c2fix_20260722_205232
+selected_aggregation_zone_count: 3
+
+[1/3] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All
+[2/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining
+[3/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen
+
+====================================================================================================
+SPLIT VALIDATION SUMMARY
+====================================================================================================
+passed_zone_count: 3
+failed_zone_count: 0
+split_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\split_runs\heat_input_splits_c2fix_20260722_205232
+
+====================================================================================================
+C4 BUILD
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION DATASET BUILDER
+====================================================================================================
+campaign_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+matrix_run_id: aggregation_matrix_20260715_114242
+audit_run_id: heat_input_audit_c2fix_20260722_205232
+feature_run_id: heat_input_features_c2fix_20260722_205232
+split_run_id: heat_input_splits_c2fix_20260722_205232
+dataset_run_id: heat_input_datasets_c2fix_20260722_205232
+selected_aggregation_zone_count: 3
+
+[1/3] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | equal | RestaurantFastFood_All
+    [1/11] QSol1
+    [2/11] QSol2
+    [3/11] QZic_P
+    [4/11] QZir_P
+    [5/11] QZic_L
+    [6/11] QZir_L
+    [7/11] QZic_EE
+    [8/11] QZir_EE
+    [9/11] QZir_GE
+    [10/11] QZivr_L
+    [11/11] QAC
+[2/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Dining
+    [1/10] QSol1
+    [2/10] QSol2
+    [3/10] QZic_P
+    [4/10] QZir_P
+    [5/10] QZic_L
+    [6/10] QZir_L
+    [7/10] QZic_EE
+    [8/10] QZir_EE
+    [9/10] QZivr_L
+    [10/10] QAC
+[3/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Kitchen
+    [1/9] QZic_P
+    [2/9] QZir_P
+    [3/9] QZic_L
+    [4/9] QZir_L
+    [5/9] QZic_EE
+    [6/9] QZir_EE
+    [7/9] QZir_GE
+    [8/9] QZivr_L
+    [9/9] QAC
+
+====================================================================================================
+DATASET BUILD SUMMARY
+====================================================================================================
+successful_zone_count: 3
+failed_zone_count: 0
+successful_model_count: 30
+failed_model_count: 0
+output_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\dataset_runs\heat_input_datasets_c2fix_20260722_205232
+
+====================================================================================================
+C4 VALIDATION
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION DATASET VALIDATION
+====================================================================================================
+dataset_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\dataset_runs\heat_input_datasets_c2fix_20260722_205232
+selected_aggregation_zone_count: 3
+
+[1/3] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All
+    QSol1
+    QSol2
+    QZic_P
+    QZir_P
+    QZic_L
+    QZir_L
+    QZic_EE
+    QZir_EE
+    QZir_GE
+    QZivr_L
+    QAC
+[2/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining
+    QSol1
+    QSol2
+    QZic_P
+    QZir_P
+    QZic_L
+    QZir_L
+    QZic_EE
+    QZir_EE
+    QZivr_L
+    QAC
+[3/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen
+    QZic_P
+    QZir_P
+    QZic_L
+    QZir_L
+    QZic_EE
+    QZir_EE
+    QZir_GE
+    QZivr_L
+    QAC
+
+====================================================================================================
+DATASET VALIDATION SUMMARY
+====================================================================================================
+passed_model_count: 30
+failed_model_count: 0
+dataset_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\dataset_runs\heat_input_datasets_c2fix_20260722_205232
+
+====================================================================================================
+C5 MODEL API VALIDATION
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION MODEL API VALIDATION
+====================================================================================================
+output_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\model_api_validation\c5_c2fix_20260722_205232
+
+Validating estimator: closed_form_linear
+
+Validating estimator: pytorch_linear[cpu]
+
+====================================================================================================
+C5 VALIDATION SUMMARY
+====================================================================================================
+check_count: 38
+passed_check_count: 38
+failed_check_count: 0
+validation_status: passed
+output_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\model_api_validation\c5_c2fix_20260722_205232
+
+====================================================================================================
+C6 PYTORCH CUDA TRAINING
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION TRAINER
+====================================================================================================
+dataset_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\dataset_runs\heat_input_datasets_c2fix_20260722_205232
+training_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\training_runs\c6_pytorch_cuda_c2fix_20260722_205232
+training_run_id: c6_pytorch_cuda_c2fix_20260722_205232
+selected_model_dataset_count: 30
+estimators: pytorch_linear
+[1/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QAC | pytorch_linear | cuda
+[2/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QSol1 | pytorch_linear | cuda
+[3/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QSol2 | pytorch_linear | cuda
+[4/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QZic_EE | pytorch_linear | cuda
+[5/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QZic_L | pytorch_linear | cuda
+[6/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QZic_P | pytorch_linear | cuda
+[7/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QZir_EE | pytorch_linear | cuda
+[8/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QZir_GE | pytorch_linear | cuda
+[9/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QZir_L | pytorch_linear | cuda
+[10/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QZir_P | pytorch_linear | cuda
+[11/30] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | RestaurantFastFood_All | QZivr_L | pytorch_linear | cuda
+[12/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QAC | pytorch_linear | cuda
+[13/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QSol1 | pytorch_linear | cuda
+[14/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QSol2 | pytorch_linear | cuda
+[15/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QZic_EE | pytorch_linear | cuda
+[16/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QZic_L | pytorch_linear | cuda
+[17/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QZic_P | pytorch_linear | cuda
+[18/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QZir_EE | pytorch_linear | cuda
+[19/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QZir_L | pytorch_linear | cuda
+[20/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QZir_P | pytorch_linear | cuda
+[21/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Dining | QZivr_L | pytorch_linear | cuda
+[22/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QAC | pytorch_linear | cuda
+[23/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QZic_EE | pytorch_linear | cuda
+[24/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QZic_L | pytorch_linear | cuda
+[25/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QZic_P | pytorch_linear | cuda
+[26/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QZir_EE | pytorch_linear | cuda
+[27/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QZir_GE | pytorch_linear | cuda
+[28/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QZir_L | pytorch_linear | cuda
+[29/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QZir_P | pytorch_linear | cuda
+[30/30] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | Kitchen | QZivr_L | pytorch_linear | cuda
+
+====================================================================================================
+TRAINING SUMMARY
+====================================================================================================
+completed_training_task_count: 30
+failed_training_task_count: 0
+training_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\training_runs\c6_pytorch_cuda_c2fix_20260722_205232
+
+====================================================================================================
+C6 VALIDATION
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION TRAINING VALIDATION
+====================================================================================================
+training_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\training_runs\c6_pytorch_cuda_c2fix_20260722_205232
+training_artifact_count: 30
+[1/30] RestaurantFastFood_All | QAC | pytorch_linear
+[2/30] RestaurantFastFood_All | QSol1 | pytorch_linear
+[3/30] RestaurantFastFood_All | QSol2 | pytorch_linear
+[4/30] RestaurantFastFood_All | QZic_EE | pytorch_linear
+[5/30] RestaurantFastFood_All | QZic_L | pytorch_linear
+[6/30] RestaurantFastFood_All | QZic_P | pytorch_linear
+[7/30] RestaurantFastFood_All | QZir_EE | pytorch_linear
+[8/30] RestaurantFastFood_All | QZir_GE | pytorch_linear
+[9/30] RestaurantFastFood_All | QZir_L | pytorch_linear
+[10/30] RestaurantFastFood_All | QZir_P | pytorch_linear
+[11/30] RestaurantFastFood_All | QZivr_L | pytorch_linear
+[12/30] Dining | QAC | pytorch_linear
+[13/30] Dining | QSol1 | pytorch_linear
+[14/30] Dining | QSol2 | pytorch_linear
+[15/30] Dining | QZic_EE | pytorch_linear
+[16/30] Dining | QZic_L | pytorch_linear
+[17/30] Dining | QZic_P | pytorch_linear
+[18/30] Dining | QZir_EE | pytorch_linear
+[19/30] Dining | QZir_L | pytorch_linear
+[20/30] Dining | QZir_P | pytorch_linear
+[21/30] Dining | QZivr_L | pytorch_linear
+[22/30] Kitchen | QAC | pytorch_linear
+[23/30] Kitchen | QZic_EE | pytorch_linear
+[24/30] Kitchen | QZic_L | pytorch_linear
+[25/30] Kitchen | QZic_P | pytorch_linear
+[26/30] Kitchen | QZir_EE | pytorch_linear
+[27/30] Kitchen | QZir_GE | pytorch_linear
+[28/30] Kitchen | QZir_L | pytorch_linear
+[29/30] Kitchen | QZir_P | pytorch_linear
+[30/30] Kitchen | QZivr_L | pytorch_linear
+
+====================================================================================================
+TRAINING VALIDATION SUMMARY
+====================================================================================================
+passed_artifact_count: 30
+failed_artifact_count: 0
+validation_status: passed
+training_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\training_runs\c6_pytorch_cuda_c2fix_20260722_205232
+
+====================================================================================================
+C7 EVALUATION
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION EVALUATOR
+====================================================================================================
+training_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\training_runs\c6_pytorch_cuda_c2fix_20260722_205232
+evaluation_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\evaluation_runs\c7_pytorch_cuda_c2fix_20260722_205232
+selected_training_artifact_count: 30
+[1/30] RestaurantFastFood_All | QAC | pytorch_linear | cuda
+[2/30] RestaurantFastFood_All | QSol1 | pytorch_linear | cuda
+[3/30] RestaurantFastFood_All | QSol2 | pytorch_linear | cuda
+[4/30] RestaurantFastFood_All | QZic_EE | pytorch_linear | cuda
+[5/30] RestaurantFastFood_All | QZic_L | pytorch_linear | cuda
+[6/30] RestaurantFastFood_All | QZic_P | pytorch_linear | cuda
+[7/30] RestaurantFastFood_All | QZir_EE | pytorch_linear | cuda
+[8/30] RestaurantFastFood_All | QZir_GE | pytorch_linear | cuda
+[9/30] RestaurantFastFood_All | QZir_L | pytorch_linear | cuda
+[10/30] RestaurantFastFood_All | QZir_P | pytorch_linear | cuda
+[11/30] RestaurantFastFood_All | QZivr_L | pytorch_linear | cuda
+[12/30] Dining | QAC | pytorch_linear | cuda
+[13/30] Dining | QSol1 | pytorch_linear | cuda
+[14/30] Dining | QSol2 | pytorch_linear | cuda
+[15/30] Dining | QZic_EE | pytorch_linear | cuda
+[16/30] Dining | QZic_L | pytorch_linear | cuda
+[17/30] Dining | QZic_P | pytorch_linear | cuda
+[18/30] Dining | QZir_EE | pytorch_linear | cuda
+[19/30] Dining | QZir_L | pytorch_linear | cuda
+[20/30] Dining | QZir_P | pytorch_linear | cuda
+[21/30] Dining | QZivr_L | pytorch_linear | cuda
+[22/30] Kitchen | QAC | pytorch_linear | cuda
+[23/30] Kitchen | QZic_EE | pytorch_linear | cuda
+[24/30] Kitchen | QZic_L | pytorch_linear | cuda
+[25/30] Kitchen | QZic_P | pytorch_linear | cuda
+[26/30] Kitchen | QZir_EE | pytorch_linear | cuda
+[27/30] Kitchen | QZir_GE | pytorch_linear | cuda
+[28/30] Kitchen | QZir_L | pytorch_linear | cuda
+[29/30] Kitchen | QZir_P | pytorch_linear | cuda
+[30/30] Kitchen | QZivr_L | pytorch_linear | cuda
+
+====================================================================================================
+EVALUATION SUMMARY
+====================================================================================================
+completed_evaluation_count: 30
+failed_evaluation_count: 0
+evaluation_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\evaluation_runs\c7_pytorch_cuda_c2fix_20260722_205232
+
+====================================================================================================
+C7 VALIDATION
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION EVALUATION VALIDATION
+====================================================================================================
+evaluation_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\evaluation_runs\c7_pytorch_cuda_c2fix_20260722_205232
+evaluation_artifact_count: 30
+[1/30] RestaurantFastFood_All | QAC | pytorch_linear | cuda
+[2/30] RestaurantFastFood_All | QSol1 | pytorch_linear | cuda
+[3/30] RestaurantFastFood_All | QSol2 | pytorch_linear | cuda
+[4/30] RestaurantFastFood_All | QZic_EE | pytorch_linear | cuda
+[5/30] RestaurantFastFood_All | QZic_L | pytorch_linear | cuda
+[6/30] RestaurantFastFood_All | QZic_P | pytorch_linear | cuda
+[7/30] RestaurantFastFood_All | QZir_EE | pytorch_linear | cuda
+[8/30] RestaurantFastFood_All | QZir_GE | pytorch_linear | cuda
+[9/30] RestaurantFastFood_All | QZir_L | pytorch_linear | cuda
+[10/30] RestaurantFastFood_All | QZir_P | pytorch_linear | cuda
+[11/30] RestaurantFastFood_All | QZivr_L | pytorch_linear | cuda
+[12/30] Dining | QAC | pytorch_linear | cuda
+[13/30] Dining | QSol1 | pytorch_linear | cuda
+[14/30] Dining | QSol2 | pytorch_linear | cuda
+[15/30] Dining | QZic_EE | pytorch_linear | cuda
+[16/30] Dining | QZic_L | pytorch_linear | cuda
+[17/30] Dining | QZic_P | pytorch_linear | cuda
+[18/30] Dining | QZir_EE | pytorch_linear | cuda
+[19/30] Dining | QZir_L | pytorch_linear | cuda
+[20/30] Dining | QZir_P | pytorch_linear | cuda
+[21/30] Dining | QZivr_L | pytorch_linear | cuda
+[22/30] Kitchen | QAC | pytorch_linear | cuda
+[23/30] Kitchen | QZic_EE | pytorch_linear | cuda
+[24/30] Kitchen | QZic_L | pytorch_linear | cuda
+[25/30] Kitchen | QZic_P | pytorch_linear | cuda
+[26/30] Kitchen | QZir_EE | pytorch_linear | cuda
+[27/30] Kitchen | QZir_GE | pytorch_linear | cuda
+[28/30] Kitchen | QZir_L | pytorch_linear | cuda
+[29/30] Kitchen | QZir_P | pytorch_linear | cuda
+[30/30] Kitchen | QZivr_L | pytorch_linear | cuda
+
+====================================================================================================
+EVALUATION VALIDATION SUMMARY
+====================================================================================================
+passed_artifact_count: 30
+failed_artifact_count: 0
+validation_status: passed
+
+====================================================================================================
+C8 FULL-YEAR INFERENCE
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION FULL-YEAR INFERENCE
+====================================================================================================
+evaluation_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\evaluation_runs\c7_pytorch_cuda_c2fix_20260722_205232
+inference_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\inference_runs\c8_pytorch_cuda_c2fix_20260722_205232
+selected_evaluation_artifact_count: 30
+selected_zone_count: 3
+[1/3] RestaurantFastFood_All | components=11
+[2/3] Dining | components=10
+[3/3] Kitchen | components=9
+
+====================================================================================================
+INFERENCE SUMMARY
+====================================================================================================
+completed_zone_count: 3
+failed_zone_count: 0
+inference_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\inference_runs\c8_pytorch_cuda_c2fix_20260722_205232
+
+====================================================================================================
+C8 VALIDATION
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION FULL-YEAR INFERENCE VALIDATION
+====================================================================================================
+inference_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\inference_runs\c8_pytorch_cuda_c2fix_20260722_205232
+inference_artifact_count: 3
+[1/3] RestaurantFastFood_All | components=11
+[2/3] Dining | components=10
+[3/3] Kitchen | components=9
+
+====================================================================================================
+INFERENCE VALIDATION SUMMARY
+====================================================================================================
+passed_artifact_count: 3
+failed_artifact_count: 0
+validation_status: passed
+
+====================================================================================================
+C8 MISSING-VALUE AUDIT
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE C8 MISSING-VALUE ROOT-CAUSE AUDIT
+====================================================================================================
+inference_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\inference_runs\c8_pytorch_cuda_c2fix_20260722_205232
+zone_artifact_count: 3
+[1/3] RestaurantFastFood_All | components=11
+[2/3] Dining | components=10
+[3/3] Kitchen | components=9
+components_with_missing_values: 0
+total_missing_component_values: 0
+unique_affected_timestamps: 0
+all_prediction_masks_match_predictors: True
+FULL C1-C8 RUN PASSED
+Transcript: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\C1_to_C8_C2Fix_Full_Run_20260722_205232.txt
+Summary: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\C1_to_C8_C2Fix_Summary_20260722_205232.txt
+**********************
+Windows PowerShell transcript end
+End time: 20260722214934
+**********************

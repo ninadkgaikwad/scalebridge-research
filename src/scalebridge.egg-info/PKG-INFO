@@ -7,11 +7,13 @@ Requires-Python: >=3.10
 License-File: LICENSE
 Requires-Dist: numpy
 Requires-Dist: pandas
+Requires-Dist: pyarrow>=14
 Requires-Dist: scikit-learn
 Requires-Dist: matplotlib
 Requires-Dist: torch
 Requires-Dist: mlflow
 Requires-Dist: optuna
+Requires-Dist: opyplus<3,>=2.0.7
 Requires-Dist: pydantic
 Requires-Dist: pyyaml
 Provides-Extra: dev

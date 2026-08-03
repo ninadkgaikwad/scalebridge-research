@@ -1,0 +1,1 @@
+"""The Recent Activity subpage."""

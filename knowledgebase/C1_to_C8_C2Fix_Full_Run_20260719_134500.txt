@@ -1,0 +1,40 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260719134500
+Username: NKG-WIN-LAPTOP\ninad
+RunAs User: NKG-WIN-LAPTOP\ninad
+Configuration Name: 
+Machine: NKG-WIN-LAPTOP (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\ninad\AppData\Local\Programs\Microsoft VS Code\f6cfa2ea24\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 8180
+PSVersion: 5.1.26100.8655
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8655
+BuildVersion: 10.0.26100.8655
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\C1_to_C8_C2Fix_Full_Run_20260719_134500.txt
+
+====================================================================================================
+COMPILE
+====================================================================================================
+
+
+====================================================================================================
+C1 AUDIT
+====================================================================================================
+
+
+====================================================================================================
+C2 BUILD WITH CANONICAL TIMESTAMPS
+====================================================================================================
+
+PS>TerminatingError(): "C2 BUILD WITH CANONICAL TIMESTAMPS failed with exit code 1"
+PS>TerminatingError(C1_to_C8_Full_Rebuild_Validation.ps1): "The running command stopped because the preference variable "ErrorActionPreference" or common parameter is set to Stop: C2 BUILD WITH CANONICAL TIMESTAMPS failed with exit code 1"
+**********************
+Windows PowerShell transcript end
+End time: 20260719135632
+**********************

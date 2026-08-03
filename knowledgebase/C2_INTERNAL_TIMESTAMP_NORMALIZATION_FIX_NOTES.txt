@@ -1,0 +1,21 @@
+ScaleBridge C2 Internal Timestamp Normalization Patch v8
+=====================================================
+
+Root cause of the repeated v7 failure
+-------------------------------------
+`build_timestamp_frame()` was still emitting a public text column named
+`timestamp_normalized`. The feature builder assembled and validated its wide
+feature frame before the later canonical-output cleanup could remove that
+column. The numeric feature validator therefore saw it as a candidate feature,
+coerced its strings to NaN, and rejected it as empty and constant.
+
+Permanent fix
+-------------
+- Timestamp normalization is now a local Series used only for parsing and
+  duplicate-count metadata.
+- build_timestamp_frame() emits only:
+    timestamp_raw
+    timestamp
+- The normalized text is not included in any feature dataframe.
+- Fast duplicate-only coalescence, complementary-value recovery, conflict
+  auditing, and canonical timestamp metadata remain unchanged.

@@ -1,0 +1,42 @@
+ScaleBridge C8 Residual-Gap Deep Audit
+======================================
+
+Validated input runs
+--------------------
+Feature run:
+heat_input_features_c2fix_20260719_153925
+
+Inference run:
+c8_pytorch_cuda_c2fix_20260719_153925
+
+Purpose
+-------
+Investigate the five remaining canonical timestamps and 57 missing component
+values after the C2 duplicate-timestamp correction.
+
+The audit produces:
+- event-level residual missing records;
+- timestamp-level summary;
+- component/zone summary;
+- source-family classification;
+- ±2-step neighboring source values;
+- evidence-based treatment recommendations;
+- JSON manifest and plain-text report.
+
+The script does not modify C2 or C8 data and does not fill any values.
+
+C9 and C10
+----------
+C9 and C10 remain pending. Their exact project definitions were not present in
+the available handoff material, so this package deliberately does not invent
+their behavior. The residual-gap outputs are designed to serve as a validated
+input to the next stage definitions.
+
+
+Version 2 correction
+--------------------
+- Uses explicit timestamp formats before any mixed-format fallback.
+- Prevents pandas format-inference warnings during normal audit parsing.
+- Runs Python through Start-Process with separate stdout/stderr capture.
+- PowerShell now fails only on the Python process exit code, not on a benign
+  warning written to stderr.

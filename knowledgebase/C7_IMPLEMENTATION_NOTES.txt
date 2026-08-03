@@ -1,0 +1,7 @@
+ScaleBridge Stage C7 Heat-Input Regression Evaluation
+
+C7 loads persisted C6 artifacts and evaluates the original C4 train,
+validation, and test Parquets without refitting. It writes split metrics,
+full prediction/residual Parquets, previews, generalization summaries, and
+provenance manifests. The independent validator reloads the model and source
+splits, recomputes predictions and RMSE/MAE, and verifies saved predictions.

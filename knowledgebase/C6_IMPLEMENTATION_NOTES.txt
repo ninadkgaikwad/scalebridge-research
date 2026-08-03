@@ -1,0 +1,19 @@
+SCALEBRIDGE STAGE C6 IMPLEMENTATION NOTES
+=========================================
+
+C6 consumes validated C4 model-specific datasets and the C5 estimator API.
+It fits each requested estimator using train.parquet only, persists the model,
+reloads it immediately, and verifies exact prediction equivalence.
+
+C6 deliberately does not perform full train/validation/test metric evaluation,
+plots, model ranking, or model selection. Those responsibilities belong to C7.
+
+Current C5 PyTorchLinearRegression constructs CPU tensors. C6 therefore records
+"device": "cpu" for both current estimators. CUDA support must be added to the
+C5 estimator itself before C6 can honestly expose a CUDA device option.
+
+Files:
+- src/scalebridge/training/heat_input_regression/trainer.py
+- src/scalebridge/training/heat_input_regression/validation.py
+- scripts/heat_input_regression/train_heat_input_regression_models.py
+- scripts/heat_input_regression/validate_heat_input_regression_training.py

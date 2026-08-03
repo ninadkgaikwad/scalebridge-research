@@ -1,0 +1,17 @@
+ScaleBridge Stage C3 validation notes
+
+Implemented:
+- monthly_distributed_holdout (default)
+- chronological_fraction
+- deterministic 70/15/15 splitting
+- invalid/duplicate timestamp exclusion
+- split count, fraction, month-coverage, and timestamp-coverage checks
+- exact independent recomputation validation
+
+Local tests:
+- all Python files compiled successfully
+- 105,120-row synthetic annual 5-minute dataset passed
+- counts: train=73,579, validation=15,766, test=15,775
+- all 12 months represented in train/validation/test
+- exact saved-vs-recomputed equality passed
+- invalid timestamp and duplicate timestamp exclusion passed

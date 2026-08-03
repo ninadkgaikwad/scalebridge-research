@@ -1,0 +1,8 @@
+.settings-live-card{margin-bottom:1rem}
+.settings-live-description{color:var(--text-muted);margin-bottom:.75rem}
+.settings-live-table-wrap{width:100%;overflow-x:auto}
+.settings-live-table{min-width:46rem;vertical-align:top}
+.settings-live-table th{white-space:nowrap;font-size:.78rem;letter-spacing:.02em;text-transform:uppercase}
+.settings-live-table td{padding-top:.6rem;padding-bottom:.6rem}
+.settings-live-table code{color:inherit;overflow-wrap:anywhere;white-space:normal}
+@media(max-width:767.98px){.settings-live-table{min-width:38rem}}

@@ -1,0 +1,24 @@
+.settings-package-sections {
+    display: block;
+}
+
+.settings-package-card-wrap {
+    margin-bottom: 1rem;
+}
+
+.settings-package-card-wrap .settings-live-card,
+.settings-package-card-wrap .studio-card,
+.settings-package-card-wrap .card {
+    height: auto !important;
+    min-height: 0 !important;
+}
+
+.settings-package-card-wrap .card-body {
+    height: auto !important;
+    min-height: 0 !important;
+    display: block !important;
+}
+
+.settings-package-card-wrap .settings-live-table-wrap {
+    margin-bottom: 0;
+}

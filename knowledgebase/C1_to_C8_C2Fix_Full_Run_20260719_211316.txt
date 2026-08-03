@@ -1,0 +1,134 @@
+﻿**********************
+Windows PowerShell transcript start
+Start time: 20260719211316
+Username: NKG-WIN-LAPTOP\ninad
+RunAs User: NKG-WIN-LAPTOP\ninad
+Configuration Name: 
+Machine: NKG-WIN-LAPTOP (Microsoft Windows NT 10.0.26200.0)
+Host Application: C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe -noexit -command try { . "c:\Users\ninad\AppData\Local\Programs\Microsoft VS Code\f6cfa2ea24\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1" } catch {}
+Process ID: 8180
+PSVersion: 5.1.26100.8655
+PSEdition: Desktop
+PSCompatibleVersions: 1.0, 2.0, 3.0, 4.0, 5.0, 5.1.26100.8655
+BuildVersion: 10.0.26100.8655
+CLRVersion: 4.0.30319.42000
+WSManStackVersion: 3.0
+PSRemotingProtocolVersion: 2.3
+SerializationVersion: 1.1.0.1
+**********************
+Transcript started, output file is C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\C1_to_C8_C2Fix_Full_Run_20260719_211316.txt
+
+====================================================================================================
+SOURCE SYNTAX CHECK (NO BYTECODE)
+====================================================================================================
+python_source_file_count: 72
+[1/72] PASS src\scalebridge\data\heat_input_regression\__init__.py
+[2/72] PASS src\scalebridge\data\heat_input_regression\alignment.py
+[3/72] PASS src\scalebridge\data\heat_input_regression\dataset_validation.py
+[4/72] PASS src\scalebridge\data\heat_input_regression\datasets.py
+[5/72] PASS src\scalebridge\data\heat_input_regression\discovery.py
+[6/72] PASS src\scalebridge\data\heat_input_regression\feature_engineering.py
+[7/72] PASS src\scalebridge\data\heat_input_regression\hvac.py
+[8/72] PASS src\scalebridge\data\heat_input_regression\models.py
+[9/72] PASS src\scalebridge\data\heat_input_regression\schedules.py
+[10/72] PASS src\scalebridge\data\heat_input_regression\signal_catalog.py
+[11/72] PASS src\scalebridge\data\heat_input_regression\solar.py
+[12/72] PASS src\scalebridge\data\heat_input_regression\source_detection.py
+[13/72] PASS src\scalebridge\data\heat_input_regression\split_validation.py
+[14/72] PASS src\scalebridge\data\heat_input_regression\splitting.py
+[15/72] PASS src\scalebridge\data\heat_input_regression\validation.py
+[16/72] PASS src\scalebridge\models\heat_input_regression\__init__.py
+[17/72] PASS src\scalebridge\models\heat_input_regression\base.py
+[18/72] PASS src\scalebridge\models\heat_input_regression\factory.py
+[19/72] PASS src\scalebridge\models\heat_input_regression\inference.py
+[20/72] PASS src\scalebridge\models\heat_input_regression\linear_closed_form.py
+[21/72] PASS src\scalebridge\models\heat_input_regression\linear_pytorch.py
+[22/72] PASS src\scalebridge\models\heat_input_regression\registry.py
+[23/72] PASS src\scalebridge\models\heat_input_regression\serialization.py
+[24/72] PASS src\scalebridge\models\heat_input_regression\specifications.py
+[25/72] PASS src\scalebridge\training\__init__.py
+[26/72] PASS src\scalebridge\training\callbacks\__init__.py
+[27/72] PASS src\scalebridge\training\checkpointing\__init__.py
+[28/72] PASS src\scalebridge\training\dataloaders\__init__.py
+[29/72] PASS src\scalebridge\training\datasets\__init__.py
+[30/72] PASS src\scalebridge\training\heat_input_regression\__init__.py
+[31/72] PASS src\scalebridge\training\heat_input_regression\trainer.py
+[32/72] PASS src\scalebridge\training\heat_input_regression\validation.py
+[33/72] PASS src\scalebridge\training\losses\__init__.py
+[34/72] PASS src\scalebridge\training\optimizers\__init__.py
+[35/72] PASS src\scalebridge\training\schedulers\__init__.py
+[36/72] PASS src\scalebridge\training\trainers\__init__.py
+[37/72] PASS src\scalebridge\training\trainers\supervised.py
+[38/72] PASS src\scalebridge\evaluation\__init__.py
+[39/72] PASS src\scalebridge\evaluation\benchmarking\__init__.py
+[40/72] PASS src\scalebridge\evaluation\diagnostics\__init__.py
+[41/72] PASS src\scalebridge\evaluation\heat_input_regression\__init__.py
+[42/72] PASS src\scalebridge\evaluation\heat_input_regression\evaluator.py
+[43/72] PASS src\scalebridge\evaluation\heat_input_regression\validation.py
+[44/72] PASS src\scalebridge\evaluation\metrics\__init__.py
+[45/72] PASS src\scalebridge\evaluation\metrics\thermal.py
+[46/72] PASS src\scalebridge\evaluation\reports\__init__.py
+[47/72] PASS src\scalebridge\evaluation\tables\__init__.py
+[48/72] PASS src\scalebridge\evaluation\visualization\__init__.py
+[49/72] PASS src\scalebridge\inference\__init__.py
+[50/72] PASS src\scalebridge\inference\heat_input_regression\__init__.py
+[51/72] PASS src\scalebridge\inference\heat_input_regression\annual_inference.py
+[52/72] PASS src\scalebridge\inference\heat_input_regression\validation.py
+[53/72] PASS scripts\heat_input_regression\audit_aggregation_for_heat_input_regression.py
+[54/72] PASS scripts\heat_input_regression\audit_heat_input_regression_inference_missing_values.py
+[55/72] PASS scripts\heat_input_regression\audit_heat_input_regression_residual_gaps.py
+[56/72] PASS scripts\heat_input_regression\build_heat_input_regression_datasets.py
+[57/72] PASS scripts\heat_input_regression\build_heat_input_regression_features.py
+[58/72] PASS scripts\heat_input_regression\build_heat_input_regression_splits.py
+[59/72] PASS scripts\heat_input_regression\evaluate_heat_input_regression_models.py
+[60/72] PASS scripts\heat_input_regression\run_heat_input_regression_full_year_inference.py
+[61/72] PASS scripts\heat_input_regression\train_heat_input_regression_models.py
+[62/72] PASS scripts\heat_input_regression\validate_heat_input_regression_canonical_timestamps.py
+[63/72] PASS scripts\heat_input_regression\validate_heat_input_regression_datasets.py
+[64/72] PASS scripts\heat_input_regression\validate_heat_input_regression_evaluation.py
+[65/72] PASS scripts\heat_input_regression\validate_heat_input_regression_features.py
+[66/72] PASS scripts\heat_input_regression\validate_heat_input_regression_features_canonical_aware.py
+[67/72] PASS scripts\heat_input_regression\validate_heat_input_regression_full_year_inference.py
+[68/72] PASS scripts\heat_input_regression\validate_heat_input_regression_model_api.py
+[69/72] PASS scripts\heat_input_regression\validate_heat_input_regression_splits.py
+[70/72] PASS scripts\heat_input_regression\validate_heat_input_regression_timestamp_coalescence.py
+[71/72] PASS scripts\heat_input_regression\validate_heat_input_regression_training.py
+[72/72] PASS scripts\heat_input_regression\validate_python_source_syntax.py
+====================================================================================================
+SOURCE SYNTAX CHECK SUMMARY
+====================================================================================================
+checked_file_count: 72
+passed_file_count: 72
+failed_file_count: 0
+status: passed
+
+====================================================================================================
+C1 AUDIT
+====================================================================================================
+====================================================================================================
+SCALEBRIDGE HEAT-INPUT REGRESSION READINESS AUDIT
+====================================================================================================
+campaign_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+audit_run_id: heat_input_audit_c2fix_20260719_211316
+selected_aggregation_zone_count: 3
+[1/3] epcase_827ca4812c0199221d031e59 | smoke_l01_all_to_one | equal | RestaurantFastFood_All
+[2/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Dining
+[3/3] epcase_827ca4812c0199221d031e59 | smoke_l05_identity | equal | Kitchen
+====================================================================================================
+AUDIT SUMMARY
+====================================================================================================
+successful_zone_count: 3
+failed_zone_count: 0
+output_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\audit_runs\heat_input_audit_c2fix_20260719_211316
+
+====================================================================================================
+C2 BUILD WITH CANONICAL TIMESTAMPS
+====================================================================================================
+PS>TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+>> TerminatingError(): "The pipeline has been stopped."
+**********************
+Windows PowerShell transcript end
+End time: 20260719213305
+**********************

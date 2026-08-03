@@ -1,0 +1,1994 @@
+﻿Folder PATH listing for volume OS
+Volume serial number is 00000258 6E2A:B104
+C:\USERS\NINAD\DROPBOX\NINADGAIKWAD_PHD\GAIKWAD_RESEARCH\FROM_WSU_ONEDRIVE\BUILDINGMODELINGPROJECT_CONDENSED\DATA\SCALEBRIDGE
++---building_geometry
+|   +---apartment_mid_rise
+|   |       apartment_mid_rise_geometry.json
+|   |       
+|   +---office_small
+|   |       office_small_geometry.json
+|   |       
+|   +---restaurant_fast_food
+|   |       restaurant_fast_food_geometry.json
+|   |       
+|   +---retail_stripmall
+|   |       retail_stripmall_geometry.json
+|   |       
+|   \---SVGs
+|       |   apartment_mid_rise_exact_no_palette_v4.svg
+|       |   office_small_exact_no_palette_v4.svg
+|       |   restaurant_fast_food_exact_no_palette_v4.svg
+|       |   retail_stripmall_exact_no_palette_v4.svg
+|       |   
+|       \---Archives
+|               apartment_mid_rise_zones_3d_aligned.svg
+|               apartment_mid_rise_zones_3d_isometric.svg
+|               office_small_zones_3d_isometric.svg
+|               restaurant_zones_3d_global.svg
+|               
++---campaigns
+|   +---p1_ashrae2013_one_zone_64
+|   |   \---generation
+|   |       \---cases
+|   |           \---epcase_3d9f84a8b90dee1a09e9c71b
+|   +---p1_ashrae2013_one_zone_compact_4b4c
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_full_v1
+|   |   +---generation
+|   |   |   \---cases
+|   |   |       +---epcase_3d59b898176ce320988f6c5e
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_f5019d2e749e
+|   |   |       +---epcase_533973e29a474b82cf6a28fd
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_d673b01d506c
+|   |   |       \---epcase_827ca4812c0199221d031e59
+|   |   |           |   latest_run.json
+|   |   |           |   
+|   |   |           \---runs
+|   |   |               +---epvwr_3a2a1762f5fc
+|   |   |               \---epvwr_83561e70bb03
+|   |   \---normalization
+|   |       \---idfs
+|   |           +---epcase_049c0e3c687c32a0390a4001
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_069fd7684ae41a05766857a3
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_0ddc6ff14c1b67d93131c955
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_0f180c4cfc779824a0db8598
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_3b57a356d280de898ad85e05
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_3d59b898176ce320988f6c5e
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_3d9f84a8b90dee1a09e9c71b
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_4abb05aa9c546958efafe7c4
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_533973e29a474b82cf6a28fd
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_827ca4812c0199221d031e59
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_b9f042278ba1f2f6cd75d970
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_bacd02766bd7dcdb78441c3f
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_d71e3df8b7b05f692f863f60
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_d7713b4c7ac1cfc4129714ba
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_ec9b92f636a696e64f49eea9
+|   |           |       normalized.idf
+|   |           |       
+|   |           \---epcase_fd2f96b3b60ab4a150baba98
+|   |                   normalized.idf
+|   |                   
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_full_v2
+|   |   +---generation
+|   |   |   \---cases
+|   |   |       +---epcase_049c0e3c687c32a0390a4001
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_8825a975b3f7
+|   |   |       +---epcase_069fd7684ae41a05766857a3
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_ebf65268d46b
+|   |   |       +---epcase_0ddc6ff14c1b67d93131c955
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_265b817d8f21
+|   |   |       +---epcase_0f180c4cfc779824a0db8598
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_fb3c8648c0ff
+|   |   |       +---epcase_3b57a356d280de898ad85e05
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_f1fccbc1d5e5
+|   |   |       +---epcase_3d59b898176ce320988f6c5e
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_bd23147a0314
+|   |   |       +---epcase_3d9f84a8b90dee1a09e9c71b
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_4e2f2c6111c4
+|   |   |       +---epcase_4abb05aa9c546958efafe7c4
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_2f2f2acd3a07
+|   |   |       +---epcase_533973e29a474b82cf6a28fd
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_3e828192556b
+|   |   |       +---epcase_827ca4812c0199221d031e59
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_3ddcae910858
+|   |   |       +---epcase_b9f042278ba1f2f6cd75d970
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_160bca2ff4ff
+|   |   |       +---epcase_bacd02766bd7dcdb78441c3f
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_79ba07ae690b
+|   |   |       +---epcase_d71e3df8b7b05f692f863f60
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_ff2755aefca9
+|   |   |       +---epcase_d7713b4c7ac1cfc4129714ba
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_1f50fd9f53ef
+|   |   |       +---epcase_ec9b92f636a696e64f49eea9
+|   |   |       |   |   latest_run.json
+|   |   |       |   |   
+|   |   |       |   \---runs
+|   |   |       |       \---epvwr_db0f670d7de0
+|   |   |       \---epcase_fd2f96b3b60ab4a150baba98
+|   |   |           |   latest_run.json
+|   |   |           |   
+|   |   |           \---runs
+|   |   |               \---epvwr_b3a3f9adf0c2
+|   |   \---normalization
+|   |       \---idfs
+|   |           +---epcase_049c0e3c687c32a0390a4001
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_069fd7684ae41a05766857a3
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_0ddc6ff14c1b67d93131c955
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_0f180c4cfc779824a0db8598
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_3b57a356d280de898ad85e05
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_3d59b898176ce320988f6c5e
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_3d9f84a8b90dee1a09e9c71b
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_4abb05aa9c546958efafe7c4
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_533973e29a474b82cf6a28fd
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_827ca4812c0199221d031e59
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_b9f042278ba1f2f6cd75d970
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_bacd02766bd7dcdb78441c3f
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_d71e3df8b7b05f692f863f60
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_d7713b4c7ac1cfc4129714ba
+|   |           |       normalized.idf
+|   |           |       
+|   |           +---epcase_ec9b92f636a696e64f49eea9
+|   |           |       normalized.idf
+|   |           |       
+|   |           \---epcase_fd2f96b3b60ab4a150baba98
+|   |                   normalized.idf
+|   |                   
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_35V_1W
+|   |   +---generation
+|   |   |   \---cases
+|   |   |       \---epcase_827ca4812c0199221d031e59
+|   |   |           |   latest_run.json
+|   |   |           |   
+|   |   |           \---runs
+|   |   \---normalization
+|   |       \---idfs
+|   |           \---epcase_827ca4812c0199221d031e59
+|   |                   normalized.idf
+|   |                   
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v2
+|   |   \---normalization
+|   |       \---idfs
+|   |           \---epcase_827ca4812c0199221d031e59
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+|   |   +---aggregation
+|   |   |   +---audits
+|   |   |   |   +---input_audit_20260708_102552
+|   |   |   |   \---input_audit_20260708_102722
+|   |   |   +---campaign_runs
+|   |   |   |   +---aggregation_campaign_20260708_114815
+|   |   |   |   +---aggregation_campaign_20260708_115253
+|   |   |   |   +---aggregation_campaign_20260708_122927
+|   |   |   |   +---aggregation_campaign_20260708_130754
+|   |   |   |   +---aggregation_campaign_20260708_130909
+|   |   |   |   +---aggregation_campaign_20260708_131811
+|   |   |   |   +---aggregation_campaign_20260708_132431
+|   |   |   |   +---aggregation_campaign_20260708_142143
+|   |   |   |   +---aggregation_campaign_20260708_142301
+|   |   |   |   +---aggregation_campaign_20260709_182156
+|   |   |   |   +---aggregation_campaign_20260709_182351
+|   |   |   |   +---aggregation_campaign_20260709_182821
+|   |   |   |   +---aggregation_campaign_20260709_185413
+|   |   |   |   \---aggregation_campaign_20260709_185652
+|   |   |   +---cases
+|   |   |   |   \---epcase_827ca4812c0199221d031e59
+|   |   |   |       \---runs
+|   |   |   +---custom_grouping_smoke
+|   |   |   |       smoke_custom_groups.csv
+|   |   |   |       
+|   |   |   +---custom_grouping_validation
+|   |   |   +---grouping_suggestions
+|   |   |   +---matrix_runs
+|   |   |   |   \---aggregation_matrix_20260715_114242
+|   |   |   +---plans
+|   |   |   |   +---plan_build_20260708_102805
+|   |   |   |   +---plan_build_20260708_102833
+|   |   |   |   +---plan_build_20260708_130437
+|   |   |   |   +---plan_build_20260708_130450
+|   |   |   |   +---plan_build_20260708_130501
+|   |   |   |   +---plan_build_20260709_180612
+|   |   |   |   +---plan_build_20260709_181216
+|   |   |   |   +---plan_build_20260709_181227
+|   |   |   |   \---plan_build_20260715_113421
+|   |   |   +---probes
+|   |   |   |   +---rule_probe_20260708_111628
+|   |   |   |   +---rule_probe_20260708_111928
+|   |   |   |   +---rule_probe_20260708_112058
+|   |   |   |   \---rule_probe_20260708_122649
+|   |   |   +---user_groupings
+|   |   |   |   +---user_grouping_20260709_163524
+|   |   |   |   |   \---cases
+|   |   |   |   +---user_grouping_20260709_164346
+|   |   |   |   |   \---cases
+|   |   |   |   \---user_grouping_20260709_164400
+|   |   |   |       \---cases
+|   |   |   +---zone_features
+|   |   |   |   \---zone_features_20260709_154951
+|   |   |   |       \---cases
+|   |   |   +---zone_inventory
+|   |   |   |   +---zone_inventory_20260709_153132
+|   |   |   |   |   \---cases
+|   |   |   |   \---zone_inventory_20260709_153213
+|   |   |   |       \---cases
+|   |   |   \---zone_similarity
+|   |   |       \---zone_similarity_20260709_160432
+|   |   +---generation
+|   |   |   \---cases
+|   |   |       \---epcase_827ca4812c0199221d031e59
+|   |   |           +---rdd_probe
+|   |   |           \---runs
+|   |   +---heat_input_regression
+|   |   |   +---audit_runs
+|   |   |   +---campaign_runs
+|   |   |   |   \---phase_c_20260726_091511
+|   |   |   +---dataset_runs
+|   |   |   +---evaluation_runs
+|   |   |   |   +---c7_pytorch_cuda_smoke_003
+|   |   |   |   \---c7_pytorch_cuda_smoke_004
+|   |   |   +---feature_runs
+|   |   |   +---inference_runs
+|   |   |   |   +---c8_pytorch_20260726_091511
+|   |   |   |   +---c8_pytorch_20260727_200800
+|   |   |   |   +---c8_pytorch_cuda_smoke_003
+|   |   |   |   +---c8_pytorch_cuda_smoke_004
+|   |   |   |   \---c8_pytorch_cuda_smoke_005
+|   |   |   +---mlflow_registration_runs
+|   |   |   +---model_api_validation
+|   |   |   |   +---c5_20260726_091511
+|   |   |   |   +---c5_20260727_200800
+|   |   |   |   +---c5_validation_001
+|   |   |   |   +---c5_validation_c4_001
+|   |   |   |   +---c5_validation_c4_002
+|   |   |   |   +---c5_validation_c4_003
+|   |   |   |   \---c5_validation_c4_004
+|   |   |   +---residual_gap_audits
+|   |   |   +---split_runs
+|   |   |   \---training_runs
+|   |   |       +---c6_cpu_gpu_smoke_001
+|   |   |       |   \---cases
+|   |   |       +---c6_pytorch_20260726_091511
+|   |   |       \---c6_pytorch_20260727_200800
+|   |   \---normalization
+|   |       \---idfs
+|   |           \---epcase_827ca4812c0199221d031e59
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_v1
+|   |   +---generation
+|   |   \---normalization
+|   |       \---idfs
+|   |           \---epcase_827ca4812c0199221d031e59
+|   |                   normalized.idf
+|   |                   
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_v2
+|   |   +---aggregation
+|   |   |   +---audits
+|   |   |   |   +---input_audit_20260703_132655
+|   |   |   |   |       aggregation_input_audit.json
+|   |   |   |   |       available_variables.csv
+|   |   |   |   |       excluded_zones.csv
+|   |   |   |   |       generation_runs.csv
+|   |   |   |   |       included_thermal_zones.csv
+|   |   |   |   |       missing_expected_files.csv
+|   |   |   |   |       schedule_equipment_mapping.csv
+|   |   |   |   |       variable_key_counts.csv
+|   |   |   |   |       zone_information.csv
+|   |   |   |   |       
+|   |   |   |   +---input_audit_20260703_163922
+|   |   |   |   |       aggregation_input_audit.json
+|   |   |   |   |       available_variables.csv
+|   |   |   |   |       excluded_zones.csv
+|   |   |   |   |       generation_runs.csv
+|   |   |   |   |       included_thermal_zones.csv
+|   |   |   |   |       missing_expected_files.csv
+|   |   |   |   |       rdd_variable_intersection.csv
+|   |   |   |   |       schedule_equipment_mapping.csv
+|   |   |   |   |       variable_key_counts.csv
+|   |   |   |   |       zone_information.csv
+|   |   |   |   |       
+|   |   |   |   \---input_audit_20260703_164214
+|   |   |   |           aggregation_input_audit.json
+|   |   |   |           available_variables.csv
+|   |   |   |           excluded_zones.csv
+|   |   |   |           generation_runs.csv
+|   |   |   |           included_thermal_zones.csv
+|   |   |   |           missing_expected_files.csv
+|   |   |   |           rdd_variable_intersection.csv
+|   |   |   |           schedule_equipment_mapping.csv
+|   |   |   |           variable_key_counts.csv
+|   |   |   |           zone_information.csv
+|   |   |   |           
+|   |   |   +---plans
+|   |   |   |   +---plan_build_20260708_094713
+|   |   |   |   |   |   aggregation_plan_index.csv
+|   |   |   |   |   |   excluded_zones_all_cases.csv
+|   |   |   |   |   |   missing_plan_inputs.csv
+|   |   |   |   |   |   zone_mapping_all_cases.csv
+|   |   |   |   |   |   
+|   |   |   |   |   \---epcase_827ca4812c0199221d031e59
+|   |   |   |   \---plan_build_20260708_094736
+|   |   |   |       |   aggregation_plan_index.csv
+|   |   |   |       |   excluded_zones_all_cases.csv
+|   |   |   |       |   missing_plan_inputs.csv
+|   |   |   |       |   zone_mapping_all_cases.csv
+|   |   |   |       |   
+|   |   |   |       \---epcase_827ca4812c0199221d031e59
+|   |   |   \---probes
+|   |   |       +---variable_loader_20260708_100640
+|   |   |       +---variable_loader_20260708_100711
+|   |   |       \---variable_loader_20260708_100726
+|   |   +---generation
+|   |   |   \---cases
+|   |   |       \---epcase_827ca4812c0199221d031e59
+|   |   |           |   latest_run.json
+|   |   |           |   
+|   |   |           \---runs
+|   |   |               \---epvwr_93c39f7dc3cb
+|   |   |                   \---raw
+|   |   \---normalization
+|   |       \---idfs
+|   |           \---epcase_827ca4812c0199221d031e59
+|   |                   normalized.idf
+|   |                   
+|   \---p1_compact_4b4c_labpc_1w_v1
+|       +---aggregation
+|       |   +---cases
+|       |   |   +---epcase_049c0e3c687c32a0390a4001
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_069fd7684ae41a05766857a3
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_0ddc6ff14c1b67d93131c955
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_0f180c4cfc779824a0db8598
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_3b57a356d280de898ad85e05
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_3d59b898176ce320988f6c5e
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_3d9f84a8b90dee1a09e9c71b
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_4abb05aa9c546958efafe7c4
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_533973e29a474b82cf6a28fd
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_827ca4812c0199221d031e59
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_b9f042278ba1f2f6cd75d970
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_bacd02766bd7dcdb78441c3f
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_d71e3df8b7b05f692f863f60
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_d7713b4c7ac1cfc4129714ba
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   +---epcase_ec9b92f636a696e64f49eea9
+|       |   |   |   |   latest_run.json
+|       |   |   |   |   
+|       |   |   |   \---runs
+|       |   |   \---epcase_fd2f96b3b60ab4a150baba98
+|       |   |       |   latest_run.json
+|       |   |       |   
+|       |   |       \---runs
+|       |   +---custom_grouping_levels
+|       |   |       p1_4b4c_custom_groups.csv
+|       |   |       p1_4b4c_custom_groups_case_summary.csv
+|       |   |       p1_4b4c_custom_groups_manifest.json
+|       |   |       
+|       |   +---diagnostics
+|       |   |   +---system_node_key_audit_20260712_204338
+|       |   |   |       system_node_case_summary.csv
+|       |   |   |       system_node_key_patterns.csv
+|       |   |   |       system_node_key_values.csv
+|       |   |   |       system_node_variable_summary.csv
+|       |   |   |       
+|       |   |   \---system_node_key_audit_20260712_205415
+|       |   |           system_node_case_summary.csv
+|       |   |           system_node_discovery_debug.csv
+|       |   |           system_node_key_patterns.csv
+|       |   |           system_node_key_values.csv
+|       |   |           system_node_variable_summary.csv
+|       |   |           
+|       |   +---matrix_runs
+|       |   |   +---aggregation_matrix_20260712_155709
+|       |   |   |       aggregation_matrix_case_runs.csv
+|       |   |   |       aggregation_matrix_manifest.json
+|       |   |   |       aggregation_matrix_outputs.csv
+|       |   |   |       missing_generation_rows.csv
+|       |   |   |       selected_aggregation_plans.csv
+|       |   |   |       
+|       |   |   +---aggregation_matrix_20260712_170358
+|       |   |   |       selected_aggregation_plans.csv
+|       |   |   |       
+|       |   |   +---aggregation_matrix_20260712_172855
+|       |   |   |       aggregation_matrix_case_runs.csv
+|       |   |   |       aggregation_matrix_manifest.json
+|       |   |   |       aggregation_matrix_outputs.csv
+|       |   |   |       missing_generation_rows.csv
+|       |   |   |       selected_aggregation_plans.csv
+|       |   |   |       
+|       |   |   +---aggregation_matrix_20260712_182618
+|       |   |   |       selected_aggregation_plans.csv
+|       |   |   |       
+|       |   |   +---aggregation_matrix_20260712_212546
+|       |   |   |       aggregation_matrix_case_runs.csv
+|       |   |   |       aggregation_matrix_manifest.json
+|       |   |   |       aggregation_matrix_outputs.csv
+|       |   |   |       missing_generation_rows.csv
+|       |   |   |       selected_aggregation_plans.csv
+|       |   |   |       
+|       |   |   \---aggregation_matrix_20260712_215839
+|       |   |           aggregation_matrix_case_runs.csv
+|       |   |           aggregation_matrix_manifest.json
+|       |   |           aggregation_matrix_outputs.csv
+|       |   |           missing_generation_rows.csv
+|       |   |           selected_aggregation_plans.csv
+|       |   |           
+|       |   \---plans
+|       |       +---plan_build_20260712_150410
+|       |       |   |   aggregation_plan_build_summary.json
+|       |       |   |   aggregation_plan_index.csv
+|       |       |   |   excluded_zones_all_cases.csv
+|       |       |   |   included_thermal_zones_all_cases.csv
+|       |       |   |   missing_plan_inputs.csv
+|       |       |   |   zone_mapping_all_cases.csv
+|       |       |   |   
+|       |       |   +---epcase_049c0e3c687c32a0390a4001
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_069fd7684ae41a05766857a3
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_0ddc6ff14c1b67d93131c955
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_0f180c4cfc779824a0db8598
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_3b57a356d280de898ad85e05
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_3d59b898176ce320988f6c5e
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_3d9f84a8b90dee1a09e9c71b
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_4abb05aa9c546958efafe7c4
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_533973e29a474b82cf6a28fd
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_827ca4812c0199221d031e59
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_b9f042278ba1f2f6cd75d970
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_bacd02766bd7dcdb78441c3f
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_d71e3df8b7b05f692f863f60
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_d7713b4c7ac1cfc4129714ba
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_ec9b92f636a696e64f49eea9
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   \---epcase_fd2f96b3b60ab4a150baba98
+|       |       |       +---p1_l01_all_to_one
+|       |       |       +---p1_l02_functional
+|       |       |       \---p1_l05_identity
+|       |       +---plan_build_20260712_150718
+|       |       |   |   aggregation_plan_build_summary.json
+|       |       |   |   aggregation_plan_index.csv
+|       |       |   |   excluded_zones_all_cases.csv
+|       |       |   |   included_thermal_zones_all_cases.csv
+|       |       |   |   missing_plan_inputs.csv
+|       |       |   |   zone_mapping_all_cases.csv
+|       |       |   |   
+|       |       |   +---epcase_049c0e3c687c32a0390a4001
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_069fd7684ae41a05766857a3
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_0ddc6ff14c1b67d93131c955
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_0f180c4cfc779824a0db8598
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_3b57a356d280de898ad85e05
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_3d59b898176ce320988f6c5e
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_3d9f84a8b90dee1a09e9c71b
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_4abb05aa9c546958efafe7c4
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_533973e29a474b82cf6a28fd
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_827ca4812c0199221d031e59
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_b9f042278ba1f2f6cd75d970
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_bacd02766bd7dcdb78441c3f
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_d71e3df8b7b05f692f863f60
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_d7713b4c7ac1cfc4129714ba
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   +---epcase_ec9b92f636a696e64f49eea9
+|       |       |   |   +---p1_l01_all_to_one
+|       |       |   |   +---p1_l02_functional
+|       |       |   |   \---p1_l05_identity
+|       |       |   \---epcase_fd2f96b3b60ab4a150baba98
+|       |       |       +---p1_l01_all_to_one
+|       |       |       +---p1_l02_functional
+|       |       |       \---p1_l05_identity
+|       |       \---plan_build_20260712_150807
+|       |           |   aggregation_plan_build_summary.json
+|       |           |   aggregation_plan_index.csv
+|       |           |   excluded_zones_all_cases.csv
+|       |           |   included_thermal_zones_all_cases.csv
+|       |           |   missing_plan_inputs.csv
+|       |           |   zone_mapping_all_cases.csv
+|       |           |   
+|       |           +---epcase_049c0e3c687c32a0390a4001
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_069fd7684ae41a05766857a3
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_0ddc6ff14c1b67d93131c955
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_0f180c4cfc779824a0db8598
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_3b57a356d280de898ad85e05
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_3d59b898176ce320988f6c5e
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_3d9f84a8b90dee1a09e9c71b
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_4abb05aa9c546958efafe7c4
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_533973e29a474b82cf6a28fd
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_827ca4812c0199221d031e59
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_b9f042278ba1f2f6cd75d970
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_bacd02766bd7dcdb78441c3f
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_d71e3df8b7b05f692f863f60
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_d7713b4c7ac1cfc4129714ba
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           +---epcase_ec9b92f636a696e64f49eea9
+|       |           |   +---p1_l01_all_to_one
+|       |           |   +---p1_l02_functional
+|       |           |   \---p1_l05_identity
+|       |           \---epcase_fd2f96b3b60ab4a150baba98
+|       |               +---p1_l01_all_to_one
+|       |               +---p1_l02_functional
+|       |               \---p1_l05_identity
+|       +---generation
+|       |   \---cases
+|       |       +---epcase_049c0e3c687c32a0390a4001
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_137c8e5d439f
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_069fd7684ae41a05766857a3
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_c4fb6abf331d
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_0ddc6ff14c1b67d93131c955
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_302ace3de980
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_0f180c4cfc779824a0db8598
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_074723157d7c
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_3b57a356d280de898ad85e05
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_82712f27f684
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_3d59b898176ce320988f6c5e
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_2c217adbdb88
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_3d9f84a8b90dee1a09e9c71b
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_fa1d8aef8de8
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_4abb05aa9c546958efafe7c4
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_320a2924c4bd
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_533973e29a474b82cf6a28fd
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_8ad61a42c2ec
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_827ca4812c0199221d031e59
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_5604324fe979
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_b9f042278ba1f2f6cd75d970
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_112da07635cf
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_bacd02766bd7dcdb78441c3f
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_9e2f404dc139
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_d71e3df8b7b05f692f863f60
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_53a9cef565cc
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_d7713b4c7ac1cfc4129714ba
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_d7a2fcdfd08e
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       +---epcase_ec9b92f636a696e64f49eea9
+|       |       |   |   latest_run.json
+|       |       |   |   
+|       |       |   +---rdd_probe
+|       |       |   |       energyplus_stderr.txt
+|       |       |   |       energyplus_stdout.txt
+|       |       |   |       eplusout.audit
+|       |       |   |       eplusout.bnd
+|       |       |   |       eplusout.dxf
+|       |       |   |       eplusout.eio
+|       |       |   |       eplusout.end
+|       |       |   |       eplusout.err
+|       |       |   |       eplusout.mdd
+|       |       |   |       eplusout.mtd
+|       |       |   |       eplusout.mtr
+|       |       |   |       eplusout.rdd
+|       |       |   |       eplusout.shd
+|       |       |   |       eplusssz.csv
+|       |       |   |       eplustbl.csv
+|       |       |   |       eplustbl.htm
+|       |       |   |       epluszsz.csv
+|       |       |   |       rdd_probe.idf
+|       |       |   |       rdd_variable_intersection.json
+|       |       |   |       sqlite.err
+|       |       |   |       
+|       |       |   \---runs
+|       |       |       \---epvwr_c1cf6aa5b344
+|       |       |           |   run_manifest.json
+|       |       |           |   
+|       |       |           +---canonical
+|       |       |           |   \---variables
+|       |       |           +---inputs
+|       |       |           |   |   case_spec.json
+|       |       |           |   |   
+|       |       |           |   \---variable_idfs
+|       |       |           +---legacy
+|       |       |           +---raw
+|       |       |           |   +---eio
+|       |       |           |   +---err
+|       |       |           |   \---variable_csv
+|       |       |           \---variable_runs
+|       |       \---epcase_fd2f96b3b60ab4a150baba98
+|       |           |   latest_run.json
+|       |           |   
+|       |           +---rdd_probe
+|       |           |       energyplus_stderr.txt
+|       |           |       energyplus_stdout.txt
+|       |           |       eplusout.audit
+|       |           |       eplusout.bnd
+|       |           |       eplusout.dxf
+|       |           |       eplusout.eio
+|       |           |       eplusout.end
+|       |           |       eplusout.err
+|       |           |       eplusout.mdd
+|       |           |       eplusout.mtd
+|       |           |       eplusout.mtr
+|       |           |       eplusout.rdd
+|       |           |       eplusout.shd
+|       |           |       eplusssz.csv
+|       |           |       eplustbl.csv
+|       |           |       eplustbl.htm
+|       |           |       epluszsz.csv
+|       |           |       rdd_probe.idf
+|       |           |       rdd_variable_intersection.json
+|       |           |       sqlite.err
+|       |           |       
+|       |           \---runs
+|       |               \---epvwr_63a0a6dd1569
+|       |                   |   run_manifest.json
+|       |                   |   
+|       |                   +---canonical
+|       |                   |   \---variables
+|       |                   +---inputs
+|       |                   |   |   case_spec.json
+|       |                   |   |   
+|       |                   |   \---variable_idfs
+|       |                   +---legacy
+|       |                   +---raw
+|       |                   |   +---eio
+|       |                   |   +---err
+|       |                   |   \---variable_csv
+|       |                   \---variable_runs
+|       +---heat_input_regression
+|       |   +---audit_runs
+|       |   |   \---heat_input_audit_20260726_143154
+|       |   |       |   audit_zone_results.csv
+|       |   |       |   source_discovery_issues.csv
+|       |   |       |   
+|       |   |       \---cases
+|       |   +---campaign_runs
+|       |   |   +---phase_c_20260726_142110
+|       |   |   |   |   phase_c_campaign_plan.json
+|       |   |   |   |   
+|       |   |   |   \---logs
+|       |   |   +---phase_c_20260726_142714
+|       |   |   |   |   phase_c_campaign_plan.json
+|       |   |   |   |   
+|       |   |   |   \---logs
+|       |   |   \---phase_c_20260726_143154
+|       |   |       |   phase_c_campaign_plan.json
+|       |   |       |   
+|       |   |       \---logs
+|       |   \---feature_runs
+|       |       \---heat_input_features_20260726_143154
+|       |           \---cases
+|       \---normalization
+|           \---idfs
+|               +---epcase_049c0e3c687c32a0390a4001
+|               |       normalized.idf
+|               |       
+|               +---epcase_069fd7684ae41a05766857a3
+|               |       normalized.idf
+|               |       
+|               +---epcase_0ddc6ff14c1b67d93131c955
+|               |       normalized.idf
+|               |       
+|               +---epcase_0f180c4cfc779824a0db8598
+|               |       normalized.idf
+|               |       
+|               +---epcase_3b57a356d280de898ad85e05
+|               |       normalized.idf
+|               |       
+|               +---epcase_3d59b898176ce320988f6c5e
+|               |       normalized.idf
+|               |       
+|               +---epcase_3d9f84a8b90dee1a09e9c71b
+|               |       normalized.idf
+|               |       
+|               +---epcase_4abb05aa9c546958efafe7c4
+|               |       normalized.idf
+|               |       
+|               +---epcase_533973e29a474b82cf6a28fd
+|               |       normalized.idf
+|               |       
+|               +---epcase_827ca4812c0199221d031e59
+|               |       normalized.idf
+|               |       
+|               +---epcase_b9f042278ba1f2f6cd75d970
+|               |       normalized.idf
+|               |       
+|               +---epcase_bacd02766bd7dcdb78441c3f
+|               |       normalized.idf
+|               |       
+|               +---epcase_d71e3df8b7b05f692f863f60
+|               |       normalized.idf
+|               |       
+|               +---epcase_d7713b4c7ac1cfc4129714ba
+|               |       normalized.idf
+|               |       
+|               +---epcase_ec9b92f636a696e64f49eea9
+|               |       normalized.idf
+|               |       
+|               \---epcase_fd2f96b3b60ab4a150baba98
+|                       normalized.idf
+|                       
++---experiment_registry
+|       all_experiments_merged.csv
+|       all_runs_merged.csv
+|       all_runs_merged.jsonl
+|       merge_manifest.json
+|       
++---inventories
+|       pnnl_ashrae_2013_commercial.csv
+|       pnnl_ashrae_2013_commercial.json
+|       
++---manual_tests
+|       rff_manual_broken_missing_zone.csv
+|       rff_manual_multi_style_custom_groups.csv
+|       
++---mlflow_artifacts
+|   +---5
+|   |   +---01f4a267fa9d461fbe60c320bb59815b
+|   |   |   \---artifacts
+|   |   |       +---aggregation_campaign_summary
+|   |   |       |       aggregation_matrix_case_runs.csv
+|   |   |       |       aggregation_matrix_manifest.json
+|   |   |       |       aggregation_matrix_outputs.csv
+|   |   |       |       missing_generation_rows.csv
+|   |   |       |       selected_aggregation_plans.csv
+|   |   |       |       
+|   |   |       \---aggregation_cases
+|   |   +---39f92fe816a249bca6a157757a8abce3
+|   |   |   \---artifacts
+|   |   |       \---aggregation_cases
+|   |   +---746201f5bed54f609f221d193f7e3133
+|   |   |   \---artifacts
+|   |   |       \---aggregation_cases
+|   |   +---907920fdb1b445249d6fa7b7bfd6b7ab
+|   |   |   \---artifacts
+|   |   |       +---aggregation_campaign_summary
+|   |   |       |       aggregation_matrix_case_runs.csv
+|   |   |       |       aggregation_matrix_manifest.json
+|   |   |       |       aggregation_matrix_outputs.csv
+|   |   |       |       missing_generation_rows.csv
+|   |   |       |       selected_aggregation_plans.csv
+|   |   |       |       
+|   |   |       \---aggregation_cases
+|   |   +---951edcf6f16540719e83d91ebd785ee7
+|   |   |   \---artifacts
+|   |   |       +---aggregation_campaign_summary
+|   |   |       |       aggregation_matrix_case_runs.csv
+|   |   |       |       aggregation_matrix_manifest.json
+|   |   |       |       aggregation_matrix_outputs.csv
+|   |   |       |       missing_generation_rows.csv
+|   |   |       |       selected_aggregation_plans.csv
+|   |   |       |       
+|   |   |       \---aggregation_cases
+|   |   \---ef4612c788144567879e723f76ea2408
+|   |       \---artifacts
+|   |           +---aggregation_campaign_summary
+|   |           |       aggregation_matrix_case_runs.csv
+|   |           |       aggregation_matrix_manifest.json
+|   |           |       aggregation_matrix_outputs.csv
+|   |           |       missing_generation_rows.csv
+|   |           |       selected_aggregation_plans.csv
+|   |           |       
+|   |           \---aggregation_cases
+|   +---p1_ashrae2013_one_zone_64
+|   |   +---27b686cd81fe48e18d56dbbf32a2815e
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---3f33dceaa7e841e6b6e8280c2a843661
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---507c85c7951a47e2bd60b56b8015793a
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---582a711f2e1545da89f18119853b2183
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---6e63c4a19ac64a8a8fa40b2d270835f5
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---86b8d6d5ec814ac0aa254478a80a0093
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---86d5ca6f307e407f9f72a14ac13c6e9d
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---a3504f9088b045a3a2e89a79dc58d76e
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---a5cbc8d98d984dba80eecf1d7ba9fdd9
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   \---ec10d08d6e774b8e81d813991527366a
+|   |       \---artifacts
+|   |           \---manifests
+|   |                   run_manifest.json
+|   |                   
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_full_v1
+|   |   +---1040c87889e04b7d85d59cb5cc76796e
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---7c2640c6c51845c78c2d34f9542cc978
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   \---c786e69ee8a647cdbe9357740c6e3c79
+|   |       \---artifacts
+|   |           \---manifests
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_full_v2
+|   |   +---083a29ced369411c8e2a4725050e535c
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---0b05a4dfcfd841efaea820be1ba1c859
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---29b62f49d9fe455597bde709e7965821
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---2de28347dbd14094acaccebcf03342cc
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---3523b04104cc41a98e2843c07d416a16
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---51667cb6fa554ad7acaeccc60d33f4bc
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---69950d11cf244aa0bdf33701c97abbb2
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---6a3b813cea56409c9ed49c60e8678172
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---7b6df2897c714780a8ce60bc3d127552
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---8beab43242da4bcfa35e046f080ee5b9
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---e6b6dc6b0edd434ba539dca976cd1862
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---e72a380dcd134ac184e90e27ba2735c2
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---e819171e69544a7fb27d1b875563b683
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---e8b99538229d4571a4060a181293b69d
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   +---f458b8c8fdf443329d795ec853c480c1
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   \---f728318344474f28bfb61f3a13d6f61b
+|   |       \---artifacts
+|   |           \---manifests
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_35V_1W
+|   |   \---a5c3367f9f864bda98ecfb66d974514f
+|   |       \---artifacts
+|   |           \---manifests
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+|   |   \---abf0189d8b6e4d11a4e9c698676891e7
+|   |       \---artifacts
+|   |           \---manifests
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3_phase_c_heat_input_regression
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_v1
+|   |   \---813ebc0211c74514b90de9e622362dc1
+|   |       \---artifacts
+|   |           \---manifests
+|   |                   run_manifest.json
+|   |                   
+|   +---p1_ashrae2013_one_zone_compact_4b4c_labpc_v2
+|   |   \---1aec9979f8f34f87972f12fcdca9c72f
+|   |       \---artifacts
+|   |           \---manifests
+|   |                   run_manifest.json
+|   |                   
+|   +---p1_compact_4b4c_labpc_1w_v1
+|   |   +---0c588a9c401d4204b7ec37fd3398c14e
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---38cc5de365d842e4a5270134f30bb631
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---3f1607d0437841b0b869347fb419d98d
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---4073114466b846a7883ea278315b1c42
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---5932ffae7d864d65a160e0458827cd9a
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---7fe55672324d41d08670b9892765e350
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---8b4cf028f1234c5ca6a7d3d95d3f0713
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---963d406a729e4e059bfd6578387a6240
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---a2f1324fb80847fb9f239f8ff0843812
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---bb26453739794293a5a61145ba8d1d0a
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---c10d2588f59148f0b7f4637a5c56ba57
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---cdd512499ac742f894a8fb2a861b1672
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---e2b14067b9c6469b8774570309690d2b
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---f51a15dceab6473e904243855cea0625
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   +---f96600e894a9447899fbdd1acbddad15
+|   |   |   \---artifacts
+|   |   |       \---manifests
+|   |   |               run_manifest.json
+|   |   |               
+|   |   \---fc6040d7647f44e8a94a1a3ad2883266
+|   |       \---artifacts
+|   |           \---manifests
+|   |                   run_manifest.json
+|   |                   
+|   \---scalebridge_connectivity_test
++---mlflow_exports
+|   +---home-pc
+|   |       experiments.csv
+|   |       export_manifest.json
+|   |       runs.csv
+|   |       runs.jsonl
+|   |       
+|   +---lab-pc
+|   |       experiments.csv
+|   |       export_manifest.json
+|   |       runs.csv
+|   |       runs.jsonl
+|   |       
+|   \---laptop
+|           experiments.csv
+|           export_manifest.json
+|           runs.csv
+|           runs.jsonl
+|           
++---p1_compact_4b4c
+|   \---cases
+|       \---epcase_827ca4812c0199221d031e59
+\---smoke_tests
+    \---office_small_seattle
+        \---epcase_9a9306e748c3d8f88989a632
+            |   latest_run.json
+            |   latest_smoke_test_summary.json
+            |   smoke_test_summary.json
+            |   
+            +---canonical
+            |       eio_tables.json
+            |       metadata.json
+            |       timeseries_timestep.parquet
+            |       
+            +---inputs
+            |       case_spec.json
+            |       prepared.idf
+            |       
+            +---raw
+            |       #opyplus.info
+            |       .opyplus.mvi
+            |       .opyplus.rvi
+            |       eplusmtr.csv
+            |       eplusout.audit
+            |       eplusout.bnd
+            |       eplusout.csv
+            |       eplusout.eio
+            |       eplusout.end
+            |       eplusout.err
+            |       eplusout.eso
+            |       eplusout.mdd
+            |       eplusout.mtd
+            |       eplusout.mtr
+            |       eplusout.rdd
+            |       eplusout.rvaudit
+            |       eplusout.shd
+            |       eplusssz.csv
+            |       eplustbl.csv
+            |       eplustbl.htm
+            |       epluszsz.csv
+            |       opyplus.epw
+            |       opyplus.idf
+            |       opyplus_progress.log
+            |       readvars.audit
+            |       sqlite.err
+            |       
+            \---runs
+                +---eprun_01ca72ddb9f4
+                |   |   smoke_test_summary.json
+                |   |   
+                |   +---canonical
+                |   |       eio_tables.json
+                |   |       metadata.json
+                |   |       timeseries_timestep.parquet
+                |   |       
+                |   +---inputs
+                |   |       case_spec.json
+                |   |       prepared.idf
+                |   |       
+                |   +---legacy
+                |   |       Eio_OutputFile.pickle
+                |   |       IDF_OutputVariables_DictDF.pickle
+                |   |       
+                |   \---raw
+                |           #opyplus.info
+                |           eplusmtr.csv
+                |           eplusout.audit
+                |           eplusout.bnd
+                |           eplusout.csv
+                |           eplusout.eio
+                |           eplusout.end
+                |           eplusout.err
+                |           eplusout.eso
+                |           eplusout.mdd
+                |           eplusout.mtd
+                |           eplusout.mtr
+                |           eplusout.rdd
+                |           eplusout.rvaudit
+                |           eplusout.shd
+                |           eplusssz.csv
+                |           eplustbl.csv
+                |           eplustbl.htm
+                |           epluszsz.csv
+                |           opyplus.epw
+                |           opyplus.idf
+                |           opyplus_progress.log
+                |           sqlite.err
+                |           
+                +---eprun_382c7d8b5944
+                |   |   smoke_test_summary.json
+                |   |   
+                |   +---canonical
+                |   |       eio_tables.json
+                |   |       metadata.json
+                |   |       timeseries_timestep.parquet
+                |   |       
+                |   +---inputs
+                |   |       case_spec.json
+                |   |       prepared.idf
+                |   |       
+                |   \---raw
+                |           #opyplus.info
+                |           eplusmtr.csv
+                |           eplusout.audit
+                |           eplusout.bnd
+                |           eplusout.csv
+                |           eplusout.eio
+                |           eplusout.end
+                |           eplusout.err
+                |           eplusout.eso
+                |           eplusout.mdd
+                |           eplusout.mtd
+                |           eplusout.mtr
+                |           eplusout.rdd
+                |           eplusout.rvaudit
+                |           eplusout.shd
+                |           eplusssz.csv
+                |           eplustbl.csv
+                |           eplustbl.htm
+                |           epluszsz.csv
+                |           opyplus.epw
+                |           opyplus.idf
+                |           opyplus_progress.log
+                |           sqlite.err
+                |           
+                +---eprun_a9d71b40d6df
+                |   |   run_manifest.json
+                |   |   smoke_test_summary.json
+                |   |   
+                |   +---canonical
+                |   |       eio_tables.json
+                |   |       metadata.json
+                |   |       timeseries_timestep.parquet
+                |   |       
+                |   +---inputs
+                |   |       case_spec.json
+                |   |       prepared.idf
+                |   |       
+                |   +---legacy
+                |   |       Eio_OutputFile.pickle
+                |   |       IDF_OutputVariables_DictDF.pickle
+                |   |       
+                |   \---raw
+                |           #opyplus.info
+                |           eplusmtr.csv
+                |           eplusout.audit
+                |           eplusout.bnd
+                |           eplusout.csv
+                |           eplusout.eio
+                |           eplusout.end
+                |           eplusout.err
+                |           eplusout.eso
+                |           eplusout.mdd
+                |           eplusout.mtd
+                |           eplusout.mtr
+                |           eplusout.rdd
+                |           eplusout.rvaudit
+                |           eplusout.shd
+                |           eplusssz.csv
+                |           eplustbl.csv
+                |           eplustbl.htm
+                |           epluszsz.csv
+                |           opyplus.epw
+                |           opyplus.idf
+                |           opyplus_progress.log
+                |           sqlite.err
+                |           
+                \---eprun_f3f1a15d7ce2
+                    |   smoke_test_summary.json
+                    |   
+                    +---canonical
+                    |       eio_tables.json
+                    |       metadata.json
+                    |       timeseries_timestep.parquet
+                    |       
+                    +---inputs
+                    |       case_spec.json
+                    |       prepared.idf
+                    |       
+                    \---raw
+                            #opyplus.info
+                            eplusmtr.csv
+                            eplusout.audit
+                            eplusout.bnd
+                            eplusout.csv
+                            eplusout.eio
+                            eplusout.end
+                            eplusout.err
+                            eplusout.eso
+                            eplusout.mdd
+                            eplusout.mtd
+                            eplusout.mtr
+                            eplusout.rdd
+                            eplusout.rvaudit
+                            eplusout.shd
+                            eplusssz.csv
+                            eplustbl.csv
+                            eplustbl.htm
+                            epluszsz.csv
+                            opyplus.epw
+                            opyplus.idf
+                            opyplus_progress.log
+                            sqlite.err
+                            

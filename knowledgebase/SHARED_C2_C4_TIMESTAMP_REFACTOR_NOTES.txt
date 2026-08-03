@@ -1,0 +1,39 @@
+ScaleBridge Shared C2/C4 Timestamp Canonicalization Refactor
+================================================================
+
+Why this replaces the earlier C4 patch
+--------------------------------------
+The earlier proposed C4 patch would have implemented a second EnergyPlus
+timestamp parser and duplicate-row policy inside datasets.py. It was not
+installed.
+
+This refactor avoids that duplication.
+
+Single owner
+------------
+alignment.py owns:
+- timestamp text normalization;
+- EnergyPlus hour-24 parsing;
+- physical-timestamp construction;
+- duplicate-row ranking;
+- complementary-value coalescence;
+- conflicting-value detection.
+
+C2 usage
+--------
+C2 continues to call canonicalize_wide_frame() to create its annual feature
+timeline.
+
+C4 usage
+--------
+C4 selects only timestamp_raw and the requested Stage B target column, calls
+the same canonicalize_wide_frame(), verifies that no conflicts remain, and
+joins the resulting target lookup to C2 on parsed timestamp.
+
+C4 therefore does not repeat C2 feature engineering. It only applies the same
+shared key policy to an external target source before alignment.
+
+Expected result
+---------------
+The 27 Stage-B-target datasets should again have valid train, validation, and
+test pairs, while the three QAC datasets remain unchanged.

@@ -1,0 +1,29 @@
+ScaleBridge C5/C6 CPU+GPU extension
+==================================
+
+This patch extends the existing C5 PyTorch linear estimator and C6 training
+orchestrator so PyTorch is developed and validated independently on CPU and CUDA.
+
+Changed files:
+- src/scalebridge/models/heat_input_regression/linear_pytorch.py
+- src/scalebridge/training/heat_input_regression/trainer.py
+- src/scalebridge/training/heat_input_regression/validation.py
+- scripts/heat_input_regression/train_heat_input_regression_models.py
+- scripts/heat_input_regression/validate_heat_input_regression_model_api.py
+
+New behavior:
+- PyTorch device choices: cpu, cuda, auto.
+- CUDA requests fail clearly when torch.cuda.is_available() is False.
+- CPU and CUDA outputs use distinct directories.
+- Model manifests persist requested/resolved device, torch version, CUDA version,
+  and CUDA device name.
+- C6 independently validates persisted device metadata.
+- --pytorch-device can be repeated to execute CPU and CUDA tasks in one run.
+
+Local validation performed:
+- forced compilation passed
+- closed_form_linear API checks passed
+- pytorch_linear CPU API checks passed
+- total local checks: 30/30 passed
+
+CUDA execution must be validated in the repaired Windows GPU environment.

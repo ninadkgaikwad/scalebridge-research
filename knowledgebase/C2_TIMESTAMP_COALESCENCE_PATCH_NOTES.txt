@@ -1,0 +1,39 @@
+ScaleBridge C2 Timestamp Parsing and Coalescence Patch v5
+======================================================
+
+Purpose
+-------
+Fix residual C8 missing predictions at their true source: timestamp parsing and
+duplicate-row resolution in C2.
+
+Permanent behavior
+------------------
+1. Strip leading/trailing whitespace from timestamp strings.
+2. Collapse internal whitespace before parsing or key comparison.
+3. Parse EnergyPlus MM/DD HH:MM:SS timestamps deterministically.
+4. Handle EnergyPlus hour 24 by advancing to the next day.
+5. Group rows by parsed physical timestamp.
+6. Prefer the densest row, then the earliest original row.
+7. Fill null columns from companion rows at the same physical timestamp.
+8. Record materially conflicting non-null values instead of silently replacing
+   the preferred value.
+
+This is source-data recovery, not interpolation.
+
+Expected smoke outcome
+----------------------
+- 105120 canonical annual rows per zone.
+- Zero duplicate parsed timestamps.
+- Zero noncanonical cadence gaps.
+- Complementary values recovered for the five previously affected timestamps.
+- C8 missing predictions reduced from 57 to zero after rebuilding C2-C8.
+
+Installation
+------------
+Extract this ZIP into the repository root, replacing alignment.py.
+The included PowerShell helper creates a backup marker and confirms installation.
+
+Validation
+----------
+After rebuilding C2, run validate_heat_input_regression_timestamp_coalescence.py
+against the new feature root. Then continue C3-C8.

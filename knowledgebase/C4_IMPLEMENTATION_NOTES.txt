@@ -1,0 +1,42 @@
+ScaleBridge Stage C4 — Model-Specific Regression-Pair Datasets
+
+New source modules:
+  src/scalebridge/data/heat_input_regression/datasets.py
+  src/scalebridge/data/heat_input_regression/dataset_validation.py
+
+New scripts:
+  scripts/heat_input_regression/build_heat_input_regression_datasets.py
+  scripts/heat_input_regression/validate_heat_input_regression_datasets.py
+
+C4 consumes:
+  C1 applicable_models.csv
+  C2 derived_heat_input_features.parquet
+  C3 split_assignments.parquet
+  Stage B aggregated_timeseries_wide.parquet
+
+C4 writes one directory per applicable model with:
+  regression_pairs_full.parquet     all source rows, including exclusions
+  regression_pairs_valid.parquet    all valid rows across three splits
+  train.parquet                     valid training rows only
+  validation.parquet                valid validation rows only
+  test.parquet                      valid test rows only
+  regression_pairs_preview.csv
+  dataset_summary.csv
+  exclusion_summary.csv
+  dataset_validation.csv
+  model_dataset_manifest.json
+
+Every pair file uses generic model-facing columns:
+  timestamp_raw
+  timestamp
+  source_row_index
+  split
+  split_index
+  split_included
+  x
+  y
+  pair_valid
+  pair_exclusion_reason
+
+The manifest records the original physical/derived predictor and target columns,
+units, source family, component, and future prediction output column.

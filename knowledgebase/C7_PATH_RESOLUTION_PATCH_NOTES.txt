@@ -1,0 +1,19 @@
+C7 path-resolution patch
+========================
+
+Fixes a manifest-schema mismatch between C6 and C7.
+
+C6 stores:
+- model artifact directory at outputs.model_artifact_dir
+- C4 manifest payload at source_dataset_manifest_payload
+- C4 split files at source_dataset_manifest_payload.outputs.train/validation/test
+
+The previous C7 code looked for absent top-level source_paths and model_artifact_dir keys.
+Path("") became the current working directory, so pandas/pyarrow scanned unrelated files.
+
+The patch:
+- reads the actual C6 and C4 manifest schema
+- resolves relative paths against their manifest locations
+- rejects empty paths
+- requires exact split Parquet files rather than directories
+- validates the model artifact as a directory before evaluation

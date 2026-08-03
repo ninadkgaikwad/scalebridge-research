@@ -1,0 +1,19 @@
+ScaleBridge C2 Fast Timestamp Coalescence Patch v7
+===================================================
+
+Fix
+---
+The v6 implementation correctly optimized duplicate processing, but an upstream
+timestamp frame could carry a public `timestamp_normalized` text column into the
+canonical wide frame. The derived-feature validator then attempted to validate
+that text helper as a numeric feature and reported:
+
+timestamp_normalized: non_null_count 0 < 1000 | feature is constant
+
+v7 keeps timestamp normalization internal:
+- excludes timestamp_normalized from source-feature scoring;
+- removes timestamp_normalized from the canonical output frame;
+- preserves timestamp_raw and parsed timestamp;
+- preserves fast duplicate-only coalescence and conflict auditing.
+
+No scientific feature is removed.

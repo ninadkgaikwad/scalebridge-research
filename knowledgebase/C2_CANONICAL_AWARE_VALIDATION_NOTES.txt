@@ -1,0 +1,23 @@
+ScaleBridge C2 Canonical-Aware Validation Patch
+==================================================
+
+Diagnosis
+---------
+The corrected C2 builder stores 105120 canonical annual rows. The legacy
+standard validator recomputes the pre-canonical 105133/105134-row tables and
+therefore reports only row-count mismatches.
+
+This patch does not blindly ignore legacy validation failures. It accepts a
+legacy row-count mismatch only when all of the following are true:
+
+- stored row count matches the zone manifest;
+- stored row count matches canonical output_row_count;
+- recomputed row count matches canonical input_row_count;
+- removed duplicate count equals recomputed minus stored;
+- canonical output contains zero duplicate parsed timestamps;
+- canonical timestamps are monotonic;
+- cadence is exactly 300 seconds;
+- no noncanonical cadence gaps remain;
+- final annual row count is exactly 105120.
+
+Any other validation failure remains fatal.

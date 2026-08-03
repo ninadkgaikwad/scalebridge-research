@@ -1,0 +1,5 @@
+ScaleBridge C2 canonical timestamp fix
+
+Observed Stage-B smoke output contained 105120 canonical 5-minute annual timestamps plus 13-14 sparse rows whose parsed timestamps duplicated existing timestamps. Because timestamp_raw formatting differed, raw-string duplicate checks did not detect them. The sparse duplicates were sorted near the end and generated missing values across unrelated feature families.
+
+The fix parses EnergyPlus timestamps, groups by parsed timestamp, retains the row with maximum non-null source coverage (earliest row as tie-break), sorts chronologically, and records a duplicate audit in zone_feature_manifest.json. The supplied validator requires 105120 rows, no parsed duplicates, monotonic timestamps, and exact 300-second cadence for this smoke campaign.

@@ -1,0 +1,22 @@
+{
+  "application_name": "Building-Grid Intelligence Research Studio",
+  "short_name": "BGI Research Studio",
+  "package_root": "src/scalebridge/dashapp",
+  "script_root": "scripts/dashapp",
+  "test_root": "tests/dashapp",
+  "major_page_count": 11,
+  "subpage_count": 57,
+  "theme_modes": [
+    "system",
+    "light",
+    "dark"
+  ],
+  "icons": "Bootstrap Icons through dash-bootstrap-components",
+  "notes": [
+    "All user-facing navigation labels use professional title case.",
+    "Internal Python folders remain lowercase with underscores.",
+    "Scientific logic is intentionally absent from shell callbacks.",
+    "Every shell page and subpage has registered contextual help.",
+    "A dedicated application icon can replace the temporary geometric Bootstrap icon later."
+  ]
+}

@@ -1,0 +1,1199 @@
+BUILDING-GRID INTELLIGENCE RESEARCH STUDIO
+SETTINGS → MACHINES AND SETTINGS → PATHS
+VALIDATED FOUR-MACHINE HANDOFF
+============================================================
+
+PURPOSE
+-------
+
+This handoff contains only the currently validated, explicitly known,
+planned, or unknown machine and path information for:
+
+    1. Windows laptop
+    2. Home PC
+    3. Lab PC
+    4. Kamiak HPC
+
+It is intended for implementation of:
+
+    Settings → Machines
+    Settings → Paths
+
+No Dash code is included.
+
+============================================================
+STATUS LEGEND
+============================================================
+
+VALIDATED
+    Explicitly used, confirmed, or verified by a successful command,
+    environment build, campaign run, path resolution, or machine prompt.
+
+KNOWN BUT MACHINE-SPECIFIC
+    The path contract, role, or convention is established, but the exact
+    absolute path differs by machine or has not been re-resolved on that
+    machine.
+
+PLANNED
+    Intended future path, workload, or storage contract that has not yet
+    been validated in production.
+
+UNKNOWN
+    Not defined in the available chat record and must not be inferred.
+
+============================================================
+SOURCE KEY
+============================================================
+
+S1
+    Current laptop PowerShell prompt:
+
+    C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\
+    From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\
+    scalebridge-research
+
+S2
+    README / project context path contract:
+
+    SCALEBRIDGE_DATA_ROOT = ../../Data
+    SCALEBRIDGE_GENERATED_DATA_ROOT = ../../Data/ScaleBridge
+
+S3
+    Four-machine roles and machine IDs recorded in the ScaleBridge
+    README and main context handoff.
+
+S4
+    Validated lab-PC data root, generated-data root, EnergyPlus work root,
+    and temporary-root configuration.
+
+S5
+    Validated lab-PC MLflow backend, artifact, export, and registry paths,
+    including the MLflow server command.
+
+S6
+    Storage and machine-workload policy from the Stage B aggregation
+    handoff.
+
+S7
+    Kamiak shell commands and environment organization from this chat:
+
+    /home/ninad.gaikwad/projects/scalebridge-research
+    /home/ninad.gaikwad/projects/Environments
+    /home/ninad.gaikwad/conda_envs/scalebridge-dev-gpu-kamiak
+
+S8
+    Kamiak environment build script and successful SLURM job:
+
+    /home/ninad.gaikwad/projects/Environments/scripts/
+    create_scalebridge_kamiak_env.sbatch
+
+    Successful job:
+        27929819
+        COMPLETED
+        ExitCode 0:0
+        Node sn14
+
+S9
+    Conditional Kamiak environment-variable contract:
+
+    export SCALEBRIDGE_DATA_ROOT="$(realpath ../../Data)"
+    export SCALEBRIDGE_GENERATED_DATA_ROOT="$(realpath ../../Data/ScaleBridge)"
+    export SCALEBRIDGE_EPLUS_WORK_ROOT="${TMPDIR:-/tmp/$USER}/ScaleBridge_EPlus_Work"
+    export SCALEBRIDGE_MACHINE_ID="kamiak"
+
+S10
+    Planned curated Kamiak training-export location:
+
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>/
+    training_exports/p1_4b4c_1w_aggregation_v1/
+
+============================================================
+SETTINGS → MACHINES
+============================================================
+
+------------------------------------------------------------
+1. WINDOWS LAPTOP
+------------------------------------------------------------
+
+1. Machine display name
+    Value:
+        Windows Laptop
+    Status:
+        VALIDATED
+    Source:
+        S1
+
+2. Machine ID used in code
+    Value:
+        laptop
+    Status:
+        VALIDATED
+    Source:
+        S3
+
+    Documented PowerShell setting:
+        $env:SCALEBRIDGE_MACHINE_ID = "laptop"
+
+3. Operating system
+    Value:
+        Windows
+    Status:
+        VALIDATED
+    Source:
+        S1
+
+4. Intended research role
+    Value:
+        Primary development machine for:
+            - code editing
+            - planning
+            - small validation
+            - Dash app development
+            - controlled smoke tests
+            - Phase C development validation
+            - Phase D development validation
+    Status:
+        VALIDATED
+    Source:
+        S3 and current laptop validation commands
+
+5. Repository root
+    Value:
+        C:\Users\ninad\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\NewOrg\
+        scalebridge-research
+    Status:
+        VALIDATED
+    Source:
+        S1
+
+6. Primary data root
+    Value:
+        C:\Users\ninad\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        Derived from S1 using the S2 ../../Data contract
+
+    Important note:
+        This path should be resolved using Resolve-Path before the
+        Settings page marks it active.
+
+7. Generation output root
+    Value:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>\
+        campaigns\<campaign_id>\generation
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        S2 and the generation campaign layout
+
+8. Aggregation output root
+    Value:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>\
+        campaigns\<campaign_id>\aggregation
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        S2 and the aggregation campaign layout
+
+9. Phase C output root
+    Value:
+        Not explicitly defined in this chat
+    Status:
+        UNKNOWN
+    Source:
+        No validated source
+
+10. Phase D output root
+    Value:
+        Not explicitly defined in this chat
+    Status:
+        UNKNOWN
+    Source:
+        No validated source
+
+11. MLflow backend root
+    Value:
+        C:\Users\ninad\AppData\Local\ScaleBridge\mlflow
+    Status:
+        VALIDATED
+    Source:
+        Prior Windows environment standardization in this project
+
+12. MLflow artifact root
+    Value:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>\mlflow_artifacts
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        General ScaleBridge MLflow artifact convention
+
+13. EnergyPlus work root
+    Value:
+        No current laptop-specific absolute path established
+    Status:
+        UNKNOWN
+    Source:
+        No validated laptop command
+
+14. Cache or temporary root
+    Value:
+        Windows user/system temporary directory
+        Exact ScaleBridge override is not defined
+    Status:
+        UNKNOWN
+    Source:
+        No current command
+
+15. Publication export root
+    Value:
+        Not defined
+    Status:
+        UNKNOWN
+    Source:
+        No source
+
+16. Storage limitations
+    Value:
+        The laptop does not have enough local storage for the complete
+        aggregation dataset.
+
+        The Dropbox data folder should remain online-only on the laptop.
+    Status:
+        VALIDATED
+    Source:
+        S6
+
+17. Recommended workloads
+    Value:
+        - code development
+        - Dash app development
+        - unit tests
+        - smoke tests
+        - controlled EnergyPlus tests
+        - small aggregation tests
+        - Phase C development and validation
+        - Phase D development and validation
+        - debugging and planning
+    Status:
+        VALIDATED / PLANNED BY WORKFLOW
+    Source:
+        S3 and S6
+
+18. Restricted workloads
+    Value:
+        - full 240-plan aggregation matrix
+        - permanent local copy of complete aggregation outputs
+        - full production-scale generation campaigns
+        - large dataset duplication
+    Status:
+        VALIDATED RESTRICTION
+    Source:
+        S6
+
+------------------------------------------------------------
+2. HOME PC
+------------------------------------------------------------
+
+1. Machine display name
+    Value:
+        Home PC
+    Status:
+        VALIDATED
+    Source:
+        S3
+
+2. Machine ID used in code
+    Value:
+        home-pc
+    Status:
+        VALIDATED
+    Source:
+        S3
+
+    Documented setting:
+        $env:SCALEBRIDGE_MACHINE_ID = "home-pc"
+
+3. Operating system
+    Value:
+        Windows
+    Status:
+        VALIDATED
+    Source:
+        Four-machine environment work in this chat
+
+4. Intended research role
+    Value:
+        Windows GPU compute machine for:
+            - medium smoke tests
+            - GPU-based PyTorch workloads
+            - storage of full aggregation outputs
+            - secondary large validation runs
+    Status:
+        VALIDATED
+    Source:
+        S3 and S6
+
+5. Repository root
+    Value:
+        Not recorded in this chat
+    Status:
+        UNKNOWN
+    Source:
+        No exact prompt or command
+
+6. Primary data root
+    Value:
+        Follows the ../../Data contract relative to the repository
+        when that layout exists
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        S2
+
+7. Generation output root
+    Value:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>\
+        campaigns\<campaign_id>\generation
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        S2 and campaign layout
+
+8. Aggregation output root
+    Value:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>\
+        campaigns\<campaign_id>\aggregation
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        S2 and campaign layout
+
+9. Phase C output root
+    Value:
+        Not explicitly defined
+    Status:
+        UNKNOWN
+    Source:
+        No validated source
+
+10. Phase D output root
+    Value:
+        Not explicitly defined
+    Status:
+        UNKNOWN
+    Source:
+        No validated source
+
+11. MLflow backend root
+    Value:
+        C:\Users\ninad\AppData\Local\ScaleBridge\mlflow
+    Status:
+        VALIDATED
+    Source:
+        Prior Windows environment standardization
+
+    Important note:
+        The exact home-PC SQLite database filename is not recorded.
+
+12. MLflow artifact root
+    Value:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>\mlflow_artifacts
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        Shared ScaleBridge MLflow convention
+
+13. EnergyPlus work root
+    Value:
+        No home-PC-specific absolute path recorded
+    Status:
+        UNKNOWN
+    Source:
+        No exact command
+
+14. Cache or temporary root
+    Value:
+        Not recorded
+    Status:
+        UNKNOWN
+    Source:
+        No exact command
+
+15. Publication export root
+    Value:
+        Not defined
+    Status:
+        UNKNOWN
+    Source:
+        No source
+
+16. Storage limitations
+    Value:
+        Home PC has enough storage for the complete aggregation outputs.
+        Exact free capacity is not recorded.
+    Status:
+        VALIDATED
+    Source:
+        S6
+
+17. Recommended workloads
+    Value:
+        - Windows GPU compute
+        - medium and large smoke tests
+        - PyTorch training
+        - full aggregation-output storage
+        - secondary production runs
+        - data analysis and validation
+    Status:
+        VALIDATED
+    Source:
+        S3 and S6
+
+18. Restricted workloads
+    Value:
+        No explicit ScaleBridge workload is prohibited.
+
+        However, the home PC is not currently designated as the preferred
+        main machine for full generation or the primary 240-plan matrix run.
+    Status:
+        KNOWN BUT MACHINE-SPECIFIC
+    Source:
+        S3 and S6
+
+------------------------------------------------------------
+3. LAB PC
+------------------------------------------------------------
+
+1. Machine display name
+    Value:
+        Lab PC
+    Status:
+        VALIDATED
+    Source:
+        S3
+
+2. Machine ID used in code
+    Value:
+        lab-pc
+    Status:
+        VALIDATED
+    Source:
+        Compact campaign and environment commands
+
+3. Operating system
+    Value:
+        Windows
+    Status:
+        VALIDATED
+    Source:
+        PowerShell commands and Windows paths
+
+4. Intended research role
+    Value:
+        Primary Windows production-compute target for:
+            - EnergyPlus generation
+            - full compact campaigns
+            - full Stage B aggregation matrix
+            - production MLflow tracking
+            - large local data processing
+    Status:
+        VALIDATED
+    Source:
+        S3 and S6
+
+5. Repository root
+    Value:
+        Exact path not recorded in the current handoff
+    Status:
+        UNKNOWN
+    Source:
+        No current shell prompt
+
+6. Primary data root
+    Value:
+        F:\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data
+    Status:
+        VALIDATED
+    Source:
+        S4 and S5
+
+7. Generation output root
+    Value:
+        F:\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data\ScaleBridge\
+        campaigns\<campaign_id>\generation
+    Status:
+        VALIDATED CONTRACT
+    Source:
+        S4 and generation output layout
+
+    Validated compact-generation path:
+        F:\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data\ScaleBridge\
+        campaigns\p1_compact_4b4c_labpc_1w_v1\generation
+
+8. Aggregation output root
+    Value:
+        F:\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data\ScaleBridge\
+        campaigns\<campaign_id>\aggregation
+    Status:
+        VALIDATED CONTRACT
+    Source:
+        S4 and aggregation output layout
+
+    Validated compact-aggregation path:
+        F:\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data\ScaleBridge\
+        campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation
+
+9. Phase C output root
+    Value:
+        No exact canonical Phase C path is stated in this chat
+    Status:
+        UNKNOWN
+    Source:
+        No validated source
+
+10. Phase D output root
+    Value:
+        Not yet defined
+    Status:
+        UNKNOWN
+    Source:
+        Phase D has assigned campaigns but no explicit root contract
+
+11. MLflow backend root
+    Value:
+        D:\ScaleBridge_MLflow\backend
+    Status:
+        VALIDATED
+    Source:
+        S5
+
+    Validated backend database:
+        D:\ScaleBridge_MLflow\backend\mlflow_labpc.sqlite
+
+12. MLflow artifact root
+    Value:
+        F:\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data\ScaleBridge\
+        mlflow_artifacts
+    Status:
+        VALIDATED
+    Source:
+        S5
+
+    MLflow export root:
+        F:\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data\ScaleBridge\
+        mlflow_exports\lab-pc
+
+    Merged experiment registry:
+        F:\Dropbox\NinadGaikwad_PhD\
+        Gaikwad_Research\From_WSU_OneDrive\
+        BuildingModelingProject_Condensed\Data\ScaleBridge\
+        experiment_registry
+
+13. EnergyPlus work root
+    Value:
+        D:\ScaleBridge_EPlus_Work\
+        p1_compact_4b4c_labpc_1w_v1
+    Status:
+        VALIDATED
+    Source:
+        S4
+
+    General work parent:
+        D:\ScaleBridge_EPlus_Work
+
+14. Cache or temporary root
+    Value:
+        D:\Temp
+    Status:
+        VALIDATED
+    Source:
+        S4
+
+15. Publication export root
+    Value:
+        Not defined
+    Status:
+        UNKNOWN
+    Source:
+        No source
+
+16. Storage limitations
+    Value:
+        Lab PC has enough storage for full generation and aggregation outputs.
+
+        C: must not be used for:
+            - large MLflow backend data
+            - MLflow artifacts
+            - EnergyPlus short-work folders
+            - other large temporary campaign outputs
+    Status:
+        VALIDATED
+    Source:
+        S4, S6, and environment workflow
+
+17. Recommended workloads
+    Value:
+        - full EnergyPlus campaigns
+        - compact and full production generation
+        - full 240-plan Stage B aggregation
+        - production MLflow tracking
+        - MLflow export and merge
+        - large local data processing
+        - large output storage
+    Status:
+        VALIDATED
+    Source:
+        S3, S5, and S6
+
+18. Restricted workloads
+    Value:
+        - avoid C: for large MLflow data
+        - avoid C: for EnergyPlus work folders
+        - avoid unnecessary duplication of the full dataset
+    Status:
+        VALIDATED RESTRICTION
+    Source:
+        Current environment and storage workflow
+
+------------------------------------------------------------
+4. KAMIAK HPC
+------------------------------------------------------------
+
+1. Machine display name
+    Value:
+        Kamiak HPC
+    Status:
+        VALIDATED
+    Source:
+        S3 and S7
+
+2. Machine ID used in code
+    Value:
+        kamiak
+    Status:
+        VALIDATED
+    Source:
+        S3 and S9
+
+    Documented setting:
+        export SCALEBRIDGE_MACHINE_ID="kamiak"
+
+3. Operating system
+    Value:
+        Linux HPC under SLURM
+    Status:
+        VALIDATED
+    Source:
+        S7 and S8
+
+4. Intended research role
+    Value:
+        High-end GPU compute target for:
+            - ANN training
+            - sequence models
+            - Scientific ML
+            - large PyTorch workloads
+            - SLURM-controlled experiment campaigns
+            - future curated training exports
+    Status:
+        VALIDATED / PLANNED
+    Source:
+        S3, S6, and S10
+
+5. Repository root
+    Value:
+        /home/ninad.gaikwad/projects/scalebridge-research
+    Status:
+        VALIDATED
+    Source:
+        S7
+
+6. Primary data root
+    Value:
+        No validated absolute Kamiak project-data root
+    Status:
+        UNKNOWN
+    Source:
+        S9 only defines a conditional relative command
+
+    Conditional command:
+        export SCALEBRIDGE_DATA_ROOT="$(realpath ../../Data)"
+
+    Status of conditional command:
+        PLANNED / CONDITIONAL
+
+7. Generation output root
+    Value:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>/
+        campaigns/<campaign_id>/generation
+    Status:
+        PLANNED
+    Source:
+        General campaign contract
+
+8. Aggregation output root
+    Value:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>/
+        campaigns/<campaign_id>/aggregation
+    Status:
+        PLANNED
+    Source:
+        General campaign contract
+
+9. Phase C output root
+    Value:
+        Not defined
+    Status:
+        UNKNOWN
+    Source:
+        No source
+
+10. Phase D output root
+    Value:
+        Not defined
+    Status:
+        UNKNOWN
+    Source:
+        No source
+
+11. MLflow backend root
+    Value:
+        Not defined for Kamiak
+    Status:
+        UNKNOWN
+    Source:
+        No validated HPC backend path
+
+    Important note:
+        http://127.0.0.1:5000 is only a conditional environment example.
+        It is not a validated persistent Kamiak MLflow backend.
+
+12. MLflow artifact root
+    Value:
+        Not defined for Kamiak
+    Status:
+        UNKNOWN
+    Source:
+        No validated storage path
+
+13. EnergyPlus work root
+    Value:
+        ${TMPDIR:-/tmp/$USER}/ScaleBridge_EPlus_Work
+    Status:
+        PLANNED / JOB-SPECIFIC
+    Source:
+        S9
+
+14. Cache or temporary root
+    Value:
+        $TMPDIR when supplied by SLURM
+
+        Fallback:
+            /tmp/$USER
+    Status:
+        KNOWN BUT JOB-SPECIFIC
+    Source:
+        S9
+
+15. Publication export root
+    Value:
+        Not defined
+    Status:
+        UNKNOWN
+    Source:
+        No source
+
+    Planned curated training export:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>/
+        training_exports/p1_4b4c_1w_aggregation_v1/
+
+    Status:
+        PLANNED
+
+    Source:
+        S10
+
+16. Storage limitations
+    Value:
+        During environment setup, approximately 39 GB was available under
+        /home.
+
+        /home should not be treated as storage for the complete raw,
+        intermediate, or full Dropbox campaign tree.
+    Status:
+        VALIDATED AT ENVIRONMENT-BUILD TIME
+    Source:
+        Disk-audit commands from this chat
+
+17. Recommended workloads
+    Value:
+        - GPU training
+        - ANN campaigns
+        - sequence-model campaigns
+        - Scientific ML
+        - curated training exports
+        - scheduled compute-node validation
+        - large PyTorch experiments
+    Status:
+        VALIDATED / PLANNED
+    Source:
+        S3, S6, and S10
+
+18. Restricted workloads
+    Value:
+        - no heavy work on login nodes
+        - no unscheduled GPU work
+        - no full uncurated Dropbox campaign copy under /home
+        - no Windows-specific EnergyPlus assumptions
+        - no persistent workflow that depends only on login-node local state
+    Status:
+        VALIDATED RESTRICTION
+    Source:
+        SLURM workflow and S6
+
+Additional validated Kamiak environment paths:
+
+    Environment-management root:
+        /home/ninad.gaikwad/projects/Environments
+        Status: VALIDATED
+
+    Environment scripts:
+        /home/ninad.gaikwad/projects/Environments/scripts
+        Status: VALIDATED
+
+    Environment logs:
+        /home/ninad.gaikwad/projects/Environments/logs
+        Status: VALIDATED
+
+    Environment software cache:
+        /home/ninad.gaikwad/projects/Environments/software
+        Status: VALIDATED
+
+    Final environment lock root:
+        /home/ninad.gaikwad/projects/Environments/
+        locks/kamiak_gpu_full
+        Status: VALIDATED
+
+    Final Conda environment:
+        /home/ninad.gaikwad/conda_envs/
+        scalebridge-dev-gpu-kamiak
+        Status: VALIDATED
+
+============================================================
+SETTINGS → PATHS
+RECOMMENDED REGISTRY KEYS
+============================================================
+
+The Settings page should store path values separately from status.
+
+Recommended registry keys:
+
+    repository_root
+    data_root
+    generated_data_root
+    campaigns_root
+    generation_root_template
+    aggregation_root_template
+    phase_c_root
+    phase_d_root
+    mlflow_backend_root
+    mlflow_artifact_root
+    mlflow_export_root
+    experiment_registry_root
+    energyplus_work_root
+    temporary_root
+    publication_export_root
+    training_export_root
+
+Recommended status values:
+
+    validated
+    known_machine_specific
+    planned
+    unknown
+
+============================================================
+SAFE INITIAL DEFAULTS
+============================================================
+
+WINDOWS LAPTOP
+--------------
+
+repository_root:
+    C:\Users\ninad\Dropbox\NinadGaikwad_PhD\
+    Gaikwad_Research\From_WSU_OneDrive\
+    BuildingModelingProject_Condensed\NewOrg\
+    scalebridge-research
+
+repository_root_status:
+    validated
+
+data_root:
+    Resolve from repository_root\..\..\Data
+
+data_root_status:
+    known_machine_specific
+
+generated_data_root:
+    Resolve from repository_root\..\..\Data\ScaleBridge
+
+generated_data_root_status:
+    known_machine_specific
+
+phase_c_root:
+    null
+
+phase_c_root_status:
+    unknown
+
+phase_d_root:
+    null
+
+phase_d_root_status:
+    unknown
+
+publication_export_root:
+    null
+
+publication_export_root_status:
+    unknown
+
+HOME PC
+-------
+
+machine_id:
+    home-pc
+
+machine_id_status:
+    validated
+
+repository_root:
+    null
+
+repository_root_status:
+    unknown
+
+data_root:
+    null until discovered on the machine
+
+data_root_status:
+    unknown
+
+generated_data_root:
+    null until discovered on the machine
+
+generated_data_root_status:
+    unknown
+
+phase_c_root:
+    null
+
+phase_c_root_status:
+    unknown
+
+phase_d_root:
+    null
+
+phase_d_root_status:
+    unknown
+
+publication_export_root:
+    null
+
+publication_export_root_status:
+    unknown
+
+LAB PC
+------
+
+data_root:
+    F:\Dropbox\NinadGaikwad_PhD\
+    Gaikwad_Research\From_WSU_OneDrive\
+    BuildingModelingProject_Condensed\Data
+
+data_root_status:
+    validated
+
+generated_data_root:
+    F:\Dropbox\NinadGaikwad_PhD\
+    Gaikwad_Research\From_WSU_OneDrive\
+    BuildingModelingProject_Condensed\Data\ScaleBridge
+
+generated_data_root_status:
+    validated
+
+mlflow_backend_root:
+    D:\ScaleBridge_MLflow\backend
+
+mlflow_backend_root_status:
+    validated
+
+mlflow_artifact_root:
+    F:\Dropbox\NinadGaikwad_PhD\
+    Gaikwad_Research\From_WSU_OneDrive\
+    BuildingModelingProject_Condensed\Data\ScaleBridge\
+    mlflow_artifacts
+
+mlflow_artifact_root_status:
+    validated
+
+mlflow_export_root:
+    F:\Dropbox\NinadGaikwad_PhD\
+    Gaikwad_Research\From_WSU_OneDrive\
+    BuildingModelingProject_Condensed\Data\ScaleBridge\
+    mlflow_exports\lab-pc
+
+mlflow_export_root_status:
+    validated
+
+experiment_registry_root:
+    F:\Dropbox\NinadGaikwad_PhD\
+    Gaikwad_Research\From_WSU_OneDrive\
+    BuildingModelingProject_Condensed\Data\ScaleBridge\
+    experiment_registry
+
+experiment_registry_root_status:
+    validated
+
+energyplus_work_root:
+    D:\ScaleBridge_EPlus_Work
+
+energyplus_work_root_status:
+    validated
+
+temporary_root:
+    D:\Temp
+
+temporary_root_status:
+    validated
+
+phase_c_root:
+    null
+
+phase_c_root_status:
+    unknown
+
+phase_d_root:
+    null
+
+phase_d_root_status:
+    unknown
+
+publication_export_root:
+    null
+
+publication_export_root_status:
+    unknown
+
+KAMIAK HPC
+----------
+
+repository_root:
+    /home/ninad.gaikwad/projects/scalebridge-research
+
+repository_root_status:
+    validated
+
+data_root:
+    null until explicitly configured
+
+data_root_status:
+    unknown
+
+generated_data_root:
+    null until explicitly configured
+
+generated_data_root_status:
+    unknown
+
+mlflow_backend_root:
+    null
+
+mlflow_backend_root_status:
+    unknown
+
+mlflow_artifact_root:
+    null
+
+mlflow_artifact_root_status:
+    unknown
+
+energyplus_work_root:
+    ${TMPDIR:-/tmp/$USER}/ScaleBridge_EPlus_Work
+
+energyplus_work_root_status:
+    planned
+
+temporary_root:
+    $TMPDIR or /tmp/$USER
+
+temporary_root_status:
+    known_machine_specific
+
+training_export_root:
+    <generated_data_root>/
+    training_exports/p1_4b4c_1w_aggregation_v1
+
+training_export_root_status:
+    planned
+
+publication_export_root:
+    null
+
+publication_export_root_status:
+    unknown
+
+============================================================
+IMPORTANT UNRESOLVED SETTINGS FIELDS
+============================================================
+
+The current chat does not establish canonical absolute values for:
+
+    - Home-PC repository root
+    - Home-PC primary data root
+    - Home-PC generated-data root
+    - Kamiak primary data root
+    - Kamiak generated-data root
+    - Phase C output root on any machine
+    - Phase D output root on any machine
+    - Publication export root on any machine
+    - Laptop EnergyPlus work root
+    - Home-PC EnergyPlus work root
+    - Laptop temporary/cache root
+    - Home-PC temporary/cache root
+    - Kamiak MLflow backend root
+    - Kamiak MLflow artifact root
+    - Lab-PC repository root
+
+These values must remain visibly UNKNOWN in the Settings UI until:
+
+    1. they are discovered from the current machine,
+    2. entered by the user,
+    3. resolved from a validated environment variable, or
+    4. confirmed by a successful path-validation command.
+
+The Settings page must not silently inherit one machine's absolute path
+for another machine.
+
+============================================================
+END OF HANDOFF
+============================================================

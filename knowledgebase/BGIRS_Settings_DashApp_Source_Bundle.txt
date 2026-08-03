@@ -1,0 +1,1421 @@
+BUILDING-GRID INTELLIGENCE RESEARCH STUDIO
+Repository Root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\page.py
+====================================================================================================
+"""Major-page composition for Settings."""
+
+from dash import html
+
+from ...components.help import help_button
+from ...layout.navigation import build_horizontal_tabs
+from .paths.page import build_layout as build_paths_layout
+from .machines.page import build_layout as build_machines_layout
+from .environments.page import build_layout as build_environments_layout
+from .mlflow.page import build_layout as build_mlflow_layout
+from .visualization.page import build_layout as build_visualization_layout
+from .help.page import build_layout as build_help_layout
+
+_SUBPAGE_BUILDERS = {
+    "paths": build_paths_layout,
+    "machines": build_machines_layout,
+    "environments": build_environments_layout,
+    "mlflow": build_mlflow_layout,
+    "visualization": build_visualization_layout,
+    "help": build_help_layout,
+}
+
+
+def build_page(active_tab: str | None = None):
+    """Build the Settings page with horizontal tabs."""
+    selected = active_tab or next(iter(_SUBPAGE_BUILDERS))
+    builder = _SUBPAGE_BUILDERS.get(selected, next(iter(_SUBPAGE_BUILDERS.values())))
+    return html.Div(
+        [
+            html.Div(
+                [
+                    html.Div(
+                        [
+                            html.H1("Settings", className="page-title"),
+                            help_button("page.settings", compact=False),
+                        ],
+                        className="title-with-help",
+                    ),
+                ],
+                className="page-heading",
+            ),
+            build_horizontal_tabs("settings", selected),
+            html.Div(builder(), id="settings-subpage-content"),
+        ],
+        className="major-page",
+    )
+
+
+def get_subpage_builder(tab_id: str):
+    """Return the builder for a selected horizontal tab."""
+    return _SUBPAGE_BUILDERS.get(tab_id, next(iter(_SUBPAGE_BUILDERS.values())))
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\__init__.py
+====================================================================================================
+"""The Settings major page."""
+
+from .page import build_page
+
+__all__ = ["build_page"]
+
+
+====================================================================================================
+====================================================================================================
+"""Layout for Paths."""
+
+from ....layout.placeholders import build_module_placeholder
+
+
+def build_layout():
+    """Build the Paths shell layout."""
+    return build_module_placeholder(
+        page_id="settings",
+        subpage_id="paths",
+        title="Paths",
+        description='The Paths workspace within Settings. This shell module is ready for integration with the authoritative scientific implementation.',
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\paths\__init__.py
+====================================================================================================
+"""The Paths subpage."""
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\machines\page.py
+====================================================================================================
+"""Layout for Machines."""
+
+from ....layout.placeholders import build_module_placeholder
+
+
+def build_layout():
+    """Build the Machines shell layout."""
+    return build_module_placeholder(
+        page_id="settings",
+        subpage_id="machines",
+        title="Machines",
+        description='The Machines workspace within Settings. This shell module is ready for integration with the authoritative scientific implementation.',
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\machines\__init__.py
+====================================================================================================
+"""The Machines subpage."""
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\environments\page.py
+====================================================================================================
+"""Layout for Environments."""
+
+from ....layout.placeholders import build_module_placeholder
+
+
+def build_layout():
+    """Build the Environments shell layout."""
+    return build_module_placeholder(
+        page_id="settings",
+        subpage_id="environments",
+        title="Environments",
+        description='The Environments workspace within Settings. This shell module is ready for integration with the authoritative scientific implementation.',
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\environments\__init__.py
+====================================================================================================
+"""The Environments subpage."""
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\mlflow\page.py
+====================================================================================================
+"""Layout for MLflow."""
+
+from ....layout.placeholders import build_module_placeholder
+
+
+def build_layout():
+    """Build the MLflow shell layout."""
+    return build_module_placeholder(
+        page_id="settings",
+        subpage_id="mlflow",
+        title="MLflow",
+        description='The MLflow workspace within Settings. This shell module is ready for integration with the authoritative scientific implementation.',
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\mlflow\__init__.py
+====================================================================================================
+"""The MLflow subpage."""
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\visualization\page.py
+====================================================================================================
+"""Layout for Visualization."""
+
+from ....layout.placeholders import build_module_placeholder
+
+
+def build_layout():
+    """Build the Visualization shell layout."""
+    return build_module_placeholder(
+        page_id="settings",
+        subpage_id="visualization",
+        title="Visualization",
+        description='The Visualization workspace within Settings. This shell module is ready for integration with the authoritative scientific implementation.',
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\visualization\__init__.py
+====================================================================================================
+"""The Visualization subpage."""
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\help\page.py
+====================================================================================================
+"""Layout for Help and About."""
+
+from ....layout.placeholders import build_module_placeholder
+
+
+def build_layout():
+    """Build the Help and About shell layout."""
+    return build_module_placeholder(
+        page_id="settings",
+        subpage_id="help",
+        title="Help and About",
+        description='The Help and About workspace within Settings. This shell module is ready for integration with the authoritative scientific implementation.',
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\settings\help\__init__.py
+====================================================================================================
+"""The Help and About subpage."""
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\app.py
+====================================================================================================
+"""Dash application factory."""
+
+from __future__ import annotations
+
+from dash import Dash
+import dash_bootstrap_components as dbc
+
+from .config import DashAppConfig
+from .constants import APP_DESCRIPTION, APP_NAME
+from .components.help import register_help_modal_callbacks
+from .layout.routing import register_routing_callbacks
+from .layout.shell import build_app_shell, register_shell_callbacks
+
+
+def create_app(config: DashAppConfig | None = None) -> Dash:
+    """Create and configure the Building-Grid Intelligence Research Studio."""
+    resolved = config or DashAppConfig.from_environment()
+
+    app = Dash(
+        __name__,
+        title=APP_NAME,
+        update_title="Updating · BGI Research Studio",
+        external_stylesheets=[
+            dbc.themes.BOOTSTRAP,
+            dbc.icons.BOOTSTRAP,
+        ],
+        assets_folder="assets",
+        use_pages=False,
+        suppress_callback_exceptions=resolved.suppress_callback_exceptions,
+        url_base_pathname=resolved.url_base_pathname,
+        meta_tags=[
+            {"name": "description", "content": APP_DESCRIPTION},
+            {"name": "viewport", "content": "width=device-width, initial-scale=1"},
+            {"name": "theme-color", "content": "#0F6B78"},
+        ],
+    )
+
+    app.layout = build_app_shell()
+    register_shell_callbacks()
+    register_routing_callbacks()
+    register_help_modal_callbacks()
+    return app
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\config.py
+====================================================================================================
+"""Configuration model for the Dash application shell."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import os
+
+
+@dataclass(frozen=True)
+class DashAppConfig:
+    """Runtime configuration for the application shell."""
+
+    host: str = "127.0.0.1"
+    port: int = 8050
+    debug: bool = False
+    url_base_pathname: str = "/"
+    suppress_callback_exceptions: bool = True
+
+    @classmethod
+    def from_environment(cls) -> "DashAppConfig":
+        """Create configuration from environment variables."""
+        return cls(
+            host=os.getenv("BGIRS_HOST", "127.0.0.1"),
+            port=int(os.getenv("BGIRS_PORT", "8050")),
+            debug=os.getenv("BGIRS_DEBUG", "0").strip().lower()
+            in {"1", "true", "yes", "on"},
+            url_base_pathname=os.getenv("BGIRS_URL_BASE", "/"),
+        )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\constants.py
+====================================================================================================
+"""User-facing identity, navigation, and external-link constants."""
+
+APP_NAME = "Building-Grid Intelligence Research Studio"
+APP_SHORT_NAME = "BGI Research Studio"
+APP_SUBTITLE = (
+    "Integrated Data Pipelines, Intelligent Thermal Modeling, "
+    "Building-Grid Simulation, Control, and Scientific Analysis"
+)
+APP_DESCRIPTION = (
+    "Integrated research platform for building-energy data pipelines, "
+    "intelligent thermal modeling, building-grid simulation, control, "
+    "scientific analysis, and publication-ready results."
+)
+
+AUTHOR_NAME = "Ninad Kiran Gaikwad"
+AUTHOR_ROLE = "Ph.D. Candidate"
+AUTHOR_UNIT = "School of Electrical Engineering and Computer Science"
+AUTHOR_LAB = "SCALE Laboratory"
+AUTHOR_INSTITUTION = "Washington State University"
+
+EXTERNAL_LINKS = {
+    "author": "https://ninadkgaikwad.github.io/",
+    "eecs": "https://school.eecs.wsu.edu/",
+    "scale_lab": "https://anamika-dubey.github.io/",
+    "wsu": "https://wsu.edu/",
+}
+
+THEME_OPTIONS = (
+    {"label": "System Preference", "value": "system"},
+    {"label": "Light Mode", "value": "light"},
+    {"label": "Dark Mode", "value": "dark"},
+)
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\pages\registry.py
+====================================================================================================
+"""Central registry for major pages and horizontal subpage tabs."""
+
+MAJOR_PAGES = [{'id': 'home', 'label': 'Home', 'icon': 'bi-house-door', 'path': '/'}, {'id': 'campaigns', 'label': 'Campaigns', 'icon': 'bi-grid-3x3-gap', 'path': '/campaigns'}, {'id': 'data_pipeline', 'label': 'Data Pipeline', 'icon': 'bi-diagram-3', 'path': '/data-pipeline'}, {'id': 'thermal_modeling', 'label': 'Thermal Modeling', 'icon': 'bi-cpu', 'path': '/thermal-modeling'}, {'id': 'model_catalog', 'label': 'Model Catalog', 'icon': 'bi-collection', 'path': '/model-catalog'}, {'id': 'simulators', 'label': 'Simulators', 'icon': 'bi-play-btn', 'path': '/simulators'}, {'id': 'results_explorer', 'label': 'Results Explorer', 'icon': 'bi-graph-up', 'path': '/results-explorer'}, {'id': 'publication_studio', 'label': 'Publication Studio', 'icon': 'bi-file-earmark-bar-graph', 'path': '/publication-studio'}, {'id': 'artifact_lineage', 'label': 'Artifact Lineage', 'icon': 'bi-bezier2', 'path': '/artifact-lineage'}, {'id': 'validation_center', 'label': 'Validation Center', 'icon': 'bi-shield-check', 'path': '/validation-center'}, {'id': 'settings', 'label': 'Settings', 'icon': 'bi-gear', 'path': '/settings'}]
+
+SUBPAGES = {'home': [{'id': 'overview', 'label': 'Overview', 'icon': 'bi-speedometer2'}, {'id': 'recent_activity', 'label': 'Recent Activity', 'icon': 'bi-clock-history'}, {'id': 'system_status', 'label': 'System Status', 'icon': 'bi-activity'}, {'id': 'quick_actions', 'label': 'Quick Actions', 'icon': 'bi-lightning-charge'}], 'campaigns': [{'id': 'browser', 'label': 'Campaign Browser', 'icon': 'bi-search'}, {'id': 'builder', 'label': 'Campaign Builder', 'icon': 'bi-tools'}, {'id': 'matrix_preview', 'label': 'Matrix Preview', 'icon': 'bi-table'}, {'id': 'monitor', 'label': 'Campaign Monitor', 'icon': 'bi-display'}, {'id': 'templates', 'label': 'Campaign Templates', 'icon': 'bi-files'}], 'data_pipeline': [{'id': 'phase_a_generation', 'label': 'Phase A: Generation', 'icon': 'bi-building-gear'}, {'id': 'phase_b_aggregation', 'label': 'Phase B: Aggregation', 'icon': 'bi-bounding-box-circles'}, {'id': 'phase_c_heat_input', 'label': 'Phase C: Heat-Input Regression', 'icon': 'bi-thermometer-sun'}, {'id': 'phase_d_thermal_model_data', 'label': 'Phase D: Thermal-Model Data', 'icon': 'bi-database-gear'}], 'thermal_modeling': [{'id': 'datasets', 'label': 'Thermal-Model Datasets', 'icon': 'bi-database'}, {'id': 'ann_sequence_models', 'label': 'ANN / Sequence Models', 'icon': 'bi-diagram-2'}, {'id': 'scientific_ml', 'label': 'Scientific Machine Learning', 'icon': 'bi-bezier'}, {'id': 'optimization', 'label': 'Optimization-Based Modeling', 'icon': 'bi-sliders'}, {'id': 'bayesian_inference', 'label': 'Bayesian Inference', 'icon': 'bi-distribute-vertical'}, {'id': 'run_monitor', 'label': 'Run Monitor', 'icon': 'bi-pc-display-horizontal'}], 'model_catalog': [{'id': 'browse', 'label': 'Browse Models', 'icon': 'bi-search'}, {'id': 'model_details', 'label': 'Model Details', 'icon': 'bi-card-list'}, {'id': 'portability', 'label': 'Model Portability', 'icon': 'bi-box-arrow-in-right'}, {'id': 'validation', 'label': 'Model Validation', 'icon': 'bi-check2-square'}, {'id': 'comparison_tray', 'label': 'Comparison Tray', 'icon': 'bi-columns-gap'}], 'simulators': [{'id': 'smartcommunitysim', 'label': 'Smart Community Simulator', 'icon': 'bi-houses'}, {'id': 'smartbuildingssim', 'label': 'Smart Buildings Simulator', 'icon': 'bi-buildings'}, {'id': 'opendsssim', 'label': 'OpenDSS Simulator', 'icon': 'bi-diagram-3-fill'}, {'id': 'co_simulationsim', 'label': 'Co-Simulation Platform', 'icon': 'bi-intersect'}], 'results_explorer': [{'id': 'single_experiment', 'label': 'Single Experiment', 'icon': 'bi-file-earmark-text'}, {'id': 'cross_experiment', 'label': 'Cross-Experiment Comparison', 'icon': 'bi-layout-three-columns'}, {'id': 'time_series', 'label': 'Time-Series Explorer', 'icon': 'bi-graph-up-arrow'}, {'id': 'metrics', 'label': 'Metrics Explorer', 'icon': 'bi-bar-chart'}, {'id': 'parameters', 'label': 'Parameter Explorer', 'icon': 'bi-toggles'}, {'id': 'diagnostics', 'label': 'Diagnostics Explorer', 'icon': 'bi-clipboard2-pulse'}, {'id': 'simulator_results', 'label': 'Simulator Results', 'icon': 'bi-play-circle'}], 'publication_studio': [{'id': 'figure_builder', 'label': 'Figure Builder', 'icon': 'bi-image'}, {'id': 'table_builder', 'label': 'Table Builder', 'icon': 'bi-table'}, {'id': 'saved_specifications', 'label': 'Saved Specifications', 'icon': 'bi-bookmark-check'}, {'id': 'export_history', 'label': 'Export History', 'icon': 'bi-clock-history'}], 'artifact_lineage': [{'id': 'graph_view', 'label': 'Graph View', 'icon': 'bi-share'}, {'id': 'run_details', 'label': 'Run Details', 'icon': 'bi-info-square'}, {'id': 'data_lineage', 'label': 'Data Lineage', 'icon': 'bi-database-check'}, {'id': 'model_lineage', 'label': 'Model Lineage', 'icon': 'bi-boxes'}, {'id': 'simulation_lineage', 'label': 'Simulation Lineage', 'icon': 'bi-arrow-repeat'}, {'id': 'publication_lineage', 'label': 'Publication Lineage', 'icon': 'bi-journal-check'}], 'validation_center': [{'id': 'campaigns', 'label': 'Campaign Validation', 'icon': 'bi-grid-3x3-gap-fill'}, {'id': 'datasets', 'label': 'Dataset Validation', 'icon': 'bi-database-check'}, {'id': 'models', 'label': 'Model Validation', 'icon': 'bi-cpu-fill'}, {'id': 'simulators', 'label': 'Simulator Validation', 'icon': 'bi-play-btn-fill'}, {'id': 'physical_checks', 'label': 'Physical Checks', 'icon': 'bi-rulers'}, {'id': 'reports', 'label': 'Validation Reports', 'icon': 'bi-file-earmark-check'}], 'settings': [{'id': 'paths', 'label': 'Paths', 'icon': 'bi-folder2-open'}, {'id': 'machines', 'label': 'Machines', 'icon': 'bi-pc-display'}, {'id': 'environments', 'label': 'Environments', 'icon': 'bi-box'}, {'id': 'mlflow', 'label': 'MLflow', 'icon': 'bi-signpost-split'}, {'id': 'visualization', 'label': 'Visualization', 'icon': 'bi-palette'}, {'id': 'help', 'label': 'Help and About', 'icon': 'bi-question-circle'}]}
+
+PAGE_BY_PATH = {page["path"]: page for page in MAJOR_PAGES}
+PAGE_BY_ID = {page["id"]: page for page in MAJOR_PAGES}
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\components\page\page_header.py
+====================================================================================================
+[MISSING FILE]
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\components\page\placeholder_panel.py
+====================================================================================================
+[MISSING FILE]
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\components\help\help_button.py
+====================================================================================================
+"""Reusable contextual-help button."""
+
+from dash import html
+import dash_bootstrap_components as dbc
+
+from ...help.registry import get_help_entry
+
+
+def help_button(help_id: str, *, compact: bool = True):
+    """Build a tooltip-enabled help button linked to the shared help modal."""
+    entry = get_help_entry(help_id)
+    button_id = {"type": "context-help-button", "help_id": help_id}
+
+    button = dbc.Button(
+        html.I(className="bi bi-question-circle", **{"aria-hidden": "true"}),
+        id=button_id,
+        color="link",
+        className="context-help-button",
+        size="sm" if compact else None,
+        n_clicks=0,
+        title=f"Help: {entry['title']}",
+    )
+
+    tooltip = dbc.Tooltip(
+        entry["summary"],
+        target=button_id,
+        placement="top",
+    )
+
+    return html.Span(
+        [button, tooltip],
+        className="context-help-wrapper",
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\components\help\help_modal.py
+====================================================================================================
+"""Shared contextual-help modal and callbacks."""
+
+from dash import ALL, Input, Output, State, callback, ctx, html
+import dash_bootstrap_components as dbc
+
+from ...help.registry import get_help_entry
+
+
+def build_help_modal():
+    """Return the shared contextual-help modal."""
+    return dbc.Modal(
+        [
+            dbc.ModalHeader(dbc.ModalTitle(id="context-help-title")),
+            dbc.ModalBody(id="context-help-body"),
+            dbc.ModalFooter(
+                dbc.Button(
+                    "Close",
+                    id="context-help-close",
+                    color="secondary",
+                    className="ms-auto",
+                )
+            ),
+        ],
+        id="context-help-modal",
+        is_open=False,
+        centered=True,
+        scrollable=True,
+        size="lg",
+    )
+
+
+def register_help_modal_callbacks() -> None:
+    """Register one callback serving all contextual-help buttons."""
+
+    @callback(
+        Output("context-help-modal", "is_open"),
+        Output("context-help-title", "children"),
+        Output("context-help-body", "children"),
+        Input({"type": "context-help-button", "help_id": ALL}, "n_clicks"),
+        Input("context-help-close", "n_clicks"),
+        State("context-help-modal", "is_open"),
+        prevent_initial_call=True,
+    )
+    def toggle_help_modal(_help_clicks, _close_clicks, is_open):
+        trigger = ctx.triggered_id
+        if trigger == "context-help-close":
+            return False, "", ""
+
+        if isinstance(trigger, dict):
+            help_id = trigger.get("help_id", "")
+            entry = get_help_entry(help_id)
+            body = html.Div(
+                [
+                    html.P(entry.get("summary", ""), className="help-summary"),
+                    html.P(entry.get("details", "")),
+                    html.Hr(),
+                    html.Small(
+                        f"Help Registry ID: {help_id}",
+                        className="text-muted",
+                    ),
+                ]
+            )
+            return True, entry.get("title", "Help"), body
+
+        return is_open, "", ""
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\layout\navigation\tabs.py
+====================================================================================================
+"""Horizontal subpage tabs."""
+
+from dash import dcc, html
+
+from ...components.help import help_button
+from ...pages.registry import SUBPAGES
+
+
+def build_horizontal_tabs(page_id: str, active_tab: str | None = None):
+    """Build horizontal tabs for one major page."""
+    items = SUBPAGES[page_id]
+    selected = active_tab or items[0]["id"]
+
+    return html.Div(
+        [
+            html.Div(
+                [
+                    html.Span("Subpages", className="horizontal-tabs-label"),
+                    help_button("navigation.tabs"),
+                ],
+                className="horizontal-tabs-heading",
+            ),
+            dcc.Tabs(
+                id={"type": "major-page-tabs", "page_id": page_id},
+                value=selected,
+                persistence=True,
+                persistence_type="session",
+                className="horizontal-tabs",
+                parent_className="horizontal-tabs-parent",
+                children=[
+                    dcc.Tab(
+                        label=item["label"],
+                        value=item["id"],
+                        className="horizontal-tab",
+                        selected_className="horizontal-tab-selected",
+                    )
+                    for item in items
+                ],
+            ),
+        ],
+        className="horizontal-tabs-container",
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\layout\routing\router.py
+====================================================================================================
+"""URL routing and horizontal-tab content callbacks."""
+
+from dash import MATCH, Input, Output, callback, html
+import dash_bootstrap_components as dbc
+
+from ...pages.home import build_page as build_home_page
+from ...pages.campaigns import build_page as build_campaigns_page
+from ...pages.data_pipeline import build_page as build_data_pipeline_page
+from ...pages.thermal_modeling import build_page as build_thermal_modeling_page
+from ...pages.model_catalog import build_page as build_model_catalog_page
+from ...pages.simulators import build_page as build_simulators_page
+from ...pages.results_explorer import build_page as build_results_explorer_page
+from ...pages.publication_studio import build_page as build_publication_studio_page
+from ...pages.artifact_lineage import build_page as build_artifact_lineage_page
+from ...pages.validation_center import build_page as build_validation_center_page
+from ...pages.settings import build_page as build_settings_page
+
+_ROUTES = {
+    "/": ("home", build_home_page),
+    "/campaigns": ("campaigns", build_campaigns_page),
+    "/data-pipeline": ("data_pipeline", build_data_pipeline_page),
+    "/thermal-modeling": ("thermal_modeling", build_thermal_modeling_page),
+    "/model-catalog": ("model_catalog", build_model_catalog_page),
+    "/simulators": ("simulators", build_simulators_page),
+    "/results-explorer": ("results_explorer", build_results_explorer_page),
+    "/publication-studio": ("publication_studio", build_publication_studio_page),
+    "/artifact-lineage": ("artifact_lineage", build_artifact_lineage_page),
+    "/validation-center": ("validation_center", build_validation_center_page),
+    "/settings": ("settings", build_settings_page),
+}
+
+
+def _not_found(pathname: str):
+    return dbc.Container(
+        [
+            html.Div(
+                html.I(className="bi bi-signpost-2"),
+                className="not-found-icon",
+            ),
+            html.H1("Page Not Found"),
+            html.P(f"No application page is registered for: {pathname}"),
+            dbc.Button("Return Home", href="/", color="primary"),
+        ],
+        fluid=True,
+        className="not-found-page",
+    )
+
+
+def register_routing_callbacks() -> None:
+    """Register URL routing and modular tab callbacks."""
+
+    @callback(
+        Output("page-content", "children"),
+        Input("app-location", "pathname"),
+    )
+    def render_route(pathname):
+        normalized = pathname or "/"
+        route = _ROUTES.get(normalized)
+        if route is None:
+            return _not_found(normalized)
+        _page_id, builder = route
+        return builder()
+
+
+    @callback(
+        Output("home-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "home"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_home_tab(tab_id):
+        from ...pages.home.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("campaigns-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "campaigns"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_campaigns_tab(tab_id):
+        from ...pages.campaigns.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("data_pipeline-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "data_pipeline"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_data_pipeline_tab(tab_id):
+        from ...pages.data_pipeline.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("thermal_modeling-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "thermal_modeling"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_thermal_modeling_tab(tab_id):
+        from ...pages.thermal_modeling.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("model_catalog-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "model_catalog"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_model_catalog_tab(tab_id):
+        from ...pages.model_catalog.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("simulators-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "simulators"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_simulators_tab(tab_id):
+        from ...pages.simulators.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("results_explorer-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "results_explorer"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_results_explorer_tab(tab_id):
+        from ...pages.results_explorer.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("publication_studio-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "publication_studio"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_publication_studio_tab(tab_id):
+        from ...pages.publication_studio.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("artifact_lineage-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "artifact_lineage"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_artifact_lineage_tab(tab_id):
+        from ...pages.artifact_lineage.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("validation_center-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "validation_center"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_validation_center_tab(tab_id):
+        from ...pages.validation_center.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+    @callback(
+        Output("settings-subpage-content", "children"),
+        Input({"type": "major-page-tabs", "page_id": "settings"}, "value"),
+        prevent_initial_call=True,
+    )
+    def render_settings_tab(tab_id):
+        from ...pages.settings.page import get_subpage_builder
+        return get_subpage_builder(tab_id)()
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\help\registry\shell_help.py
+====================================================================================================
+"""Contextual-help entries for the complete application shell."""
+
+from __future__ import annotations
+
+from typing import Any
+
+HELP_ENTRIES: dict[str, dict[str, Any]] = {'app.identity': {'title': 'Building-Grid Intelligence Research Studio', 'summary': 'Integrated research software for building-grid data, models, simulators, controls, and scientific outputs.', 'details': 'This application provides a common research interface for pipeline execution, thermal-model development, simulator studies, result exploration, validation, lineage, and publication-ready exports.'}, 'navigation.sidebar': {'title': 'Primary Navigation', 'summary': 'Use the left sidebar to move between major research domains.', 'details': 'Each sidebar item opens one major application page. Subpages within that domain appear as horizontal tabs across the top of the main content area.'}, 'navigation.tabs': {'title': 'Horizontal Subpage Tabs', 'summary': 'Use these tabs to move between workflows within the selected major page.', 'details': 'The selected tab is retained for the browser session. Each tab is implemented in its own module so the application can grow incrementally.'}, 'theme.selector': {'title': 'Application Theme', 'summary': 'Select System Preference, Light Mode, or Dark Mode.', 'details': 'System Preference follows the operating-system color scheme. The selection is retained in browser storage and affects the application shell, pages, controls, tables, and plots that use theme variables.'}, 'sidebar.collapse': {'title': 'Collapse Sidebar', 'summary': 'Reduce the sidebar to icons when more horizontal space is needed.', 'details': 'The expanded sidebar shows full page labels and attribution. The collapsed sidebar shows icons and exposes full labels through tooltips.'}, 'about.author': {'title': 'Research and Software Attribution', 'summary': 'View author, laboratory, school, and university information.', 'details': 'The external links open the official author, SCALE Laboratory, WSU EECS, and Washington State University websites in a new browser tab.'}, 'page.home': {'title': 'Home', 'summary': 'Open the Home major application page.', 'details': 'The Home page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.home.overview': {'title': 'Overview', 'summary': 'Open the Overview subpage.', 'details': 'This modular subpage is reserved for the Overview workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.home.recent_activity': {'title': 'Recent Activity', 'summary': 'Open the Recent Activity subpage.', 'details': 'This modular subpage is reserved for the Recent Activity workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.home.system_status': {'title': 'System Status', 'summary': 'Open the System Status subpage.', 'details': 'This modular subpage is reserved for the System Status workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.home.quick_actions': {'title': 'Quick Actions', 'summary': 'Open the Quick Actions subpage.', 'details': 'This modular subpage is reserved for the Quick Actions workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.campaigns': {'title': 'Campaigns', 'summary': 'Open the Campaigns major application page.', 'details': 'The Campaigns page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.campaigns.browser': {'title': 'Campaign Browser', 'summary': 'Open the Campaign Browser subpage.', 'details': 'This modular subpage is reserved for the Campaign Browser workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.campaigns.builder': {'title': 'Campaign Builder', 'summary': 'Open the Campaign Builder subpage.', 'details': 'This modular subpage is reserved for the Campaign Builder workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.campaigns.matrix_preview': {'title': 'Matrix Preview', 'summary': 'Open the Matrix Preview subpage.', 'details': 'This modular subpage is reserved for the Matrix Preview workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.campaigns.monitor': {'title': 'Campaign Monitor', 'summary': 'Open the Campaign Monitor subpage.', 'details': 'This modular subpage is reserved for the Campaign Monitor workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.campaigns.templates': {'title': 'Campaign Templates', 'summary': 'Open the Campaign Templates subpage.', 'details': 'This modular subpage is reserved for the Campaign Templates workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.data_pipeline': {'title': 'Data Pipeline', 'summary': 'Open the Data Pipeline major application page.', 'details': 'The Data Pipeline page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.data_pipeline.phase_a_generation': {'title': 'Phase A: Generation', 'summary': 'Open the Phase A: Generation subpage.', 'details': 'This modular subpage is reserved for the Phase A: Generation workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.data_pipeline.phase_b_aggregation': {'title': 'Phase B: Aggregation', 'summary': 'Open the Phase B: Aggregation subpage.', 'details': 'This modular subpage is reserved for the Phase B: Aggregation workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.data_pipeline.phase_c_heat_input': {'title': 'Phase C: Heat-Input Regression', 'summary': 'Open the Phase C: Heat-Input Regression subpage.', 'details': 'This modular subpage is reserved for the Phase C: Heat-Input Regression workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.data_pipeline.phase_d_thermal_model_data': {'title': 'Phase D: Thermal-Model Data', 'summary': 'Open the Phase D: Thermal-Model Data subpage.', 'details': 'This modular subpage is reserved for the Phase D: Thermal-Model Data workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.thermal_modeling': {'title': 'Thermal Modeling', 'summary': 'Open the Thermal Modeling major application page.', 'details': 'The Thermal Modeling page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.thermal_modeling.datasets': {'title': 'Thermal-Model Datasets', 'summary': 'Open the Thermal-Model Datasets subpage.', 'details': 'This modular subpage is reserved for the Thermal-Model Datasets workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.thermal_modeling.ann_sequence_models': {'title': 'ANN / Sequence Models', 'summary': 'Open the ANN / Sequence Models subpage.', 'details': 'This modular subpage is reserved for the ANN / Sequence Models workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.thermal_modeling.scientific_ml': {'title': 'Scientific Machine Learning', 'summary': 'Open the Scientific Machine Learning subpage.', 'details': 'This modular subpage is reserved for the Scientific Machine Learning workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.thermal_modeling.optimization': {'title': 'Optimization-Based Modeling', 'summary': 'Open the Optimization-Based Modeling subpage.', 'details': 'This modular subpage is reserved for the Optimization-Based Modeling workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.thermal_modeling.bayesian_inference': {'title': 'Bayesian Inference', 'summary': 'Open the Bayesian Inference subpage.', 'details': 'This modular subpage is reserved for the Bayesian Inference workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.thermal_modeling.run_monitor': {'title': 'Run Monitor', 'summary': 'Open the Run Monitor subpage.', 'details': 'This modular subpage is reserved for the Run Monitor workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.model_catalog': {'title': 'Model Catalog', 'summary': 'Open the Model Catalog major application page.', 'details': 'The Model Catalog page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.model_catalog.browse': {'title': 'Browse Models', 'summary': 'Open the Browse Models subpage.', 'details': 'This modular subpage is reserved for the Browse Models workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.model_catalog.model_details': {'title': 'Model Details', 'summary': 'Open the Model Details subpage.', 'details': 'This modular subpage is reserved for the Model Details workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.model_catalog.portability': {'title': 'Model Portability', 'summary': 'Open the Model Portability subpage.', 'details': 'This modular subpage is reserved for the Model Portability workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.model_catalog.validation': {'title': 'Model Validation', 'summary': 'Open the Model Validation subpage.', 'details': 'This modular subpage is reserved for the Model Validation workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.model_catalog.comparison_tray': {'title': 'Comparison Tray', 'summary': 'Open the Comparison Tray subpage.', 'details': 'This modular subpage is reserved for the Comparison Tray workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.simulators': {'title': 'Simulators', 'summary': 'Open the Simulators major application page.', 'details': 'The Simulators page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.simulators.smartcommunitysim': {'title': 'Smart Community Simulator', 'summary': 'Open the Smart Community Simulator subpage.', 'details': 'This modular subpage is reserved for the Smart Community Simulator workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.simulators.smartbuildingssim': {'title': 'Smart Buildings Simulator', 'summary': 'Open the Smart Buildings Simulator subpage.', 'details': 'This modular subpage is reserved for the Smart Buildings Simulator workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.simulators.opendsssim': {'title': 'OpenDSS Simulator', 'summary': 'Open the OpenDSS Simulator subpage.', 'details': 'This modular subpage is reserved for the OpenDSS Simulator workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.simulators.co_simulationsim': {'title': 'Co-Simulation Platform', 'summary': 'Open the Co-Simulation Platform subpage.', 'details': 'This modular subpage is reserved for the Co-Simulation Platform workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.results_explorer': {'title': 'Results Explorer', 'summary': 'Open the Results Explorer major application page.', 'details': 'The Results Explorer page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.results_explorer.single_experiment': {'title': 'Single Experiment', 'summary': 'Open the Single Experiment subpage.', 'details': 'This modular subpage is reserved for the Single Experiment workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.results_explorer.cross_experiment': {'title': 'Cross-Experiment Comparison', 'summary': 'Open the Cross-Experiment Comparison subpage.', 'details': 'This modular subpage is reserved for the Cross-Experiment Comparison workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.results_explorer.time_series': {'title': 'Time-Series Explorer', 'summary': 'Open the Time-Series Explorer subpage.', 'details': 'This modular subpage is reserved for the Time-Series Explorer workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.results_explorer.metrics': {'title': 'Metrics Explorer', 'summary': 'Open the Metrics Explorer subpage.', 'details': 'This modular subpage is reserved for the Metrics Explorer workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.results_explorer.parameters': {'title': 'Parameter Explorer', 'summary': 'Open the Parameter Explorer subpage.', 'details': 'This modular subpage is reserved for the Parameter Explorer workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.results_explorer.diagnostics': {'title': 'Diagnostics Explorer', 'summary': 'Open the Diagnostics Explorer subpage.', 'details': 'This modular subpage is reserved for the Diagnostics Explorer workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.results_explorer.simulator_results': {'title': 'Simulator Results', 'summary': 'Open the Simulator Results subpage.', 'details': 'This modular subpage is reserved for the Simulator Results workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.publication_studio': {'title': 'Publication Studio', 'summary': 'Open the Publication Studio major application page.', 'details': 'The Publication Studio page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.publication_studio.figure_builder': {'title': 'Figure Builder', 'summary': 'Open the Figure Builder subpage.', 'details': 'This modular subpage is reserved for the Figure Builder workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.publication_studio.table_builder': {'title': 'Table Builder', 'summary': 'Open the Table Builder subpage.', 'details': 'This modular subpage is reserved for the Table Builder workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.publication_studio.saved_specifications': {'title': 'Saved Specifications', 'summary': 'Open the Saved Specifications subpage.', 'details': 'This modular subpage is reserved for the Saved Specifications workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.publication_studio.export_history': {'title': 'Export History', 'summary': 'Open the Export History subpage.', 'details': 'This modular subpage is reserved for the Export History workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.artifact_lineage': {'title': 'Artifact Lineage', 'summary': 'Open the Artifact Lineage major application page.', 'details': 'The Artifact Lineage page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.artifact_lineage.graph_view': {'title': 'Graph View', 'summary': 'Open the Graph View subpage.', 'details': 'This modular subpage is reserved for the Graph View workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.artifact_lineage.run_details': {'title': 'Run Details', 'summary': 'Open the Run Details subpage.', 'details': 'This modular subpage is reserved for the Run Details workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.artifact_lineage.data_lineage': {'title': 'Data Lineage', 'summary': 'Open the Data Lineage subpage.', 'details': 'This modular subpage is reserved for the Data Lineage workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.artifact_lineage.model_lineage': {'title': 'Model Lineage', 'summary': 'Open the Model Lineage subpage.', 'details': 'This modular subpage is reserved for the Model Lineage workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.artifact_lineage.simulation_lineage': {'title': 'Simulation Lineage', 'summary': 'Open the Simulation Lineage subpage.', 'details': 'This modular subpage is reserved for the Simulation Lineage workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.artifact_lineage.publication_lineage': {'title': 'Publication Lineage', 'summary': 'Open the Publication Lineage subpage.', 'details': 'This modular subpage is reserved for the Publication Lineage workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.validation_center': {'title': 'Validation Center', 'summary': 'Open the Validation Center major application page.', 'details': 'The Validation Center page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.validation_center.campaigns': {'title': 'Campaign Validation', 'summary': 'Open the Campaign Validation subpage.', 'details': 'This modular subpage is reserved for the Campaign Validation workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.validation_center.datasets': {'title': 'Dataset Validation', 'summary': 'Open the Dataset Validation subpage.', 'details': 'This modular subpage is reserved for the Dataset Validation workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.validation_center.models': {'title': 'Model Validation', 'summary': 'Open the Model Validation subpage.', 'details': 'This modular subpage is reserved for the Model Validation workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.validation_center.simulators': {'title': 'Simulator Validation', 'summary': 'Open the Simulator Validation subpage.', 'details': 'This modular subpage is reserved for the Simulator Validation workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.validation_center.physical_checks': {'title': 'Physical Checks', 'summary': 'Open the Physical Checks subpage.', 'details': 'This modular subpage is reserved for the Physical Checks workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.validation_center.reports': {'title': 'Validation Reports', 'summary': 'Open the Validation Reports subpage.', 'details': 'This modular subpage is reserved for the Validation Reports workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'page.settings': {'title': 'Settings', 'summary': 'Open the Settings major application page.', 'details': 'The Settings page groups related research workflows under horizontal subpage tabs. Each subpage is implemented independently and connected through shared services, adapters, schemas, validation, and contextual help.'}, 'subpage.settings.paths': {'title': 'Paths', 'summary': 'Open the Paths subpage.', 'details': 'This modular subpage is reserved for the Paths workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.settings.machines': {'title': 'Machines', 'summary': 'Open the Machines subpage.', 'details': 'This modular subpage is reserved for the Machines workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.settings.environments': {'title': 'Environments', 'summary': 'Open the Environments subpage.', 'details': 'This modular subpage is reserved for the Environments workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.settings.mlflow': {'title': 'MLflow', 'summary': 'Open the MLflow subpage.', 'details': 'This modular subpage is reserved for the MLflow workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.settings.visualization': {'title': 'Visualization', 'summary': 'Open the Visualization subpage.', 'details': 'This modular subpage is reserved for the Visualization workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}, 'subpage.settings.help': {'title': 'Help and About', 'summary': 'Open the Help and About subpage.', 'details': 'This modular subpage is reserved for the Help and About workflow. Scientific functions will be integrated through the corresponding service and adapter layers as that research module is completed.'}}
+
+
+def get_help_entry(help_id: str) -> dict[str, Any]:
+    """Return a registered help entry or a safe fallback."""
+    return HELP_ENTRIES.get(
+        help_id,
+        {
+            "title": "Help",
+            "summary": "Contextual help is not yet registered for this item.",
+            "details": (
+                "This item must receive a complete help entry before the "
+                "associated page is considered finished."
+            ),
+        },
+    )
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\help\registry\__init__.py
+====================================================================================================
+"""Central contextual-help registry."""
+
+from .shell_help import HELP_ENTRIES, get_help_entry
+
+__all__ = ["HELP_ENTRIES", "get_help_entry"]
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\callbacks\__init__.py
+====================================================================================================
+[MISSING FILE]
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\assets\styles\00_theme.css
+====================================================================================================
+:root,
+:root[data-theme="light"] {
+    --bg-app: #F4F7F9;
+    --bg-surface: #FFFFFF;
+    --bg-elevated: #F8FAFB;
+    --bg-muted: #EAF0F3;
+    --text-primary: #15242D;
+    --text-secondary: #5D6D77;
+    --text-muted: #788791;
+    --border: #D7E0E5;
+    --primary: #0F6B78;
+    --primary-hover: #0B5662;
+    --secondary: #2A9D8F;
+    --accent: #E59A32;
+    --success: #2F855A;
+    --warning: #B7791F;
+    --danger: #C44552;
+    --info: #3478A5;
+    --sidebar-bg: #102A34;
+    --sidebar-elevated: #173A46;
+    --sidebar-text: #F0F7F9;
+    --sidebar-muted: #AFC2C9;
+    --sidebar-active: #1C7182;
+    --shadow: 0 10px 30px rgba(20, 45, 57, 0.08);
+    --plot-grid: #DDE5E9;
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    --bg-app: #0C1419;
+    --bg-surface: #142027;
+    --bg-elevated: #192830;
+    --bg-muted: #23343D;
+    --text-primary: #EDF5F7;
+    --text-secondary: #B3C3CA;
+    --text-muted: #8FA4AE;
+    --border: #314650;
+    --primary: #55B6C6;
+    --primary-hover: #72C8D5;
+    --secondary: #5CC7B8;
+    --accent: #F0B45A;
+    --success: #5ABA83;
+    --warning: #E2AA47;
+    --danger: #E26B76;
+    --info: #70ACD1;
+    --sidebar-bg: #071015;
+    --sidebar-elevated: #10242D;
+    --sidebar-text: #F1F7F8;
+    --sidebar-muted: #91A6AF;
+    --sidebar-active: #1A5D6B;
+    --shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+    --plot-grid: #344A54;
+    color-scheme: dark;
+}
+
+html,
+body {
+    min-height: 100%;
+    background: var(--bg-app);
+    color: var(--text-primary);
+}
+
+body {
+    margin: 0;
+    font-family:
+        Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+.card,
+.modal-content,
+.dropdown-menu,
+.form-control,
+.form-select {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.card-header,
+.modal-header,
+.modal-footer {
+    border-color: var(--border);
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\assets\styles\10_shell.css
+====================================================================================================
+:root {
+    --sidebar-width: 19rem;
+    --sidebar-collapsed-width: 5.25rem;
+    --header-height: 5.25rem;
+    --transition: 180ms ease;
+}
+
+.app-root {
+    min-height: 100vh;
+    background: var(--bg-app);
+}
+
+.app-sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 1040;
+    width: var(--sidebar-width);
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: var(--sidebar-bg);
+    color: var(--sidebar-text);
+    border-right: 1px solid rgba(255, 255, 255, 0.08);
+    transition: width var(--transition), transform var(--transition);
+}
+
+.app-workspace {
+    min-height: 100vh;
+    margin-left: var(--sidebar-width);
+    transition: margin-left var(--transition);
+}
+
+.sidebar-collapsed .app-sidebar {
+    width: var(--sidebar-collapsed-width);
+}
+
+.sidebar-collapsed .app-workspace {
+    margin-left: var(--sidebar-collapsed-width);
+}
+
+.sidebar-brand {
+    min-height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.9rem 0.85rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.brand-row {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+
+.brand-mark {
+    flex: 0 0 auto;
+    width: 2.55rem;
+    height: 2.55rem;
+    display: grid;
+    place-items: center;
+    border-radius: 0.8rem;
+    font-size: 1.25rem;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, var(--secondary), var(--primary));
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22);
+}
+
+.brand-text {
+    min-width: 0;
+}
+
+.brand-short {
+    color: var(--sidebar-text);
+    font-weight: 700;
+    line-height: 1.15;
+}
+
+.brand-full {
+    margin-top: 0.18rem;
+    color: var(--sidebar-muted);
+    font-size: 0.68rem;
+    line-height: 1.25;
+}
+
+.sidebar-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0.9rem 0.4rem;
+}
+
+.sidebar-section-label {
+    color: var(--sidebar-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+}
+
+.sidebar-nav {
+    padding: 0.25rem 0.55rem;
+    gap: 0.24rem;
+}
+
+.sidebar-nav-link {
+    display: flex !important;
+    align-items: center;
+    min-height: 2.8rem;
+    gap: 0.8rem;
+    border-radius: 0.75rem !important;
+    color: var(--sidebar-muted) !important;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.sidebar-nav-link:hover {
+    color: var(--sidebar-text) !important;
+    background: var(--sidebar-elevated) !important;
+}
+
+.sidebar-nav-link.active {
+    color: #FFFFFF !important;
+    background: var(--sidebar-active) !important;
+    box-shadow: inset 3px 0 0 var(--accent);
+}
+
+.sidebar-nav-icon {
+    width: 1.7rem;
+    flex: 0 0 1.7rem;
+    text-align: center;
+    font-size: 1.05rem;
+}
+
+.sidebar-spacer {
+    flex: 1 1 auto;
+}
+
+.sidebar-attribution {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin: 0.75rem;
+    padding: 0.85rem;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 0.85rem;
+    background: rgba(255, 255, 255, 0.035);
+}
+
+.sidebar-author-name {
+    color: var(--sidebar-text);
+    font-weight: 700;
+    font-size: 0.82rem;
+    text-decoration: none;
+}
+
+.sidebar-author-role,
+.sidebar-author-links {
+    color: var(--sidebar-muted);
+    font-size: 0.68rem;
+}
+
+.sidebar-author-links a {
+    color: var(--sidebar-muted);
+    text-decoration: none;
+}
+
+.sidebar-author-links a:hover {
+    color: var(--sidebar-text);
+}
+
+.sidebar-about-button,
+.context-help-button,
+.header-icon-button {
+    color: inherit !important;
+    text-decoration: none !important;
+    box-shadow: none !important;
+}
+
+.sidebar-collapsed .brand-text,
+.sidebar-collapsed .sidebar-section-label,
+.sidebar-collapsed .sidebar-nav-label,
+.sidebar-collapsed .sidebar-attribution-text,
+.sidebar-collapsed .sidebar-brand .context-help-wrapper {
+    display: none;
+}
+
+.sidebar-collapsed .sidebar-brand,
+.sidebar-collapsed .sidebar-section-header,
+.sidebar-collapsed .sidebar-attribution {
+    justify-content: center;
+}
+
+.sidebar-collapsed .sidebar-nav-link {
+    justify-content: center;
+    padding-inline: 0;
+}
+
+.sidebar-collapsed .sidebar-attribution {
+    padding: 0.65rem;
+}
+
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 1020;
+    min-height: var(--header-height);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1.4rem;
+    background: color-mix(in srgb, var(--bg-surface) 92%, transparent);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(14px);
+}
+
+.app-header-left,
+.app-header-actions,
+.theme-control {
+    display: flex;
+    align-items: center;
+}
+
+.app-header-left {
+    min-width: 0;
+    gap: 0.75rem;
+}
+
+.app-title-group {
+    min-width: 0;
+}
+
+.app-title {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(1.05rem, 1.8vw, 1.42rem);
+    font-weight: 750;
+    letter-spacing: -0.02em;
+}
+
+.app-subtitle {
+    margin: 0.18rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.76rem;
+}
+
+.header-icon-button {
+    color: var(--text-primary) !important;
+    font-size: 1.35rem;
+}
+
+.theme-control {
+    gap: 0.4rem;
+}
+
+.theme-control-icon {
+    color: var(--text-secondary);
+}
+
+.theme-selector {
+    width: 11.5rem;
+}
+
+.theme-selector .Select-control,
+.theme-selector .Select-menu-outer,
+.theme-selector .Select-menu {
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.app-main-content {
+    min-height: calc(100vh - var(--header-height));
+    padding: 1.35rem;
+}
+
+.page-heading {
+    margin-bottom: 0.8rem;
+}
+
+.page-title,
+.page-subtitle {
+    margin: 0;
+    color: var(--text-primary);
+    letter-spacing: -0.025em;
+}
+
+.page-title {
+    font-size: clamp(1.45rem, 2.2vw, 2rem);
+    font-weight: 760;
+}
+
+.page-subtitle {
+    font-size: 1.3rem;
+    font-weight: 720;
+}
+
+.title-with-help {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.context-help-wrapper {
+    display: inline-flex;
+    vertical-align: middle;
+}
+
+.context-help-button {
+    color: var(--text-secondary) !important;
+    padding: 0.15rem 0.3rem !important;
+}
+
+.horizontal-tabs-container {
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+.horizontal-tabs-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+
+.horizontal-tabs-label {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.horizontal-tabs {
+    overflow-x: auto;
+}
+
+.horizontal-tab {
+    padding: 0.75rem 1rem !important;
+    color: var(--text-secondary) !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-bottom: 3px solid transparent !important;
+    font-weight: 650;
+    white-space: nowrap;
+}
+
+.horizontal-tab-selected {
+    color: var(--primary) !important;
+    border-bottom-color: var(--primary) !important;
+}
+
+.page-content-container {
+    padding: 1.1rem 0 2rem;
+}
+
+.placeholder-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-bottom: 1.25rem;
+}
+
+.placeholder-icon {
+    width: 3.2rem;
+    height: 3.2rem;
+    display: grid;
+    place-items: center;
+    flex: 0 0 3.2rem;
+    border-radius: 1rem;
+    color: #FFFFFF;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    font-size: 1.3rem;
+}
+
+.page-description {
+    margin: 0.3rem 0 0;
+    color: var(--text-secondary);
+}
+
+.studio-card {
+    height: 100%;
+    border: 1px solid var(--border);
+    border-radius: 0.9rem;
+    box-shadow: var(--shadow);
+}
+
+.studio-card .card-header {
+    color: var(--text-primary);
+    background: var(--bg-elevated);
+    font-weight: 700;
+}
+
+.status-badge {
+    white-space: normal;
+    line-height: 1.35;
+}
+
+.about-subtitle {
+    color: var(--text-secondary);
+    font-weight: 650;
+}
+
+.about-links {
+    display: grid;
+    gap: 0.6rem;
+}
+
+.about-link {
+    display: flex;
+    align-items: center;
+    padding: 0.65rem 0.8rem;
+    color: var(--text-primary);
+    text-decoration: none;
+    border: 1px solid var(--border);
+    border-radius: 0.7rem;
+    background: var(--bg-elevated);
+}
+
+.about-link:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.help-summary {
+    color: var(--text-secondary);
+    font-weight: 650;
+}
+
+.not-found-page {
+    display: grid;
+    place-items: center;
+    align-content: center;
+    min-height: 65vh;
+    text-align: center;
+}
+
+.not-found-icon {
+    margin-bottom: 1rem;
+    color: var(--primary);
+    font-size: 3rem;
+}
+
+@media (max-width: 991.98px) {
+    .app-sidebar {
+        transform: translateX(-100%);
+        width: var(--sidebar-width);
+    }
+
+    .app-workspace,
+    .sidebar-collapsed .app-workspace {
+        margin-left: 0;
+    }
+
+    .sidebar-collapsed .app-sidebar {
+        width: var(--sidebar-width);
+        transform: translateX(0);
+    }
+
+    .sidebar-collapsed .brand-text,
+    .sidebar-collapsed .sidebar-section-label,
+    .sidebar-collapsed .sidebar-nav-label,
+    .sidebar-collapsed .sidebar-attribution-text,
+    .sidebar-collapsed .sidebar-brand .context-help-wrapper {
+        display: initial;
+    }
+
+    .sidebar-collapsed .sidebar-nav-link {
+        justify-content: flex-start;
+        padding-inline: 1rem;
+    }
+
+    .sidebar-collapsed .sidebar-brand,
+    .sidebar-collapsed .sidebar-section-header,
+    .sidebar-collapsed .sidebar-attribution {
+        justify-content: space-between;
+    }
+
+    .app-subtitle {
+        display: none;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .app-header {
+        padding-inline: 0.7rem;
+    }
+
+    .app-main-content {
+        padding: 0.85rem;
+    }
+
+    .app-title {
+        max-width: 53vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .theme-control-icon,
+    .theme-control .context-help-wrapper {
+        display: none;
+    }
+
+    .theme-selector {
+        width: 8.8rem;
+    }
+}
+
+
+====================================================================================================
+FILE: src\scalebridge\dashapp\assets\styles\20_horizontal_tabs.css
+====================================================================================================
+/*
+Building-Grid Intelligence Research Studio
+Responsive Horizontal Subpage Tabs Patch
+
+This file is loaded after 10_shell.css so these rules override the
+initial horizontal-tab sizing behavior without changing the shell layout.
+*/
+
+.horizontal-tabs-container {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.horizontal-tabs-parent {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    -webkit-overflow-scrolling: touch;
+}
+
+.horizontal-tabs-parent::-webkit-scrollbar {
+    height: 0.45rem;
+}
+
+.horizontal-tabs-parent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.horizontal-tabs-parent::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+}
+
+.horizontal-tabs {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: stretch;
+    width: max-content !important;
+    min-width: 100%;
+    overflow: visible !important;
+}
+
+.horizontal-tab {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.horizontal-tab-selected {
+    flex: 0 0 auto !important;
+}
+
+@media (max-width: 991.98px) {
+    .horizontal-tab {
+        padding-inline: 0.85rem !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .horizontal-tab {
+        padding-inline: 0.7rem !important;
+        font-size: 0.9rem;
+    }
+}
+
+

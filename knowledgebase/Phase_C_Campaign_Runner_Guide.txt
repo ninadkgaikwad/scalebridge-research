@@ -1,0 +1,125 @@
+SCALEBRIDGE PHASE C CAMPAIGN RUNNER
+===================================
+
+Install
+-------
+Copy:
+
+    scripts/heat_input_regression/run_phase_c_campaign.py
+
+into the repository at the same relative path.
+
+Purpose
+-------
+The runner orchestrates:
+
+    C1 audit
+    C2 features
+    C3 splits
+    C4 datasets
+    C5 model API validation
+    C6 training
+    C7 evaluation
+    C8 full-year inference
+    C9 MLflow registration
+
+It uses one timestamp suffix across all stage run IDs.
+
+Validation profiles
+-------------------
+full:
+    All available stage validators plus C9 validation.
+
+some:
+    High-value validation at C2, C4, C6, C7, C8, and C9.
+
+none:
+    No explicit validator scripts. Stage-internal checks still apply.
+
+Recommended dry run
+-------------------
+python `
+  ".\scripts\heat_input_regression\run_phase_c_campaign.py" `
+  --campaign-root `
+  "$env:SCALEBRIDGE_GENERATED_DATA_ROOT\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3" `
+  --matrix-run-id "aggregation_matrix_20260715_114242" `
+  --validation full `
+  --estimator-type pytorch_linear `
+  --pytorch-device cuda `
+  --dry-run
+
+Recommended smoke execution
+---------------------------
+python `
+  ".\scripts\heat_input_regression\run_phase_c_campaign.py" `
+  --campaign-root `
+  "$env:SCALEBRIDGE_GENERATED_DATA_ROOT\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3" `
+  --matrix-run-id "aggregation_matrix_20260715_114242" `
+  --validation full `
+  --estimator-type pytorch_linear `
+  --pytorch-device cuda `
+  --max-zones 3 `
+  2>&1 | Tee-Object -FilePath ".\Phase_C_Campaign_Run.log"
+
+Full campaign example
+---------------------
+python `
+  ".\scripts\heat_input_regression\run_phase_c_campaign.py" `
+  --campaign-root `
+  "$env:SCALEBRIDGE_GENERATED_DATA_ROOT\campaigns\p1_compact_4b4c_labpc_1w_v1" `
+  --validation full `
+  --estimator-type pytorch_linear `
+  --pytorch-device cuda `
+  2>&1 | Tee-Object -FilePath ".\Phase_C_Full_Campaign_Run.log"
+
+Resume example
+--------------
+python `
+  ".\scripts\heat_input_regression\run_phase_c_campaign.py" `
+  --campaign-root "<campaign-root>" `
+  --phase-c-run-id "phase_c_20260725_210000" `
+  --matrix-run-id "aggregation_matrix_20260712_215839" `
+  --start-stage C6 `
+  --validation some `
+  --estimator-type pytorch_linear `
+  --pytorch-device cuda
+
+Important
+---------
+Use the same --phase-c-run-id when resuming. The timestamp suffix determines
+all C1-C9 artifact roots.
+
+MLflow is enabled by default. Use --disable-mlflow only when deliberately
+running Phase C without C9 registration.
+
+
+V2 C3 orchestration fix
+-----------------------
+V1 omitted --audit-run-id when launching C3. V2 forwards the shared C1 audit
+run ID and performs a required-CLI-option preflight before executing stages.
+
+Resume the failed smoke run
+---------------------------
+python `
+  ".\scripts\heat_input_regression\run_phase_c_campaign.py" `
+  --campaign-root `
+  "$env:SCALEBRIDGE_GENERATED_DATA_ROOT\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3" `
+  --matrix-run-id "aggregation_matrix_20260715_114242" `
+  --phase-c-run-id "phase_c_20260726_091511" `
+  --start-stage C3 `
+  --validation none `
+  --estimator-type pytorch_linear `
+  --pytorch-device cuda `
+  --max-zones 3 `
+  2>&1 | Tee-Object -FilePath ".\Phase_C_Campaign_NoValidation_Resume_C3.log"
+
+
+V3 dry-run preflight correction
+-------------------------------
+The V2 regex-based required-option inference was removed. Wrapped argparse
+usage text can make optional arguments appear required, as happened with
+--aggregation-run-root in the C1 audit script.
+
+The runner still inspects each stage's --help output, uses only supported CLI
+option names, forwards C3 --audit-run-id correctly, and prints all generated
+commands during --dry-run.

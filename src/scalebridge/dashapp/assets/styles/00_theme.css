@@ -1,0 +1,95 @@
+:root,
+:root[data-theme="light"] {
+    --bg-app: #F4F7F9;
+    --bg-surface: #FFFFFF;
+    --bg-elevated: #F8FAFB;
+    --bg-muted: #EAF0F3;
+    --text-primary: #15242D;
+    --text-secondary: #5D6D77;
+    --text-muted: #788791;
+    --border: #D7E0E5;
+    --primary: #0F6B78;
+    --primary-hover: #0B5662;
+    --secondary: #2A9D8F;
+    --accent: #E59A32;
+    --success: #2F855A;
+    --warning: #B7791F;
+    --danger: #C44552;
+    --info: #3478A5;
+    --sidebar-bg: #102A34;
+    --sidebar-elevated: #173A46;
+    --sidebar-text: #F0F7F9;
+    --sidebar-muted: #AFC2C9;
+    --sidebar-active: #1C7182;
+    --shadow: 0 10px 30px rgba(20, 45, 57, 0.08);
+    --plot-grid: #DDE5E9;
+    color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+    --bg-app: #0C1419;
+    --bg-surface: #142027;
+    --bg-elevated: #192830;
+    --bg-muted: #23343D;
+    --text-primary: #EDF5F7;
+    --text-secondary: #B3C3CA;
+    --text-muted: #8FA4AE;
+    --border: #314650;
+    --primary: #55B6C6;
+    --primary-hover: #72C8D5;
+    --secondary: #5CC7B8;
+    --accent: #F0B45A;
+    --success: #5ABA83;
+    --warning: #E2AA47;
+    --danger: #E26B76;
+    --info: #70ACD1;
+    --sidebar-bg: #071015;
+    --sidebar-elevated: #10242D;
+    --sidebar-text: #F1F7F8;
+    --sidebar-muted: #91A6AF;
+    --sidebar-active: #1A5D6B;
+    --shadow: 0 12px 34px rgba(0, 0, 0, 0.28);
+    --plot-grid: #344A54;
+    color-scheme: dark;
+}
+
+html,
+body {
+    min-height: 100%;
+    background: var(--bg-app);
+    color: var(--text-primary);
+}
+
+body {
+    margin: 0;
+    font-family:
+        Inter, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+a {
+    color: var(--primary);
+}
+
+a:hover {
+    color: var(--primary-hover);
+}
+
+.card,
+.modal-content,
+.dropdown-menu,
+.form-control,
+.form-select {
+    background-color: var(--bg-surface);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.card-header,
+.modal-header,
+.modal-footer {
+    border-color: var(--border);
+}
+
+.text-muted {
+    color: var(--text-muted) !important;
+}

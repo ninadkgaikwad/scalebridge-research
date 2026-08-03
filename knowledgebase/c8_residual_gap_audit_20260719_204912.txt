@@ -1,0 +1,18 @@
+﻿====================================================================================================
+SCALEBRIDGE C8 RESIDUAL-GAP DEEP AUDIT
+====================================================================================================
+inference_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\inference_runs\c8_pytorch_cuda_c2fix_20260719_153925
+feature_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\feature_runs\heat_input_features_c2fix_20260719_153925
+output_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\residual_gap_audits\c8_residual_gap_audit_20260719_204912
+
+====================================================================================================
+RESIDUAL-GAP AUDIT SUMMARY
+====================================================================================================
+residual_event_count: 57
+unique_affected_timestamp_count: 5
+affected_zone_count: 3
+affected_component_count: 11
+feature_row_found_count: 57
+report: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\residual_gap_audits\c8_residual_gap_audit_20260719_204912\residual_gap_audit_report.txt
+manifest: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\residual_gap_audits\c8_residual_gap_audit_20260719_204912\residual_gap_audit_manifest.json
+status: completed

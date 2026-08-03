@@ -1,0 +1,1236 @@
+BUILDING-GRID INTELLIGENCE RESEARCH STUDIO
+SETTINGS → ENVIRONMENTS
+AUTHORITATIVE FOUR-MACHINE ENVIRONMENT PROFILE
+============================================================
+
+Scope
+-----
+
+This handoff uses only environment information validated in the current
+ScaleBridge chat and uploaded environment records.
+
+Status meanings:
+
+PASS
+    The value was confirmed through an environment export, import test,
+    package-version command, solver test, GPU test, or successful production run.
+
+WARNING
+    The component is expected, partially documented, or present in a common
+    specification, but the final machine-specific validation is incomplete.
+
+UNAVAILABLE
+    No validated value exists in the current chat, or the component has not
+    yet been installed/confirmed.
+
+General remediation rule:
+
+    Do not install or upgrade packages blindly.
+    First inspect the machine-specific lock and active environment.
+    Prefer exact pinned installs.
+    Use --no-deps only when all required dependencies are already validated.
+    Re-run pip check and the machine validation suite after any change.
+
+============================================================
+AUTHORITATIVE SOURCE RECORD
+============================================================
+
+SRC-WIN-LOCK
+    Windows conda-env-export.yml and common environment specification.
+
+    Validated/common versions include:
+        Python 3.10.20
+        pip 26.1.2
+        NumPy 1.26.3
+        SciPy 1.15.2
+        pandas 2.3.3
+        PyArrow 23.0.1
+        MLflow 3.13.0
+        Plotly 6.8.0
+        Dash 4.0.0
+
+SRC-WIN-VALIDATION
+    Four-machine environment rebuild and validation commands.
+
+    Validated Windows shared stack:
+        torch 2.5.1+cu118
+        torchvision 0.20.1+cu118
+        torchaudio 2.5.1+cu118
+        CUDA available = True
+        CasADi 3.7.2
+        bundled IPOPT available
+        Opyplus 2.0.7
+        OpenBLAS 0.3.32 pthreads
+        pip check passed on home PC and lab PC
+        laptop validation previously passed the same controlled stack
+
+SRC-LAPTOP-DASH
+    Command:
+        python -c "import dash; print('Dash:', dash.__version__)"
+
+    Result:
+        Dash: 4.0.0
+
+    dash-bootstrap-components was missing when:
+        python scripts\dashapp\validation\validate_shell.py
+
+    Error:
+        ModuleNotFoundError: No module named 'dash_bootstrap_components'
+
+    A pinned installation was proposed:
+        python -m pip install --no-deps dash-bootstrap-components==2.0.4
+
+    No successful installation output was provided in this chat.
+
+SRC-KAMIAK
+    Successful SLURM environment build:
+
+        Job ID: 27929819
+        State: COMPLETED
+        Exit code: 0:0
+        Elapsed: 00:05:03
+        Node: sn14
+
+    Validated environment:
+        /home/ninad.gaikwad/conda_envs/scalebridge-dev-gpu-kamiak
+
+    Validated values:
+        Python 3.10.12
+        PyTorch 2.5.1+cu118
+        torch.version.cuda = 11.8
+        torch.cuda.is_available() = True
+        GPU = NVIDIA A100-PCIE-40GB
+        MLflow 3.13.0
+        CasADi 3.7.2
+        bundled IPOPT available
+        Opyplus 2.0.7
+        pip check passed
+
+SRC-ENERGYPLUS
+    Validated ScaleBridge project tooling and production campaign:
+
+        EnergyPlus 9.0.1
+        Opyplus 2.0.7
+
+    EnergyPlus 9.0.1 was used for validated Windows generation campaigns,
+    especially on lab PC.
+
+SRC-GPU
+    Validated GPU identities:
+
+        Laptop:
+            NVIDIA GeForce MX150
+
+        Home PC:
+            NVIDIA GeForce GTX 1050 Ti
+
+        Lab PC:
+            NVIDIA RTX A4000
+
+        Kamiak:
+            NVIDIA A100-PCIE-40GB
+
+============================================================
+1. WINDOWS LAPTOP
+============================================================
+
+Environment name
+    Value:
+        scalebridge-dev-gpu-laptop
+    Status:
+        PASS
+    Source:
+        Four-machine Windows environment rebuild
+    Remediation:
+        None
+
+Python version
+    Value:
+        3.10.20
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+Conda version
+    Value:
+        24.11.3
+    Status:
+        PASS
+    Source:
+        Windows environment validation diagnostics
+    Remediation:
+        None
+
+Pip version
+    Value:
+        26.1.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK
+    Remediation:
+        None
+
+Dash version
+    Value:
+        4.0.0
+    Status:
+        PASS
+    Source:
+        SRC-LAPTOP-DASH
+    Validation command:
+        python -c "import dash; print('Dash:', dash.__version__)"
+    Remediation:
+        None
+
+dash-bootstrap-components version
+    Value:
+        Not validated as installed
+    Expected pinned candidate:
+        2.0.4
+    Status:
+        UNAVAILABLE
+    Source:
+        SRC-LAPTOP-DASH
+    Failure:
+        ModuleNotFoundError: No module named 'dash_bootstrap_components'
+    Recommended remediation:
+        Install only after confirming the lock strategy:
+
+        python -m pip install --no-deps dash-bootstrap-components==2.0.4
+
+        Then run:
+
+        python -m pip check
+        python -c "import dash_bootstrap_components as dbc; print(dbc.__version__)"
+        python scripts\dashapp\validation\validate_shell.py
+
+Plotly version
+    Value:
+        6.8.0
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK
+    Remediation:
+        None
+
+NumPy
+    Value:
+        1.26.3
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+SciPy
+    Value:
+        1.15.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+Pandas
+    Value:
+        2.3.3
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+PyArrow
+    Value:
+        23.0.1
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+DuckDB
+    Value:
+        No validated version
+    Status:
+        UNAVAILABLE
+    Source:
+        Not present in the validated chat record
+    Recommended remediation:
+        First determine whether Dash data exploration requires DuckDB.
+        If required, choose a pinned version, install it in a disposable test
+        environment or clone, then validate before updating the machine lock.
+
+MLflow
+    Value:
+        3.13.0
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+PyTorch
+    Value:
+        2.5.1+cu118
+    Status:
+        PASS
+    Source:
+        SRC-WIN-VALIDATION
+    Validation command:
+        python -c "import torch; print(torch.__version__, torch.cuda.is_available())"
+    Remediation:
+        None
+
+CUDA runtime
+    Value:
+        11.8
+    Status:
+        PASS
+    Source:
+        torch.version.cuda in Windows validation
+    Remediation:
+        None
+
+CUDA availability
+    Value:
+        True
+    Status:
+        PASS
+    Source:
+        SRC-WIN-VALIDATION
+    Remediation:
+        None
+
+GPU model
+    Value:
+        NVIDIA GeForce MX150
+    Status:
+        PASS
+    Source:
+        SRC-GPU
+    Known limitation:
+        2 GB-class entry GPU; limited for large deep-learning batches.
+
+CasADi
+    Value:
+        3.7.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-VALIDATION
+    Remediation:
+        None
+
+IPOPT availability
+    Value:
+        Available through CasADi bundled IPOPT
+    Status:
+        PASS
+    Source:
+        Successful CasADi IPOPT solve
+    Additional Windows capability:
+        External Pyomo IPOPT was also standardized and validated.
+    Remediation:
+        None
+
+EnergyPlus
+    Value:
+        9.0.1
+    Status:
+        PASS
+    Source:
+        SRC-ENERGYPLUS and laptop ScaleBridge development validation
+    Remediation:
+        None
+
+Opyplus
+    Value:
+        2.0.7
+    Status:
+        PASS
+    Source:
+        SRC-ENERGYPLUS / Windows validation
+    Remediation:
+        None
+
+OpenBLAS
+    Value:
+        0.3.32, pthreads backend
+    Status:
+        PASS
+    Source:
+        Windows environment validation
+    Remediation:
+        None
+
+Known limitations
+    Status:
+        WARNING
+
+    1. dash-bootstrap-components is not yet confirmed installed.
+    2. DuckDB is not validated.
+    3. GPU memory and compute capability are limited relative to the other machines.
+    4. Laptop storage is insufficient for the complete aggregation dataset.
+    5. Do not use KMP_DUPLICATE_LIB_OK=TRUE.
+    6. Preserve the validated OpenBLAS-based environment; do not reintroduce the
+       prior mixed MKL/Intel/LLVM OpenMP stack.
+    7. The laptop Dropbox data folder should remain online-only for large outputs.
+
+============================================================
+2. HOME PC
+============================================================
+
+Environment name
+    Value:
+        scalebridge-dev-gpu-homepc
+    Status:
+        PASS
+    Source:
+        Four-machine Windows environment rebuild
+    Remediation:
+        None
+
+Python version
+    Value:
+        3.10.20
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+Conda version
+    Value:
+        24.11.3
+    Status:
+        PASS
+    Source:
+        Windows environment validation diagnostics
+    Remediation:
+        None
+
+Pip version
+    Value:
+        26.1.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK
+    Remediation:
+        None
+
+Dash version
+    Value:
+        4.0.0
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK
+    Recommended confirmation command:
+        python -c "import dash; print(dash.__version__)"
+
+dash-bootstrap-components version
+    Value:
+        No machine-specific validated installation
+    Status:
+        UNAVAILABLE
+    Source:
+        No successful home-PC import/version command in this chat
+    Recommended remediation:
+        After laptop validation succeeds, apply the same exact pinned package:
+
+        python -m pip install --no-deps dash-bootstrap-components==2.0.4
+
+        Then run pip check and import validation before updating the home-PC lock.
+
+Plotly version
+    Value:
+        6.8.0
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK
+    Remediation:
+        None
+
+NumPy
+    Value:
+        1.26.3
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+SciPy
+    Value:
+        1.15.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+Pandas
+    Value:
+        2.3.3
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+PyArrow
+    Value:
+        23.0.1
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+DuckDB
+    Value:
+        No validated version
+    Status:
+        UNAVAILABLE
+    Source:
+        Not present in the validated chat record
+    Recommended remediation:
+        Add only after defining a project-wide pinned version and validating it
+        against pandas, PyArrow, Dash, and the environment lock.
+
+MLflow
+    Value:
+        3.13.0
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / pip check
+    Remediation:
+        None
+
+PyTorch
+    Value:
+        2.5.1+cu118
+    Status:
+        PASS
+    Source:
+        SRC-WIN-VALIDATION
+    Remediation:
+        None
+
+CUDA runtime
+    Value:
+        11.8
+    Status:
+        PASS
+    Source:
+        torch.version.cuda
+    Remediation:
+        None
+
+CUDA availability
+    Value:
+        True
+    Status:
+        PASS
+    Source:
+        Home-PC GPU validation
+    Remediation:
+        None
+
+GPU model
+    Value:
+        NVIDIA GeForce GTX 1050 Ti
+    Status:
+        PASS
+    Source:
+        SRC-GPU
+    Known limitation:
+        Older 4 GB-class GPU; unsuitable for very large models or batches.
+
+CasADi
+    Value:
+        3.7.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-VALIDATION
+    Remediation:
+        None
+
+IPOPT availability
+    Value:
+        Available through CasADi bundled IPOPT
+    Status:
+        PASS
+    Source:
+        Successful CasADi IPOPT solve
+    Additional Windows capability:
+        External Pyomo IPOPT standardized and validated.
+    Remediation:
+        None
+
+EnergyPlus
+    Value:
+        9.0.1 project version
+    Status:
+        WARNING
+    Source:
+        SRC-ENERGYPLUS
+    Reason:
+        The project version is validated, but a distinct home-PC EnergyPlus
+        executable/version command was not shown in this chat.
+    Recommended remediation:
+        Run the machine environment validation and:
+        energyplus --version
+
+Opyplus
+    Value:
+        2.0.7
+    Status:
+        PASS
+    Source:
+        Windows shared environment validation
+    Remediation:
+        None
+
+OpenBLAS
+    Value:
+        0.3.32, pthreads backend
+    Status:
+        PASS
+    Source:
+        Windows environment validation
+    Remediation:
+        None
+
+Known limitations
+    Status:
+        WARNING
+
+    1. dash-bootstrap-components is not yet machine-validated.
+    2. DuckDB is not validated.
+    3. EnergyPlus executable version should be reconfirmed locally.
+    4. GTX 1050 Ti limits practical deep-learning model size and batch size.
+    5. Preserve OpenBLAS; do not mix MKL, Intel OpenMP, and LLVM OpenMP.
+    6. Do not use KMP_DUPLICATE_LIB_OK=TRUE.
+    7. The home PC is suitable for complete aggregation storage, but it is not
+       the preferred primary full-generation machine.
+
+============================================================
+3. LAB PC
+============================================================
+
+Environment name
+    Value:
+        scalebridge-dev-gpu-labpc
+    Status:
+        PASS
+    Source:
+        Four-machine Windows environment rebuild
+    Remediation:
+        None
+
+Python version
+    Value:
+        3.10.20
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+Conda version
+    Value:
+        24.11.3
+    Status:
+        PASS
+    Source:
+        Windows environment validation diagnostics
+    Remediation:
+        None
+
+Pip version
+    Value:
+        26.1.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK
+    Remediation:
+        None
+
+Dash version
+    Value:
+        4.0.0
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK
+    Recommended confirmation command:
+        python -c "import dash; print(dash.__version__)"
+
+dash-bootstrap-components version
+    Value:
+        No machine-specific validated installation
+    Status:
+        UNAVAILABLE
+    Source:
+        No successful lab-PC import/version command in this chat
+    Recommended remediation:
+        After laptop validation succeeds, install the same pinned version with
+        no dependency changes and regenerate the lab-PC lock.
+
+Plotly version
+    Value:
+        6.8.0
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK
+    Remediation:
+        None
+
+NumPy
+    Value:
+        1.26.3
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+SciPy
+    Value:
+        1.15.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+Pandas
+    Value:
+        2.3.3
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+PyArrow
+    Value:
+        23.0.1
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK / Windows validation
+    Remediation:
+        None
+
+DuckDB
+    Value:
+        No validated version
+    Status:
+        UNAVAILABLE
+    Source:
+        Not present in the validated chat record
+    Recommended remediation:
+        Add only through a project-wide pinned environment update and rerun the
+        full aggregation smoke validation because DuckDB may interact with
+        Arrow-based workflows.
+
+MLflow
+    Value:
+        3.13.0
+    Status:
+        PASS
+    Source:
+        SRC-WIN-LOCK, pip check, and successful production MLflow runs
+    Remediation:
+        None
+
+PyTorch
+    Value:
+        2.5.1+cu118
+    Status:
+        PASS
+    Source:
+        SRC-WIN-VALIDATION
+    Remediation:
+        None
+
+CUDA runtime
+    Value:
+        11.8
+    Status:
+        PASS
+    Source:
+        torch.version.cuda
+    Remediation:
+        None
+
+CUDA availability
+    Value:
+        True
+    Status:
+        PASS
+    Source:
+        Lab-PC GPU validation
+    Remediation:
+        None
+
+GPU model
+    Value:
+        NVIDIA RTX A4000
+    Status:
+        PASS
+    Source:
+        SRC-GPU
+    Remediation:
+        None
+
+CasADi
+    Value:
+        3.7.2
+    Status:
+        PASS
+    Source:
+        SRC-WIN-VALIDATION
+    Remediation:
+        None
+
+IPOPT availability
+    Value:
+        Available through CasADi bundled IPOPT
+    Status:
+        PASS
+    Source:
+        Successful CasADi IPOPT solve
+
+    External Pyomo IPOPT:
+        PASS
+
+    External solver source:
+        Ipopt-3.10.1-win64-intel11.1 copied from the validated laptop archive,
+        extracted to C:\software, and added to the user PATH.
+
+EnergyPlus
+    Value:
+        9.0.1
+    Status:
+        PASS
+    Source:
+        SRC-ENERGYPLUS and successful 16-case compact generation campaign
+    Remediation:
+        None
+
+Opyplus
+    Value:
+        2.0.7
+    Status:
+        PASS
+    Source:
+        SRC-ENERGYPLUS and production generation campaign
+    Remediation:
+        None
+
+OpenBLAS
+    Value:
+        0.3.32, pthreads backend
+    Status:
+        PASS
+    Source:
+        Windows environment validation
+    Remediation:
+        None
+
+Known limitations
+    Status:
+        WARNING
+
+    1. dash-bootstrap-components is not yet machine-validated.
+    2. DuckDB is not validated.
+    3. C: must not be used for large MLflow, EnergyPlus work, or campaign data.
+    4. Preserve D: for MLflow backend and EnergyPlus work.
+    5. Preserve OpenBLAS and avoid mixed OpenMP runtimes.
+    6. Do not use KMP_DUPLICATE_LIB_OK=TRUE.
+    7. Any new package must be validated against the 16-case or controlled
+       aggregation smoke before updating the production lock.
+
+============================================================
+4. KAMIAK HPC
+============================================================
+
+Environment name
+    Value:
+        scalebridge-dev-gpu-kamiak
+    Full path:
+        /home/ninad.gaikwad/conda_envs/scalebridge-dev-gpu-kamiak
+    Status:
+        PASS
+    Source:
+        SRC-KAMIAK
+    Remediation:
+        None
+
+Python version
+    Value:
+        3.10.12
+    Status:
+        PASS
+    Source:
+        SRC-KAMIAK final validation
+    Remediation:
+        None
+
+Conda version
+    Value:
+        23.3.1
+    Status:
+        PASS
+    Source:
+        Kamiak module validation:
+        /opt/apps/miniconda3/3.10/bin/conda
+    Remediation:
+        None
+
+Pip version
+    Value:
+        26.1.2
+    Status:
+        PASS
+    Source:
+        Final Kamiak bootstrap and lock export
+    Remediation:
+        None
+
+Dash version
+    Value:
+        No final machine-specific import/version result in this chat
+    Status:
+        WARNING
+    Source:
+        The portable/common environment specification includes Dash 4.0.0,
+        but the final Kamiak summary did not explicitly print it.
+    Recommended remediation:
+        Run on a compute node:
+
+        python -c "import dash; print(dash.__version__)"
+
+        Record the result before marking PASS.
+
+dash-bootstrap-components version
+    Value:
+        No validated installation
+    Status:
+        UNAVAILABLE
+    Source:
+        Not included in the final Kamiak validation summary
+    Recommended remediation:
+        Validate the exact pinned version on laptop first, then add the same
+        version to the portable pip overlay and rebuild/revalidate Kamiak.
+
+Plotly version
+    Value:
+        No final machine-specific import/version result
+    Status:
+        WARNING
+    Source:
+        Common environment specification contains Plotly 6.8.0, but the final
+        Kamiak validation summary did not explicitly print it.
+    Recommended remediation:
+        Run:
+
+        python -c "import plotly; print(plotly.__version__)"
+
+NumPy
+    Value:
+        No final machine-specific printed version in this chat
+    Status:
+        WARNING
+    Source:
+        Linux environment was recreated from an explicit lock and pip check
+        passed, but the final summary did not explicitly print NumPy.
+    Recommended remediation:
+        Run the consolidated environment-version command and compare with the
+        final lock.
+
+SciPy
+    Value:
+        No final machine-specific printed version
+    Status:
+        WARNING
+    Source:
+        Same as NumPy
+    Recommended remediation:
+        Run import/version validation.
+
+Pandas
+    Value:
+        No final machine-specific printed version
+    Status:
+        WARNING
+    Source:
+        Same as NumPy
+    Recommended remediation:
+        Run import/version validation.
+
+PyArrow
+    Value:
+        No final machine-specific printed version
+    Status:
+        WARNING
+    Source:
+        Same as NumPy
+    Recommended remediation:
+        Run import/version validation and a Parquet read/write smoke test.
+
+DuckDB
+    Value:
+        No validated version
+    Status:
+        UNAVAILABLE
+    Source:
+        Not present in the final Kamiak validation record
+    Recommended remediation:
+        Do not add independently. Define a project-wide version and test against
+        PyArrow and the training export workflow.
+
+MLflow
+    Value:
+        3.13.0
+    Status:
+        PASS
+    Source:
+        SRC-KAMIAK final validation
+    Remediation:
+        None
+
+PyTorch
+    Value:
+        2.5.1+cu118
+    Status:
+        PASS
+    Source:
+        SRC-KAMIAK final validation
+    Remediation:
+        None
+
+CUDA runtime
+    Value:
+        11.8
+    Status:
+        PASS
+    Source:
+        torch.version.cuda
+    Remediation:
+        None
+
+CUDA availability
+    Value:
+        True
+    Status:
+        PASS
+    Source:
+        Compute-node GPU validation
+    Remediation:
+        None
+
+GPU model
+    Value:
+        NVIDIA A100-PCIE-40GB
+    Status:
+        PASS
+    Source:
+        SRC-KAMIAK final validation on node sn14
+    Important correction:
+        The current validated GPU is A100-PCIE-40GB.
+        Older H100 references are not authoritative for this environment.
+
+CasADi
+    Value:
+        3.7.2
+    Status:
+        PASS
+    Source:
+        SRC-KAMIAK final validation
+    Remediation:
+        None
+
+IPOPT availability
+    Value:
+        Available through CasADi bundled IPOPT
+    Status:
+        PASS
+    Source:
+        Successful compute-node CasADi IPOPT solve
+    Remediation:
+        None
+
+EnergyPlus
+    Value:
+        No validated Kamiak EnergyPlus executable/version
+    Status:
+        UNAVAILABLE
+    Source:
+        No final Kamiak EnergyPlus validation command
+    Recommended remediation:
+        Install/configure only when Kamiak generation is required.
+        Validate on a compute node with:
+            energyplus --version
+        and a minimal controlled simulation.
+
+Opyplus
+    Value:
+        2.0.7
+    Status:
+        PASS
+    Source:
+        SRC-KAMIAK final validation
+    Remediation:
+        None
+
+OpenBLAS
+    Value:
+        No final machine-specific version/backend printed
+    Status:
+        WARNING
+    Source:
+        Final Kamiak environment validation did not state the BLAS backend.
+    Recommended remediation:
+        Run:
+
+        python -c "import numpy as np; np.show_config()"
+
+        Record implementation, version, and thread backend in the lock metadata.
+
+Known limitations
+    Status:
+        WARNING
+
+    1. Heavy work must not run on login nodes.
+    2. All GPU validation and experiments must use SLURM compute jobs.
+    3. Dash, Plotly, NumPy, SciPy, pandas, PyArrow, and OpenBLAS require a final
+       explicit version-report command before the Settings page marks them PASS.
+    4. dash-bootstrap-components is not validated.
+    5. DuckDB is not validated.
+    6. EnergyPlus is not validated on Kamiak.
+    7. The environment was recreated through:
+           explicit Conda lock
+           + ensurepip bootstrap
+           + pinned pip tooling
+           + exact PyTorch cu118 wheels
+           + portable pip overlay
+           + editable ScaleBridge install
+    8. Avoid a second broad Conda solve after explicit reconstruction. It caused
+       long solver behavior under Conda 23.3.1.
+    9. The successful recovery used:
+           python -m ensurepip --upgrade
+       rather than:
+           conda install pip ...
+   10. The final environment passed pip check, GPU checks, CVXPY, and CasADi
+       IPOPT validation.
+
+============================================================
+SETTINGS-PAGE SUMMARY MATRIX
+============================================================
+
+Field                         Laptop             Home PC            Lab PC             Kamiak
+------------------------------------------------------------------------------------------------
+Environment                   PASS                PASS               PASS               PASS
+Python                        3.10.20 PASS        3.10.20 PASS       3.10.20 PASS       3.10.12 PASS
+Conda                         24.11.3 PASS        24.11.3 PASS       24.11.3 PASS       23.3.1 PASS
+Pip                           26.1.2 PASS         26.1.2 PASS        26.1.2 PASS        26.1.2 PASS
+Dash                          4.0.0 PASS          4.0.0 PASS         4.0.0 PASS         WARNING
+dash-bootstrap-components     UNAVAILABLE         UNAVAILABLE        UNAVAILABLE        UNAVAILABLE
+Plotly                        6.8.0 PASS          6.8.0 PASS         6.8.0 PASS         WARNING
+NumPy                         1.26.3 PASS         1.26.3 PASS        1.26.3 PASS        WARNING
+SciPy                         1.15.2 PASS         1.15.2 PASS        1.15.2 PASS        WARNING
+Pandas                        2.3.3 PASS          2.3.3 PASS         2.3.3 PASS         WARNING
+PyArrow                       23.0.1 PASS         23.0.1 PASS        23.0.1 PASS        WARNING
+DuckDB                        UNAVAILABLE         UNAVAILABLE        UNAVAILABLE        UNAVAILABLE
+MLflow                        3.13.0 PASS         3.13.0 PASS        3.13.0 PASS        3.13.0 PASS
+PyTorch                       2.5.1+cu118 PASS    2.5.1+cu118 PASS   2.5.1+cu118 PASS   2.5.1+cu118 PASS
+CUDA runtime                  11.8 PASS           11.8 PASS          11.8 PASS          11.8 PASS
+CUDA available                True PASS           True PASS          True PASS          True PASS
+GPU                           MX150 PASS          GTX 1050 Ti PASS   RTX A4000 PASS     A100 40GB PASS
+CasADi                        3.7.2 PASS          3.7.2 PASS         3.7.2 PASS         3.7.2 PASS
+IPOPT                         PASS                PASS               PASS               PASS
+EnergyPlus                    9.0.1 PASS          WARNING            9.0.1 PASS         UNAVAILABLE
+Opyplus                       2.0.7 PASS          2.0.7 PASS         2.0.7 PASS         2.0.7 PASS
+OpenBLAS                      0.3.32 PASS         0.3.32 PASS        0.3.32 PASS        WARNING
+
+============================================================
+RECOMMENDED NEXT VALIDATION COMMANDS
+============================================================
+
+Windows laptop after installing dash-bootstrap-components:
+
+    python -m pip check
+
+    python -c "import dash_bootstrap_components as dbc; print(dbc.__version__)"
+
+    python scripts\dashapp\validation\validate_shell.py
+
+Home PC and lab PC before enabling Dash shell:
+
+    python -c "import dash, plotly; print(dash.__version__, plotly.__version__)"
+
+    python -c "import dash_bootstrap_components as dbc; print(dbc.__version__)"
+
+Kamiak consolidated explicit version validation:
+
+    Run only through SLURM on a compute node:
+
+    python - <<'PY'
+    import dash
+    import plotly
+    import numpy
+    import scipy
+    import pandas
+    import pyarrow
+
+    print("dash", dash.__version__)
+    print("plotly", plotly.__version__)
+    print("numpy", numpy.__version__)
+    print("scipy", scipy.__version__)
+    print("pandas", pandas.__version__)
+    print("pyarrow", pyarrow.__version__)
+
+    numpy.show_config()
+    PY
+
+DuckDB decision:
+
+    Do not install yet.
+
+    First decide whether DuckDB is a required BGIRS dependency or an optional
+    data-exploration accelerator. Then define one pinned cross-machine version,
+    validate it in a test environment, and only then update all machine locks.
+
+============================================================
+END OF AUTHORITATIVE ENVIRONMENT PROFILE
+============================================================

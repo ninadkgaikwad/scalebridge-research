@@ -1,0 +1,433 @@
+# -*- coding: utf-8 -*-
+"""Timestamp parsing and deterministic predictor-target alignment."""
+
+from __future__ import annotations
+
+from typing import Any
+
+import numpy as np
+import pandas as pd
+
+TIMESTAMP_COLUMN = "timestamp_raw"
+PARSED_TIMESTAMP_COLUMN = "timestamp"
+
+
+def build_timestamp_frame(
+    frame: pd.DataFrame,
+    *,
+    timestamp_column: str = TIMESTAMP_COLUMN,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Return raw, normalized, and parsed timestamps.
+
+    Timestamp text is normalized before parsing so whitespace-only variants map
+    to the same physical key. EnergyPlus hour-24 timestamps are handled
+    deterministically. The original raw text is preserved for provenance.
+    """
+    if timestamp_column not in frame.columns:
+        raise KeyError(f"Timestamp column is absent: {timestamp_column}")
+
+    output = pd.DataFrame(index=frame.index)
+    output[timestamp_column] = frame[timestamp_column].astype(str)
+    output["timestamp_normalized"] = normalize_timestamp_text(
+        frame[timestamp_column]
+    )
+    parsed = _parse_timestamp_series(output["timestamp_normalized"])
+    output[PARSED_TIMESTAMP_COLUMN] = parsed
+
+    metadata = {
+        "timestamp_column": timestamp_column,
+        "normalized_timestamp_column": "timestamp_normalized",
+        "parsed_timestamp_column": PARSED_TIMESTAMP_COLUMN,
+        "row_count": int(len(output)),
+        "parsed_timestamp_count": int(parsed.notna().sum()),
+        "unparsed_timestamp_count": int(parsed.isna().sum()),
+        "duplicate_timestamp_raw_count": int(
+            output[timestamp_column].duplicated().sum()
+        ),
+        "duplicate_timestamp_normalized_count": int(
+            output["timestamp_normalized"].duplicated().sum()
+        ),
+        "duplicate_parsed_timestamp_count": int(parsed.duplicated().sum()),
+        "timestamp_raw_monotonic": bool(
+            output[timestamp_column].astype(str).is_monotonic_increasing
+        ),
+        "parsed_timestamp_monotonic": bool(parsed.is_monotonic_increasing),
+    }
+    return output, metadata
+
+
+def align_predictor_target(
+    *,
+    timestamp_frame: pd.DataFrame,
+    predictor: pd.Series,
+    target: pd.Series,
+    predictor_column: str,
+    target_column: str,
+    drop_invalid: bool = False,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Align one predictor-target pair by the source dataframe index."""
+    aligned = timestamp_frame.copy()
+    aligned[predictor_column] = pd.to_numeric(predictor, errors="coerce")
+    aligned[target_column] = pd.to_numeric(target, errors="coerce")
+    valid_mask = aligned[[predictor_column, target_column]].notna().all(axis=1)
+    aligned["pair_valid"] = valid_mask
+
+    metadata = {
+        "row_count": int(len(aligned)),
+        "valid_pair_count": int(valid_mask.sum()),
+        "invalid_pair_count": int((~valid_mask).sum()),
+        "predictor_non_null_count": int(aligned[predictor_column].notna().sum()),
+        "target_non_null_count": int(aligned[target_column].notna().sum()),
+        "drop_invalid": bool(drop_invalid),
+    }
+    if drop_invalid:
+        aligned = aligned[valid_mask].reset_index(drop=True)
+    return aligned, metadata
+
+
+def normalize_timestamp_text(series: pd.Series) -> pd.Series:
+    """Normalize timestamp strings before any key comparison or parsing.
+
+    This removes leading/trailing whitespace and collapses all internal
+    whitespace runs to one space. Numeric date/time tokens are not otherwise
+    changed, preserving provenance while eliminating formatting-only variants.
+    """
+    return (
+        series.astype(str)
+        .str.strip()
+        .str.replace(r"\s+", " ", regex=True)
+    )
+
+
+def canonicalize_wide_frame(
+    frame: pd.DataFrame,
+    *,
+    timestamp_column: str = TIMESTAMP_COLUMN,
+    numeric_conflict_absolute_tolerance: float = 1e-9,
+    numeric_conflict_relative_tolerance: float = 1e-9,
+) -> tuple[pd.DataFrame, dict[str, Any]]:
+    """Return one coalesced row per parsed EnergyPlus timestamp.
+
+    Fast path:
+    - parse and normalize all timestamps vectorially;
+    - copy all unique-timestamp rows without Python group iteration;
+    - process only duplicate timestamp groups column by column.
+
+    This preserves the v5 coalescence and conflict-audit behavior while avoiding
+    iteration over roughly 105,120 singleton groups per zone.
+    """
+    if timestamp_column not in frame.columns:
+        raise KeyError(f"Timestamp column is absent: {timestamp_column}")
+
+    work = frame.copy()
+    work["__canonical_original_position"] = np.arange(len(work), dtype=np.int64)
+    work["__canonical_timestamp_normalized"] = normalize_timestamp_text(
+        work[timestamp_column]
+    )
+    parsed = _parse_timestamp_series(
+        work["__canonical_timestamp_normalized"]
+    )
+
+    if parsed.isna().any():
+        examples = (
+            work.loc[parsed.isna(), timestamp_column]
+            .astype(str)
+            .head(10)
+            .tolist()
+        )
+        raise ValueError(
+            f"Cannot canonicalize {int(parsed.isna().sum())} unparsed "
+            f"timestamps; examples={examples}"
+        )
+
+    work["__canonical_timestamp"] = parsed
+
+    helper_columns = {
+        timestamp_column,
+        PARSED_TIMESTAMP_COLUMN,
+        "__canonical_original_position",
+        "__canonical_timestamp_normalized",
+        "__canonical_timestamp",
+        "__canonical_non_null_score",
+    }
+    source_columns = [c for c in work.columns if c not in helper_columns]
+    work["__canonical_non_null_score"] = (
+        work[source_columns].notna().sum(axis=1)
+    )
+
+    duplicate_mask = work["__canonical_timestamp"].duplicated(keep=False)
+    duplicate_rows = work.loc[duplicate_mask].copy()
+    unique_rows = work.loc[~duplicate_mask].copy()
+
+    duplicate_input_row_count = int(len(duplicate_rows))
+    duplicate_parsed_timestamp_count = int(
+        duplicate_rows["__canonical_timestamp"].nunique()
+    )
+
+    # Unique rows need no coalescence and are passed through vectorially.
+    if not unique_rows.empty:
+        unique_rows[PARSED_TIMESTAMP_COLUMN] = unique_rows[
+            "__canonical_timestamp"
+        ]
+        unique_rows[timestamp_column] = unique_rows[
+            "__canonical_timestamp_normalized"
+        ]
+
+    duplicate_output_rows: list[pd.Series] = []
+    duplicate_audit_rows: list[dict[str, Any]] = []
+    conflict_rows: list[dict[str, Any]] = []
+    coalesced_value_count = 0
+    complementary_duplicate_timestamp_count = 0
+    conflicting_duplicate_timestamp_count = 0
+
+    # Only duplicate groups are iterated. In the smoke dataset this is a tiny
+    # subset of the annual 105,120-row timeline.
+    for canonical_timestamp, group in duplicate_rows.groupby(
+        "__canonical_timestamp",
+        sort=True,
+        dropna=False,
+    ):
+        ranked = group.sort_values(
+            ["__canonical_non_null_score", "__canonical_original_position"],
+            ascending=[False, True],
+            kind="mergesort",
+        )
+        preferred = ranked.iloc[0].copy()
+        group_coalesced_count = 0
+        group_conflict_count = 0
+
+        for _, candidate in ranked.iloc[1:].iterrows():
+            preferred_missing = preferred[source_columns].isna()
+            candidate_present = candidate[source_columns].notna()
+            fill_columns = list(
+                pd.Index(source_columns)[preferred_missing & candidate_present]
+            )
+            if fill_columns:
+                preferred.loc[fill_columns] = candidate.loc[fill_columns]
+                group_coalesced_count += len(fill_columns)
+                coalesced_value_count += len(fill_columns)
+
+            comparable_columns = list(
+                pd.Index(source_columns)[
+                    preferred[source_columns].notna()
+                    & candidate[source_columns].notna()
+                ]
+            )
+            for column in comparable_columns:
+                preferred_value = preferred[column]
+                candidate_value = candidate[column]
+                if _values_conflict(
+                    preferred_value,
+                    candidate_value,
+                    absolute_tolerance=numeric_conflict_absolute_tolerance,
+                    relative_tolerance=numeric_conflict_relative_tolerance,
+                ):
+                    group_conflict_count += 1
+                    conflict_rows.append({
+                        "canonical_timestamp": canonical_timestamp,
+                        "column": column,
+                        "preferred_original_position": int(
+                            preferred["__canonical_original_position"]
+                        ),
+                        "candidate_original_position": int(
+                            candidate["__canonical_original_position"]
+                        ),
+                        "preferred_value": _audit_scalar(preferred_value),
+                        "candidate_value": _audit_scalar(candidate_value),
+                    })
+
+        if group_coalesced_count > 0:
+            complementary_duplicate_timestamp_count += 1
+        if group_conflict_count > 0:
+            conflicting_duplicate_timestamp_count += 1
+
+        for _, duplicate_row in ranked.iterrows():
+            duplicate_audit_rows.append({
+                "timestamp_raw": str(duplicate_row[timestamp_column]),
+                "timestamp_normalized": str(
+                    duplicate_row["__canonical_timestamp_normalized"]
+                ),
+                "canonical_timestamp": canonical_timestamp,
+                "original_position": int(
+                    duplicate_row["__canonical_original_position"]
+                ),
+                "non_null_source_score": int(
+                    duplicate_row["__canonical_non_null_score"]
+                ),
+                "is_preferred_row": bool(
+                    duplicate_row["__canonical_original_position"]
+                    == ranked.iloc[0]["__canonical_original_position"]
+                ),
+                "group_coalesced_value_count": int(group_coalesced_count),
+                "group_conflict_count": int(group_conflict_count),
+            })
+
+        preferred[PARSED_TIMESTAMP_COLUMN] = canonical_timestamp
+        preferred[timestamp_column] = preferred[
+            "__canonical_timestamp_normalized"
+        ]
+        duplicate_output_rows.append(preferred)
+
+    pieces = [unique_rows]
+    if duplicate_output_rows:
+        pieces.append(pd.DataFrame(duplicate_output_rows))
+
+    output = pd.concat(pieces, ignore_index=True, sort=False)
+    output = output.sort_values(
+        PARSED_TIMESTAMP_COLUMN,
+        kind="mergesort",
+    ).reset_index(drop=True)
+
+    output = output.drop(
+        columns=[
+            "__canonical_original_position",
+            "__canonical_timestamp_normalized",
+            "__canonical_timestamp",
+            "__canonical_non_null_score",
+        ],
+        errors="ignore",
+    )
+
+    parsed_out = pd.to_datetime(
+        output[PARSED_TIMESTAMP_COLUMN],
+        errors="coerce",
+    )
+    deltas = parsed_out.diff().dropna()
+    cadence_seconds = (
+        float(deltas.mode().iloc[0].total_seconds())
+        if not deltas.empty
+        else None
+    )
+    noncanonical_gap_count = 0
+    if cadence_seconds and cadence_seconds > 0:
+        noncanonical_gap_count = int(
+            (deltas.dt.total_seconds() != cadence_seconds).sum()
+        )
+
+    metadata = {
+        "input_row_count": int(len(frame)),
+        "output_row_count": int(len(output)),
+        "removed_duplicate_row_count": int(len(frame) - len(output)),
+        "duplicate_input_row_count": duplicate_input_row_count,
+        "duplicate_parsed_timestamp_count": duplicate_parsed_timestamp_count,
+        "complementary_duplicate_timestamp_count": int(
+            complementary_duplicate_timestamp_count
+        ),
+        "conflicting_duplicate_timestamp_count": int(
+            conflicting_duplicate_timestamp_count
+        ),
+        "coalesced_source_value_count": int(coalesced_value_count),
+        "conflicting_source_value_count": int(len(conflict_rows)),
+        "output_duplicate_parsed_timestamp_count": int(
+            parsed_out.duplicated().sum()
+        ),
+        "output_timestamp_monotonic": bool(
+            parsed_out.is_monotonic_increasing
+        ),
+        "canonical_cadence_seconds": cadence_seconds,
+        "noncanonical_gap_count": noncanonical_gap_count,
+        "timestamp_normalization_policy":
+            "strip_and_collapse_internal_whitespace_before_parsing",
+        "duplicate_resolution_policy":
+            "column_wise_coalescence_prefer_densest_then_earliest",
+        "canonicalization_execution_policy":
+            "vectorized_unique_rows_iterate_duplicate_groups_only",
+        "conflict_policy":
+            "retain_preferred_value_and_record_material_conflict",
+        "numeric_conflict_absolute_tolerance":
+            float(numeric_conflict_absolute_tolerance),
+        "numeric_conflict_relative_tolerance":
+            float(numeric_conflict_relative_tolerance),
+        "duplicate_audit_rows": duplicate_audit_rows,
+        "conflict_audit_rows": conflict_rows,
+    }
+    return output, metadata
+
+
+def _values_conflict(
+    left: Any,
+    right: Any,
+    *,
+    absolute_tolerance: float,
+    relative_tolerance: float,
+) -> bool:
+    """Return True when two non-null source values materially disagree."""
+    try:
+        left_numeric = float(left)
+        right_numeric = float(right)
+    except (TypeError, ValueError):
+        return str(left) != str(right)
+
+    if np.isnan(left_numeric) and np.isnan(right_numeric):
+        return False
+    return not bool(
+        np.isclose(
+            left_numeric,
+            right_numeric,
+            atol=absolute_tolerance,
+            rtol=relative_tolerance,
+            equal_nan=True,
+        )
+    )
+
+
+def _audit_scalar(value: Any) -> Any:
+    if isinstance(value, pd.Timestamp):
+        return value.isoformat()
+    if isinstance(value, np.generic):
+        return value.item()
+    if pd.isna(value):
+        return None
+    return value
+
+
+def _parse_timestamp_series(series: pd.Series) -> pd.Series:
+    """Deterministically parse common EnergyPlus timestamp formats."""
+    text = normalize_timestamp_text(series)
+
+    repaired: list[pd.Timestamp | pd.NaT] = []
+    for value in text:
+        try:
+            repaired.append(_parse_one_energyplus_timestamp(value))
+        except Exception:
+            repaired.append(pd.NaT)
+
+    repaired_series = pd.Series(
+        repaired,
+        index=series.index,
+        dtype="datetime64[ns]",
+    )
+
+    unresolved = repaired_series.isna()
+    if unresolved.any():
+        fallback = pd.to_datetime(
+            text[unresolved],
+            errors="coerce",
+        )
+        repaired_series.loc[unresolved] = fallback
+    return repaired_series
+
+
+def _parse_one_energyplus_timestamp(value: str) -> pd.Timestamp:
+    value = " ".join(str(value).strip().split())
+    date_part, time_part = value.split(" ", maxsplit=1)
+    hour_text, minute_text, second_text = time_part.split(":")
+    hour = int(hour_text)
+    minute = int(minute_text)
+    second = int(float(second_text))
+
+    base = pd.to_datetime(
+        f"2001/{date_part}",
+        format="%Y/%m/%d",
+    )
+    if hour == 24:
+        return base + pd.Timedelta(
+            days=1,
+            minutes=minute,
+            seconds=second,
+        )
+    return base + pd.Timedelta(
+        hours=hour,
+        minutes=minute,
+        seconds=second,
+    )

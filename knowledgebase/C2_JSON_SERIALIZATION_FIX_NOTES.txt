@@ -1,0 +1,15 @@
+ScaleBridge Stage C2 JSON Serialization Fix
+============================================
+
+This package contains the complete C2 canonical-timestamp correction plus the
+complete C1-to-C8 PowerShell validation runner.
+
+Additional correction:
+- C2 canonical timestamp diagnostics can contain pandas.Timestamp, NumPy scalar,
+  pathlib.Path, datetime/date, pandas.NA, and NaN values.
+- The feature builder now recursively converts these values to deterministic,
+  JSON-safe representations before calling the shared write_json helper.
+- Timestamps are stored as ISO-8601 strings; missing values are stored as null.
+
+The PowerShell runner also merges native stderr into stdout for every stage so
+future Python tracebacks are captured in the transcript before the runner stops.

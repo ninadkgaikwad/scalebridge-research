@@ -1,0 +1,18 @@
+ScaleBridge Stage C8 NaN-Tolerant Full-Run and Root-Cause Diagnostics Patch
+
+Changed files:
+- src/scalebridge/inference/heat_input_regression/annual_inference.py
+- src/scalebridge/inference/heat_input_regression/validation.py
+- scripts/heat_input_regression/audit_heat_input_regression_inference_missing_values.py
+
+Behavior:
+- Preserves the complete annual C2 timestamp axis.
+- Predicts only where a component-specific predictor is finite.
+- Writes NaN only where the predictor is unavailable.
+- Never fails a zone merely because some predictor rows are unavailable.
+- Writes exact missing timestamps and per-timestamp component availability.
+- Validates that saved prediction NaN masks exactly equal predictor NaN masks.
+- Recomputes all finite predictions from persisted C6 models.
+- Audits common versus predictor-specific missing-value patterns.
+- Optionally searches aggregation-zone source files for the raw source columns
+  listed in the C2 derived-feature catalog.

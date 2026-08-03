@@ -1,10 +1,12 @@
 numpy
 pandas
+pyarrow>=14
 scikit-learn
 matplotlib
 torch
 mlflow
 optuna
+opyplus<3,>=2.0.7
 pydantic
 pyyaml
 

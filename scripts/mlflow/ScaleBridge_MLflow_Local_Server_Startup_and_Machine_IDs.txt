@@ -1,0 +1,300 @@
+SCALEBRIDGE MLFLOW LOCAL SERVER STARTUP GUIDE
+==============================================
+
+Purpose
+-------
+This file records how to start the current machine-local ScaleBridge MLflow
+tracking server and which SCALEBRIDGE_MACHINE_ID value to use on each machine.
+
+Keep this file beside:
+
+    scripts\mlflow\start_local_tracking_server.ps1
+    scripts\mlflow\ssl_safe_mlflow.py
+    scripts\mlflow\export_mlflow_runs.py
+    scripts\mlflow\merge_mlflow_exports.py
+
+
+1. MACHINE IDS
+--------------
+
+Use exactly one of these stable machine IDs:
+
+    laptop
+        Primary Windows development laptop.
+
+    home-pc
+        Home Windows GPU/compute PC.
+
+    lab-pc
+        Lab Windows GPU/compute PC.
+
+    kamiak
+        WSU Kamiak HPC/Linux environment.
+
+Do not use the Windows COMPUTERNAME as the normal project machine ID.
+Set SCALEBRIDGE_MACHINE_ID explicitly so MLflow exports remain consistent
+even if the operating-system hostname changes.
+
+
+2. WINDOWS PREREQUISITES
+------------------------
+
+Before starting the server:
+
+    1. Open PowerShell.
+    2. Change to the scalebridge-research repository root.
+    3. Activate the intended ScaleBridge conda environment.
+    4. Set SCALEBRIDGE_GENERATED_DATA_ROOT.
+    5. Set SCALEBRIDGE_MACHINE_ID.
+    6. Set MLFLOW_TRACKING_URI to the local server address.
+
+The current server script requires both files below to remain in the same folder:
+
+    scripts\mlflow\start_local_tracking_server.ps1
+    scripts\mlflow\ssl_safe_mlflow.py
+
+The SSL-safe launcher uses the certifi CA bundle to avoid Windows certificate
+store failures.
+
+
+3. LAPTOP STARTUP
+-----------------
+
+Run from the repository root:
+
+    conda activate scalebridge-dev-gpu-openblas-test
+
+    $repoRoot = (Resolve-Path ".").Path
+    $env:SCALEBRIDGE_GENERATED_DATA_ROOT = `
+        (Resolve-Path (Join-Path $repoRoot "..\..\Data\ScaleBridge")).Path
+
+    $env:SCALEBRIDGE_MACHINE_ID = "laptop"
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+
+    & ".\scripts\mlflow\start_local_tracking_server.ps1"
+
+Open the MLflow interface in a browser:
+
+    http://127.0.0.1:5000
+
+
+4. HOME-PC STARTUP
+------------------
+
+Run from the repository root:
+
+    conda activate scalebridge-dev-gpu-openblas-test
+
+    $repoRoot = (Resolve-Path ".").Path
+    $env:SCALEBRIDGE_GENERATED_DATA_ROOT = `
+        (Resolve-Path (Join-Path $repoRoot "..\..\Data\ScaleBridge")).Path
+
+    $env:SCALEBRIDGE_MACHINE_ID = "home-pc"
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+
+    & ".\scripts\mlflow\start_local_tracking_server.ps1"
+
+Open:
+
+    http://127.0.0.1:5000
+
+
+5. LAB-PC STARTUP
+-----------------
+
+Run from the repository root:
+
+    conda activate scalebridge-dev-gpu-openblas-test
+
+    $repoRoot = (Resolve-Path ".").Path
+    $env:SCALEBRIDGE_GENERATED_DATA_ROOT = `
+        (Resolve-Path (Join-Path $repoRoot "..\..\Data\ScaleBridge")).Path
+
+    $env:SCALEBRIDGE_MACHINE_ID = "lab-pc"
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+
+    & ".\scripts\mlflow\start_local_tracking_server.ps1"
+
+Open:
+
+    http://127.0.0.1:5000
+
+
+6. WHAT THE CURRENT WINDOWS SERVER SCRIPT USES
+----------------------------------------------
+
+The current start_local_tracking_server.ps1 creates:
+
+    Backend database:
+        %LOCALAPPDATA%\ScaleBridge\mlflow\mlflow.db
+
+    Artifact root:
+        %SCALEBRIDGE_GENERATED_DATA_ROOT%\mlflow_artifacts
+
+    Tracking endpoint:
+        http://127.0.0.1:5000
+
+Machine identity is stored as MLflow metadata/tags. It is not used as a
+top-level MLflow artifact folder.
+
+The local SQLite backend is machine-local and should not be synchronized
+through Dropbox or committed to Git.
+
+The semantic artifact directory is shared under:
+
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>\mlflow_artifacts\<experiment-or-campaign>
+
+
+7. OPTIONAL NONDEFAULT PORT
+---------------------------
+
+To use another port:
+
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5001"
+
+    & ".\scripts\mlflow\start_local_tracking_server.ps1" `
+        -Port 5001
+
+The MLFLOW_TRACKING_URI value used by training or campaign commands must match
+the server port.
+
+
+8. VERIFY THE SERVER
+--------------------
+
+The PowerShell window should display values similar to:
+
+    ScaleBridge machine id: lab-pc
+    MLflow backend: ...\ScaleBridge\mlflow\mlflow.db
+    MLflow artifacts: ...\Data\ScaleBridge\mlflow_artifacts
+    MLflow endpoint: http://127.0.0.1:5000
+    ScaleBridge SSL certifi patch: 1
+
+Then open:
+
+    http://127.0.0.1:5000
+
+Leave the PowerShell window running while executing MLflow-tracked ScaleBridge
+commands in a second PowerShell window.
+
+
+9. SECOND POWERSHELL WINDOW
+---------------------------
+
+In every second PowerShell window used for a tracked run, set at least:
+
+    $env:SCALEBRIDGE_MACHINE_ID = "laptop"   # or home-pc / lab-pc
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+
+Also set the generated-data root:
+
+    $repoRoot = (Resolve-Path ".").Path
+    $env:SCALEBRIDGE_GENERATED_DATA_ROOT = `
+        (Resolve-Path (Join-Path $repoRoot "..\..\Data\ScaleBridge")).Path
+
+Activate the same ScaleBridge environment before running project scripts.
+
+
+10. STOP THE SERVER
+-------------------
+
+Return to the PowerShell window running MLflow and press:
+
+    Ctrl+C
+
+Do not close or delete the local backend database merely to stop the server.
+
+
+11. EXPORT MACHINE-LOCAL RUNS
+-----------------------------
+
+Example:
+
+    python scripts\mlflow\export_mlflow_runs.py `
+      --experiment-name "<experiment-name>" `
+      --machine-id "$env:SCALEBRIDGE_MACHINE_ID"
+
+Default export location:
+
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>\mlflow_exports\<machine-id>
+
+Examples:
+
+    ...\mlflow_exports\laptop
+    ...\mlflow_exports\home-pc
+    ...\mlflow_exports\lab-pc
+
+
+12. MERGE EXPORTED RUNS
+-----------------------
+
+After the per-machine export folders are synchronized into the generated-data
+root:
+
+    python scripts\mlflow\merge_mlflow_exports.py
+
+Default merged registry:
+
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>\experiment_registry
+
+
+13. KAMIAK MACHINE ID
+---------------------
+
+Use:
+
+    export SCALEBRIDGE_MACHINE_ID="kamiak"
+
+Kamiak does not use the Windows PowerShell startup script. Its MLflow backend
+and server/SQLite command should be configured separately for the active HPC
+job or login-session workflow. Keep the same semantic rules:
+
+    machine_id = kamiak
+    machine identity is metadata
+    generated artifacts remain outside the Git repository
+    export runs into mlflow_exports/kamiak
+
+
+14. QUICK REFERENCE
+-------------------
+
+Laptop:
+
+    $env:SCALEBRIDGE_MACHINE_ID = "laptop"
+
+Home PC:
+
+    $env:SCALEBRIDGE_MACHINE_ID = "home-pc"
+
+Lab PC:
+
+    $env:SCALEBRIDGE_MACHINE_ID = "lab-pc"
+
+Kamiak:
+
+    export SCALEBRIDGE_MACHINE_ID="kamiak"
+
+Windows local tracking URI:
+
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+
+Windows startup command:
+
+    & ".\scripts\mlflow\start_local_tracking_server.ps1"
+
+MLflow browser:
+
+    http://127.0.0.1:5000
+
+
+15. IMPORTANT RULES
+-------------------
+
+    - Start one local MLflow server per machine.
+    - Use one stable SCALEBRIDGE_MACHINE_ID per physical machine.
+    - Do not synchronize the machine-local SQLite backend.
+    - Do not commit MLflow databases or artifacts to Git.
+    - Keep full Phase C filesystem manifests as the authoritative record.
+    - Use MLflow for searchable experiment metadata, metrics, and compact
+      artifacts.
+    - Export each machine's runs and merge the exports for cross-machine review.

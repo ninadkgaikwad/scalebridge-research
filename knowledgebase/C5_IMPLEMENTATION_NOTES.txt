@@ -1,0 +1,39 @@
+ScaleBridge Stage C5 — Heat-Input Regression Model API
+======================================================
+
+Scope
+-----
+C5 implements reusable scalar regression estimators and their persistence/inference
+contract. It does not orchestrate the 30-model smoke campaign; that remains C6.
+
+Files
+-----
+src/scalebridge/models/heat_input_regression/base.py
+    Abstract API, input validation, fitted-state contract, and fit-summary schema.
+
+src/scalebridge/models/heat_input_regression/linear_closed_form.py
+    Deterministic scalar OLS/ridge estimator with optional intercept.
+
+src/scalebridge/models/heat_input_regression/linear_pytorch.py
+    Deterministic PyTorch/Adam scalar linear estimator with optional intercept.
+
+src/scalebridge/models/heat_input_regression/factory.py
+    Creates estimators from stable string identifiers.
+
+src/scalebridge/models/heat_input_regression/serialization.py
+    Loads a saved artifact by reading its estimator type from model_manifest.json.
+
+src/scalebridge/models/heat_input_regression/inference.py
+    Thin single-value and batch inference helpers.
+
+scripts/heat_input_regression/validate_heat_input_regression_model_api.py
+    Synthetic numerical, API, persistence, error-contract, and optional C4 compatibility
+    validation. This is a validator, not the campaign trainer.
+
+Artifact format
+---------------
+Each fitted model writes a versioned model_manifest.json containing estimator type,
+model ID, hyperparameters, coefficient, intercept, fit summary, and caller metadata.
+Because the current estimators are scalar linear models, this JSON is sufficient and
+portable. A later nonlinear estimator may add a binary state file while retaining the
+same manifest contract.

@@ -3,8 +3,8 @@
 **Repository:** `scalebridge-research`  
 **Python package:** `scalebridge`  
 **Project context:** PhD_Code_Framework / ScaleBridge research software stack  
-**Primary current focus:** P1 compact EnergyPlus generation completed; Stage B aggregation now supports a 5-level custom aggregation ladder, exact matrix execution, memory-safe System Node Mass Flow Rate streaming, and one-parquet-at-a-time aggregation; next execution is the full 240-plan compact aggregation matrix  
-**Current date context:** July 2026  
+**Primary current focus:** Stage A generation and the complete 240-object Stage B aggregation matrix are validated. Phase C C1–C9 is now fully availability-aware and end-to-end validated on the controlled laptop campaign, including CUDA `pytorch_linear` training, full-year inference, hierarchical MLflow registration, and runtime-derived C9 task-count validation. The immediate execution target is the unrestricted main Phase C lab-PC campaign with MLflow enabled and separate validators disabled. Phase D canonical thermal-model dataset assembly follows and must consume per-zone component-availability metadata rather than assuming that every zone has every People, Lights, equipment, QAC, or PHVAC model.  
+**Current date context:** August 2, 2026  
 
 ScaleBridge is a professional research-software framework for scalable building thermal modeling, EnergyPlus data generation, one-zone commercial building datasets, grey-box and Bayesian estimation, scientific machine learning, PyTorch baselines, MLflow experiment tracking, automated hyperparameter tuning, and later building-grid co-simulation and control experiments.
 
@@ -16,7 +16,7 @@ The repository is being developed to support the PhD paper/dissertation workflow
 
 ## 1. Current Development Snapshot
 
-The current validated milestones are **Stage A: P1 compact EnergyPlus variable-wise generation** and **Stage B: multi-level custom aggregation through the full 16-case L1 equal smoke run**.
+The current validated milestones are **Stage A: P1 compact EnergyPlus variable-wise generation**, **Stage B: the complete 240-object multi-level aggregation matrix**, and **Phase C: a fully validated C1–C8 QAC/PHVAC smoke campaign with all validators enabled**. C9 MLflow registration is implemented and had passed an earlier smoke registration, but the latest authoritative run intentionally stopped at C8 with MLflow disabled so the computational pipeline could be validated independently.
 
 The validated full compact campaign is:
 
@@ -64,9 +64,13 @@ The latest validated code state includes:
 - Pre-opyplus IDF normalization for `ApartmentMidRise`
 - Full compact 4-building x 4-climate lab-PC campaign validation
 
-The next major execution stage is the **full 240-plan Stage B aggregation matrix** on `p1_compact_4b4c_labpc_1w_v1`, using exact matrix plan selection, one-parquet-at-a-time aggregation, memory-safe system-node mass-flow streaming, legacy pickle writing, and MLflow tracking/export/merge.
+The complete **240-plan Stage B aggregation matrix** on `p1_compact_4b4c_labpc_1w_v1` has been completed and validated. The next campaign execution is unrestricted Phase C heat-input regression on lab-PC, followed by Phase D canonical thermal-model dataset assembly.
 
 ---
+
+
+> **Authoritative status note — July 31, 2026:** Sections describing Stage B as pending are historical development records. The full Stage B matrix completed with **240/240 successful aggregation objects and 0 failures**. The latest authoritative Phase C test is `phase_c_qac_phvac_test_20260727_200800`: C1–C8 completed with **17/17 commands passed**, **33/33 datasets, models, and evaluations passed**, **3/3 full-year inference zones passed**, and all C2/C3/C4/C6/C7/C8 validators passed. C9 MLflow registration remains implemented but was intentionally excluded from this run.
+
 
 ## 2. Repository Purpose
 
@@ -1889,3 +1893,2272 @@ python scripts\mlflow\export_mlflow_runs.py `
 python scripts\mlflow\merge_mlflow_exports.py
 ```
 
+
+
+---
+
+## 42. July 2026 Four-Machine Environment Rebuild and Validation
+
+This section is the authoritative environment record for the current ScaleBridge development stack. It supersedes older generic references to a single `scalebridge-dev-gpu` environment and supersedes the earlier statement that the final Kamiak validation used an H100. The final validated Kamiak rebuild ran on an **NVIDIA A100-PCIE-40GB** compute node.
+
+### 42.1 Environment architecture
+
+ScaleBridge now uses a two-layer environment strategy on every machine:
+
+```text
+Layer 1: Conda-managed scientific/system foundation
+Layer 2: pip-managed GPU and project-specific overlay
+Layer 3: editable ScaleBridge repository install
+```
+
+The design goals are:
+
+- Preserve the old `scalebridge-dev-gpu` environments until the new environments pass.
+- Create a new machine-specific environment instead of mutating the historical environment.
+- Use Conda for the broad compiled scientific stack and platform-specific native libraries.
+- Use pip for the exact PyTorch CUDA wheel set and packages that were unavailable, more reliable, or intentionally controlled through pip.
+- Install `scalebridge` in editable mode from the current repository.
+- Validate imports, dependency consistency, CUDA visibility, and optimization solvers before accepting an environment.
+- Export machine-specific lock files after validation.
+- Keep environment folders and large lock artifacts outside Git.
+
+### 42.2 Final environment names and machine roles
+
+| Machine | Final environment | Primary role | Validated GPU |
+|---|---|---|---|
+| Laptop | `scalebridge-dev-gpu-laptop` | Primary development, planning, small tests | NVIDIA GeForce MX150 |
+| Home PC | `scalebridge-dev-gpu-homepc` | Windows GPU compute and medium smoke tests | NVIDIA GeForce GTX 1050 Ti |
+| Lab PC | `scalebridge-dev-gpu-labpc` | Main Windows generation/aggregation compute target | NVIDIA RTX A4000 |
+| Kamiak | `/home/ninad.gaikwad/conda_envs/scalebridge-dev-gpu-kamiak` | SLURM GPU training and large compute | NVIDIA A100-PCIE-40GB |
+
+Historical environments were not overwritten during development. On Windows, the original `scalebridge-dev-gpu` environment was preserved. On Kamiak, the original environment remained at:
+
+```text
+/home/ninad.gaikwad/conda_envs/scalebridge-dev-gpu
+```
+
+Temporary Kamiak test environments were removed after they were no longer needed:
+
+```text
+/home/ninad.gaikwad/conda_envs/scalebridge-torch-gpu-test-cu118
+/home/ninad.gaikwad/conda_envs/scalebridge-torch-gpu-test-pip-cu118
+```
+
+### 42.3 Common validated software baseline
+
+The three Windows environments share the following validated core:
+
+```text
+Python              3.10.20
+NumPy               1.26.3
+SciPy               1.15.2
+pandas              2.3.3
+scikit-learn        1.7.2
+matplotlib          3.10.9
+seaborn             0.13.2
+PyArrow             23.0.1
+
+PyTorch             2.5.1+cu118
+Torchvision         0.20.1+cu118
+Torchaudio          2.5.1+cu118
+CUDA runtime        11.8
+Pillow              12.2.0
+
+MLflow              3.13.0
+Optuna              4.9.0
+CVXPY               1.7.5
+Pyomo               6.10.1
+CasADi              3.7.2
+opyplus             2.0.7
+python-slugify      5.0.2
+text-unidecode      1.3
+Unidecode           1.4.0
+ScaleBridge         0.1.0 editable
+```
+
+The final Kamiak environment validated:
+
+```text
+Python              3.10.12
+NumPy               2.2.6
+PyTorch             2.5.1+cu118
+Torchvision         0.20.1+cu118
+Torchaudio          2.5.1+cu118
+CUDA runtime        11.8
+Pillow              12.2.0
+MLflow              3.13.0
+Optuna              4.9.0
+CVXPY               1.7.5
+CasADi              3.7.2
+opyplus             2.0.7
+Gymnasium           1.2.3
+Stable-Baselines3   2.8.0
+ScaleBridge         0.1.0 editable
+GPU                  NVIDIA A100-PCIE-40GB
+```
+
+The Linux NumPy version differs from Windows because the Kamiak environment was reconstructed from a Linux-native explicit lock and portable pip overlay. This difference is accepted because the environment passed its import, dependency, CUDA, CVXPY, and CasADi validation suite.
+
+### 42.4 Windows Conda foundation
+
+The Windows environments were created from the laptop's validated explicit Conda lock:
+
+```text
+..\Environments\locks\windows\laptop\conda-explicit-spec.txt
+```
+
+Example environment creation:
+
+```powershell
+conda create --name scalebridge-dev-gpu-labpc `
+  --file "..\Environments\locks\windows\laptop\conda-explicit-spec.txt"
+```
+
+or in CMD:
+
+```cmd
+conda create --name scalebridge-dev-gpu-homepc --file "..\Environments\locks\windows\laptop\conda-explicit-spec.txt"
+```
+
+The Conda layer includes the compiled scientific stack, OpenBLAS, MLflow, Optuna, CVXPY, Pyomo, GIS/plotting dependencies, and related native libraries.
+
+Validated Windows numerical backend:
+
+```text
+_openmp_mutex  4.5  20_gnu
+libopenblas    0.3.32 pthreads
+libblas        3.11.0 openblas
+libcblas       3.11.0 openblas
+liblapack      3.11.0 openblas
+```
+
+Do not use:
+
+```text
+KMP_DUPLICATE_LIB_OK=TRUE
+```
+
+That variable masks OpenMP conflicts rather than fixing the environment and is not part of the validated configuration.
+
+### 42.5 Exact PyTorch CUDA overlay
+
+PyTorch was intentionally installed through pip on all machines using the CUDA 11.8 wheel index:
+
+```powershell
+python -m pip install `
+  torch==2.5.1+cu118 `
+  torchvision==0.20.1+cu118 `
+  torchaudio==2.5.1+cu118 `
+  --index-url https://download.pytorch.org/whl/cu118
+```
+
+CMD equivalent:
+
+```cmd
+python -m pip install torch==2.5.1+cu118 torchvision==0.20.1+cu118 torchaudio==2.5.1+cu118 --index-url https://download.pytorch.org/whl/cu118
+```
+
+Linux/Kamiak equivalent:
+
+```bash
+"$TARGET_ENV/bin/python" -m pip install \
+  torch==2.5.1+cu118 \
+  torchvision==0.20.1+cu118 \
+  torchaudio==2.5.1+cu118 \
+  --index-url https://download.pytorch.org/whl/cu118
+```
+
+This isolates the exact GPU framework version from the Conda solver and gives the same PyTorch/CUDA runtime combination across all four machines.
+
+### 42.6 Windows Pillow DLL workaround
+
+The Conda Pillow 12.2.0 build caused a Windows DLL/import-order issue when Torch was imported before Torchvision/Pillow. The validated fix was to replace the Conda-installed Pillow package with the official pip wheel of the same version:
+
+```powershell
+python -m pip install --force-reinstall --no-deps pillow==12.2.0
+```
+
+This was required on laptop, home PC, and lab PC. It is a Windows-specific binary compatibility workaround and was not required on Kamiak.
+
+Validation must preserve the torch-first order:
+
+```python
+import torch
+import torchvision
+import torchaudio
+import PIL
+```
+
+The accepted Windows result is:
+
+```text
+PyTorch: 2.5.1+cu118
+Torchvision: 0.20.1+cu118
+Torchaudio: 2.5.1+cu118
+Pillow: 12.2.0
+CUDA available: True
+```
+
+### 42.7 pip-only package overlay
+
+The following packages were deliberately installed through pip after the Conda foundation:
+
+```text
+casadi==3.7.2
+opyplus==2.0.7
+python-slugify==5.0.2
+text-unidecode==1.3
+Unidecode==1.4.0
+```
+
+Windows command:
+
+```powershell
+python -m pip install --no-deps `
+  casadi==3.7.2 `
+  opyplus==2.0.7 `
+  python-slugify==5.0.2 `
+  text-unidecode==1.3 `
+  Unidecode==1.4.0
+```
+
+`--no-deps` was used because the dependency foundation was already controlled through the Conda lock, and reinstalling transitive dependencies through pip could destabilize compiled packages.
+
+Kamiak additionally used a generated portable pip overlay derived from the existing validated Linux environment:
+
+```text
+/home/ninad.gaikwad/projects/Environments/locks/kamiak/pip-portable-requirements.txt
+```
+
+The portable overlay intentionally excluded:
+
+```text
+torch
+torchvision
+torchaudio
+triton
+nvidia-*
+scalebridge
+pip
+wheel
+```
+
+PyTorch and its NVIDIA runtime packages were installed from the CUDA 11.8 wheel index. ScaleBridge was installed editable from the repository. Packaging tools were bootstrapped separately.
+
+### 42.8 Editable ScaleBridge installation
+
+Every final environment installs the repository in editable mode:
+
+```powershell
+python -m pip install --no-deps -e .
+```
+
+Validated Windows paths:
+
+```text
+Laptop:
+  <laptop repo>\src\scalebridge\__init__.py
+
+Home PC:
+  D:\Dropbox (Personal)\NinadGaikwad_PhD\Gaikwad_Research\
+  From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\
+  scalebridge-research\src\scalebridge\__init__.py
+
+Lab PC:
+  F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\
+  From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\
+  scalebridge-research\src\scalebridge\__init__.py
+```
+
+Validated Kamiak path:
+
+```text
+/home/ninad.gaikwad/projects/scalebridge-research/src/scalebridge/__init__.py
+```
+
+Editable installation means source-code changes in the repository are immediately visible to the active environment without rebuilding a wheel.
+
+### 42.9 Dependency and import validation
+
+Every accepted environment passed:
+
+```text
+python -m pip check
+```
+
+Expected result:
+
+```text
+No broken requirements found.
+```
+
+The consolidated validation imports:
+
+```python
+import numpy
+import scipy
+import pandas
+import sklearn
+import matplotlib
+import seaborn
+import torch
+import torchvision
+import torchaudio
+import PIL
+import pyarrow
+import mlflow
+import optuna
+import cvxpy
+import pyomo.environ
+import casadi
+import opyplus
+import scalebridge
+```
+
+Kamiak additionally validated:
+
+```python
+import gymnasium
+import stable_baselines3
+import neuromancer
+```
+
+### 42.10 Optimization solver validation
+
+CVXPY was tested with:
+
+```python
+x = cp.Variable()
+problem = cp.Problem(cp.Minimize((x - 3) ** 2), [x >= 0])
+problem.solve()
+```
+
+Accepted result:
+
+```text
+status = optimal
+x = 3.0
+objective = 0.0
+```
+
+Lab-PC installed CVXPY solvers:
+
+```text
+CLARABEL
+ECOS
+ECOS_BB
+OSQP
+SCIPY
+SCS
+```
+
+CasADi's bundled IPOPT was tested on Windows and Kamiak with:
+
+```python
+x = ca.MX.sym("x")
+nlp = {"x": x, "f": (x - 3) ** 2}
+solver = ca.nlpsol(
+    "solver",
+    "ipopt",
+    nlp,
+    {"ipopt.print_level": 0, "print_time": 0},
+)
+solution = solver(x0=0)
+```
+
+Accepted result:
+
+```text
+x = 3.0
+objective = 0.0
+```
+
+For Pyomo on Windows, an external AMPL-compatible Ipopt executable is required. The validated binary is:
+
+```text
+Ipopt 3.10.1
+Microsoft cl 15.00.21022.08 for x64
+ASL(20111018)
+```
+
+Validated path:
+
+```text
+C:\software\Ipopt-3.10.1-win64-intel11.1\bin\ipopt.exe
+```
+
+The archive is stored outside the repository in the shared external environment tree:
+
+```text
+..\Environments\software\Ipopt-3.10.1-win64-intel11.1.zip
+```
+
+The lab-PC user `PATH` was updated to include:
+
+```text
+C:\software\Ipopt-3.10.1-win64-intel11.1\bin
+```
+
+Validated Pyomo result on laptop and lab PC:
+
+```text
+Available: True
+Status: ok
+Termination: optimal
+x: 3.0
+objective: 0.0
+```
+
+The home-PC environment passed import and dependency validation, but an external Pyomo-Ipopt solve was not separately recorded during this rebuild. CasADi and CVXPY remain available through the environment.
+
+### 42.11 Lock-file policy
+
+Each machine has three final environment records:
+
+```text
+conda-explicit-spec.txt
+conda-env-export.yml
+pip-freeze.txt
+```
+
+Purpose:
+
+| File | Purpose |
+|---|---|
+| `conda-explicit-spec.txt` | Exact platform-specific Conda artifact URLs and builds; strongest same-platform reproduction |
+| `conda-env-export.yml` | Human-readable environment specification without build pins |
+| `pip-freeze.txt` | Complete installed Python distribution record, including pip-installed packages |
+
+Windows external lock layout:
+
+```text
+..\Environments\locks\windows\
+  laptop\
+    conda-explicit-spec.txt
+    conda-env-export.yml
+    pip-freeze.txt
+  home_pc\
+    conda-explicit-spec.txt
+    conda-env-export.yml
+    pip-freeze.txt
+  lab_pc\
+    conda-explicit-spec.txt
+    conda-env-export.yml
+    pip-freeze.txt
+```
+
+Kamiak external lock layout:
+
+```text
+/home/ninad.gaikwad/projects/Environments/locks/
+  kamiak/
+    conda-explicit-spec.txt
+    conda-env-export.yml
+    pip-freeze.txt
+    pip-portable-requirements.txt
+  kamiak_gpu_full/
+    conda-explicit-spec.txt
+    conda-env-export.yml
+    pip-freeze.txt
+```
+
+The `kamiak` directory contains the source/bootstrap records derived from the original Linux environment. The `kamiak_gpu_full` directory contains the final rebuilt and validated environment locks.
+
+### 42.12 UTF-8 BOM issue and lock export
+
+PowerShell `Out-File -Encoding utf8` on older Windows PowerShell versions writes a UTF-8 BOM. Conda explicit files with a BOM can fail because the first line is no longer parsed correctly.
+
+The original Windows lock files were rewritten as UTF-8 without BOM. Older Windows PowerShell also does not recognize:
+
+```text
+-Encoding utf8NoBOM
+```
+
+Therefore, all three Windows lock files should be exported through Python:
+
+```powershell
+python -c "import subprocess, pathlib; out=pathlib.Path(r'..\Environments\locks\windows\lab_pc'); out.mkdir(parents=True, exist_ok=True); cmds={'conda-explicit-spec.txt':['conda','list','--explicit'],'conda-env-export.yml':['conda','env','export','--no-builds'],'pip-freeze.txt':['python','-m','pip','freeze']}; [(out/name).write_text(subprocess.check_output(cmd, text=True), encoding='utf-8', newline='\n') for name,cmd in cmds.items()]"
+```
+
+Use the corresponding output directory for `laptop`, `home_pc`, or `lab_pc`.
+
+Bash redirection on Kamiak did not introduce the Windows BOM problem:
+
+```bash
+conda list --prefix "$TARGET_ENV" --explicit \
+  > "$FINAL_LOCK/conda-explicit-spec.txt"
+
+conda env export --prefix "$TARGET_ENV" --no-builds \
+  > "$FINAL_LOCK/conda-env-export.yml"
+
+"$TARGET_ENV/bin/python" -m pip freeze \
+  > "$FINAL_LOCK/pip-freeze.txt"
+```
+
+### 42.13 Important pip-freeze limitation
+
+Conda-installed Python packages can appear in `pip freeze` as build-machine URLs such as:
+
+```text
+file:///home/conda/feedstock_root/build_artifacts/...
+file:///D:/bld/...
+file:///C:/bld/...
+```
+
+These paths are not portable and must not be installed wholesale with:
+
+```text
+pip install -r pip-freeze.txt
+```
+
+The authoritative reconstruction order is:
+
+```text
+1. Conda explicit lock for the platform
+2. exact PyTorch CUDA pip wheels
+3. controlled pip-only overlay
+4. editable ScaleBridge install
+5. validation
+```
+
+`pip-freeze.txt` is an audit record, not the primary all-in-one installer.
+
+### 42.14 Kamiak module and SLURM requirements
+
+The login node is for inspection and job submission only. Heavy environment creation and GPU validation must run through SLURM.
+
+Required modules:
+
+```bash
+module purge
+module load StdEnv
+module load miniconda3/3.10
+module load cuda/11.8.0
+```
+
+Validated Conda executable:
+
+```text
+/opt/apps/miniconda3/3.10/bin/conda
+```
+
+SLURM account and partition:
+
+```text
+account: dubey
+partition: vcea
+qos: normal
+GPU node used: sn14
+```
+
+Validated module availability:
+
+```text
+miniconda3/3.10 requires StdEnv
+cuda/11.8.0 is available
+```
+
+External Kamiak environment tree:
+
+```text
+/home/ninad.gaikwad/projects/
+  scalebridge-research/
+  Environments/
+    locks/
+    logs/
+    scripts/
+    software/
+```
+
+The external `Environments` directory is intentionally outside the Git repository and mirrors the Windows external environment organization.
+
+### 42.15 Kamiak environment-build script
+
+Authoritative script:
+
+```text
+/home/ninad.gaikwad/projects/Environments/scripts/create_scalebridge_kamiak_env.sbatch
+```
+
+Primary target:
+
+```text
+/home/ninad.gaikwad/conda_envs/scalebridge-dev-gpu-kamiak
+```
+
+The script performs:
+
+```text
+1. Allocate a vcea Tesla GPU through SLURM.
+2. Load StdEnv, miniconda3/3.10, and cuda/11.8.0.
+3. Recreate the Linux Conda foundation from the explicit lock.
+4. Bootstrap pip without a full Conda re-solve.
+5. Install exact PyTorch 2.5.1 CUDA 11.8 wheels.
+6. Install the portable Linux pip overlay.
+7. Install ScaleBridge editable.
+8. Run pip check.
+9. Run the full import/CUDA validation.
+10. Run CVXPY and CasADi-IPOPT tests.
+11. Export final Kamiak locks.
+```
+
+Final successful SLURM job:
+
+```text
+job_id: 27929819
+state: COMPLETED
+exit_code: 0:0
+elapsed: 00:05:03
+node: sn14
+GPU observed by PyTorch: NVIDIA A100-PCIE-40GB
+```
+
+### 42.16 Kamiak failure history and fixes
+
+The first submission failed immediately because the SLURM output/error directory did not exist before SLURM attempted to open the files. A script cannot create its own log directory after SLURM has already tried to open the output path.
+
+Fix:
+
+```bash
+mkdir -p /home/ninad.gaikwad/projects/Environments/logs
+```
+
+The next build recreated the explicit Conda layer but failed because the target environment did not contain a usable `pip` module:
+
+```text
+No module named pip
+```
+
+A subsequent script revision attempted:
+
+```bash
+conda install --prefix "$TARGET_ENV" pip setuptools wheel
+```
+
+That forced Conda 23.3.1 to re-solve the large environment, fell back from frozen to flexible solving, and ran for over an hour.
+
+That job was canceled. The partial target environment was removed, and the packaging-tools block was replaced with:
+
+```bash
+"$TARGET_ENV/bin/python" -m ensurepip --upgrade
+"$TARGET_ENV/bin/python" -m pip install --upgrade \
+  pip==26.1.2 \
+  setuptools==83.0.0 \
+  wheel==0.47.0
+```
+
+This avoided a second full Conda solve. The final job completed in approximately five minutes.
+
+### 42.17 Machine-specific operational notes
+
+#### Laptop
+
+```text
+Environment: scalebridge-dev-gpu-laptop
+GPU: NVIDIA GeForce MX150
+Use: development, code review, small validation
+Data policy: Dropbox-generated data should remain online-only when space is limited
+```
+
+#### Home PC
+
+```text
+Environment: scalebridge-dev-gpu-homepc
+GPU: NVIDIA GeForce GTX 1050 Ti
+Repository shell used during rebuild: CMD
+Use: medium compute and smoke testing
+Lock export: Python-based UTF-8-no-BOM writer
+```
+
+#### Lab PC
+
+```text
+Environment: scalebridge-dev-gpu-labpc
+GPU: NVIDIA RTX A4000
+Repository root:
+  F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\
+  From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\
+  scalebridge-research
+Use: primary Windows generation and aggregation
+MLflow and EnergyPlus scratch policy: use D: drive to avoid C: space exhaustion
+External Ipopt: validated and added to user PATH
+```
+
+#### Kamiak
+
+```text
+Environment:
+  /home/ninad.gaikwad/conda_envs/scalebridge-dev-gpu-kamiak
+Repository:
+  /home/ninad.gaikwad/projects/scalebridge-research
+GPU validation:
+  NVIDIA A100-PCIE-40GB
+Execution model:
+  login node for light inspection/submission only
+  SLURM sbatch for environment creation and GPU validation
+```
+
+### 42.18 Rebuild acceptance checklist
+
+An environment is accepted only after all applicable checks pass:
+
+```text
+[ ] New environment has a machine-specific name/prefix.
+[ ] Historical environment remains untouched until validation passes.
+[ ] Conda foundation installs successfully.
+[ ] Exact PyTorch 2.5.1+cu118 stack installs successfully.
+[ ] Windows Pillow pip-wheel override is applied.
+[ ] Controlled pip-only overlay installs.
+[ ] ScaleBridge editable path points to the current repository.
+[ ] python -m pip check reports no broken requirements.
+[ ] Consolidated scientific/ML imports pass.
+[ ] torch.cuda.is_available() is True on a GPU machine.
+[ ] CUDA runtime reports 11.8.
+[ ] Expected GPU is visible.
+[ ] CVXPY solve passes.
+[ ] CasADi IPOPT solve passes.
+[ ] Pyomo external Ipopt passes where configured.
+[ ] Machine-specific locks are exported.
+[ ] Lock files are UTF-8 without BOM.
+[ ] Final paths and machine details are recorded.
+```
+
+### 42.19 Environment status summary
+
+As of the final July 2026 rebuild:
+
+```text
+Laptop environment: complete
+Home-PC environment: complete
+Lab-PC environment: complete
+Kamiak environment: complete
+
+Windows pip check: passed
+Kamiak pip check: passed
+Windows CUDA validation: passed
+Kamiak CUDA validation: passed
+CVXPY validation: passed
+CasADi IPOPT validation: passed
+Pyomo external Ipopt: passed on laptop and lab PC
+Machine-specific locks: exported
+```
+
+---
+
+## 43. July 26, 2026 Authoritative Stage B Completion Record
+
+The compact P1 Stage B aggregation campaign is complete and is the fixed upstream source for Phase C.
+
+```text
+campaign_id: p1_compact_4b4c_labpc_1w_v1
+matrix_run_id: aggregation_matrix_20260712_215839
+building-weather cases: 16
+aggregation levels: 5
+weight modes: 3
+selected aggregation objects: 240
+successful aggregation objects: 240
+failed aggregation objects: 0
+```
+
+Matrix definition:
+
+```text
+4 buildings
+× 4 climates/weather cases
+× 5 aggregation levels
+× 3 aggregation weighting styles
+= 240 Phase B aggregation objects
+```
+
+The five aggregation levels are:
+
+```text
+p1_l01_all_to_one
+p1_l02_functional
+p1_l03_intermediate
+p1_l04_spatial_detailed
+p1_l05_identity
+```
+
+The three weighting modes are:
+
+```text
+equal
+floor_area
+volume
+```
+
+Stage B provides more than 240 physical zone outputs because each aggregation object can contain one or more aggregate zones. Phase C therefore discovers and processes aggregate zones, not merely the 240 plan rows.
+
+The Stage B matrix is memory-safe by design:
+
+- one aggregation plan is executed at a time;
+- normal variables are loaded one parquet at a time;
+- `System Node Mass Flow Rate` is streamed with PyArrow batches;
+- raw frames are deleted and garbage-collected between variables;
+- exact plan paths are selected by case, aggregation ID, and weight mode.
+
+The full Stage B matrix is now considered immutable upstream provenance for the first P1 Phase C/D/E campaign unless a documented re-aggregation is intentionally performed.
+
+---
+
+## 44. Phase C Purpose and Scientific Role
+
+Phase C learns intermediate heat-input models from Stage B aggregated EnergyPlus data.
+
+The main purpose is to reconstruct or predict heat-input components needed by downstream thermal models without requiring the thermal-model stage to reproduce every EnergyPlus internal-gain and HVAC calculation directly.
+
+The core mapping is:
+
+```text
+available aggregated predictors
+    → component-specific heat-input regression model
+    → persisted model
+    → full-year predicted heat-input component
+```
+
+Phase C outputs are not the final building thermal models. They are reusable learned input blocks for Phase D and Phase E.
+
+Downstream uses include:
+
+- assembling the complete thermal-model state/input/target table;
+- supplying component heat inputs to ANN/RNN/SciML thermal models;
+- supplying physically interpretable exogenous inputs to grey-box RC models;
+- enabling full-year inference with a common model artifact interface;
+- supporting future Gymnasium simulation and sensitivity workflows.
+
+Current component vocabulary observed in the validated smoke campaign includes:
+
+```text
+QSol1
+QSol2
+QZic_P
+QZir_P
+QZic_L
+QZir_L
+QZic_EE
+QZir_EE
+QZir_GE
+QZivr_L
+QAC
+```
+
+Not every aggregate zone has every component. Dataset and task counts are therefore discovered from available signals rather than hard-coded.
+
+---
+
+## 45. Phase C C1–C9 Pipeline
+
+The Phase C pipeline is organized into nine ordered stages.
+
+| Stage | Name | Responsibility |
+|---|---|---|
+| C1 | Aggregation readiness audit | Discover selected Stage B aggregation-zone outputs and verify required inputs |
+| C2 | Canonical feature construction | Build aligned full-year predictors and heat-input targets |
+| C3 | Split construction | Build train/validation/test assignments |
+| C4 | Model-dataset construction | Materialize one model-ready dataset per zone/component |
+| C5 | Model API validation | Validate estimator factory, persistence, reload, inference, and common API behavior |
+| C6 | Model training | Train and persist component regression models |
+| C7 | Persisted-model evaluation | Reload saved models and evaluate train/validation/test behavior |
+| C8 | Full-year component inference | Produce full-year component predictions by aggregate zone |
+| C9 | MLflow registration | Register parent, stage, training-task, evaluation-task, and inference-task runs |
+
+A single timestamp suffix is shared across all stages:
+
+```text
+phase_c_YYYYMMDD_HHMMSS
+
+heat_input_audit_YYYYMMDD_HHMMSS
+heat_input_features_YYYYMMDD_HHMMSS
+heat_input_splits_YYYYMMDD_HHMMSS
+heat_input_datasets_YYYYMMDD_HHMMSS
+c5_YYYYMMDD_HHMMSS
+c6_pytorch_YYYYMMDD_HHMMSS
+c7_pytorch_YYYYMMDD_HHMMSS
+c8_pytorch_YYYYMMDD_HHMMSS
+```
+
+This shared suffix is the primary provenance link across C1–C9.
+
+---
+
+## 46. Phase C Important Modules and Scripts
+
+Primary campaign runner:
+
+```text
+scripts/heat_input_regression/run_phase_c_campaign.py
+```
+
+Primary stage scripts:
+
+```text
+scripts/heat_input_regression/audit_aggregation_for_heat_input_regression.py
+scripts/heat_input_regression/build_heat_input_regression_features.py
+scripts/heat_input_regression/build_heat_input_regression_splits.py
+scripts/heat_input_regression/build_heat_input_regression_datasets.py
+scripts/heat_input_regression/validate_heat_input_regression_model_api.py
+scripts/heat_input_regression/train_heat_input_regression_models.py
+scripts/heat_input_regression/evaluate_heat_input_regression_models.py
+scripts/heat_input_regression/run_heat_input_regression_full_year_inference.py
+scripts/heat_input_regression/register_phase_c_run_with_mlflow.py
+scripts/heat_input_regression/validate_phase_c_mlflow_tracking.py
+```
+
+Reusable package areas developed during Phase C include:
+
+```text
+src/scalebridge/data/heat_input_regression/
+src/scalebridge/models/heat_input_regression/
+src/scalebridge/tracking/mlflow/
+```
+
+The implementation includes:
+
+- aggregation discovery and signal cataloging;
+- canonical time alignment;
+- HVAC target construction;
+- feature engineering;
+- split construction;
+- dataset manifests and validation;
+- estimator base/factory API;
+- closed-form linear estimator;
+- PyTorch linear estimator;
+- persisted inference;
+- evaluation metrics and artifacts;
+- full-year component inference;
+- hierarchical MLflow registration.
+
+The current production estimator for the P1 full campaign is:
+
+```text
+pytorch_linear
+```
+
+The validated Windows GPU stack is:
+
+```text
+torch: 2.5.1+cu118
+CUDA runtime: 11.8
+lab-PC GPU: NVIDIA RTX A4000
+```
+
+---
+
+## 47. Phase C Feature and Target Semantics
+
+Validated C2 defaults:
+
+```text
+internal_gain_predictor_method: aggregate_average
+hvac_target_method: signed_zone_sensible
+```
+
+C2 consumes Stage B zone-level outputs and constructs canonical aligned data keyed by:
+
+```text
+case_id
+aggregation_id
+weight_mode
+aggregate_zone_id
+timestamp
+```
+
+The feature builder preserves provenance back to:
+
+```text
+campaign_id
+matrix_run_id
+case_id
+source generation run
+aggregation run
+aggregation level
+weight mode
+source-zone grouping
+```
+
+Expected Phase D work must not discard this provenance.
+
+C3 validated split behavior:
+
+```text
+split_strategy: monthly_distributed_holdout
+train_fraction: 0.70
+validation_fraction: 0.15
+test_fraction: 0.15
+```
+
+The monthly distributed split is intended to distribute seasonal conditions across train, validation, and test rather than creating one single chronological tail holdout.
+
+Phase E may require additional sequence-aware windows or scenario-specific splits, but those must be derived from the canonical C3/Phase D records and recorded explicitly.
+
+---
+
+## 48. Phase C Estimator Contract
+
+All Phase C estimators must expose a common lifecycle:
+
+```text
+construct
+fit
+predict
+save
+load
+report metadata
+```
+
+Implemented estimator types:
+
+```text
+closed_form_linear
+pytorch_linear
+```
+
+The PyTorch linear model is the selected production model for the real P1 campaign.
+
+The estimator interface is designed so later regression methods can be added without changing C1–C4 or C7–C9. Potential future additions include:
+
+```text
+regularized linear regression
+small MLP
+monotonic or constrained regression
+probabilistic regression
+multi-output regression
+```
+
+These are not required before Phase D begins.
+
+---
+
+## 49. Phase C Output Layout
+
+Campaign-level orchestration output:
+
+```text
+<campaign_root>/
+  heat_input_regression/
+    campaign_runs/
+      <phase_c_run_id>/
+        phase_c_campaign_plan.json
+        phase_c_campaign_run_manifest.json
+        logs/
+          01_*.log
+          02_*.log
+          ...
+```
+
+Stage outputs:
+
+```text
+<campaign_root>/heat_input_regression/
+  audit_runs/<audit_run_id>/
+  feature_runs/<feature_run_id>/
+  split_runs/<split_run_id>/
+  dataset_runs/<dataset_run_id>/
+  model_api_validation/<c5_run_id>/
+  training_runs/<training_run_id>/
+  evaluation_runs/<evaluation_run_id>/
+  inference_runs/<inference_run_id>/
+  mlflow_registration_runs/<phase_c_run_id>/
+```
+
+Key manifests:
+
+```text
+heat_input_regression_audit_manifest.json
+heat_input_feature_run_manifest.json
+split_run_manifest.json
+dataset_run_manifest.json
+c5_model_api_validation_manifest.json
+training_run_manifest.json
+evaluation_run_manifest.json
+inference_run_manifest.json
+phase_c_mlflow_registration_manifest.json
+phase_c_campaign_run_manifest.json
+```
+
+Phase D should discover Phase C artifacts from these manifests. It should not reconstruct paths from assumptions when a manifest path is available.
+
+---
+
+## 50. Phase C Validation Modes
+
+The campaign runner supports:
+
+```text
+full
+some
+none
+```
+
+Meaning:
+
+```text
+full:
+    Run all available separate stage validators and final MLflow validation.
+
+some:
+    Run selected high-value validators for C2, C4, C6, C7, C8, and C9.
+
+none:
+    Run C1–C8 and C9 MLflow registration, but skip separate validator scripts.
+```
+
+Important nuance:
+
+- C5 remains part of the core pipeline even under `--validation none`.
+- Stage-internal assertions and failure handling remain active.
+- `--validation none` does not mean “ignore errors.”
+- MLflow registration remains enabled unless `--disable-mlflow` is supplied.
+- The C9 registration script has its own `--validation-mode` setting, exposed by the runner as `--mlflow-validation-mode`.
+
+For a truly no-separate-validation production run, use:
+
+```text
+--validation none
+--mlflow-validation-mode none
+```
+
+---
+
+## 51. Phase C Campaign Runner Development and Final Validation Fixes
+
+The campaign runner was developed after the individual C1–C9 scripts existed. It now provides:
+
+- required `--campaign-root` and optional exact `--matrix-run-id`;
+- automatic latest-successful matrix discovery when the matrix ID is omitted;
+- one shared timestamp suffix across C1–C9 artifacts;
+- `--start-stage` and `--stop-stage` resume controls;
+- `--validation full|some|none` profiles;
+- `--dry-run`, `--overwrite-existing`, and per-command logs;
+- adaptive `--help` inspection so historical CLI aliases can be resolved;
+- MLflow enabled by default unless `--disable-mlflow` is supplied.
+
+The final runner/validator repair sequence established these important contracts:
+
+1. **Source syntax validation**
+   - `validate_python_source_syntax.py` requires one `--paths` option followed by multiple paths.
+   - The runner now emits the full Phase C source/module/script path set correctly.
+
+2. **C3 validator provenance**
+   - The C3 validator requires `campaign_root`, `matrix_run_id`, `feature_run_id`, and `split_run_id`.
+   - Unsupported root aliases were removed.
+
+3. **C4 validator provenance**
+   - The C4 validator requires `campaign_root`, `matrix_run_id`, `audit_run_id`, `feature_run_id`, `split_run_id`, and `dataset_run_id`.
+
+4. **C6–C8 validator roots**
+   - C6 uses `--training-root`.
+   - C7 uses `--evaluation-root`.
+   - C8 uses `--inference-root`.
+
+5. **Canonical-aware C2 validator forwarding**
+   - The wrapper now accepts and forwards `campaign_root`, `matrix_run_id`, `audit_run_id`, and `feature_run_id` to the deterministic legacy validator.
+
+6. **C2 deterministic recomputation alignment**
+   - The validator canonicalizes the Stage B wide frame before recomputation, matching the builder.
+   - It passes the required `aggregate_zone_count` used by PHVAC feature construction.
+   - It checks canonical row counts and aggregate-zone-count consistency.
+
+7. **Canonical timestamp and duplicate coalescence checks**
+   - Separate validators verify annual 5-minute row counts, parsed timestamps, monotonic order, canonical cadence, duplicate removal, complementary-value coalescence, and absence of unresolved source conflicts.
+
+These fixes are part of the current validated source state and should not be reverted to the older feature-root-only validator interface.
+
+## 52. Authoritative Fully Validated Phase C QAC/PHVAC Smoke Campaign
+
+Controlled upstream campaign:
+
+```text
+campaign_id:
+p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+
+matrix_run_id:
+aggregation_matrix_20260715_114242
+```
+
+Authoritative completed run:
+
+```text
+phase_c_run_id: phase_c_qac_phvac_test_20260727_200800
+validation: full
+start_stage: C1
+stop_stage: C8
+estimator_type: pytorch_linear
+pytorch_device: cuda
+mlflow: disabled for this run
+selected aggregate zones: 3
+status: completed
+passed command count: 17
+failed command count: 0
+```
+
+Selected zones:
+
+```text
+RestaurantFastFood_All
+Dining
+Kitchen
+```
+
+The validated component vocabulary now includes PHVAC in addition to the earlier heat-input components:
+
+```text
+QSol1
+QSol2
+QZic_P
+QZir_P
+QZic_L
+QZir_L
+QZic_EE
+QZir_EE
+QZir_GE
+QZivr_L
+QAC
+PHVAC
+```
+
+Availability remains structurally zone-dependent. The authoritative run produced:
+
+```text
+RestaurantFastFood_All: 12 component datasets
+Dining:                11 component datasets
+Kitchen:               10 component datasets
+Total:                  33 component datasets
+```
+
+Validated results:
+
+```text
+C1 readiness audit:
+    successful zones: 3
+    failed zones: 0
+
+Source syntax validation:
+    checked files: 62
+    passed files: 62
+    failed files: 0
+
+C2 feature construction:
+    successful zones: 3
+    failed zones: 0
+    internal_gain_predictor_method: aggregate_average
+    hvac_target_method: signed_zone_sensible
+
+C2 deterministic/canonical-aware feature validation:
+    passed zones: 3
+    failed zones: 0
+
+C2 canonical timestamp validation:
+    annual rows per zone: 105120
+    unparsed timestamps: 0
+    duplicate timestamps after canonicalization: 0
+    timestamp monotonic: true
+    noncanonical cadence count: 0
+    passed zones: 3
+
+C2 timestamp coalescence validation:
+    missing source values after coalescence: 0
+    conflicting source values: 0
+    passed zones: 3
+
+C3 split construction:
+    split strategy: monthly_distributed_holdout
+    train/validation/test: 0.70/0.15/0.15
+    successful zones: 3
+    split validation passed zones: 3
+
+C4 dataset construction:
+    successful zones: 3
+    successful model datasets: 33
+    failed model datasets: 0
+
+C4 dataset validation:
+    passed model datasets: 33
+    failed model datasets: 0
+
+C5 model API validation:
+    checks: 224
+    passed: 224
+    failed: 0
+    estimators exercised: closed_form_linear and pytorch_linear[cpu]
+
+C6 CUDA training:
+    completed training tasks: 33
+    failed training tasks: 0
+    estimator: pytorch_linear
+    requested device: cuda
+
+C6 training validation:
+    passed artifacts: 33
+    failed artifacts: 0
+
+C7 persisted-model evaluation:
+    completed evaluations: 33
+    failed evaluations: 0
+
+C7 evaluation validation:
+    passed artifacts: 33
+    failed artifacts: 0
+
+C8 full-year inference:
+    completed zones: 3
+    failed zones: 0
+    inferred component counts: 12, 11, and 10
+
+C8 inference validation:
+    passed artifacts: 3
+    failed artifacts: 0
+```
+
+Campaign manifest:
+
+```text
+<campaign_root>/heat_input_regression/campaign_runs/
+phase_c_qac_phvac_test_20260727_200800/
+phase_c_campaign_run_manifest.json
+```
+
+This run is the authoritative computational validation of Phase C C1–C8. It supersedes the older 30-model smoke as the primary development record.
+
+## 53. Phase C Sequential Execution and Memory Policy
+
+The campaign runner launches one stage subprocess at a time:
+
+```text
+C1 completes
+→ C2 completes
+→ C3 completes
+→ C4 completes
+→ C5 completes
+→ C6 completes
+→ C7 completes
+→ C8 completes
+→ C9 completes
+```
+
+Within validated stage scripts, work is also iterated sequentially:
+
+```text
+C1: one aggregation zone at a time
+C2: one aggregation zone at a time
+C3: one aggregation zone at a time
+C4: one aggregation zone, then one component dataset at a time
+C6: one model dataset at a time
+C7: one persisted model at a time
+C8: one aggregate zone at a time
+C9: one MLflow run registration at a time
+```
+
+The design does not place all 240 Stage B objects, all aggregate zones, or all component models into GPU memory simultaneously.
+
+Expected memory scaling is approximately with the largest current zone/model dataset plus stage-local intermediates, rather than the full campaign.
+
+Highest-risk memory stages are:
+
+```text
+C2: full-year feature construction
+C4: model-dataset materialization
+C6: CPU/GPU tensor conversion and training
+C8: full-year inference output assembly
+```
+
+Phase D must preserve this streaming/sequential philosophy. It should not concatenate the entire campaign into one in-memory pandas dataframe.
+
+---
+
+## 54. Phase C MLflow Status and Full P1 Lab-PC Execution
+
+### Latest authoritative test-run MLflow status
+
+The fully validated run `phase_c_qac_phvac_test_20260727_200800` intentionally used:
+
+```text
+--disable-mlflow
+--stop-stage C8
+```
+
+This isolated C1–C8 pipeline correctness from tracking registration while the runner and validators were being repaired. Therefore:
+
+```text
+C1–C8 for the latest run: fully validated
+C9 for the latest run: not executed
+```
+
+C9 is still implemented, and an earlier 30-model smoke run successfully registered the expected Phase C parent/stage/task hierarchy. That earlier MLflow result is retained as historical evidence, but it must not be reported as the C9 result for the latest 33-model run.
+
+### Full P1 Phase C target
+
+Validated lab-PC environment:
+
+```text
+environment: scalebridge-dev-gpu-labpc
+machine_id: lab-pc
+generated data root:
+F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge
+MLflow tracking URI: http://127.0.0.1:5000
+GPU: NVIDIA RTX A4000
+```
+
+Full upstream campaign:
+
+```text
+campaign_id: p1_compact_4b4c_labpc_1w_v1
+matrix_run_id: aggregation_matrix_20260712_215839
+Stage B aggregation objects: 240/240 successful
+```
+
+The full campaign should first be dry-run with the corrected runner, then executed without limits. For a full validation run without C9:
+
+```powershell
+$CampaignRoot = "$env:SCALEBRIDGE_GENERATED_DATA_ROOT\campaigns\p1_compact_4b4c_labpc_1w_v1"
+$MatrixRunId = "aggregation_matrix_20260712_215839"
+$Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$PhaseCRunId = "phase_c_p1_full_$Timestamp"
+
+python `
+  ".\scripts\heat_input_regression\run_phase_c_campaign.py" `
+  --campaign-root "$CampaignRoot" `
+  --matrix-run-id "$MatrixRunId" `
+  --phase-c-run-id "$PhaseCRunId" `
+  --start-stage C1 `
+  --stop-stage C8 `
+  --validation full `
+  --estimator-type pytorch_linear `
+  --pytorch-device cuda `
+  --disable-mlflow `
+  --overwrite-existing
+```
+
+After C1–C8 passes, C9 should be run or resumed with the same Phase C run ID and MLflow enabled. Do not claim the unrestricted full Phase C campaign complete until its final campaign manifest and, when used, C9 registration manifest have been inspected.
+
+Do not use these limits for the unrestricted campaign:
+
+```text
+--max-zones
+--max-model-datasets
+--max-artifacts
+```
+
+The final Phase C model count is not 240. It is the sum of all available component datasets over all discovered aggregate zones.
+
+## 55. Phase D Development Objective
+
+Phase D is the canonical thermal-model data assembly layer.
+
+Its purpose is to combine:
+
+1. Stage B aggregated physical/environmental signals;
+2. Phase C measured and predicted heat-input components;
+3. thermal state variables;
+4. control variables and setpoints;
+5. weather and schedule inputs;
+6. split/provenance metadata;
+
+into one consistent, model-family-neutral dataset contract.
+
+Phase D must not train final thermal models. It prepares authoritative data packages that all Phase E methods consume.
+
+Conceptual lifecycle:
+
+```text
+Stage B aggregation manifests and zone outputs
++ Phase C feature/split/dataset/training/evaluation/inference manifests
+→ resolve one canonical record per case/aggregation/weight/zone
+→ align timestamps and units
+→ select measured versus Phase-C-predicted heat inputs
+→ construct thermal-model state/input/target variables
+→ derive lagged and sequence-ready views without duplicating truth
+→ fit training-only scalers
+→ write canonical thermal-model datasets and manifests
+→ validate completeness, leakage, units, and provenance
+```
+
+---
+
+## 56. Proposed Phase D Canonical Keys and Schemas
+
+Every Phase D row or sequence must retain the identity key:
+
+```text
+campaign_id
+matrix_run_id
+phase_c_run_id
+case_id
+building_type
+climate/weather
+aggregation_id
+aggregation_level
+weight_mode
+aggregate_zone_id
+timestamp
+```
+
+Recommended canonical long/wide data fields:
+
+```text
+state:
+    T_zone
+    optional latent/auxiliary temperatures when available
+
+weather:
+    T_outdoor
+    solar variables
+    humidity and other selected weather variables
+
+control/HVAC:
+    QAC measured or Phase-C-predicted
+    heating setpoint
+    cooling setpoint
+    operating mode
+    mass flow / supply conditions when retained
+
+internal/solar heat inputs:
+    QSol1
+    QSol2
+    QZic_P
+    QZir_P
+    QZic_L
+    QZir_L
+    QZic_EE
+    QZir_EE
+    QZir_GE
+    QZivr_L
+
+metadata:
+    split
+    timestep_minutes
+    source signal provenance
+    missingness flags
+    measured/predicted source flag per heat-input component
+```
+
+Recommended Phase D artifacts:
+
+```text
+thermal_model_dataset_manifest.json
+thermal_model_zone_index.csv
+thermal_model_signal_catalog.csv
+thermal_model_timeseries.parquet
+thermal_model_timeseries_preview.csv
+thermal_model_split_manifest.json
+thermal_model_scaler_manifest.json
+thermal_model_quality_report.json
+thermal_model_provenance.json
+```
+
+For memory safety, write one zone package at a time and a lightweight campaign index.
+
+---
+
+## 57. Phase D Required Design Decisions
+
+The next development chat should resolve these explicitly before implementation:
+
+1. **Thermal prediction target**
+   ```text
+   one-step T_zone(t+1)
+   derivative dT/dt
+   multi-step sequence
+   continuous-time state derivative
+   ```
+   A canonical dataset may support multiple targets, but one authoritative base representation is required.
+
+2. **Measured versus Phase-C-predicted heat inputs**
+   - preserve both when available;
+   - mark source explicitly;
+   - do not silently overwrite measured components;
+   - support controlled experiments comparing oracle/measured and learned-input settings.
+
+3. **Time representation**
+   - maintain the native 5-minute timeline;
+   - record timezone and EnergyPlus timestamp semantics;
+   - define sequence windows without leakage across split boundaries.
+
+4. **Scaling**
+   - fit scalers on training rows only;
+   - store per-zone, per-building, and global scaler options separately;
+   - never infer scaler policy from filenames.
+
+5. **Missing components**
+   - absence can be structurally valid;
+   - distinguish unavailable equipment from missing/corrupt data;
+   - define zero-fill, omission, and mask policies explicitly.
+
+6. **Static features**
+   - floor area;
+   - volume;
+   - aggregation compression ratio;
+   - building and climate identifiers;
+   - equipment levels;
+   - zone-group metadata.
+
+7. **Sequence adapters**
+   - derive ANN tabular, RNN windowed, and SciML continuous-time adapters from one canonical truth;
+   - do not create separate independent preprocessing pipelines.
+
+---
+
+## 58. Phase D Proposed Package Architecture
+
+Recommended reusable modules:
+
+```text
+src/scalebridge/data/thermal_modeling/
+  models.py
+  discovery.py
+  signal_catalog.py
+  alignment.py
+  heat_inputs.py
+  targets.py
+  splits.py
+  scaling.py
+  windows.py
+  writers.py
+  validation.py
+  engine.py
+```
+
+Recommended scripts:
+
+```text
+scripts/thermal_modeling/audit_phase_d_inputs.py
+scripts/thermal_modeling/build_phase_d_signal_catalog.py
+scripts/thermal_modeling/build_phase_d_datasets.py
+scripts/thermal_modeling/validate_phase_d_datasets.py
+scripts/thermal_modeling/run_phase_d_campaign.py
+```
+
+Recommended campaign output:
+
+```text
+<campaign_root>/thermal_modeling/
+  phase_d_runs/<phase_d_run_id>/
+    phase_d_campaign_plan.json
+    phase_d_campaign_manifest.json
+    zone_index.csv
+    logs/
+  datasets/<dataset_run_id>/
+    cases/<case_id>/<aggregation_id>/<weight_mode>/<aggregate_zone_id>/
+      thermal_model_timeseries.parquet
+      signal_catalog.csv
+      split_manifest.json
+      scaler_manifest.json
+      provenance.json
+```
+
+---
+
+## 59. Phase E Model-Family Scope
+
+Phase E contains final thermal-model development and benchmarking.
+
+Required families:
+
+### E1. Classical feedforward neural networks
+
+```text
+linear baseline
+MLP / ANN
+residual MLP where useful
+```
+
+Use lagged state/input features or a defined autoregressive representation.
+
+### E2. Sequence models
+
+```text
+vanilla RNN
+LSTM
+GRU
+```
+
+Potential later additions:
+
+```text
+temporal convolution
+transformer/attention baseline
+```
+
+These should not displace the core RNN/LSTM/GRU benchmark unless justified.
+
+### E3. Scientific machine learning
+
+```text
+learned ODE / Neural ODE
+PINN
+hybrid Neural ODE + physics constraints
+Neuromancer-based constrained dynamics where appropriate
+```
+
+The physics formulation must use consistent units, timestep semantics, and explicit state/input equations from Phase D.
+
+### E4. Explicit deterministic optimization / grey-box estimation
+
+Potential model structures:
+
+```text
+1R1C
+2R2C
+3R2C
+4R3C
+```
+
+Potential estimation methods:
+
+```text
+nonlinear least squares
+maximum likelihood
+constrained optimization
+multiple shooting
+CasADi/IPOPT
+Pyomo/IPOPT where suitable
+```
+
+### E5. Bayesian inference
+
+Potential methods:
+
+```text
+Bayesian parameter estimation
+Metropolis-Hastings / MCMC
+extended Kalman filter
+extended Kalman smoother
+expectation-maximization
+particle methods if needed
+posterior predictive uncertainty
+```
+
+The exact P1/P2 split must remain clear:
+
+- P1 emphasizes black-box and SciML comparison.
+- P2 emphasizes grey-box model structures, deterministic estimation, filtering/smoothing, Bayesian inference, and uncertainty.
+
+Shared Phase D data and evaluation infrastructure should serve both papers.
+
+---
+
+## 60. Phase E Common Runtime Contract
+
+Every Phase E model should support a shared high-level interface:
+
+```text
+fit
+predict one step
+roll out multiple steps
+save
+load
+report metadata
+report parameter count
+report runtime
+report device
+```
+
+Where scientifically meaningful, also support:
+
+```text
+state initialization
+continuous-time derivative
+uncertainty prediction
+parameter posterior
+constraint diagnostics
+```
+
+The runtime contract should allow later loading into a Gymnasium environment.
+
+Planned simulator direction:
+
+- one or multiple building thermal models;
+- exposed controllable inputs;
+- common model loading;
+- scenario testing;
+- sensitivity analysis;
+- later MPC, RL, and co-simulation workflows.
+
+Model-specific training remains separate. The Gymnasium environment is the common simulation/control layer.
+
+---
+
+## 61. Phase E Experiment Fairness Rules
+
+All compared model families must align on:
+
+```text
+same Phase D source records
+same train/validation/test assignments
+same aggregation object and zone identity
+same weather and input variables
+same prediction horizon
+same initialization rules
+same missing-data policy
+same metrics
+same measured-versus-predicted heat-input scenario
+```
+
+Recommended evaluation categories:
+
+```text
+one-step accuracy
+multi-step rollout accuracy
+seasonal performance
+operating-regime performance
+setpoint-change performance
+climate transfer
+aggregation-level sensitivity
+weight-mode sensitivity
+training runtime
+inference runtime
+peak CPU memory
+peak GPU memory
+parameter count
+model artifact size
+physical constraint violations
+uncertainty calibration where applicable
+```
+
+Do not compare methods using different hidden preprocessing choices.
+
+---
+
+## 62. Phase D/E MLflow Hierarchy
+
+Recommended hierarchy:
+
+```text
+Phase D parent run
+  stage/data-build runs
+  per-zone dataset audit runs if needed
+
+Phase E experiment parent
+  model-family run
+    hyperparameter/tuning child runs
+    final training run
+    evaluation/rollout child runs
+```
+
+Required tags:
+
+```text
+campaign_id
+matrix_run_id
+phase_c_run_id
+phase_d_run_id
+case_id
+building_type
+climate
+aggregation_id
+aggregation_level
+weight_mode
+aggregate_zone_id
+model_family
+model_name
+estimation_method
+machine_id
+device
+git_commit
+```
+
+Keep machine identity as metadata, not as a top-level artifact folder.
+
+---
+
+## 63. Phase D/E Immediate New-Chat Starting Tasks
+
+A new development chat should begin with Phase D, not directly with model training.
+
+Recommended first sequence:
+
+1. Audit the exact current Phase C inference, feature, split, and dataset manifests.
+2. Audit representative Stage B zone files and Phase C full-year inference files.
+3. Define the canonical Phase D identity key and signal catalog.
+4. Decide the first thermal target representation.
+5. Implement discovery and manifest models.
+6. Build one-zone Phase D smoke output without loading the campaign globally.
+7. Validate timestamp alignment, splits, units, and measured/predicted heat-input provenance.
+8. Expand to a multi-building/multi-aggregation smoke.
+9. Add the Phase D campaign runner.
+10. Only after Phase D validation, begin Phase E with the simplest linear/MLP baseline.
+
+Files that the new chat should request first if exact current code is needed:
+
+```text
+Phase C inference manifest and one zone output
+Phase C dataset manifest and one component dataset
+Phase C feature manifest
+Phase C split manifest
+Stage B aggregation manifest and one aggregated_timeseries_wide.parquet schema
+current heat_input_regression package tree
+current model base/factory implementation
+```
+
+---
+
+## 64. Authoritative Current Status for New Development Chats
+
+```text
+Stage A:
+    complete and validated
+    16/16 generation cases
+    440 canonical variable parquet files
+    440 legacy pickles
+
+Stage B:
+    complete and validated
+    matrix_run_id: aggregation_matrix_20260712_215839
+    240/240 aggregation objects successful
+    0 failures
+
+Phase C:
+    C1–C9 implemented
+    PyTorch linear estimator implemented
+    campaign runner implemented
+    resume and dry-run supported
+    MLflow hierarchical registration implemented
+    3-zone / 30-model smoke completed end to end
+    38/38 C5 API checks passed
+    30/30 CUDA training tasks passed
+    30/30 evaluation tasks passed
+    3/3 full-year inference zones passed
+    8 stage + 63 task MLflow registration passed
+    full P1 command dry run passed on lab-PC
+    unrestricted full P1 execution ready, not yet claimed complete
+
+Phase D:
+    next code-development phase
+    canonical thermal-model data assembly
+
+Phase E:
+    follows validated Phase D
+    ANN, RNN/LSTM/GRU, SciML, explicit optimization, Bayesian inference
+```
+
+This section supersedes earlier “next step” statements elsewhere in this document.
+
+
+---
+
+## 56. August 2, 2026 Authoritative Phase C Availability-Aware Completion
+
+This section supersedes earlier Phase C status statements in this README.
+
+### 56.1 Controlled end-to-end validation
+
+The authoritative controlled Phase C run is:
+
+```text
+campaign_id:
+p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+
+matrix_run_id:
+aggregation_matrix_20260715_114242
+
+phase_c_run_id:
+phase_c_full_updated_test_laptop_20260802_172455
+
+machine:
+laptop
+
+environment:
+scalebridge-dev-gpu-laptop
+
+estimator:
+pytorch_linear
+
+training device:
+cuda
+
+validation profile:
+full
+
+MLflow:
+enabled
+```
+
+Final orchestration result:
+
+```text
+status: completed
+passed_command_count: 19
+failed_command_count: 0
+```
+
+The 19 commands consist of C1-C9 plus all configured source, feature,
+timestamp, coalescence, split, dataset, training, evaluation, inference, and
+MLflow validators.
+
+### 56.2 Final availability-aware counts
+
+```text
+candidate_model_count:                  57
+applicable_model_count:                 33
+structurally_inapplicable_model_count:  20
+invalid_model_count:                     4
+missing_expected_data_model_count:       0
+
+created_dataset_count:                  33
+trained_model_count:                    33
+evaluated_model_count:                  33
+inferred_component_count:               33
+
+inference_zone_count:                    3
+zero_component_zone_count:               0
+```
+
+The core cross-stage invariant passed:
+
+```text
+C1 applicable models
+= C4 model datasets
+= C6 trained models
+= C7 evaluated models
+= C8 inferred components
+= 33
+```
+
+Controlled per-zone component counts:
+
+```text
+RestaurantFastFood_All: 12
+Dining:                11
+Kitchen:               10
+```
+
+### 56.3 Structural model availability is now part of the Phase C contract
+
+A candidate Phase C component model is no longer assumed to exist for every
+aggregate zone.
+
+Each candidate relationship is classified independently as one of:
+
+```text
+applicable
+structurally_inapplicable
+invalid
+missing_expected_data
+fatal/unexpected failure
+```
+
+Examples of structural availability differences include:
+
+- a zone with no People object has no People convective/radiant model;
+- a zone with no Lights object has no Lights convective/radiant/visible model;
+- a zone may lack one or more electric, gas, other, hot-water, or steam
+  equipment components;
+- a zone with no mapped HVAC supply/system node cannot support QAC;
+- PHVAC depends on QAC and is structurally inapplicable when QAC is unavailable;
+- an unconditioned or common zone can still have valid solar or equipment
+  components even when QAC and PHVAC are absent.
+
+Phase C must never create fake models or silently substitute zeros merely to
+force a fixed model count.
+
+### 56.4 Availability propagation through C1-C9
+
+C1 writes the authoritative model-applicability inventory, including:
+
+```text
+model_applicability.csv
+applicable_models.csv
+inapplicable_models.csv
+```
+
+Important fields include:
+
+```text
+applicability_class
+reason_code
+missing_required_signals
+dependency_status
+fatal_for_zone
+```
+
+C2 snapshots this availability beside each zone's features and builds only
+feature families required by applicable models.
+
+C3 carries the zone-level availability counts and IDs through split provenance.
+
+C4 materializes only C1-approved model datasets. A valid zero-model zone may
+complete with zero model datasets.
+
+C5 validates the estimator API against discovered C4 datasets.
+
+C6 trains only discovered C4 datasets and supports valid zero-task runs.
+
+C7 evaluates only completed C6 artifacts and supports valid zero-artifact runs.
+
+C8 uses the C2 feature inventory as the authoritative zone inventory. It
+therefore preserves zones even when they have zero evaluated components. Each
+zone receives a `component_applicability.csv` snapshot beside its prediction
+package.
+
+C9 logs availability-aware metrics, creates the parent/stage/task hierarchy,
+and validates that C6, C7, and C8 task runs are nested under the correct stage
+runs.
+
+### 56.5 Final C9 MLflow validation
+
+The authoritative controlled run registered:
+
+```text
+stage_run_count:             8
+training_task_run_count:    33
+evaluation_task_run_count:  33
+inference_task_run_count:    3
+total_task_run_count:       69
+misplaced_task_run_count:    0
+failed_registration_count:   0
+```
+
+The C9 validator derives expected C6-C8 task counts at runtime from the
+completed registration manifest. The campaign runner must not freeze these
+counts while planning a fresh run.
+
+### 56.6 Authoritative controlled artifacts
+
+```text
+<testing_campaign_root>/heat_input_regression/campaign_runs/
+  phase_c_full_updated_test_laptop_20260802_172455/
+    phase_c_campaign_run_manifest.json
+
+<testing_campaign_root>/heat_input_regression/mlflow_registration_runs/
+  phase_c_full_updated_test_laptop_20260802_172455/
+    phase_c_mlflow_registration_manifest.json
+```
+
+### 56.7 Main lab-PC Phase C production run
+
+Main campaign:
+
+```text
+campaign_id:
+p1_compact_4b4c_labpc_1w_v1
+
+matrix_run_id:
+aggregation_matrix_20260712_215839
+
+machine:
+lab-pc
+
+environment:
+scalebridge-dev-gpu-labpc
+```
+
+The production run should use:
+
+```text
+validation: none
+MLflow validation mode: none
+estimator: pytorch_linear
+device: cuda
+MLflow: enabled
+```
+
+`--validation none` disables separate stage validator subprocesses. It does not
+disable stage-internal assertions or ordinary failure handling. MLflow remains
+enabled because `--disable-mlflow` is not supplied.
+
+```powershell
+conda activate scalebridge-dev-gpu-labpc
+
+chcp 65001
+
+$CampaignRoot = "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1"
+$MatrixRunId = "aggregation_matrix_20260712_215839"
+
+$env:SCALEBRIDGE_MACHINE_ID = "lab-pc"
+$env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+$env:PYTHONDONTWRITEBYTECODE = "1"
+$env:PYTHONIOENCODING = "utf-8"
+$env:PYTHONUTF8 = "1"
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
+$Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$PhaseCRunId = "phase_c_full_main_labpc_$Timestamp"
+$LogFile = ".\Phase_C_Full_Main_LabPC_$Timestamp.log"
+
+python `
+  ".\scripts\heat_input_regression\run_phase_c_campaign.py" `
+  --campaign-root "$CampaignRoot" `
+  --matrix-run-id "$MatrixRunId" `
+  --phase-c-run-id "$PhaseCRunId" `
+  --start-stage C1 `
+  --stop-stage C9 `
+  --validation none `
+  --mlflow-validation-mode none `
+  --estimator-type pytorch_linear `
+  --pytorch-device cuda `
+  --overwrite-existing `
+  2>&1 | Tee-Object -FilePath "$LogFile"
+```
+
+Do not add `--disable-mlflow`. Do not add `--continue-on-error` for the first
+authoritative production run; fail fast on an unexpected error.
+
+The authoritative production manifest will be:
+
+```text
+<main_campaign_root>/heat_input_regression/campaign_runs/<phase_c_run_id>/
+phase_c_campaign_run_manifest.json
+```
+
+---
+
+## 57. Phase D Interface Consequence of Phase C Availability
+
+Phase D must not assume a fixed 12-component input vector for every zone.
+
+For every aggregate zone, Phase D must consume:
+
+```text
+component_applicability.csv
+annual_component_predictions_manifest.json
+annual_component_predictions.parquet
+zone_feature_manifest.json
+model_applicability_snapshot.csv
+```
+
+when available.
+
+For each component, Phase D must preserve an explicit state such as:
+
+```text
+available_and_predicted
+structurally_inapplicable
+invalid_upstream_relationship
+missing_expected_data
+not_trained
+training_failed
+evaluation_failed
+inference_failed
+```
+
+Structural absence is not equivalent to zero and is not equivalent to data
+corruption.
+
+Grouped totals such as `QZic_total` and `QZir_total` must record:
+
+- which component terms were available;
+- which terms were structurally absent;
+- whether the grouped total is complete relative to the zone's applicable
+  component set;
+- the exact aggregation formula;
+- measured versus predicted source;
+- whether any missing applicable term forced the grouped total to be marked
+  incomplete.
+
+QAC and PHVAC require special handling:
+
+```text
+QAC:
+    available only when the required mapped system-node mass-flow and
+    temperature signals exist for that aggregate zone.
+
+PHVAC:
+    depends on QAC and must be marked structurally inapplicable when QAC is
+    unavailable.
+```
+
+No Phase D or Phase E model may interpret an absent QAC/PHVAC model as a
+physical zero without an explicit, scientifically justified transformation.

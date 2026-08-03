@@ -1,0 +1,11 @@
+ScaleBridge C1-C8 runner no-bytecode patch v4
+
+Fixes:
+1. Replaces compileall with source-only compile(...) syntax validation, so no
+   .pyc files are created or replaced. This avoids Windows/Dropbox/VS Code
+   __pycache__ locks.
+2. Passes --feature-root to the canonical-aware C2 validator.
+3. Preserves the original legacy-validator arguments when the wrapper invokes
+   validate_heat_input_regression_features.py.
+4. Keeps the legacy validator authoritative for every failure except the
+   specifically verified canonical row-count difference.

@@ -1,0 +1,48 @@
+BGIRS ROUTER FIX: REMOVE VALIDATION CENTER AND ARTIFACT LINEAGE
+==============================================================
+
+Cause
+-----
+The previous maintenance script removed both page directories and updated the
+page registry, but router.py still contained:
+
+    from ...pages.artifact_lineage import ...
+    from ...pages.validation_center import ...
+
+and still registered their routes and tab callbacks.
+
+Fix
+---
+This patch replaces router.py with the current router structure while removing
+only:
+
+- Artifact Lineage import
+- Validation Center import
+- /artifact-lineage route
+- /validation-center route
+- Artifact Lineage tab callback
+- Validation Center tab callback
+
+All nine retained major routes and their callbacks remain.
+
+Apply
+-----
+Expand-Archive `
+    -Path ".\BGIRS_Router_Remove_Validation_Artifact_Fix.zip" `
+    -DestinationPath "." `
+    -Force
+
+Validate
+--------
+pytest `
+    tests\dashapp\unit\test_removed_major_pages.py `
+    tests\dashapp\smoke\test_removed_major_page_routes.py `
+    -v
+
+pytest tests\dashapp\unit tests\dashapp\smoke -v
+
+python scripts\dashapp\validation\validate_shell.py
+
+Expected
+--------
+Major pages: 9

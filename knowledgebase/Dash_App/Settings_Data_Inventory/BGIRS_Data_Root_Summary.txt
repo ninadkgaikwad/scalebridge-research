@@ -1,0 +1,30 @@
+﻿BUILDING-GRID INTELLIGENCE RESEARCH STUDIO
+DATA-ROOT DISCOVERY SUMMARY
+============================================================
+
+Generated:
+    2026-07-31 14:10:33
+
+Repository Root:
+    C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+Data-Root Contract:
+    <repository-root>\..\..\Data
+
+Resolved Data Root:
+    C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data
+
+Data Root Exists:
+    True
+
+Current Machine:
+    NKG-WIN-LAPTOP
+
+ScaleBridge Machine ID:
+    laptop
+
+Configured External Data Root:
+    C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data
+
+Configured Generated Data Root:
+    C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge

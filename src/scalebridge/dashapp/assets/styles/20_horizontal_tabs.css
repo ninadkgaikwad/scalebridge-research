@@ -1,0 +1,72 @@
+/*
+Building-Grid Intelligence Research Studio
+Responsive Horizontal Subpage Tabs Patch
+
+This file is loaded after 10_shell.css so these rules override the
+initial horizontal-tab sizing behavior without changing the shell layout.
+*/
+
+.horizontal-tabs-container {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.horizontal-tabs-parent {
+    width: 100%;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+    -webkit-overflow-scrolling: touch;
+}
+
+.horizontal-tabs-parent::-webkit-scrollbar {
+    height: 0.45rem;
+}
+
+.horizontal-tabs-parent::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.horizontal-tabs-parent::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 999px;
+}
+
+.horizontal-tabs {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: stretch;
+    width: max-content !important;
+    min-width: 100%;
+    overflow: visible !important;
+}
+
+.horizontal-tab {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+    white-space: nowrap !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.horizontal-tab-selected {
+    flex: 0 0 auto !important;
+}
+
+@media (max-width: 991.98px) {
+    .horizontal-tab {
+        padding-inline: 0.85rem !important;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .horizontal-tab {
+        padding-inline: 0.7rem !important;
+        font-size: 0.9rem;
+    }
+}

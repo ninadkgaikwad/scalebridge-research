@@ -1,0 +1,8 @@
+﻿SCALEBRIDGE FILTERED FULL REPOSITORY TREE
+Generated: 2026-08-01 12:35:51
+Repository: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+Excluded directory names:
+.git, .pytest_cache, .mypy_cache, .ruff_cache, __pycache__, .idea, .vscode, node_modules, dist, build, htmlcov, .tox, .venv, venv, env
+
+scalebridge-research

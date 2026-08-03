@@ -1,0 +1,9 @@
+"""Reusable Settings components."""
+from dash import html
+import dash_bootstrap_components as dbc
+from ...components.help import help_button
+COLORS={"validated":"success","pass":"success","known_machine_specific":"info","warning":"warning","planned":"secondary","unknown":"secondary","unavailable":"danger"}
+def status_badge(status): return dbc.Badge(status.replace("_"," ").title(),color=COLORS.get(status,"secondary"),pill=True,className="settings-status-badge")
+def settings_heading(title,description,icon,help_id): return html.Div([html.Div(html.I(className=f"bi {icon}",**{"aria-hidden":"true"}),className="settings-heading-icon"),html.Div([html.Div([html.H2(title,className="page-subtitle"),help_button(help_id,compact=False)],className="title-with-help"),html.P(description,className="page-description")])],className="settings-subpage-heading")
+def summary_card(label,value,icon,status=None,help_id=None): return dbc.Card(dbc.CardBody([html.Div([html.I(className=f"bi {icon}",**{"aria-hidden":"true"}),html.Span(label),help_button(help_id) if help_id else None],className="settings-summary-label"),html.Div(value,className="settings-summary-value"),status_badge(status) if status else None]),className="studio-card settings-summary-card")
+def field_row(label,value,status,source,help_id,description=None,actions=None): return html.Div([html.Div([html.Div([html.Span(label,className="settings-field-label"),help_button(help_id)],className="settings-field-label-row"),html.Div(value,className="settings-field-value"),html.Div(source,className="settings-field-source"),html.Div(description,className="settings-field-description") if description else None],className="settings-field-main"),html.Div([status_badge(status),html.Div(actions,className="settings-field-actions") if actions else None],className="settings-field-meta")],className="settings-field-row")

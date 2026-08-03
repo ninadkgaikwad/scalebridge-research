@@ -1,0 +1,49 @@
+﻿SCALEBRIDGE ENERGYPLUS INTEGRATION TREE
+Generated: 2026-08-01 12:35:51
+Repository: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+Folder PATH listing for volume OS
+Volume serial number is 000001F2 6E2A:B104
+C:\USERS\NINAD\DROPBOX\NINADGAIKWAD_PHD\GAIKWAD_RESEARCH\FROM_WSU_ONEDRIVE\BUILDINGMODELINGPROJECT_CONDENSED\NEWORG\SCALEBRIDGE-RESEARCH\SRC\SCALEBRIDGE\INTEGRATION\ENERGYPLUS
+|   p1.py
+|   prototypes.py
+|   __init__.py
+|   
++---epw
+|       __init__.py
+|       
++---generation
+|       orchestrator.py
+|       rdd.py
+|       rdd_probe.py
+|       variable_wise.py
+|       __init__.py
+|       
++---idf
+|       backend.py
+|       opyplus_compat.py
+|       preparer.py
+|       pre_opyplus_normalization.py
+|       __init__.py
+|       
++---manifests
+|       identifiers.py
+|       models.py
+|       serialization.py
+|       __init__.py
+|       
++---one_zone
+|       __init__.py
+|       
++---outputs
+|       eio.py
+|       extractor.py
+|       __init__.py
+|       
++---output_parsing
+|       __init__.py
+|       
+\---simulation
+        runner.py
+        __init__.py
+        

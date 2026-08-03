@@ -1,0 +1,14 @@
+C8 path-resolution patch v2
+
+Fixes discovery when a C6 training manifest embeds the C4 manifest under
+source_dataset_manifest_payload but does not contain a separate
+source_dataset_manifest path.
+
+Resolution order:
+1. source_dataset_manifest
+2. source_dataset_manifest_path
+3. embedded manifest_path/model_dataset_manifest
+4. embedded output_root/model_dataset_manifest.json
+5. parent of embedded outputs.train/model_dataset_manifest.json
+
+The resolved path must exist and be a file.

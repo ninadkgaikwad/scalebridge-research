@@ -1,0 +1,17 @@
+ScaleBridge Stage C8 — Full-Year Heat-Input Regression Inference
+
+Boundary:
+- consumes completed C7 evaluation artifacts and persisted C6 models;
+- locates matching complete C2 zone feature Parquets;
+- never refits models;
+- writes one annual component-prediction table per aggregate zone;
+- preserves the complete C2 timestamp axis;
+- writes component registry, summary, previews, and provenance;
+- includes independent recomputation validation.
+
+Main outputs per zone:
+- annual_component_predictions.parquet
+- annual_component_predictions_preview.csv
+- component_prediction_registry.csv
+- component_prediction_summary.csv
+- annual_component_predictions_manifest.json

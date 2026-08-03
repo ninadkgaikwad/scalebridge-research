@@ -1,0 +1,3 @@
+﻿status=failed
+error=C4 BUILD failed with exit code 1
+transcript=C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\C1_to_C8_C2Fix_Full_Run_20260719_215659.txt

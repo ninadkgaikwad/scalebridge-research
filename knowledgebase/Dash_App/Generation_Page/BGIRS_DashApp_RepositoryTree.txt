@@ -1,0 +1,782 @@
+﻿BGIRS DASH APP REPOSITORY TREE
+Generated: 2026-08-01 12:35:51
+Repository: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+Folder PATH listing for volume OS
+Volume serial number is 000001DE 6E2A:B104
+C:\USERS\NINAD\DROPBOX\NINADGAIKWAD_PHD\GAIKWAD_RESEARCH\FROM_WSU_ONEDRIVE\BUILDINGMODELINGPROJECT_CONDENSED\NEWORG\SCALEBRIDGE-RESEARCH\SRC\SCALEBRIDGE\DASHAPP
+|   app.py
+|   config.py
+|   constants.py
+|   server.py
+|   __init__.py
+|   
++---adapters
+|   +---aggregation
+|   +---ann
+|   +---bayesian
+|   +---co_simulationsim
+|   +---duckdb
+|   +---filesystem
+|   +---generation
+|   +---heat_input
+|   +---mlflow
+|   +---opendsssim
+|   +---optimization
+|   +---phase_d
+|   +---portable_models
+|   +---scientific_ml
+|   +---smartbuildingssim
+|   \---smartcommunitysim
++---assets
+|   +---icons
+|   +---images
+|   +---styles
+|   |       00_theme.css
+|   |       10_shell.css
+|   |       20_horizontal_tabs.css
+|   |       30_settings.css
+|   |       31_machine_profiles.css
+|   |       32_live_settings.css
+|   |       33_settings_ui_refinements.css
+|   |       
+|   \---templates
++---cache
+|   +---catalogs
+|   +---plots
+|   +---queries
+|   \---tables
++---callbacks
++---catalogs
+|   +---artifacts
+|   +---experiments
+|   +---models
+|   +---publications
+|   \---simulations
++---components
+|   +---artifacts
+|   +---dialogs
+|   +---errors
+|   +---exports
+|   +---forms
+|   +---help
+|   |   |   help_button.py
+|   |   |   help_modal.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           help_button.cpython-310.pyc
+|   |           help_modal.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---loading
+|   +---navigation
+|   +---plots
+|   +---provenance
+|   +---selectors
+|   +---status
+|   +---tables
+|   \---validation
++---help
+|   +---coverage
+|   +---documentation
+|   +---errors
+|   +---inputs
+|   +---metrics
+|   +---outputs
+|   +---pages
+|   +---plots
+|   +---registry
+|   |   |   profile_manager_help.py
+|   |   |   settings_help.py
+|   |   |   shell_help.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           profile_manager_help.cpython-310.pyc
+|   |           profile_manager_help.cpython-313.pyc
+|   |           settings_help.cpython-310.pyc
+|   |           shell_help.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---sections
+|   +---statuses
+|   +---tables
+|   +---validation
+|   \---warnings
++---layout
+|   +---footers
+|   +---headers
+|   |   |   app_header.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           app_header.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---navigation
+|   |   |   sidebar.py
+|   |   |   tabs.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           sidebar.cpython-310.pyc
+|   |           tabs.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---notifications
+|   +---placeholders
+|   |   |   module_placeholder.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           module_placeholder.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---routing
+|   |   |   router.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           router.cpython-310.pyc
+|   |           router.cpython-313.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   \---shell
+|       |   app_shell.py
+|       |   __init__.py
+|       |   
+|       \---__pycache__
+|               app_shell.cpython-310.pyc
+|               __init__.cpython-310.pyc
+|               
++---pages
+|   |   registry.py
+|   |   __init__.py
+|   |   
+|   +---campaigns
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---browser
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---builder
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---matrix_preview
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---monitor
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---templates
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---data_pipeline
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---phase_a_generation
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---diagnostics
+|   |   |   +---execution
+|   |   |   +---results
+|   |   |   +---setup
+|   |   |   +---validation
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---phase_b_aggregation
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---diagnostics
+|   |   |   +---execution
+|   |   |   +---results
+|   |   |   +---setup
+|   |   |   +---zone_mapping
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---phase_c_heat_input
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---datasets
+|   |   |   +---diagnostics
+|   |   |   +---evaluation
+|   |   |   +---features_targets
+|   |   |   +---results
+|   |   |   +---training
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---phase_d_thermal_model_data
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---dataset_splits
+|   |   |   +---outputs
+|   |   |   +---signal_assembly
+|   |   |   +---source_selection
+|   |   |   +---temporal_processing
+|   |   |   +---validation
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---home
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---overview
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---quick_actions
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---recent_activity
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---system_status
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---model_catalog
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---browse
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---comparison_tray
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---model_details
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---portability
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---validation
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---publication_studio
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---export_history
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---figure_builder
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---data_selection
+|   |   |   +---export
+|   |   |   +---filters
+|   |   |   +---formatting
+|   |   |   +---plot_design
+|   |   |   +---preview
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---saved_specifications
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---table_builder
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---data_selection
+|   |   |   +---export
+|   |   |   +---formatting
+|   |   |   +---grouping
+|   |   |   +---preview
+|   |   |   +---statistics
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---results_explorer
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---cross_experiment
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---diagnostics
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---metrics
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---parameters
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---simulator_results
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---single_experiment
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---time_series
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---settings
+|   |   |   components.py
+|   |   |   live_components.py
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---environments
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           page.cpython-313.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---help
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           page.cpython-313.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---machines
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           page.cpython-313.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---mlflow
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           page.cpython-313.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---paths
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           page.cpython-313.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---visualization
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           page.cpython-313.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           components.cpython-310.pyc
+|   |           live_components.cpython-310.pyc
+|   |           live_components.cpython-313.pyc
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---simulators
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---co_simulationsim
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---control
+|   |   |   +---execution
+|   |   |   +---participants
+|   |   |   +---results
+|   |   |   +---signal_mapping
+|   |   |   +---timing
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---opendsssim
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---assets
+|   |   |   +---control
+|   |   |   +---network_setup
+|   |   |   +---power_flow
+|   |   |   +---profiles
+|   |   |   +---results
+|   |   |   +---run
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---smartbuildingssim
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---building_models
+|   |   |   +---controllers
+|   |   |   +---environment_setup
+|   |   |   +---interactive_simulation
+|   |   |   +---results
+|   |   |   +---run
+|   |   |   +---scenario
+|   |   |   +---sensitivity
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---smartcommunitysim
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---controllers
+|   |   |   +---environment_setup
+|   |   |   +---houses_ders
+|   |   |   +---results
+|   |   |   +---run
+|   |   |   +---scenario
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   +---thermal_modeling
+|   |   |   page.py
+|   |   |   __init__.py
+|   |   |   
+|   |   +---ann_sequence_models
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---architecture
+|   |   |   +---diagnostics
+|   |   |   +---execution
+|   |   |   +---export
+|   |   |   +---training_setup
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---bayesian_inference
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---diagnostics
+|   |   |   +---execution
+|   |   |   +---export
+|   |   |   +---inference_setup
+|   |   |   +---model_structure
+|   |   |   +---priors_likelihood
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---datasets
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---browser
+|   |   |   +---inspection
+|   |   |   +---validation
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---optimization
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---diagnostics
+|   |   |   +---execution
+|   |   |   +---export
+|   |   |   +---model_structure
+|   |   |   +---parameters_bounds
+|   |   |   +---solver_setup
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---run_monitor
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   +---scientific_ml
+|   |   |   |   page.py
+|   |   |   |   __init__.py
+|   |   |   |   
+|   |   |   +---diagnostics
+|   |   |   +---execution
+|   |   |   +---export
+|   |   |   +---model_equations
+|   |   |   +---physics_constraints
+|   |   |   +---training_setup
+|   |   |   \---__pycache__
+|   |   |           page.cpython-310.pyc
+|   |   |           __init__.cpython-310.pyc
+|   |   |           
+|   |   \---__pycache__
+|   |           page.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           
+|   \---__pycache__
+|           registry.cpython-310.pyc
+|           __init__.cpython-310.pyc
+|           
++---plotting
+|   +---common
+|   +---diagnostics
+|   +---metrics
+|   +---parameters
+|   +---predictions
+|   +---publication
+|   +---residuals
+|   +---sensitivity
+|   +---simulators
+|   \---time_series
++---publication
+|   +---exporters
+|   +---figures
+|   +---specifications
+|   +---tables
+|   \---templates
++---query
+|   +---builders
+|   +---cache
+|   +---filters
+|   \---joins
++---schemas
+|   +---common
+|   +---help
+|   +---models
+|   +---pipeline
+|   +---publication
+|   \---simulators
++---services
+|   +---aggregation
+|   +---campaigns
+|   +---exports
+|   +---generation
+|   +---heat_input
+|   +---lineage
+|   +---models
+|   +---phase_d
+|   +---publication
+|   +---results
+|   +---simulators
+|   +---system
+|   |   |   live_settings.py
+|   |   |   settings_runtime.py
+|   |   |   __init__.py
+|   |   |   
+|   |   \---__pycache__
+|   |           live_settings.cpython-310.pyc
+|   |           live_settings.cpython-313.pyc
+|   |           settings_runtime.cpython-310.pyc
+|   |           __init__.cpython-310.pyc
+|   |           __init__.cpython-313.pyc
+|   |           
+|   +---thermal_modeling
+|   \---validation
++---state
+|   +---comparison
+|   +---execution
+|   +---filters
+|   \---session
++---tables
+|   +---campaigns
+|   +---common
+|   +---datasets
+|   +---metrics
+|   +---models
+|   +---parameters
+|   +---publication
+|   \---simulators
++---utils
+|   +---formatting
+|   +---identifiers
+|   +---logging
+|   +---paths
+|   +---serialization
+|   \---units
++---validation
+|   +---campaigns
+|   +---datasets
+|   +---help_coverage
+|   +---models
+|   +---physical
+|   +---schemas
+|   \---simulators
+\---__pycache__
+        app.cpython-310.pyc
+        app.cpython-313.pyc
+        config.cpython-310.pyc
+        constants.cpython-310.pyc
+        __init__.cpython-310.pyc
+        

@@ -1,0 +1,24 @@
+====================================================================================================
+SCALEBRIDGE PHASE C CAMPAIGN PLAN
+====================================================================================================
+campaign_id: p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+campaign_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+matrix_run_id: aggregation_matrix_20260715_114242
+phase_c_run_id: phase_c_qac_phvac_test_20260727_134619
+validation: full
+start_stage: C1
+stop_stage: C8
+mlflow: False
+campaign_run_root: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\heat_input_regression\campaign_runs\phase_c_qac_phvac_test_20260727_134619
+Traceback (most recent call last):
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\heat_input_regression\run_phase_c_campaign.py", line 807, in <module>
+    raise SystemExit(main(sys.argv[1:]))
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\heat_input_regression\run_phase_c_campaign.py", line 271, in main
+    commands = build_pipeline_commands(layout, args)
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\heat_input_regression\run_phase_c_campaign.py", line 485, in build_pipeline_commands
+    commands.extend(validation_commands_for_stage(stage, layout, args))
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\heat_input_regression\run_phase_c_campaign.py", line 550, in validation_commands_for_stage
+    command = build_adaptive_command(script, semantics[key])
+  File "C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\heat_input_regression\run_phase_c_campaign.py", line 620, in build_adaptive_command
+    raise RuntimeError(
+RuntimeError: validate_heat_input_regression_splits.py does not expose a supported option for 'feature_root'. Tried: ('--feature-root',)

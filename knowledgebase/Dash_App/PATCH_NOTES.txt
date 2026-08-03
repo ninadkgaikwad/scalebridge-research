@@ -1,0 +1,68 @@
+BUILDING-GRID INTELLIGENCE RESEARCH STUDIO
+MACHINE PROFILE MANAGER PATCH
+============================================================
+
+Apply order
+-----------
+This patch must be applied AFTER:
+1. BGIRS shell
+2. Detailed Settings implementation
+3. Settings Badge DBC 2.0.4 compatibility patch
+
+Capabilities
+------------
+- Create a blank profile
+- Duplicate an existing profile
+- Edit complete machine identity and configuration
+- Validate machine ID, path relationships, MLflow URI, and policies
+- Save draft
+- Save validated profile
+- Save and activate
+- Archive non-active profiles
+- Import/export JSON profiles
+- Record revision history in JSONL
+- Resolve effective values from:
+    machine profile
+    local override
+    environment variables
+- Create new machine IDs matching:
+    ^[a-z0-9]+(?:-[a-z0-9]+)*$
+
+Storage
+-------
+config/machines/<machine_id>.json
+config/active_machine.json
+config/local/<machine_id>.local.json
+config/machine_profile_history/<machine_id>.jsonl
+config/machines_archive/<machine_id>.json
+
+Why JSON rather than YAML
+-------------------------
+JSON is used so the patch adds no unvalidated runtime dependency. Profiles can
+later gain YAML import/export after PyYAML is explicitly added to the validated
+environment locks.
+
+DBC 2.0.4 compatibility
+-----------------------
+The patch avoids unsupported Badge props such as outline. It uses only common,
+validated component properties:
+- Badge: color, pill, title
+- Button: id, color, size, n_clicks
+- Input/Textarea/Checkbox/Card/ButtonGroup standard properties
+
+Apply
+-----
+Expand-Archive `
+    -Path ".\BGIRS_Machine_Profile_Manager_Patch.zip" `
+    -DestinationPath "." `
+    -Force
+
+Optional .gitignore rule
+------------------------
+config/local/*.local.json
+
+Validation
+----------
+python scripts\dashapp\validation\validate_shell.py
+pytest tests\dashapp\unit tests\dashapp\smoke -v
+python scripts\dashapp\run\run_dashapp.py

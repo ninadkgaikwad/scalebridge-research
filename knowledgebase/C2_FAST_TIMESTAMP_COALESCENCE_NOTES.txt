@@ -1,0 +1,20 @@
+ScaleBridge Fast C2 Timestamp Coalescence Patch v6
+===================================================
+
+Reason
+------
+The v5 implementation iterated through every parsed timestamp group in Python.
+For a one-year 5-minute dataset, this meant approximately 105,120 group
+iterations per zone, even though only a small number of timestamps were
+duplicated.
+
+Optimization
+------------
+- Parse and normalize the complete timestamp column.
+- Split rows into unique-timestamp and duplicate-timestamp subsets.
+- Pass unique rows through vectorially without Python iteration.
+- Iterate only the small duplicate subset.
+- Preserve column-wise coalescence, densest-row preference, conflict auditing,
+  metadata, and canonical ordering.
+
+The output semantics are unchanged; only execution speed is improved.

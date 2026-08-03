@@ -1,0 +1,58 @@
+/* Machine profile manager */
+
+.settings-import-export-row {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    margin-top: 1rem;
+}
+
+.settings-profile-action-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.settings-effective-list,
+.settings-history-list {
+    display: grid;
+    gap: 0;
+    max-height: 36rem;
+    overflow-y: auto;
+}
+
+.settings-effective-row {
+    display: grid;
+    grid-template-columns: minmax(10rem, 1fr) minmax(12rem, 1.4fr) auto;
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.settings-effective-row:last-child,
+.settings-history-row:last-child {
+    border-bottom: 0;
+}
+
+.settings-effective-row code {
+    overflow-wrap: anywhere;
+}
+
+.settings-history-row {
+    display: grid;
+    gap: 0.2rem;
+    padding: 0.65rem 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.settings-history-row span {
+    color: var(--text-muted);
+    font-size: 0.75rem;
+}
+
+@media (max-width: 767.98px) {
+    .settings-effective-row {
+        grid-template-columns: 1fr;
+    }
+}
