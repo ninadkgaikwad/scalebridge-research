@@ -1,0 +1,1475 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{array,booktabs}
+\usepackage[hidelinks]{hyperref}
+\title{Part 5: Detailed Energy-Balance-Projected PINODE (EBP-PINODE)}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Part 5 --- Detailed Energy-Balance-Projected PINODE (EBP-PINODE)}
+
+The Energy-Balance-Projected PINODE (EBP-PINODE) uses the same data architecture, state definitions, normalization, causal encoder, rollout construction, RK4 integration convention, hyperparameter-selection protocol, and Sim1/Sim2/Sim3 evaluation contract established in Parts 1--4.
+
+The defining new operation is that the raw neural derivative is \textbf{projected onto an exact energy-balance manifold before the ODE solver integrates it}.
+
+The progression across the methods is
+\begin{align}
+\boxed{\text{NODE: }\dot x=\widetilde f_\omega}
+\end{align}
+\begin{align}
+\boxed{\text{Base PINODE: }\dot x=\widetilde f_\omega,\qquad r_{\rm RC}\approx0\text{ through a soft penalty}}
+\end{align}
+and
+\begin{align}
+\boxed{\text{EBP-PINODE: }\dot x=f_P,\qquad Af_P=b\text{ exactly}.}
+\end{align}
+
+The most important conceptual distinction is that the raw neural derivative is no longer the derivative that is directly integrated. The deployed derivative is the projected derivative \(f_P\).
+
+\section*{1. Notation: the derivative objects must remain distinct}
+
+The neural network produces the \textbf{raw neural derivative}
+\begin{align}
+\boxed{\widetilde f_\omega(x,v).}
+\tag{E5.1}
+\end{align}
+Inside the projection optimization, \(f\) is a \textbf{dummy candidate derivative variable}:
+\begin{align}
+\boxed{f=\text{generic candidate derivative in the projection optimization}.}
+\tag{E5.2}
+\end{align}
+The optimizer is the \textbf{projected derivative}
+\begin{align}
+\boxed{f_P=\text{specific feasible derivative produced by the projection}.}
+\tag{E5.3}
+\end{align}
+For theoretical error analysis only, introduce
+\begin{align}
+\boxed{f^\star=\text{ideal/reference feasible derivative}.}
+\tag{E5.4}
+\end{align}
+Thus
+\begin{align}
+\boxed{\widetilde f_\omega=\text{raw neural derivative},}
+\tag{E5.5}
+\end{align}
+\begin{align}
+\boxed{f=\text{dummy optimization variable},}
+\tag{E5.6}
+\end{align}
+\begin{align}
+\boxed{f_P=\text{projected derivative actually integrated},}
+\tag{E5.7}
+\end{align}
+and
+\begin{align}
+\boxed{f^\star=\text{feasible theoretical reference}.}
+\tag{E5.8}
+\end{align}
+
+\section*{2. One running 2C example used throughout the theory}
+
+Consider one thermal zone with two state coordinates:
+\begin{align}
+\boxed{x=\begin{bmatrix}T_a\\T_m\end{bmatrix}.}
+\tag{E5.9}
+\end{align}
+The raw neural model proposes
+\begin{align}
+\boxed{\widetilde f_\omega=\begin{bmatrix}\widetilde{\dot T}_a\\\widetilde{\dot T}_m\end{bmatrix}.}
+\tag{E5.10}
+\end{align}
+The exact total-energy balance is
+\begin{align}
+\boxed{C_a\dot T_a+C_m\dot T_m=b(x,v;\theta).}
+\tag{E5.11}
+\end{align}
+For the one-zone 2C RC structure,
+\begin{align}
+\boxed{b(x,v;\theta)=\frac{T_o-T_a}{R_o}+Q_c+Q_r.}
+\tag{E5.12}
+\end{align}
+The air--mass exchange resistance \(R_m\) and radiative split \(\eta_r\) do not appear in this total-energy equation because they describe internal redistribution and cancel when the air and mass balances are added.
+
+Equation (E5.11) is
+\begin{align}
+\boxed{Af=b,}
+\tag{E5.13}
+\end{align}
+with
+\begin{align}
+\boxed{A=\begin{bmatrix}C_a&C_m\end{bmatrix}.}
+\tag{E5.14}
+\end{align}
+
+\section*{3. Linear-algebra meaning of the mapping \(A\)}
+
+For one-zone 1C,
+\begin{align}
+f=\begin{bmatrix}\dot T\end{bmatrix}\in\mathbb R^1,
+\qquad
+A=\begin{bmatrix}C\end{bmatrix}.
+\end{align}
+Therefore
+\begin{align}
+\boxed{A:\mathbb R^1\rightarrow\mathbb R^1,}
+\tag{E5.15}
+\end{align}
+and the map is
+\begin{align}
+\boxed{\dot T\longmapsto C\dot T.}
+\tag{E5.16}
+\end{align}
+There is one derivative coordinate and one independent energy-balance equation.
+
+For one-zone 2C,
+\begin{align}
+f=\begin{bmatrix}\dot T_a\\\dot T_m\end{bmatrix}\in\mathbb R^2,
+\qquad
+A=\begin{bmatrix}C_a&C_m\end{bmatrix}.
+\end{align}
+Therefore
+\begin{align}
+\boxed{A:\mathbb R^2\rightarrow\mathbb R^1,}
+\tag{E5.17}
+\end{align}
+and
+\begin{align}
+\boxed{\begin{bmatrix}\dot T_a\\\dot T_m\end{bmatrix}\longmapsto C_a\dot T_a+C_m\dot T_m.}
+\tag{E5.18}
+\end{align}
+Thus two derivative coordinates are summarized by one exact total-energy constraint.
+
+For two-zone 2C, \(f\in\mathbb R^4\) and there are two independent zone total-energy balances, so
+\begin{align}
+\boxed{A:\mathbb R^4\rightarrow\mathbb R^2.}
+\tag{E5.19}
+\end{align}
+
+\section*{4. The feasible derivative set}
+
+The hard energy-balance constraint defines
+\begin{align}
+\boxed{\mathcal F=\{f:Af=b\}.}
+\tag{E5.20}
+\end{align}
+For one-zone 2C, \(\mathcal F\) is a line in the two-dimensional derivative plane \((\dot T_a,\dot T_m)\). The raw neural derivative may lie away from that line. EBP asks for the point on the line closest to the neural proposal.
+
+\section*{5. Weighted projection optimization}
+
+Let
+\begin{align}
+\boxed{W\succ0.}
+\tag{E5.21}
+\end{align}
+Define
+\begin{align}
+\boxed{
+\begin{aligned}
+f_P=\arg\min_f\quad&\frac12(f-\widetilde f_\omega)^\top W(f-\widetilde f_\omega)\\
+\text{subject to}\quad&Af=b.
+\end{aligned}}
+\tag{E5.22}
+\end{align}
+Here \(f\) is only the optimization variable. After solving the optimization, its optimal value is \(f_P\).
+
+A physically interpretable primary 2C choice is
+\begin{align}
+\boxed{W_C=\operatorname{diag}(C_a^2,C_m^2).}
+\tag{E5.23}
+\end{align}
+Then the objective is
+\begin{align}
+\boxed{C_a^2(\Delta\dot T_a)^2+C_m^2(\Delta\dot T_m)^2,}
+\tag{E5.24}
+\end{align}
+which minimizes squared corrections in energy-rate-like coordinates.
+
+\section*{6. Lagrangian derivation}
+
+Introduce multiplier \(\nu\). The Lagrangian is
+\begin{align}
+\boxed{\mathcal L(f,\nu)=\frac12(f-\widetilde f_\omega)^\top W(f-\widetilde f_\omega)+\nu^\top(Af-b).}
+\tag{E5.25}
+\end{align}
+Stationarity gives
+\begin{align}
+\boxed{W(f-\widetilde f_\omega)+A^\top\nu=0.}
+\tag{E5.26}
+\end{align}
+Hence
+\begin{align}
+\boxed{f=\widetilde f_\omega-W^{-1}A^\top\nu.}
+\tag{E5.27}
+\end{align}
+
+\section*{7. The second KKT equation is the original physical constraint}
+
+The optimization already requires
+\begin{align}
+\boxed{Af=b,}
+\tag{E5.28}
+\end{align}
+or
+\begin{align}
+\boxed{Af-b=0.}
+\tag{E5.29}
+\end{align}
+Thus the KKT conditions are
+\begin{align}
+\boxed{W(f-\widetilde f_\omega)+A^\top\nu=0,}
+\tag{E5.30}
+\end{align}
+and
+\begin{align}
+\boxed{Af-b=0.}
+\tag{E5.31}
+\end{align}
+
+\section*{8. Deriving the projection step by step}
+
+Substitute equation (E5.27) into \(Af=b\):
+\begin{align}
+A\left(\widetilde f_\omega-W^{-1}A^\top\nu\right)=b.
+\end{align}
+Therefore
+\begin{align}
+AW^{-1}A^\top\nu=A\widetilde f_\omega-b.
+\end{align}
+Define
+\begin{align}
+\boxed{\rho=A\widetilde f_\omega-b,}
+\tag{E5.32}
+\end{align}
+and
+\begin{align}
+\boxed{M=AW^{-1}A^\top.}
+\tag{E5.33}
+\end{align}
+Then
+\begin{align}
+\boxed{M\nu=\rho.}
+\tag{E5.34}
+\end{align}
+Numerically, solve this system directly rather than explicitly computing \(M^{-1}\). Then
+\begin{align}
+\boxed{f_P=\widetilde f_\omega-W^{-1}A^\top\nu.}
+\tag{E5.35}
+\end{align}
+The equivalent analytical expression is
+\begin{align}
+\boxed{f_P=\widetilde f_\omega-W^{-1}A^\top(AW^{-1}A^\top)^{-1}(A\widetilde f_\omega-b).}
+\tag{E5.36}
+\end{align}
+
+\section*{9. KKT matrix form}
+
+Since
+\begin{align}
+A(f_P-\widetilde f_\omega)=b-A\widetilde f_\omega=-\rho,
+\end{align}
+we have
+\begin{align}
+\boxed{A(f_P-\widetilde f_\omega)=-\rho.}
+\tag{E5.37}
+\end{align}
+Stacking stationarity and feasibility yields
+\begin{align}
+\boxed{\begin{bmatrix}W&A^\top\\A&0\end{bmatrix}\begin{bmatrix}f_P-\widetilde f_\omega\\\nu\end{bmatrix}=\begin{bmatrix}0\\-\rho\end{bmatrix}.}
+\tag{E5.38}
+\end{align}
+
+\section*{10. Raw and projected balance residuals}
+
+Before projection,
+\begin{align}
+\boxed{\rho=A\widetilde f_\omega-b.}
+\tag{E5.39}
+\end{align}
+For one-zone 2C,
+\begin{align}
+\boxed{\rho=C_a\widetilde{\dot T}_a+C_m\widetilde{\dot T}_m-b.}
+\tag{E5.40}
+\end{align}
+After projection,
+\begin{align}
+\boxed{\rho_P=Af_P-b.}
+\tag{E5.41}
+\end{align}
+By construction,
+\begin{align}
+\boxed{\rho_P=0}
+\tag{E5.42}
+\end{align}
+mathematically and near machine precision numerically.
+
+\section*{11. Exact feasibility proof}
+
+Using equation (E5.36),
+\begin{align}
+Af_P=A\widetilde f_\omega-AW^{-1}A^\top(AW^{-1}A^\top)^{-1}(A\widetilde f_\omega-b).
+\end{align}
+Hence
+\begin{align}
+\boxed{Af_P=b.}
+\tag{E5.43}
+\end{align}
+
+\section*{12. Projection as linear algebra}
+
+The compact notation is
+\begin{align}
+\boxed{f_P=\operatorname{Proj}_{\mathcal F}^{W}(\widetilde f_\omega).}
+\tag{E5.44}
+\end{align}
+For every feasible \(f\),
+\begin{align}
+\boxed{\|f_P-\widetilde f_\omega\|_W\le\|f-\widetilde f_\omega\|_W,}
+\tag{E5.45}
+\end{align}
+where
+\begin{align}
+\boxed{\|u\|_W^2=u^\top Wu.}
+\tag{E5.46}
+\end{align}
+
+\section*{13. Projection correction and correction energy}
+
+Define
+\begin{align}
+\boxed{c=f_P-\widetilde f_\omega.}
+\tag{E5.47}
+\end{align}
+Then
+\begin{align}
+\boxed{c=-W^{-1}A^\top M^{-1}\rho.}
+\tag{E5.48}
+\end{align}
+The weighted correction magnitude is
+\begin{align}
+\boxed{c^\top Wc=\rho^\top M^{-1}\rho.}
+\tag{E5.49}
+\end{align}
+
+\section*{14. The theoretical reference derivative and the Pythagorean identity}
+
+Let \(f^\star\) satisfy
+\begin{align}
+\boxed{Af^\star=b.}
+\tag{E5.50}
+\end{align}
+Because both \(f_P\) and \(f^\star\) are feasible,
+\begin{align}
+\boxed{f_P-f^\star\in\ker(A).}
+\tag{E5.51}
+\end{align}
+The projection correction is \(W\)-orthogonal to feasible directions:
+\begin{align}
+\boxed{(\widetilde f_\omega-f_P)^\top W(f_P-f^\star)=0.}
+\tag{E5.52}
+\end{align}
+Therefore
+\begin{align}
+\boxed{\|\widetilde f_\omega-f^\star\|_W^2=\|\widetilde f_\omega-f_P\|_W^2+\|f_P-f^\star\|_W^2.}
+\tag{E5.53}
+\end{align}
+Equivalently,
+\begin{align}
+\boxed{\|f_P-f^\star\|_W^2=\|\widetilde f_\omega-f^\star\|_W^2-\rho^\top M^{-1}\rho.}
+\tag{E5.54}
+\end{align}
+This is a weighted Pythagorean equality, not merely triangle inequality, because projection creates orthogonality.
+
+\section*{15. Null-space interpretation of neural freedom}
+
+If \(f_0\) is one feasible solution, every feasible derivative can be written
+\begin{align}
+\boxed{f=f_0+n,\qquad n\in\ker(A).}
+\tag{E5.55}
+\end{align}
+Thus
+\begin{align}
+\boxed{\ker(A)=\text{derivative directions that change no hard energy balance}.}
+\tag{E5.56}
+\end{align}
+
+\section*{16. Why 1C has zero neural derivative freedom}
+
+For one-zone 1C,
+\begin{align}
+A=\begin{bmatrix}C\end{bmatrix},\qquad \operatorname{rank}(A)=1,\qquad n_x=1.
+\end{align}
+Therefore
+\begin{align}
+\boxed{\dim\ker(A)=1-1=0.}
+\tag{E5.57}
+\end{align}
+Once \(C\dot T=b\) is imposed,
+\begin{align}
+\boxed{\dot T=\frac{b}{C}}
+\tag{E5.58}
+\end{align}
+is unique. The raw NN cannot alter the projected derivative while retaining the constraint.
+
+\section*{17. Why 2C retains one neural direction per zone}
+
+For one-zone 2C,
+\begin{align}
+A=\begin{bmatrix}C_a&C_m\end{bmatrix},\qquad n_x=2,\qquad \operatorname{rank}(A)=1.
+\end{align}
+Hence
+\begin{align}
+\boxed{\dim\ker(A)=2-1=1.}
+\tag{E5.59}
+\end{align}
+A null-space basis vector is
+\begin{align}
+\boxed{n_{\rm int}=\begin{bmatrix}C_m\\-C_a\end{bmatrix}.}
+\tag{E5.60}
+\end{align}
+Indeed,
+\begin{align}
+An_{\rm int}=C_aC_m-C_mC_a=0.
+\end{align}
+This is the internal air/mass redistribution direction.
+
+\section*{18. Multi-zone rank/nullity rule}
+
+If zone \(i\) has \(n_i\) thermal states and one exact total-energy constraint,
+\begin{align}
+N_x=\sum_{i=1}^{Z}n_i,
+\end{align}
+and, for independent zone constraints,
+\begin{align}
+\operatorname{rank}(A)=Z.
+\end{align}
+Thus
+\begin{align}
+\boxed{\dim\ker(A)=N_x-Z=\sum_{i=1}^{Z}(n_i-1).}
+\tag{E5.61}
+\end{align}
+For 1C zones, nullity is zero. For 2C zones,
+\begin{align}
+\boxed{\dim\ker(A)=Z.}
+\tag{E5.62}
+\end{align}
+
+\section*{19. One wholesome numerical example}
+
+Let
+\begin{align}
+\boxed{C_a=2,\qquad C_m=8,\qquad b=10.}
+\tag{E5.63}
+\end{align}
+The feasible balance is
+\begin{align}
+\boxed{2\dot T_a+8\dot T_m=10.}
+\tag{E5.64}
+\end{align}
+Suppose
+\begin{align}
+\boxed{\widetilde f_\omega=\begin{bmatrix}3\\1\end{bmatrix}.}
+\tag{E5.65}
+\end{align}
+Then
+\begin{align}
+\boxed{\rho=2(3)+8(1)-10=4.}
+\tag{E5.66}
+\end{align}
+Choose
+\begin{align}
+\boxed{W=\operatorname{diag}(4,64).}
+\tag{E5.67}
+\end{align}
+With capacity-squared weighting,
+\begin{align}
+\boxed{\dot T_a^P=\widetilde{\dot T}_a-\frac{\rho}{2C_a}=2,}
+\tag{E5.68}
+\end{align}
+\begin{align}
+\boxed{\dot T_m^P=\widetilde{\dot T}_m-\frac{\rho}{2C_m}=0.75.}
+\tag{E5.69}
+\end{align}
+Therefore
+\begin{align}
+\boxed{f_P=\begin{bmatrix}2\\0.75\end{bmatrix}.}
+\tag{E5.70}
+\end{align}
+Check:
+\begin{align}
+2(2)+8(0.75)=10,
+\end{align}
+so
+\begin{align}
+\boxed{\rho_P=0.}
+\tag{E5.71}
+\end{align}
+
+\section*{20. Particular plus null-space decomposition of the same example}
+
+One feasible particular solution is
+\begin{align}
+\boxed{f_{\rm particular}=\begin{bmatrix}5\\0\end{bmatrix}.}
+\tag{E5.72}
+\end{align}
+A null-space vector is
+\begin{align}
+\boxed{n=\begin{bmatrix}8\\-2\end{bmatrix}.}
+\tag{E5.73}
+\end{align}
+Every feasible derivative is
+\begin{align}
+\boxed{f=\begin{bmatrix}5\\0\end{bmatrix}+\gamma\begin{bmatrix}8\\-2\end{bmatrix}.}
+\tag{E5.74}
+\end{align}
+For \(f_P=[2,0.75]^\top\), \(\gamma=-0.375\). Thus EBP-2C uses physics to fix the externally required component while retaining an internal null-space degree of freedom.
+
+\section*{21. Contrast with 1C using the same idea}
+
+If \(C=2\) and \(b=10\),
+\begin{align}
+2\dot T=10,
+\end{align}
+so
+\begin{align}
+\boxed{\dot T=5.}
+\tag{E5.75}
+\end{align}
+No alternative feasible derivative exists. Any raw NN proposal projects to the same derivative.
+
+\section*{22. Normalized versus physical derivative notation}
+
+The normalized state and forcing are
+\begin{align}
+\boxed{z=S_x^{-1}(x-\mu_x),}
+\tag{E5.76}
+\end{align}
+\begin{align}
+\boxed{\widetilde v=S_v^{-1}(v-\mu_v).}
+\tag{E5.77}
+\end{align}
+The neural network outputs
+\begin{align}
+\boxed{g_\omega(z,\widetilde v)=\frac{dz}{d\tau}.}
+\tag{E5.78}
+\end{align}
+Convert to physical units:
+\begin{align}
+\boxed{\widetilde f_\omega=\frac{S_x}{\Delta t}g_\omega.}
+\tag{E5.79}
+\end{align}
+Projection gives physical derivative \(f_P\). Convert back for the normalized RK4 solver:
+\begin{align}
+\boxed{g_P=\Delta tS_x^{-1}f_P.}
+\tag{E5.80}
+\end{align}
+Thus
+\begin{align}
+\boxed{g_\omega\neq g_P}
+\tag{E5.81}
+\end{align}
+in general. There is only one neural network, \(g_\omega\). The quantity \(g_P\) is obtained deterministically after physical projection.
+
+\section*{23. Complete forward-pass flow at one RK4 stage}
+
+At RK4 stage \(q\), begin with
+\begin{align}
+\boxed{z^{(q)}.}
+\tag{E5.82}
+\end{align}
+Recover physical state:
+\begin{align}
+\boxed{x^{(q)}=\mu_x+S_xz^{(q)}.}
+\tag{E5.83}
+\end{align}
+Normalize forcing:
+\begin{align}
+\boxed{\widetilde v_k=S_v^{-1}(v_k-\mu_v).}
+\tag{E5.84}
+\end{align}
+Evaluate neural network:
+\begin{align}
+\boxed{g_\omega^{(q)}=g_\omega(z^{(q)},\widetilde v_k).}
+\tag{E5.85}
+\end{align}
+Convert to physical raw derivative:
+\begin{align}
+\boxed{\widetilde f_\omega^{(q)}=\frac{S_x}{\Delta t}g_\omega^{(q)}.}
+\tag{E5.86}
+\end{align}
+Construct current \(A^{(q)}\) and \(b^{(q)}\), then
+\begin{align}
+\boxed{\rho^{(q)}=A^{(q)}\widetilde f_\omega^{(q)}-b^{(q)}.}
+\tag{E5.87}
+\end{align}
+Construct
+\begin{align}
+\boxed{M^{(q)}=A^{(q)}W^{-1}A^{(q)\top}.}
+\tag{E5.88}
+\end{align}
+Solve
+\begin{align}
+\boxed{M^{(q)}\nu^{(q)}=\rho^{(q)}.}
+\tag{E5.89}
+\end{align}
+Project:
+\begin{align}
+\boxed{f_P^{(q)}=\widetilde f_\omega^{(q)}-W^{-1}A^{(q)\top}\nu^{(q)}.}
+\tag{E5.90}
+\end{align}
+Verify
+\begin{align}
+\boxed{\rho_P^{(q)}=A^{(q)}f_P^{(q)}-b^{(q)}\approx0.}
+\tag{E5.91}
+\end{align}
+Scale back to normalized derivative:
+\begin{align}
+\boxed{g_P^{(q)}=\Delta tS_x^{-1}f_P^{(q)}.}
+\tag{E5.92}
+\end{align}
+RK4 uses \(g_P^{(q)}\), not \(g_\omega^{(q)}\).
+
+The full chain is
+\begin{align}
+\boxed{x,v\rightarrow z,\widetilde v\rightarrow g_\omega\rightarrow\widetilde f_\omega\rightarrow(A,b)\rightarrow f_P\rightarrow g_P\rightarrow\text{RK4}.}
+\tag{E5.93}
+\end{align}
+
+\section*{24. Projection is applied at every RK4 stage}
+
+Because quantities such as
+\begin{align}
+\frac{T_o-T_a}{R_o}
+\end{align}
+and
+\begin{align}
+\frac{T_K-T_D}{R_{DK}}
+\end{align}
+depend on the current stage state, \(b\) must be recomputed at every RK4 stage. The model therefore uses stage-wise projection, not endpoint-only correction.
+
+\section*{25. Why the projection solve is differentiable}
+
+The projection is part of the computational graph:
+\begin{align}
+g_\omega\rightarrow\widetilde f_\omega\rightarrow\rho\rightarrow M\rightarrow\nu\rightarrow f_P\rightarrow g_P.
+\end{align}
+The nontrivial algebraic operation is
+\begin{align}
+\boxed{\nu=\operatorname{solve}(M,\rho),}
+\tag{E5.94}
+\end{align}
+meaning solve \(M\nu=\rho\) without explicitly forming \(M^{-1}\).
+
+For nonsingular, well-conditioned \(M\), the solution is differentiable with respect to both \(M\) and \(\rho\). Therefore automatic differentiation propagates gradients through the linear solve and through all operations used to construct \(M\) and \(\rho\).
+
+The projection is therefore a differentiable algebraic layer, not a detached external optimization routine.
+
+\section*{26. How gradients reach neural and physical parameters}
+
+The raw neural derivative depends on neural parameters:
+\begin{align}
+\boxed{\widetilde f_\omega=\widetilde f_\omega(\omega).}
+\tag{E5.95}
+\end{align}
+The constraint matrix depends on capacitances:
+\begin{align}
+\boxed{A=A(C).}
+\tag{E5.96}
+\end{align}
+The right-hand side depends on resistances and other physical parameters:
+\begin{align}
+\boxed{b=b(R,x,v,\lambda,\ldots).}
+\tag{E5.97}
+\end{align}
+Thus
+\begin{align}
+\boxed{f_P=f_P(\omega,C,R,x,v,\lambda,\ldots).}
+\tag{E5.98}
+\end{align}
+For the neural parameters,
+\begin{align}
+\boxed{\frac{d\mathcal L}{d\omega}=\frac{\partial\mathcal L}{\partial f_P}\frac{\partial f_P}{\partial\widetilde f_\omega}\frac{\partial\widetilde f_\omega}{\partial g_\omega}\frac{\partial g_\omega}{\partial\omega}.}
+\tag{E5.99}
+\end{align}
+If \(W\) depends on capacitance,
+\begin{align}
+\boxed{\frac{d\mathcal L}{dC}=\frac{\partial\mathcal L}{\partial f_P}\left[\frac{\partial f_P}{\partial A}\frac{\partial A}{\partial C}+\frac{\partial f_P}{\partial W}\frac{\partial W}{\partial C}\right]+\cdots.}
+\tag{E5.100}
+\end{align}
+
+\section*{27. RC parameters are learnable}
+
+The paper does not assume true RC parameters are known. Positive resistances and capacitances are parameterized as
+\begin{align}
+\boxed{R=R_{\min}+\operatorname{softplus}(\rho_R),}
+\tag{E5.101}
+\end{align}
+\begin{align}
+\boxed{C=C_{\min}+\operatorname{softplus}(\rho_C).}
+\tag{E5.102}
+\end{align}
+Thus \(\rho_R\) and \(\rho_C\) are trainable unconstrained variables.
+
+The physical manifold itself evolves during learning because \(A\) and \(b\) change as \(R\) and \(C\) change.
+
+\section*{28. Hard-balance versus internal-distribution parameters in 2C}
+
+For one-zone 2C,
+\begin{align}
+b=\frac{T_o-T_a}{R_o}+Q_c+Q_r.
+\end{align}
+The hard projection therefore directly uses
+\begin{align}
+\boxed{R_o,\quad C_a,\quad C_m.}
+\tag{E5.103}
+\end{align}
+The internal resistance and radiative split
+\begin{align}
+\boxed{R_m,\quad\eta_r}
+\tag{E5.104}
+\end{align}
+do not appear in the total-energy constraint. They are learned through internal-physics regularization.
+
+\section*{29. Projected full 2C air and mass residuals}
+
+After projection, define the separate air residual
+\begin{align}
+\boxed{\begin{aligned}r_a^P={}&C_a\dot T_a^P-\frac{T_o-T_a}{R_o}-\frac{T_m-T_a}{R_m}-Q_c-(1-\eta_r)Q_r.\end{aligned}}
+\tag{E5.105}
+\end{align}
+and mass residual
+\begin{align}
+\boxed{r_m^P=C_m\dot T_m^P-\frac{T_a-T_m}{R_m}-\eta_rQ_r.}
+\tag{E5.106}
+\end{align}
+Adding them gives the hard total-energy residual, so
+\begin{align}
+\boxed{r_a^P+r_m^P=0,}
+\tag{E5.107}
+\end{align}
+and therefore
+\begin{align}
+\boxed{r_m^P=-r_a^P.}
+\tag{E5.108}
+\end{align}
+These residuals measure remaining internal air/mass redistribution mismatch after exact total-energy conservation has already been imposed.
+
+\section*{30. Loss 1: projected rollout data loss}
+
+The trajectory is generated by
+\begin{align}
+\boxed{\frac{dx}{dt}=f_P.}
+\tag{E5.109}
+\end{align}
+For rollout start \(k\),
+\begin{align}
+\boxed{\mathcal L_{\rm data}^{(k)}=\frac{1}{N_r}\sum_{\ell=1}^{N_r}\left\|S_y^{-1}(\widehat y_{k+\ell|k}-y_{k+\ell})\right\|_2^2.}
+\tag{E5.110}
+\end{align}
+Across windows,
+\begin{align}
+\boxed{\mathcal L_{\rm data}=\frac{1}{|\mathcal W_{\rm tr}|}\sum_{k\in\mathcal W_{\rm tr}}\mathcal L_{\rm data}^{(k)}.}
+\tag{E5.111}
+\end{align}
+
+\section*{31. Loss 2: internal-physics loss for 2C}
+
+For one zone,
+\begin{align}
+\boxed{\mathcal L_{\rm int}=\operatorname{mean}\left[\frac{(r_a^P)^2+(r_m^P)^2}{(q^\star)^2}\right].}
+\tag{E5.112}
+\end{align}
+This term guides the neural null-space dynamics and trains internal physical parameters such as \(R_m\) and \(\eta_r\). For 1C this term is absent.
+
+\section*{32. Loss 3: projection-correction loss}
+
+Define
+\begin{align}
+c=f_P-\widetilde f_\omega.
+\end{align}
+Then
+\begin{align}
+\boxed{\mathcal L_{\rm corr}=\operatorname{mean}[c^\top Wc].}
+\tag{E5.113}
+\end{align}
+Equivalently,
+\begin{align}
+\boxed{\mathcal L_{\rm corr}=\operatorname{mean}[\rho^\top M^{-1}\rho].}
+\tag{E5.114}
+\end{align}
+This encourages the raw NN to propose derivatives near the feasible manifold. It is not required for conservation.
+
+\section*{33. Loss 4: ordinary neural regularization}
+
+\begin{align}
+\boxed{\mathcal L_{\rm reg}=\|\omega\|_2^2+\|\psi\|_2^2.}
+\tag{E5.115}
+\end{align}
+For 1C the encoder term is absent.
+
+\section*{34. Complete EBP objective}
+
+For 2C,
+\begin{align}
+\boxed{\mathcal J_{\rm EBP}=\lambda_y\mathcal L_{\rm data}+\lambda_{\rm int}\mathcal L_{\rm int}+\lambda_{\rm corr}\mathcal L_{\rm corr}+\lambda_{\rm wd}\mathcal L_{\rm reg}.}
+\tag{E5.116}
+\end{align}
+No hard-balance penalty is required because
+\begin{align}
+\boxed{Af_P=b}
+\tag{E5.117}
+\end{align}
+is already enforced by the forward model.
+
+\section*{35. Projection diagnostics: training and testing}
+
+At every RK4 projection evaluation, the model has
+\begin{align}
+\boxed{\rho=A\widetilde f_\omega-b,}
+\tag{E5.118}
+\end{align}
+\begin{align}
+\boxed{\rho_P=Af_P-b,}
+\tag{E5.119}
+\end{align}
+\begin{align}
+\boxed{c=f_P-\widetilde f_\omega,}
+\tag{E5.120}
+\end{align}
+and
+\begin{align}
+\boxed{E_{\rm corr}=c^\top Wc=\rho^\top M^{-1}\rho.}
+\tag{E5.121}
+\end{align}
+During training, these are optimization/stability diagnostics using current parameter values. During final testing, the same quantities are scientific evaluation diagnostics using frozen learned parameters.
+
+For full-year runs, aggregate mean, RMS, maxima, and quantiles rather than necessarily storing every RK4-stage value.
+
+\section*{36. Projection unit tests are separate code-validation tests}
+
+The exact-feasibility test verifies
+\begin{align}
+\boxed{\|Af_P-b\|\le\epsilon_{\rm proj}.}
+\tag{E5.122}
+\end{align}
+The KKT stationarity test verifies
+\begin{align}
+\boxed{W(f_P-\widetilde f_\omega)+A^\top\nu\approx0.}
+\tag{E5.123}
+\end{align}
+The already-feasible test verifies
+\begin{align}
+\boxed{A\widetilde f=b\Rightarrow f_P=\widetilde f.}
+\tag{E5.124}
+\end{align}
+The correction-energy identity test verifies
+\begin{align}
+\boxed{(f_P-\widetilde f)^\top W(f_P-\widetilde f)\approx\rho^\top M^{-1}\rho.}
+\tag{E5.125}
+\end{align}
+The Pythagorean test verifies
+\begin{align}
+\boxed{\|\widetilde f-f^\star\|_W^2\approx\|\widetilde f-f_P\|_W^2+\|f_P-f^\star\|_W^2.}
+\tag{E5.126}
+\end{align}
+The gradient test verifies finite gradients reach applicable parameters:
+\begin{align}
+\boxed{\omega,\quad R,\quad C,\quad\alpha_c,\quad\alpha_r,\quad\eta.}
+\tag{E5.127}
+\end{align}
+The rank/nullity test verifies
+\begin{align}
+\boxed{\text{1C one zone: }\dim\ker(A)=0,}
+\tag{E5.128}
+\end{align}
+\begin{align}
+\boxed{\text{2C one zone: }\dim\ker(A)=1,}
+\tag{E5.129}
+\end{align}
+and
+\begin{align}
+\boxed{\text{2C two zones: }\dim\ker(A)=2.}
+\tag{E5.130}
+\end{align}
+These tests use small synthetic values and do not require learned building parameters.
+
+\section*{37. Trained EBP checkpoint contents}
+
+A trained 2C EBP checkpoint contains
+\begin{align}
+\boxed{\omega^\star=\text{trained neural vector-field parameters},}
+\tag{E5.131}
+\end{align}
+\begin{align}
+\boxed{\psi^\star=\text{trained causal-encoder parameters},}
+\tag{E5.132}
+\end{align}
+and applicable learned physical parameters such as
+\begin{align}
+\boxed{R_o^\star,\quad R_m^\star,\quad C_a^\star,\quad C_m^\star,\quad\eta_r^\star.}
+\tag{E5.133}
+\end{align}
+DEP1 additionally contains
+\begin{align}
+\boxed{R_{DK}^\star.}
+\tag{E5.134}
+\end{align}
+DEP2 additionally contains
+\begin{align}
+\boxed{\alpha_c^\star,\quad\alpha_r^\star,}
+\tag{E5.135}
+\end{align}
+from which \(\lambda_c^\star,\lambda_r^\star\) are reconstructed.
+
+The checkpoint also stores
+\begin{align}
+\boxed{\mu_x,S_x,\mu_v,S_v,S_y}
+\tag{E5.136}
+\end{align}
+and frozen hyperparameters.
+
+\section*{38. Projection remains part of testing and deployment}
+
+The projection is not discarded after training. The deployed vector field is
+\begin{align}
+\boxed{f_{\rm EBP}(x,v)=\Pi\left(\widetilde f_{\omega^\star}(x,v);A_{\theta^\star}(x,v),b_{\theta^\star}(x,v),W_{\theta^\star}\right).}
+\tag{E5.137}
+\end{align}
+During testing, every RK4 stage still solves the small projection system using frozen learned parameters.
+
+\section*{39. Conservation is exact relative to the learned model}
+
+The projection guarantees
+\begin{align}
+\boxed{A_{\theta^\star}f_P=b_{\theta^\star}.}
+\tag{E5.138}
+\end{align}
+This is exact satisfaction of the learned/modelled energy balance, not a claim that the learned parameters equal inaccessible true physical parameters.
+
+\section*{40. All-to-One 1C EBP}
+
+\begin{align}
+\boxed{A_A^{1C}=\begin{bmatrix}C_A\end{bmatrix},}
+\tag{E5.139}
+\end{align}
+\begin{align}
+\boxed{b_A^{1C}=\frac{T_o-T_A}{R_{Ao}}+Q_{c,A}+\eta_{r,A}Q_{r,A}.}
+\tag{E5.140}
+\end{align}
+Therefore
+\begin{align}
+\boxed{\dot T_A^P=\frac{1}{C_A}\left[\frac{T_o-T_A}{R_{Ao}}+Q_{c,A}+\eta_{r,A}Q_{r,A}\right].}
+\tag{E5.141}
+\end{align}
+No neural derivative freedom remains.
+
+\section*{41. All-to-One 2C EBP}
+
+\begin{align}
+\boxed{A_A^{2C}=\begin{bmatrix}C_{a,A}&C_{m,A}\end{bmatrix},}
+\tag{E5.142}
+\end{align}
+\begin{align}
+\boxed{b_A^{2C}=\frac{T_o-T_{a,A}}{R_{Ao}}+Q_{c,A}+Q_{r,A}.}
+\tag{E5.143}
+\end{align}
+The raw violation is
+\begin{align}
+\boxed{\rho_A=C_{a,A}\widetilde{\dot T}_{a,A}+C_{m,A}\widetilde{\dot T}_{m,A}-b_A^{2C}.}
+\tag{E5.144}
+\end{align}
+For diagonal \(W_A\),
+\begin{align}
+\boxed{d_A=\frac{C_{a,A}^2}{w_{a,A}}+\frac{C_{m,A}^2}{w_{m,A}}.}
+\tag{E5.145}
+\end{align}
+Then
+\begin{align}
+\boxed{\dot T_{a,A}^{P}=\widetilde{\dot T}_{a,A}-\frac{C_{a,A}/w_{a,A}}{d_A}\rho_A,}
+\tag{E5.146}
+\end{align}
+\begin{align}
+\boxed{\dot T_{m,A}^{P}=\widetilde{\dot T}_{m,A}-\frac{C_{m,A}/w_{m,A}}{d_A}\rho_A.}
+\tag{E5.147}
+\end{align}
+
+\section*{42. Identity / IND 1C EBP}
+
+Dining:
+\begin{align}
+\boxed{A_D^{1C}=\begin{bmatrix}C_D\end{bmatrix},\qquad b_D=\frac{T_o-T_D}{R_{Do}}+Q_{c,D}+\eta_{r,D}Q_{r,D}.}
+\tag{E5.148}
+\end{align}
+\begin{align}
+\boxed{\dot T_D^P=\frac{b_D}{C_D}.}
+\tag{E5.149}
+\end{align}
+Kitchen:
+\begin{align}
+\boxed{A_K^{1C}=\begin{bmatrix}C_K\end{bmatrix},\qquad b_K=\frac{T_o-T_K}{R_{Ko}}+Q_{c,K}+\eta_{r,K}Q_{r,K}.}
+\tag{E5.150}
+\end{align}
+\begin{align}
+\boxed{\dot T_K^P=\frac{b_K}{C_K}.}
+\tag{E5.151}
+\end{align}
+with \(Q_{c,K}=Q_{ZIC,K}+Q_{AC,K}\) and \(Q_{r,K}=Q_{ZIR,K}\).
+
+\section*{43. Identity / IND 2C EBP}
+
+Dining:
+\begin{align}
+\boxed{A_D^{2C}=\begin{bmatrix}C_{a,D}&C_{m,D}\end{bmatrix},}
+\tag{E5.152}
+\end{align}
+\begin{align}
+\boxed{b_D=\frac{T_o-T_{a,D}}{R_{Do}}+Q_{c,D}+Q_{r,D}.}
+\tag{E5.153}
+\end{align}
+Kitchen:
+\begin{align}
+\boxed{A_K^{2C}=\begin{bmatrix}C_{a,K}&C_{m,K}\end{bmatrix},}
+\tag{E5.154}
+\end{align}
+\begin{align}
+\boxed{b_K=\frac{T_o-T_{a,K}}{R_{Ko}}+Q_{c,K}+Q_{r,K}.}
+\tag{E5.155}
+\end{align}
+Each zone is projected independently.
+
+\section*{44. Identity / DEP1 1C EBP}
+
+\begin{align}
+\boxed{A_{\rm DEP1}^{1C}=\begin{bmatrix}C_D&0\\0&C_K\end{bmatrix}.}
+\tag{E5.156}
+\end{align}
+\begin{align}
+\boxed{b_D^{1C}=\frac{T_o-T_D}{R_{Do}}+\frac{T_K-T_D}{R_{DK}}+Q_{c,D}+\eta_{r,D}Q_{r,D}.}
+\tag{E5.157}
+\end{align}
+\begin{align}
+\boxed{b_K^{1C}=\frac{T_o-T_K}{R_{Ko}}+\frac{T_D-T_K}{R_{DK}}+Q_{c,K}+\eta_{r,K}Q_{r,K}.}
+\tag{E5.158}
+\end{align}
+Thus
+\begin{align}
+\boxed{\dot T_D^P=\frac{b_D^{1C}}{C_D},\qquad \dot T_K^P=\frac{b_K^{1C}}{C_K}.}
+\tag{E5.159}
+\end{align}
+Inter-zone exchange cancels in the building-total balance:
+\begin{align}
+\boxed{\frac{T_K-T_D}{R_{DK}}+\frac{T_D-T_K}{R_{DK}}=0.}
+\tag{E5.160}
+\end{align}
+
+\section*{45. Identity / DEP1 2C EBP}
+
+\begin{align}
+\boxed{A_{\rm DEP1}^{2C}=\begin{bmatrix}C_{a,D}&C_{m,D}&0&0\\0&0&C_{a,K}&C_{m,K}\end{bmatrix}.}
+\tag{E5.161}
+\end{align}
+\begin{align}
+\boxed{b_D=\frac{T_o-T_{a,D}}{R_{Do}}+\frac{T_{a,K}-T_{a,D}}{R_{DK}}+Q_{c,D}+Q_{r,D}.}
+\tag{E5.162}
+\end{align}
+\begin{align}
+\boxed{b_K=\frac{T_o-T_{a,K}}{R_{Ko}}+\frac{T_{a,D}-T_{a,K}}{R_{DK}}+Q_{c,K}+Q_{r,K}.}
+\tag{E5.163}
+\end{align}
+Raw zone violations are
+\begin{align}
+\boxed{\rho_D=C_{a,D}\widetilde{\dot T}_{a,D}+C_{m,D}\widetilde{\dot T}_{m,D}-b_D,}
+\tag{E5.164}
+\end{align}
+\begin{align}
+\boxed{\rho_K=C_{a,K}\widetilde{\dot T}_{a,K}+C_{m,K}\widetilde{\dot T}_{m,K}-b_K.}
+\tag{E5.165}
+\end{align}
+For diagonal \(W\),
+\begin{align}
+\boxed{d_D=\frac{C_{a,D}^2}{w_{a,D}}+\frac{C_{m,D}^2}{w_{m,D}},\qquad d_K=\frac{C_{a,K}^2}{w_{a,K}}+\frac{C_{m,K}^2}{w_{m,K}}.}
+\tag{E5.166}
+\end{align}
+Then
+\begin{align}
+\boxed{\dot T_{a,D}^{P}=\widetilde{\dot T}_{a,D}-\frac{C_{a,D}/w_{a,D}}{d_D}\rho_D,}
+\tag{E5.167}
+\end{align}
+\begin{align}
+\boxed{\dot T_{m,D}^{P}=\widetilde{\dot T}_{m,D}-\frac{C_{m,D}/w_{m,D}}{d_D}\rho_D,}
+\tag{E5.168}
+\end{align}
+\begin{align}
+\boxed{\dot T_{a,K}^{P}=\widetilde{\dot T}_{a,K}-\frac{C_{a,K}/w_{a,K}}{d_K}\rho_K,}
+\tag{E5.169}
+\end{align}
+\begin{align}
+\boxed{\dot T_{m,K}^{P}=\widetilde{\dot T}_{m,K}-\frac{C_{m,K}/w_{m,K}}{d_K}\rho_K.}
+\tag{E5.170}
+\end{align}
+There are four derivative coordinates and two hard constraints, hence
+\begin{align}
+\boxed{\dim\ker(A)=2.}
+\tag{E5.171}
+\end{align}
+
+\section*{46. Identity / DEP2 allocation parameters}
+
+Define
+\begin{align}
+\boxed{\bar Q_c^{nh}=Q_{ZIC,A}+Q_{Sol1,A},}
+\tag{E5.172}
+\end{align}
+\begin{align}
+\boxed{\bar Q_r=Q_{ZIR,A}+Q_{Sol2,A}.}
+\tag{E5.173}
+\end{align}
+The constrained allocations are
+\begin{align}
+\boxed{\lambda_{c,D}=2\sigma(\alpha_c),\qquad\lambda_{c,K}=2[1-\sigma(\alpha_c)],}
+\tag{E5.174}
+\end{align}
+\begin{align}
+\boxed{\lambda_{r,D}=2\sigma(\alpha_r),\qquad\lambda_{r,K}=2[1-\sigma(\alpha_r)].}
+\tag{E5.175}
+\end{align}
+Therefore
+\begin{align}
+\boxed{\lambda_{c,D}+\lambda_{c,K}=2,\qquad\lambda_{r,D}+\lambda_{r,K}=2.}
+\tag{E5.176}
+\end{align}
+
+\section*{47. Identity / DEP2 1C EBP}
+
+\begin{align}
+\boxed{A_{\rm DEP2}^{1C}=\begin{bmatrix}C_D&0\\0&C_K\end{bmatrix}.}
+\tag{E5.177}
+\end{align}
+Dining:
+\begin{align}
+\boxed{\begin{aligned}b_D={}&\frac{T_o-T_D}{R_{Do}}+\frac{T_K-T_D}{R_{DK}}+Q_{AC,D}+\lambda_{c,D}\bar Q_c^{nh}+\eta_{r,D}\lambda_{r,D}\bar Q_r.\end{aligned}}
+\tag{E5.178}
+\end{align}
+Kitchen:
+\begin{align}
+\boxed{\begin{aligned}b_K={}&\frac{T_o-T_K}{R_{Ko}}+\frac{T_D-T_K}{R_{DK}}+Q_{AC,K}+\lambda_{c,K}\bar Q_c^{nh}+\eta_{r,K}\lambda_{r,K}\bar Q_r.\end{aligned}}
+\tag{E5.179}
+\end{align}
+Thus
+\begin{align}
+\boxed{\dot T_D^P=\frac{b_D}{C_D},\qquad\dot T_K^P=\frac{b_K}{C_K}.}
+\tag{E5.180}
+\end{align}
+For the primary DEP2 1C fit,
+\begin{align}
+\boxed{\eta_{r,D}=\eta_{r,K}=1,}
+\tag{E5.181}
+\end{align}
+while \(\alpha_r\), and hence \(\lambda_r\), may be learned.
+
+\section*{48. Identity / DEP2 2C EBP}
+
+\begin{align}
+\boxed{A_{\rm DEP2}^{2C}=\begin{bmatrix}C_{a,D}&C_{m,D}&0&0\\0&0&C_{a,K}&C_{m,K}\end{bmatrix}.}
+\tag{E5.182}
+\end{align}
+Dining:
+\begin{align}
+\boxed{\begin{aligned}b_D={}&\frac{T_o-T_{a,D}}{R_{Do}}+\frac{T_{a,K}-T_{a,D}}{R_{DK}}+Q_{AC,D}+\lambda_{c,D}\bar Q_c^{nh}+\lambda_{r,D}\bar Q_r.\end{aligned}}
+\tag{E5.183}
+\end{align}
+Kitchen:
+\begin{align}
+\boxed{\begin{aligned}b_K={}&\frac{T_o-T_{a,K}}{R_{Ko}}+\frac{T_{a,D}-T_{a,K}}{R_{DK}}+Q_{AC,K}+\lambda_{c,K}\bar Q_c^{nh}+\lambda_{r,K}\bar Q_r.\end{aligned}}
+\tag{E5.184}
+\end{align}
+The hard balance does not contain \(\eta_r\) because
+\begin{align}
+\boxed{(1-\eta_r)\lambda_r\bar Q_r+\eta_r\lambda_r\bar Q_r=\lambda_r\bar Q_r.}
+\tag{E5.185}
+\end{align}
+Thus \(\lambda_r\) controls total zone radiative allocation while \(\eta_r\) controls internal air/mass splitting.
+
+The projected Dining internal residuals are
+\begin{align}
+\boxed{\begin{aligned}r_{a,D}^{P}={}&C_{a,D}\dot T_{a,D}^{P}-\frac{T_o-T_{a,D}}{R_{Do}}-\frac{T_{m,D}-T_{a,D}}{R_{Dm}}-\frac{T_{a,K}-T_{a,D}}{R_{DK}}\\&-Q_{AC,D}-\lambda_{c,D}\bar Q_c^{nh}-(1-\eta_{r,D})\lambda_{r,D}\bar Q_r,\end{aligned}}
+\tag{E5.186}
+\end{align}
+\begin{align}
+\boxed{r_{m,D}^{P}=C_{m,D}\dot T_{m,D}^{P}-\frac{T_{a,D}-T_{m,D}}{R_{Dm}}-\eta_{r,D}\lambda_{r,D}\bar Q_r.}
+\tag{E5.187}
+\end{align}
+They satisfy
+\begin{align}
+\boxed{r_{a,D}^{P}+r_{m,D}^{P}=0,}
+\tag{E5.188}
+\end{align}
+and analogously
+\begin{align}
+\boxed{r_{a,K}^{P}+r_{m,K}^{P}=0.}
+\tag{E5.189}
+\end{align}
+
+\section*{49. Causal encoder remains part of EBP-2C}
+
+At rollout initialization,
+\begin{align}
+\boxed{T_{m,k}^{(0)}=T_{a,k}+\Delta T_m^{\max}\tanh[e_\psi(\mathcal C_k)].}
+\tag{E5.190}
+\end{align}
+The context is
+\begin{align}
+\boxed{\mathcal C_k=\{(y_j,v_j):j=k-L_e+1,\ldots,k\}.}
+\tag{E5.191}
+\end{align}
+The encoder is evaluated once at rollout start; projected dynamics propagate the hidden state afterward.
+
+\section*{50. Training loop with current physical parameters}
+
+At training iteration \(e\), let
+\begin{align}
+\boxed{\theta^{(e)}=\{R^{(e)},C^{(e)},R_m^{(e)},\eta^{(e)},\alpha_c^{(e)},\alpha_r^{(e)},\ldots\}.}
+\tag{E5.192}
+\end{align}
+For every rollout and every RK4 stage,
+\begin{align}
+z&\rightarrow x,\\
+(z,\widetilde v)&\rightarrow g_\omega,\\
+g_\omega&\rightarrow\widetilde f_\omega,\\
+(x,v,\theta^{(e)})&\rightarrow A^{(e)},b^{(e)},\\
+(\widetilde f_\omega,A^{(e)},b^{(e)})&\rightarrow f_P,\\
+f_P&\rightarrow g_P,\\
+g_P&\rightarrow\text{RK4 stage update}.
+\end{align}
+After rollout,
+\begin{align}
+\widehat y\rightarrow\mathcal L_{\rm data},
+\end{align}
+\begin{align}
+r_a^P,r_m^P\rightarrow\mathcal L_{\rm int},
+\end{align}
+and
+\begin{align}
+f_P-\widetilde f_\omega\rightarrow\mathcal L_{\rm corr}.
+\end{align}
+Then backpropagation updates all applicable trainable parameters.
+
+\section*{51. Hyperparameter-selection protocol}
+
+Hyperparameter tuning uses a smaller representative subset
+\begin{align}
+\boxed{\mathcal D_{\rm tune}\subset\mathcal D_{\rm train}.}
+\tag{E5.193}
+\end{align}
+Tunable quantities include
+\begin{align}
+\boxed{L_{\rm hid},\quad\bm n_{\rm hid},\quad\varphi,\quad N_r,\quad L_e,\quad N_s,}
+\tag{E5.194}
+\end{align}
+learning rate, batch size, optimizer, weight decay, and EBP-specific
+\begin{align}
+\boxed{\lambda_{\rm int},\quad\lambda_{\rm corr}.}
+\tag{E5.195}
+\end{align}
+The primary 2C projection metric is fixed as
+\begin{align}
+\boxed{W_i=\operatorname{diag}(C_{a,i}^2,C_{m,i}^2).}
+\tag{E5.196}
+\end{align}
+Choose
+\begin{align}
+\boxed{h^\star=\arg\min_h\mathcal E_{\rm tune,val}(h),}
+\tag{E5.197}
+\end{align}
+freeze \(h^\star\), then perform full training on complete training data. The test set is untouched until final evaluation.
+
+\section*{52. EBP Sim1, Sim2, and Sim3}
+
+Sim1 uses projected one-step dynamics:
+\begin{align}
+\boxed{\widehat x_{k+1}=\Phi_{\rm EBP}(x_k,v_k^{test};N_s).}
+\tag{E5.198}
+\end{align}
+For 1C, \(x_k=y_k\). For 2C, \(x_k=[y_k,E_{\psi^\star}(\mathcal C_k)]\).
+
+Sim2 recursively propagates
+\begin{align}
+\boxed{\widehat x_{k+1}=\Phi_{\rm EBP}(\widehat x_k,v_k^{test};N_s).}
+\tag{E5.199}
+\end{align}
+Recorded QAC and disturbances are replayed.
+
+Sim3 uses thermostat mass flow
+\begin{align}
+\boxed{\dot m_k=\pi_{\rm thermostat}(\widehat T_{z,k},T_{\rm set,k}),}
+\tag{E5.200}
+\end{align}
+Phase-C QAC
+\begin{align}
+\boxed{Q_{AC,k}=G_{QAC}(\dot m_k,\widehat T_{z,k},T_{sa,k},\ldots),}
+\tag{E5.201}
+\end{align}
+and projected thermal evolution
+\begin{align}
+\boxed{\widehat x_{k+1}=\Phi_{\rm EBP}(\widehat x_k,Q_{AC,k},d_k^{test};N_s).}
+\tag{E5.202}
+\end{align}
+
+\section*{53. Locked PHVAC contract}
+
+For every EBP Sim1/Sim2/Sim3 run,
+\begin{align}
+\boxed{\widehat P_{\rm HVAC,k}=G_{\rm PHVAC}(Q_{AC,k},\ldots).}
+\tag{E5.203}
+\end{align}
+For Sim1/Sim2,
+\begin{align}
+\boxed{Q_{AC,k}=Q_{AC,k}^{test}.}
+\tag{E5.204}
+\end{align}
+For Sim3, QAC is produced by the Phase-C QAC model from the thermostat mass-flow trajectory. PHVAC trajectories and metrics are saved for every simulation.
+
+\section*{54. Base PINODE versus EBP deployment}
+
+Base PINODE deploys
+\begin{align}
+\boxed{f_{\rm PINODE}=\widetilde f_{\omega^\star}.}
+\tag{E5.205}
+\end{align}
+EBP deploys
+\begin{align}
+\boxed{f_{\rm EBP}=f_P.}
+\tag{E5.206}
+\end{align}
+Projection remains part of both training and testing.
+
+\section*{55. Complete EBP algorithm}
+
+For each architecture and state order:
+
+\begin{enumerate}
+\item Load the same Phase-D \texttt{ML\_SciML/l1\_h1} data.
+\item Construct the same contiguous rollout windows.
+\item Compute training-only normalization.
+\item For 2C, construct the causal encoder context.
+\item Construct physical initial state \(x_k\).
+\item Normalize to \(z_k\).
+\item At every RK4 stage evaluate raw normalized derivative \(g_\omega\).
+\item Convert to physical raw derivative \(\widetilde f_\omega\).
+\item Construct architecture-specific \(A(x,v,\theta)\) and \(b(x,v,\theta)\).
+\item Compute \(\rho=A\widetilde f_\omega-b\).
+\item Construct \(M=AW^{-1}A^\top\).
+\item Solve \(M\nu=\rho\).
+\item Compute \(f_P=\widetilde f_\omega-W^{-1}A^\top\nu\).
+\item Monitor \(\rho_P=Af_P-b\).
+\item Convert to \(g_P=\Delta tS_x^{-1}f_P\).
+\item Use \(g_P\) in the RK4 stage.
+\item Repeat projection at every RK4 stage.
+\item Compute recursive data loss.
+\item For 2C, compute internal projected RC residual loss.
+\item Optionally compute correction loss.
+\item Log projection diagnostics.
+\item Backpropagate through the differentiable projection and rollout.
+\item Update neural, encoder, and applicable physical parameters.
+\item Tune hyperparameters on the smaller representative dataset.
+\item Freeze hyperparameters.
+\item Train final models on complete training data.
+\item Use validation for checkpoint selection.
+\item Evaluate Sim1/Sim2/Sim3 on untouched test data.
+\item Compute and save Phase-C PHVAC for every simulation.
+\end{enumerate}
+
+\section*{56. Final conceptual lock}
+
+The EBP model consists of three coupled pieces.
+
+Neural proposal:
+\begin{align}
+\boxed{g_\omega\rightarrow\widetilde f_\omega.}
+\tag{E5.207}
+\end{align}
+Learned physical manifold:
+\begin{align}
+\boxed{R,C,\eta,\lambda\rightarrow A,b.}
+\tag{E5.208}
+\end{align}
+Projection:
+\begin{align}
+\boxed{(\widetilde f_\omega,A,b)\rightarrow f_P.}
+\tag{E5.209}
+\end{align}
+
+For 1C,
+\begin{align}
+\boxed{\dim\ker(A)=0,}
+\tag{E5.210}
+\end{align}
+so the hard physical balance fully determines the derivative.
+
+For 2C,
+\begin{align}
+\boxed{\dim\ker(A)=1\text{ per zone},}
+\tag{E5.211}
+\end{align}
+so exact total-energy conservation coexists with learned internal thermal redistribution.
+
+During both training and testing,
+\begin{align}
+\boxed{\dot x=f_P,}
+\tag{E5.212}
+\end{align}
+never the raw \(\widetilde f_\omega\).
+
+\section*{Part 5 conclusion}
+
+The raw normalized neural derivative is
+\begin{align}
+\boxed{g_\omega(z,\widetilde v).}
+\end{align}
+It is converted to physical units:
+\begin{align}
+\boxed{\widetilde f_\omega=\frac{S_x}{\Delta t}g_\omega.}
+\end{align}
+The physical derivative is projected by
+\begin{align}
+\boxed{\begin{aligned}f_P=\arg\min_f\quad&\frac12(f-\widetilde f_\omega)^\top W(f-\widetilde f_\omega)\\\text{s.t.}\quad&Af=b.\end{aligned}}
+\end{align}
+Numerically,
+\begin{align}
+\boxed{AW^{-1}A^\top\nu=A\widetilde f_\omega-b,}
+\end{align}
+followed by
+\begin{align}
+\boxed{f_P=\widetilde f_\omega-W^{-1}A^\top\nu.}
+\end{align}
+Then
+\begin{align}
+\boxed{g_P=\Delta tS_x^{-1}f_P}
+\end{align}
+is integrated by RK4.
+
+The deepest interpretation is
+\begin{align}
+\boxed{f_P=f_{\rm particular}+f_{\rm null},}
+\end{align}
+with
+\begin{align}
+Af_{\rm particular}=b,
+\end{align}
+and
+\begin{align}
+Af_{\rm null}=0.
+\end{align}
+Thus EBP-PINODE combines
+\begin{align}
+\boxed{\text{exact external energy balance}}
+\end{align}
+with
+\begin{align}
+\boxed{\text{learnable internal thermal dynamics}.}
+\end{align}
+
+\end{document}

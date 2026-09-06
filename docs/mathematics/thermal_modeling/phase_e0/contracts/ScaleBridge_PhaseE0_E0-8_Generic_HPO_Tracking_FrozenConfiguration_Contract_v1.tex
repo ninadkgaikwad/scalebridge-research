@@ -1,0 +1,666 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools,amsthm}
+\usepackage{booktabs,array,longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\SB}{\textsc{ScaleBridge}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Hspace}{\mathcal{H}}
+\newcommand{\Study}{\mathcal{S}}
+\newcommand{\Trial}{\tau}
+\newcommand{\Data}{\mathcal{D}}
+\newcommand{\Provider}{\mathfrak{P}}
+\newcommand{\Fingerprint}{\mathfrak{F}}
+\newcommand{\Freeze}{\mathcal{A}^{\star}}
+\newtheorem{invariant}{Invariant}
+\newtheorem{proposition}{Proposition}
+
+\title{\SB{} Phase E0 --- E0-8\\
+Generic Hyperparameter Optimization, Study Tracking,\\
+and Frozen-Configuration Framework\\
+Mathematical and Scientific Contract v1}
+\author{ScaleBridge Research Framework}
+\date{Ratified August 2026}
+
+\begin{document}
+\setlength{\emergencystretch}{3em}
+\maketitle
+
+\begin{abstract}
+This document freezes the E0-8 mathematical, scientific, and reproducibility
+contract for generic hyperparameter optimization (HPO) in \SB{}. E0-8 is
+method-neutral. It owns the lifecycle of a study, trial orchestration, Optuna
+integration, MLflow tracking, TRAIN-only data-leakage enforcement, study
+fingerprints, compatible resume, failure/pruning semantics, single- and
+multi-objective bookkeeping, and production of a frozen hyperparameter
+configuration. E0-8 does \emph{not} define method-specific hyperparameters,
+search-space meanings, model-fitting equations, objective science,
+representative-subset science, pruning validity, or final-model fitting. Those
+responsibilities belong to the future E.1/E.2/E.3/E.4 method families.
+
+Let $m$ denote a method and $h\in\Hspace_m$ its hyperparameter vector. A method
+provider supplies the search space, objective contract, TRAIN-side data policy,
+optional pruning interface, resource/repetition metadata, and deterministic
+final-selection policy. E0-8 then orchestrates trials of the form
+\[
+M_j=\operatorname{Fit}_m(\Data_{\mathrm{fit},j};h_j,s_j),
+\qquad
+\mathbf y_j=\mathbf J_m(M_j,\Data_{\mathrm{score},j}),
+\]
+while keeping $h$ distinct from fitted model parameters such as $\Theta$,
+$\psi$, or a posterior representation $\Pi_\Theta$. Hyperparameter selection
+is restricted to Phase-D TRAIN data. Phase-D VALIDATION and TEST are excluded
+from all HPO selection influence; any fit/score split or cross-validation used
+inside a trial must be derived from TRAIN only.
+
+Optuna is the study/trial optimization authority and MLflow is the
+experiment/provenance authority. This division matches Optuna's study/trial,
+sampler, pruner, persistence, and dynamic-search-space abstractions
+\cite{AkibaEtAl2019Optuna,OptunaDocs2026} and MLflow's experiment/run tracking
+of parameters, metrics, metadata, and artifacts \cite{MLflowDocs2026}. The
+precise ownership boundary, however, is a \SB{}-specific contract. General HPO
+notation and reproducibility considerations are consistent with the broader HPO
+literature \cite{BischlEtAl2023HPO}.
+\end{abstract}
+
+% =============================================================================
+\section{Scope and responsibility boundary}
+
+E0-8 sits between method-specific HPO declarations and method-specific final
+model fitting:
+\[
+\boxed{
+\text{E.x HPO provider}
+\rightarrow
+\text{E0-8 study}
+\rightarrow
+h^{\star}_{\mathrm{frozen}}
+\rightarrow
+\text{E.x final fit}
+\rightarrow
+\text{E0-7 bundle}.
+}
+\]
+Here E.x denotes one of E.1/E.2/E.3/E.4.
+
+\begin{invariant}[Generic orchestration]
+E0-8 owns generic HPO orchestration and tracking. E.1/E.2/E.3/E.4 own the
+scientific meaning and declaration of all method-specific hyperparameters and
+objectives.
+\end{invariant}
+
+Accordingly, E0-8 must not contain method branches such as ``if Base-PINODE then
+use these hyperparameters'' or ``if Bayesian then optimize these sampler
+settings.'' Instead, each method registers a provider that satisfies the common
+E0-8 interface.
+
+\paragraph{Explicit non-responsibilities.}
+E0-8 does not own model equations, forward discretization, backpropagation,
+CasADi/IPOPT parameter estimation, Bayesian posterior inference, neural-network
+architecture science, scientific loss design, final production-model fitting,
+Sim1/Sim2/Sim3 evaluation, MPC, RL, or SmartBuildingsSim. E0-10 remains the
+authoritative comprehensive real testing campaign after the method families
+exist.
+
+% =============================================================================
+\section{Hyperparameters versus fitted model parameters}
+
+For method $m$, let
+\[
+h\in\Hspace_m
+\]
+be the hyperparameter vector. Let the fitted model quantities be represented
+generically by
+\[
+\vartheta_m\in\mathcal V_m,
+\]
+where $\vartheta_m$ may contain physical parameters $\Theta$, neural weights
+$\psi$, a posterior object $\Pi_\Theta$, noise parameters, or other
+method-owned fitted quantities.
+
+\begin{invariant}[Coordinate separation]
+\[
+\boxed{h\neq\vartheta_m.}
+\]
+E0-8 chooses and freezes $h$; the method-specific fitter estimates
+$\vartheta_m$ conditional on $h$.
+\end{invariant}
+
+For trial $j$,
+\[
+\vartheta_{m,j}^{\star}
+=
+\operatorname{Fit}_m(\Data_{\mathrm{fit},j};h_j,s_j),
+\]
+and the trial score is
+\[
+\mathbf y_j
+=
+\mathbf J_m(\vartheta_{m,j}^{\star},\Data_{\mathrm{score},j}).
+\]
+E0-8 invokes these method-provided operations but does not redefine their
+internal mathematics.
+
+% =============================================================================
+\section{Method HPO provider contract}
+
+Each method $m$ provides a generic declaration
+\[
+\boxed{
+\Provider_m=
+(\mathcal S_m,\mathcal J_m,\mathcal D_m,\mathcal Q_m,\mathcal R_m,\mathcal F_m),
+}
+\]
+with:
+\begin{align*}
+\mathcal S_m &: \text{search-space declaration},\\
+\mathcal J_m &: \text{objective names, directions, and evaluator},\\
+\mathcal D_m &: \text{TRAIN-side HPO data-selection policy},\\
+\mathcal Q_m &: \text{optional pruning/intermediate-reporting contract},\\
+\mathcal R_m &: \text{resource, repetition, timeout, and seed requirements},\\
+\mathcal F_m &: \text{deterministic final hyperparameter-selection policy}.
+\end{align*}
+
+E0-8 understands only generic domain types such as continuous/log-continuous,
+integer, categorical, Boolean, and conditional parameters. The names, bounds,
+categories, conditions, defaults, and scientific meanings are method-owned.
+Optuna's define-by-run design motivates support for dynamic/conditional spaces
+\cite{AkibaEtAl2019Optuna}, but the exact ScaleBridge provider boundary above is
+ScaleBridge-specific.
+
+\begin{invariant}[Search-space ownership]
+A change to a method's hyperparameters changes the E.x provider declaration,
+not the common E0-8 engine.
+\end{invariant}
+
+% =============================================================================
+\section{Study object and immutable identity}
+
+A canonical study is
+\[
+\boxed{
+\Study=
+(I,m,V_m,\mathcal S_m,\mathcal J_m,\mathcal D_m,s_{\mathrm{study}},
+\mathcal O,\mathcal T),
+}
+\]
+where $I$ is study identity, $m$ method identity, $V_m$ provider/search-space
+version, $s_{\mathrm{study}}$ study seed, $\mathcal O$ generic Optuna
+configuration, and $\mathcal T$ tracking configuration.
+
+The study stores a frozen snapshot of the provider's search-space and objective
+contract at creation time. Subsequent source-code changes to a provider do not
+silently reinterpret already recorded trials.
+
+\paragraph{Study fingerprint.}
+Define the immutable resume fingerprint
+\[
+\boxed{
+\Fingerprint(\Study)
+=
+H\!\left(
+I,m,V_m,\operatorname{canon}(\mathcal S_m),
+\operatorname{canon}(\mathcal J_m),
+\operatorname{fp}(\mathcal D_m),
+s_{\mathrm{study}},v_{\mathrm{E0-8}}
+\right),
+}
+\]
+where $H$ is a stable cryptographic digest and $\operatorname{canon}$ denotes a
+deterministic canonical serialization.
+
+\begin{invariant}[Compatible resume only]
+A stored study may be resumed only when
+\[
+\Fingerprint_{\mathrm{stored}}=\Fingerprint_{\mathrm{requested}}.
+\]
+If the method version, search-space snapshot, objective contract, HPO data
+selection, seed policy, or E0-8 schema is incompatible, resume fails clearly
+rather than appending scientifically incomparable trials.
+\end{invariant}
+
+% =============================================================================
+\section{Phase-D TRAIN-only HPO data authority}
+
+Let the authoritative Phase-D outer partition be
+\[
+\Data
+=
+\Data_{\mathrm{train}}
+\cup
+\Data_{\mathrm{validation}}
+\cup
+\Data_{\mathrm{test}}
+\cup
+\Data_{\mathrm{excluded}},
+\]
+with disjoint primary partitions.
+
+The HPO source satisfies
+\[
+\boxed{
+\Data_{\mathrm{HPO}}\subseteq\Data_{\mathrm{train}}.
+}
+\]
+Therefore
+\[
+\Data_{\mathrm{HPO}}\cap\Data_{\mathrm{validation}}=\varnothing,
+\qquad
+\Data_{\mathrm{HPO}}\cap\Data_{\mathrm{test}}=\varnothing.
+\]
+
+\begin{invariant}[No validation/test leakage into HPO]
+Phase-D VALIDATION and TEST cannot affect hyperparameter proposals, pruning,
+trial scores, ranking, Pareto construction, or final hyperparameter selection.
+\end{invariant}
+
+If a method requires fit/score separation during HPO, it must derive it from
+TRAIN only. For example,
+\[
+\Data_{\mathrm{train}}
+=
+\Data_{\mathrm{inner\mbox{-}fit}}
+\dot\cup
+\Data_{\mathrm{inner\mbox{-}score}}
+\dot\cup
+\Data_{\mathrm{unused}},
+\]
+or a deterministic TRAIN-only cross-validation construction may be used. E0-8
+validates the outer-partition boundary and records the method-provided inner
+selection.
+
+% =============================================================================
+\section{Representative-subset HPO}
+
+Expensive methods may declare
+\[
+\Data_{\mathrm{rep}}\subseteq\Data_{\mathrm{train}}.
+\]
+The science of representative selection belongs to E.x. E0-8 records, at
+minimum, the policy identifier/version, selected cases/zones/time ranges,
+selection seed when relevant, and a deterministic data-selection fingerprint.
+The trial objective is then evaluated on the provider-declared TRAIN-side HPO
+construction, for example
+\[
+\mathbf J_m(h;\Data_{\mathrm{rep}}).
+\]
+
+\begin{invariant}[Selection provenance]
+E0-8 never silently chooses which buildings, zones, seasons, or time blocks are
+``representative.'' It persists exactly what the method provider selected and
+why that selection is reproducible.
+\end{invariant}
+
+% =============================================================================
+\section{Trial contract}
+
+Trial $j$ is
+\[
+\boxed{
+\Trial_j=
+(j,h_j,s_j,\mathbf y_j,q_j,a_j,e_j,t_j),
+}
+\]
+where $q_j$ is trial state, $a_j$ artifact/metadata references, $e_j$ failure or
+pruning evidence when applicable, and $t_j$ timing/resource metadata.
+
+A deterministic trial seed is derived from the study seed and trial identity:
+\[
+\boxed{
+s_j=\operatorname{SeedDerive}(s_{\mathrm{study}},j,I).
+}
+\]
+The concrete derivation must be stable across supported machines and Python
+processes; implementation must not depend on randomized language-runtime hash
+seeds.
+
+The method receives $h_j$, $s_j$, and the authorized TRAIN-side data selection,
+then returns objective value(s), intermediate reports if supported, artifacts,
+and terminal state.
+
+% =============================================================================
+\section{Trial terminal states and failure semantics}
+
+E0-8 distinguishes at least
+\[
+q_j\in\{\mathrm{COMPLETE},\mathrm{PRUNED},\mathrm{FAILED}\}.
+\]
+
+\begin{invariant}[State distinction]
+\[
+\boxed{
+\mathrm{COMPLETE}\neq\mathrm{PRUNED}\neq\mathrm{FAILED}.
+}
+\]
+A failed trial is not converted into an artificially poor objective value, and
+a pruned trial is not reported as a completed scientific evaluation.
+\end{invariant}
+
+Trial-level failures retain the sampled hyperparameters, trial seed, exception
+class/message, traceback or structured failure evidence, machine/environment
+identity, and elapsed/runtime metadata. A configured study may continue after a
+trial-level failure. Study/storage corruption, incompatible resume, leakage
+violation, or invalid provider contract is a study-level failure.
+
+% =============================================================================
+\section{Pruning contract}
+
+If method $m$ declares pruning scientifically meaningful, it may expose
+intermediate values
+\[
+\mathbf y_j^{(1)},\mathbf y_j^{(2)},\ldots,\mathbf y_j^{(r)}.
+\]
+E0-8 reports them to the configured Optuna pruning mechanism and records the
+pruning decision and step. Optuna explicitly separates study, sampler, and
+pruner concepts \cite{OptunaDocs2026}.
+
+\begin{invariant}[Method-declared pruning compatibility]
+E0-8 never assumes that epochs, optimizer iterations, IPOPT iterations, MCMC
+iterations, or Bayesian filtering steps are comparable intermediate HPO scores.
+The method provider must explicitly authorize and define intermediate reporting.
+\end{invariant}
+
+% =============================================================================
+\section{Single-objective selection}
+
+For a scalar objective $J$ with direction $d_m$, the completed-trial set is
+\[
+\mathcal C=\{j:q_j=\mathrm{COMPLETE}\}.
+\]
+For minimization,
+\[
+\boxed{
+h^{\star}=h_{j^{\star}},\qquad
+j^{\star}=\arg\min_{j\in\mathcal C}J(h_j),
+}
+\]
+and for maximization,
+\[
+\boxed{
+j^{\star}=\arg\max_{j\in\mathcal C}J(h_j).}
+\]
+The objective direction is method-declared. E0-8 does not assume that lower is
+universally better.
+
+If repeated stochastic evaluations are required for one $h_j$, the method
+provider declares the repetitions and the deterministic reduction rule that
+produces the trial objective. E0-8 tracks each repetition's seed/evidence but
+does not invent the scientific reducer.
+
+% =============================================================================
+\section{Multi-objective selection}
+
+For $q>1$ objectives,
+\[
+\mathbf J(h)=[J_1(h),\ldots,J_q(h)]^T.
+\]
+E0-8 and Optuna may maintain the nondominated/Pareto set
+\[
+\boxed{
+\mathcal P^{\star}
+=\operatorname{Pareto}\{(h_j,\mathbf J(h_j)):j\in\mathcal C\}.
+}
+\]
+
+\begin{invariant}[No invented scalarization]
+E0-8 may compute and persist the Pareto set but does not invent a scientific
+scalarization or utility function. If one final $h^{\star}$ is required, E.x
+must provide a deterministic final-selection rule $\mathcal F_m$. If no such
+rule exists, E0-8 returns the Pareto set without falsely declaring one trial
+``best.''
+\end{invariant}
+
+% =============================================================================
+\section{Optuna orchestration authority}
+
+Optuna provides the optimization-layer concepts used by E0-8: studies and
+trials, persistent storage, samplers, pruners, single/multiple directions, and
+dynamic search spaces \cite{AkibaEtAl2019Optuna,OptunaDocs2026}. E0-8 wraps
+these capabilities in ScaleBridge-specific scientific checks.
+
+E0-8 owns generic registries/configuration for compatible sampler, pruner, and
+storage capabilities. E.x may restrict compatibility; for example, a method may
+declare pruning disabled or require a particular objective structure. E0-8
+does not redefine Optuna's optimization algorithm internally.
+
+\begin{invariant}[Optimization authority]
+\[
+\boxed{\text{Optuna is the HPO optimization authority.}}
+\]
+The E0-8 layer adds scientific identity, leakage protection, reproducibility,
+provenance, and output contracts around that authority.
+\end{invariant}
+
+% =============================================================================
+\section{MLflow tracking authority}
+
+MLflow Tracking organizes executions as runs grouped by experiments and records
+parameters, metrics, metadata, and artifacts \cite{MLflowDocs2026}. E0-8 uses a
+study-parent / trial-child logical hierarchy:
+\[
+\boxed{
+\text{HPO study parent run}
+\rightarrow
+\{\text{trial runs}\}
+\rightarrow
+\text{study finalization evidence}.
+}
+\]
+
+The study parent records method/provider identity, Phase-D lineage/data
+fingerprint, search-space snapshot, objective contract, study seed, Optuna
+sampler/pruner/storage identity, environment, and study fingerprint. Each trial
+records sampled hyperparameters, objective values, trial seed/state, duration,
+method metrics, selected artifacts, and failure/pruning evidence. Finalization
+records the frozen configuration or Pareto/selection decision.
+
+\begin{invariant}[Tracking authority]
+\[
+\boxed{\text{MLflow is the experiment/provenance authority.}}
+\]
+MLflow does not replace Optuna's study/trial optimization logic, and E0-8 does
+not use MLflow run ordering as an optimization algorithm.
+\end{invariant}
+
+% =============================================================================
+\section{Frozen hyperparameter configuration}
+
+The principal downstream artifact is
+\[
+\boxed{
+\Freeze=
+(h^{\star},I,j^{\star},\Fingerprint,\operatorname{fp}(\Data_{\mathrm{HPO}}),
+\operatorname{fp}(\mathcal S_m),\operatorname{fp}(\mathcal J_m),\rho),
+}
+\]
+where $\rho$ contains provenance such as MLflow run identity, Optuna study
+identity, method/provider version, and selection evidence.
+
+For a Pareto study without one final selection, the corresponding frozen output
+contains the Pareto trial set and its complete provenance rather than a
+fabricated scalar optimum.
+
+\begin{invariant}[Freeze, do not final-fit]
+E0-8 freezes $h^{\star}$ (or the Pareto result) but does not fit the final
+production model. E.x consumes the frozen configuration, performs the final
+allowed fit, and subsequently exports the fitted model to E0-7.
+\end{invariant}
+
+% =============================================================================
+\section{Standard E0-8 artifact contract}
+
+The generic study layer should produce at least the following logical artifacts:
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+Artifact & Purpose\\
+\midrule
+\texttt{study\_manifest.json} & immutable study identity and schema\\
+\texttt{search\_space\_snapshot.json} & exact provider search-space snapshot\\
+\texttt{objective\_contract.json} & names, directions, evaluator identity\\
+\texttt{data\_selection\_manifest.json} & TRAIN-only HPO selection + fingerprint\\
+\texttt{trials.parquet} & trial parameters, objectives, state, seed, timing\\
+\texttt{study\_summary.json} & aggregate study result/status\\
+\texttt{frozen\_hyperparameters.json} & selected $h^{\star}$ + provenance\\
+\bottomrule
+\end{tabular}
+\end{center}
+For multi-objective studies, \texttt{pareto\_trials.parquet} and a
+\texttt{selection\_manifest.json} may replace or complement the scalar
+best-trial artifact. Exact filesystem placement is an implementation concern;
+the semantic contents above are the authority.
+
+% =============================================================================
+\section{Interaction with E0-7, E0-9, and E0-10}
+
+The eventual E0-7 portable model bundle should preserve the HPO lineage of the
+finished model, including at least the E0-8 study identity, selected trial or
+selection manifest, frozen hyperparameter payload or its content hash, and
+method/provider version. E0-7 never reruns HPO.
+
+E0-9 validates E0-8 infrastructure/readiness across qualified machines and
+repairs environment discrepancies without changing the HPO science. E0-10 is
+the authoritative comprehensive real testing campaign and, once E.1--E.4
+methods exist, exercises the chain
+\[
+\boxed{
+\text{Phase D}
+\rightarrow
+\text{E.x provider}
+\rightarrow
+\text{E0-8 study}
+\rightarrow
+h^{\star}
+\rightarrow
+\text{E.x final fit}
+\rightarrow
+\text{E0-7 bundle}
+\rightarrow
+\text{evaluation}.
+}
+\]
+
+% =============================================================================
+\section{Worked generic example}
+
+This example is intentionally synthetic and does not freeze any real E.1--E.4
+hyperparameter names. Suppose a future method $m_{\mathrm{demo}}$ declares
+three hyperparameters:
+\[
+h=(h_c,h_i,h_k),
+\]
+where $h_c$ is continuous, $h_i$ integer, and $h_k$ categorical. The provider
+might declare
+\[
+h_c\in[10^{-4},10^{-2}]\ \text{on a log scale},\qquad
+h_i\in\{2,3,4\},\qquad
+h_k\in\{A,B\}.
+\]
+These names and ranges are illustrative only; a real E.x provider owns its own
+space.
+
+Assume Phase D contains 100 TRAIN windows, 20 VALIDATION windows, and 20 TEST
+windows. The method declares an HPO representative subset of 40 TRAIN windows
+and a deterministic inner split
+\[
+30\ \text{TRAIN windows for trial fitting},\qquad
+10\ \text{TRAIN windows for trial scoring}.
+\]
+No VALIDATION or TEST window is eligible for the study.
+
+With study seed $s_{\mathrm{study}}=1234$, trial 7 receives
+\[
+s_7=\operatorname{SeedDerive}(1234,7,I).
+\]
+Suppose Optuna proposes
+\[
+h_7=(3\times10^{-3},3,B).
+\]
+The method performs
+\[
+\vartheta_7^{\star}
+=\operatorname{Fit}_{m_{\mathrm{demo}}}(\Data_{30};h_7,s_7)
+\]
+and returns a minimization score
+\[
+J(h_7)=0.184
+\]
+on the authorized 10-window inner score set. E0-8 records $h_7$, $s_7$,
+$J(h_7)$, state COMPLETE, timing/resources, MLflow trial identity, and the data
+fingerprint. If trial 8 raises a numerical exception, it remains FAILED rather
+than receiving an invented score. If trial 9 is pruned under a provider-enabled
+pruning contract, it remains PRUNED.
+
+After all trials, suppose completed objectives are
+\[
+0.231,\quad 0.184,\quad 0.201.
+\]
+For a minimization study,
+\[
+h^{\star}=h_7.
+\]
+E0-8 writes \texttt{frozen\_hyperparameters.json} containing $h_7$ and full
+study/data/search-space/objective provenance. E0-8 does not train the final
+production model. The method later consumes $h_7$, performs its final fit under
+its own E.x contract, and sends the fitted model to E0-7.
+
+% =============================================================================
+\section{Qualification requirements}
+
+E0-8 implementation qualification must include, at minimum:
+\begin{enumerate}[label=\arabic*.]
+\item provider-agnostic search-space registration with no method-specific branch;
+\item TRAIN-only enforcement rejecting Phase-D VALIDATION/TEST leakage;
+\item deterministic data-selection fingerprints and trial seeds;
+\item single-objective minimization and maximization studies;
+\item multi-objective Pareto persistence and method-owned final selection;
+\item COMPLETE/PRUNED/FAILED distinction;
+\item compatible resume with exact fingerprint match and incompatible-resume rejection;
+\item persistent Optuna study recovery;
+\item MLflow study/trial/finalization tracking linkage;
+\item deterministic frozen-hyperparameter artifact creation;
+\item failure recovery without corrupting completed trial history;
+\item downstream handoff semantics to E.x and HPO-lineage preservation for E0-7.
+\end{enumerate}
+Actual method-family search spaces are not required for E0-8 framework
+qualification because E.1--E.4 are not yet implemented; synthetic providers are
+the correct E0-8 framework fixture until those method families exist.
+
+% =============================================================================
+\section{Ratified E0-8 contract}
+
+The following decisions are frozen:
+\begin{enumerate}[label=\arabic*.]
+\item E0-8 is generic and method-neutral.
+\item E.1/E.2/E.3/E.4 define hyperparameter names, domains, conditional dependencies, and meanings.
+\item E.1--E.4 define trial objective evaluators and objective directions.
+\item E.1--E.4 define whether pruning is scientifically meaningful.
+\item E.1--E.4 define any representative HPO subset science.
+\item E0-8 never hard-codes method-specific hyperparameters.
+\item Hyperparameters $h$ remain distinct from fitted quantities $\Theta$, $\psi$, and $\Pi_\Theta$.
+\item E0-8 orchestrates trials; the method performs trial fitting.
+\item HPO consumes only Phase-D TRAIN data.
+\item Phase-D VALIDATION and TEST cannot influence hyperparameter selection.
+\item Any inner fit/score split or cross-validation is derived from TRAIN only.
+\item Exact HPO data selection and fingerprint are persisted.
+\item Single- and multi-objective studies are supported generically.
+\item E0-8 persists Pareto fronts but never invents method-specific scalarization.
+\item A method requiring one final multi-objective configuration supplies deterministic selection logic.
+\item COMPLETE, PRUNED, and FAILED remain distinct.
+\item Study/trial seeds and reproducibility metadata are first-class.
+\item Resume requires immutable study-fingerprint equality.
+\item Optuna is the HPO optimization authority.
+\item MLflow is the experiment/provenance authority.
+\item E0-8 standardizes study/trial/frozen-configuration artifacts.
+\item E0-8 freezes $h^{\star}$ but does not own final production-model fitting.
+\item E.x consumes $h^{\star}$, fits the final model, and hands it to E0-7.
+\item E0-10 remains the authoritative real end-to-end testing campaign.
+\end{enumerate}
+
+\bibliographystyle{plain}
+\bibliography{ScaleBridge_Thermal_Modeling_References}
+
+\end{document}

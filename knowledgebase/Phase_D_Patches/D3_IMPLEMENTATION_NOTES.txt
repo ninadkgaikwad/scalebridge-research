@@ -1,0 +1,3 @@
+ScaleBridge Phase D D3
+
+Adds configurable canonical Phase D calendar year (default 2001), EnergyPlus MM/DD HH:MM:SS parsing with 24:00 rollover, Phase B bad-join duplicate cleanup, Phase C/split placeholder-year rewriting, one-to-one timestamp alignment, and diagnostics. Source artifacts are never modified. Final ZIC/ZIR grouping and Phase D Parquet writing remain out of scope.

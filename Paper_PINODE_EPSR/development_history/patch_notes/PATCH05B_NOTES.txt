@@ -1,0 +1,64 @@
+PINODE / EPSR — PATCH 05B / DAY 6 LOCKED FALLBACK NOTES
+======================================================================
+
+PURPOSE
+-------
+Close the Day-6 thermostat/QAC issue after Patch05R without changing any Part-1..Part-5 model mathematics.
+
+AUTHORITATIVE CONTROLLED-DATA FINDINGS
+--------------------------------------
+- Exact Phase-D TRAIN+included count: 73,567 rows per controlled zone.
+- Old calendar-key filter: 73,579 rows; Patch05B fixes this with exact normalized Phase-D timestamp ownership.
+- Dining effective modes: cooling 38,258; heating 25,299.
+- Kitchen effective modes: cooling 66,009; heating 0.
+- Kitchen nevertheless has a valid QAC signal/model. Its 43 raw heating-rate-positive TRAIN rows are simultaneous with larger cooling, so net QAC never becomes positive.
+
+LOCKED ACTUATOR-PARAMETER HIERARCHY
+-----------------------------------
+For each zone/mode:
+1. explicit per-mode override, if deliberately supplied;
+2. observed same-mode TRAIN values: mass-flow-weighted median Ts, median nominal mdot, maximum mdot;
+3. if the mode is absent, same-zone observed opposite-mode fallback only.
+
+The missing-mode fallback uses:
+- the observed opposite-mode mass-flow-weighted active |Ts-Tz|;
+- that same zone's medium setpoint as the reflection center;
+- a physical sign guard (heating Ts > high setpoint; cooling Ts < low setpoint);
+- the same zone's observed opposite-mode nominal and max mdot.
+
+It does NOT use equipment definitions and does NOT search other weather/runs.
+
+CONTROLLER CAPABILITY
+---------------------
+Every zone may request and physically apply heating or cooling regardless of TRAIN mode support. TRAIN support is provenance/confidence only. Unobserved-mode Phase-C QAC evaluation is allowed and flagged extrapolative/OOD. No action is suppressed solely because the requested mode was absent from TRAIN.
+
+MASS FLOW + DEADBANDS
+---------------------
+Cooling and heating active-flow choices are independently `nominal | max`. Deadbands are data-derived by default and overrideable; both data and used values are saved.
+
+SETPOINTS
+---------
+Low/high = strict-TRAIN P10/P90. Medium = P50 only when separated by >=0.5 C from both; otherwise midpoint(low,high). This repairs Dining's P10≈P50 collapse.
+
+SIM3
+----
+Historical test QAC is never replayed. Sim3 records requested/delivered mode, observed-in-TRAIN support, actuator parameter source, extrapolative QAC flag, Ts, mdot, QAC and PHVAC.
+
+
+FINAL2 OBSERVED-MODE GUARD REPAIR
+---------------------------------
+The first Patch05B install attempt reached 134/134 tests and then the real
+validator rejected observed RestaurantFastFood_All heating Ts=20.678 C because
+the paper high setpoint is 24.997 C. The installer automatically rolled the
+repository back to Patch05R.
+
+That rejection was incorrect. Experimental setpoints are not bounds on
+historically observed actuator supply temperatures.
+
+FINAL2 therefore:
+- preserves observed same-mode TRAIN Ts and nominal/max mdot exactly;
+- applies the low/high-setpoint directional guard only to synthesized
+  unobserved-mode fallbacks;
+- leaves explicit overrides as explicit user choices;
+- adds unit and real validation that observed actuator values pass through
+  unchanged.

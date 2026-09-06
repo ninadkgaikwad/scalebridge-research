@@ -1,0 +1,32 @@
+ScaleBridge Phase E0-8 Generic HPO Tracking Implementation Patch Manifest
+=========================================================================
+
+Patch type: additive implementation
+Existing production files modified: NONE
+Existing production files deleted: NONE
+
+Added production package:
+  src/scalebridge/tuning/e0_hpo/__init__.py
+  src/scalebridge/tuning/e0_hpo/contracts.py
+  src/scalebridge/tuning/e0_hpo/provider.py
+  src/scalebridge/tuning/e0_hpo/data_policy.py
+  src/scalebridge/tuning/e0_hpo/seeding.py
+  src/scalebridge/tuning/e0_hpo/optuna_backend.py
+  src/scalebridge/tuning/e0_hpo/mlflow_tracking.py
+  src/scalebridge/tuning/e0_hpo/artifacts.py
+  src/scalebridge/tuning/e0_hpo/runner.py
+  src/scalebridge/tuning/e0_hpo/handoff.py
+
+Added qualification/documentation:
+  tests/thermal_modeling/test_phase_e0_generic_hpo_tracking.py
+  scripts/thermal_modeling/validate_phase_e0_generic_hpo_tracking.py
+  docs/architecture/phase_e0_generic_hpo_tracking.md
+  knowledgebase/Phase_E_Patches/E0_8_GENERIC_HPO_TRACKING_IMPLEMENTATION/E0_8_IMPLEMENTATION_NOTES.txt
+  knowledgebase/Phase_E_Patches/E0_8_GENERIC_HPO_TRACKING_IMPLEMENTATION/E0_8_IMPLEMENTATION_PATCH_MANIFEST.txt
+
+Explicit non-changes:
+  existing src/scalebridge/tuning/optuna/objective.py remains untouched
+  existing Phase-D production code remains untouched
+  existing MLflow production code remains untouched
+  existing E0-7 portable-model production code remains untouched
+  E.1/E.2/E.3/E.4 model/training packages remain untouched

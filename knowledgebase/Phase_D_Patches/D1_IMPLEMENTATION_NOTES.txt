@@ -1,0 +1,39 @@
+ScaleBridge Phase D — D1 Foundational Contracts
+================================================
+
+Scope implemented
+-----------------
+- No data assembly, Parquet writing, source discovery, campaign runner, or MLflow work.
+- Added immutable Phase D identities, enums, signal registry, signal classification,
+  ZIC/ZIR grouping membership, and JSON-serializable manifest contracts.
+
+Locked signal policy
+--------------------
+- Phase B supplies zone temperature and outdoor temperature.
+- Phase C supplies regression outputs.
+- Varying Phase C outputs are retained.
+- Constant nonzero Phase C outputs are retained.
+- Complete-zero Phase C outputs become nullable.
+- Signals whose Phase C model is not applicable become nullable.
+- Missing timestamps in an applicable signal are a validation failure.
+- QSol1 and QSol2 remain separate.
+- QAC is a thermal input.
+- PHVAC is auxiliary/provenance.
+- ZIC sums retained QZic_* components.
+- ZIR sums retained QZir_* components and includes QZivr_L by default.
+- QZivr_L inclusion in ZIR is configurable.
+
+Files
+-----
+src/scalebridge/data/thermal_modeling/
+  __init__.py
+  constants.py
+  identities.py
+  signals.py
+  models.py
+  manifests.py
+
+tests/thermal_modeling/
+  test_identities.py
+  test_signals.py
+  test_manifests.py

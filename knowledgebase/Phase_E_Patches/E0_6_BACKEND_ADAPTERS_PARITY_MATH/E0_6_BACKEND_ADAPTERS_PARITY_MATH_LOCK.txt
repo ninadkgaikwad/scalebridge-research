@@ -1,0 +1,29 @@
+ScaleBridge Phase E0 -- E0-6 Backend Adapters + Numerical Parity
+MATHEMATICAL AUTHORITY LOCK -- v2
+
+Status: RATIFIED FOR IMPLEMENTATION
+Date: 2026-08-29
+
+AUTHORITATIVE CONTRACT
+  docs\mathematics\thermal_modeling\phase_e0\contracts\ScaleBridge_PhaseE0_E0-6_Backend_Adapters_Numerical_Parity_Contract_v2.tex
+
+SUPERSEDES
+  ScaleBridge_PhaseE0_E0-6_Backend_Adapters_Numerical_Parity_Contract_v1.tex
+  wherever v1 required all production backends to use one common raw rho coordinate.
+
+V2 CORE LOCK
+  - Physical master parameter vector Theta is the cross-method/cross-backend authority.
+  - E0-3 defines admissible flavour parameter/routing semantics; campaign chooses fixed/estimated/shared policy.
+  - PyTorch/Neuromancer SciML uses centered transformed raw rho -> Theta by default.
+  - Production CasADi/IPOPT deterministic parameter estimation uses direct physical Theta decision variables with explicit NLP bounds/constraints.
+  - Optional transformed CasADi exists only for transform/parity diagnostics.
+  - Bayesian RC inference consumes the same physical Theta forward model; NumPy is the independent/default likelihood reference, not a mandatory backend for every future sampler.
+  - Pure black-box ML and pure Neural ODE do not require RC equations.
+  - Inverse PINN-RC, differentiable RC ODE fitting, Base PINODE, and EBP-PINODE require the E0-3 RC equations through PyTorch/Neuromancer.
+  - CasADi/IPOPT uses the same RC equations/discrete representation through E0-5; symbolic RK4 is the preferred universally portable NLP transcription.
+  - Physical parity is P0-P5 at common Theta.
+  - P4 transformed-vs-physical gradient parity uses the chain rule grad_rho = J_T^T grad_Theta.
+  - QAC/QZIC/QSol1 convective grouping and QZIR/QSol2 radiative grouping remain frozen for current paper-compatible 2R2C semantics.
+  - DEP2 contribution-simplex conservation and PHVAC exclusion remain frozen.
+
+V1 remains historical provenance but is not the current implementation authority.

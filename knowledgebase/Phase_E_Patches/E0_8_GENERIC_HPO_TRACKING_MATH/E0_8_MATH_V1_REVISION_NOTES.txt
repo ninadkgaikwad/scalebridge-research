@@ -1,0 +1,30 @@
+ScaleBridge Phase E0 - E0-8 Mathematics v1 Revision Notes
+=========================================================
+Date: 2026-08-31
+
+This package installs the first ratified E0-8 mathematical/software-science
+authority for the Generic Hyperparameter Optimization, Study Tracking, and
+Frozen-Configuration Framework.
+
+Key decisions:
+- E0-8 is method-neutral.
+- E.1/E.2/E.3/E.4 define all method-specific hyperparameters and objectives.
+- Hyperparameters are distinct from fitted model parameters/weights/posteriors.
+- Phase-D TRAIN only may influence HPO selection.
+- Any HPO internal fit/score partition is derived from TRAIN only.
+- Representative-subset science is method-owned, but E0-8 fingerprints/tracks it.
+- Optuna is the optimization authority; MLflow is tracking/provenance authority.
+- Single-objective and multi-objective/Pareto studies are supported generically.
+- E0-8 does not invent multi-objective scalarization.
+- COMPLETE, PRUNED, FAILED remain distinct.
+- Study resume requires exact immutable fingerprint compatibility.
+- E0-8 freezes h*; E.x performs final production-model fitting.
+- Final fitted model is subsequently packaged through E0-7.
+- E0-10 remains the comprehensive real testing campaign.
+
+Bibliography additions installed idempotently into the shared ScaleBridge thermal
+modeling bibliography:
+- AkibaEtAl2019Optuna
+- BischlEtAl2023HPO
+- OptunaDocs2026
+- MLflowDocs2026

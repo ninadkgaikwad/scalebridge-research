@@ -1,0 +1,23 @@
+E0-7 implementation patch manifest
+
+ADDED
+src/scalebridge/models/portable/__init__.py
+src/scalebridge/models/portable/contracts.py
+src/scalebridge/models/portable/bundle.py
+src/scalebridge/models/portable/lineage.py
+src/scalebridge/models/portable/historical.py
+src/scalebridge/models/portable/normalization.py
+src/scalebridge/models/portable/phvac.py
+src/scalebridge/models/portable/rc_payload.py
+src/scalebridge/models/portable/runtime.py
+docs/architecture/phase_e0_runtime_phvac_portable_bundles.md
+scripts/thermal_modeling/validate_phase_e0_runtime_phvac_portable_bundles.py
+tests/thermal_modeling/test_phase_e0_runtime_phvac_portable_bundles.py
+knowledgebase/Phase_E_Patches/E0_7_RUNTIME_PHVAC_PORTABLE_MODEL_BUNDLES_IMPLEMENTATION/E0_7_IMPLEMENTATION_NOTES.txt
+knowledgebase/Phase_E_Patches/E0_7_RUNTIME_PHVAC_PORTABLE_MODEL_BUNDLES_IMPLEMENTATION/E0_7_IMPLEMENTATION_PATCH_MANIFEST.txt
+
+MODIFIED
+NONE
+
+DELETED
+NONE

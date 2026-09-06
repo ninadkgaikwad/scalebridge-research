@@ -1,0 +1,38 @@
+aggregate_zone_id,source_variable_name,output_variable_name,rule_family,status,source_key_count,source_keys,message
+Aggregated_Zone_1,Facility Total HVAC Electric Demand Power,Facility_Total_HVAC_Electric_Demand_Power_,Facility,aggregated,1,Whole Building,
+Aggregated_Zone_1,Site Diffuse Solar Radiation Rate per Area,Site_Diffuse_Solar_Radiation_Rate_per_Area_,Site,aggregated,1,Environment,
+Aggregated_Zone_1,Site Direct Solar Radiation Rate per Area,Site_Direct_Solar_Radiation_Rate_per_Area_,Site,aggregated,1,Environment,
+Aggregated_Zone_1,Site Outdoor Air Drybulb Temperature,Site_Outdoor_Air_Drybulb_Temperature_,Site,aggregated,1,Environment,
+Aggregated_Zone_1,Site Solar Altitude Angle,Site_Solar_Altitude_Angle_,Site,aggregated,1,Environment,
+Aggregated_Zone_1,Surface Inside Face Internal Gains Radiation Heat Gain Rate,Surface_Inside_Face_Internal_Gains_Radiation_Heat_Gain_Rate_,Surface,aggregated,19,ATTIC-FLOOR-KITCHEN | DINING_CEILING | DINING_FLOOR | DINING_INTERNALMASS_1 | DINING_WALL_EAST | DINING_WALL_EAST_WINDOW | DINING_WALL_NORTH | DINING_WALL_NORTH-PPAUTOCREATEOTHER | DINING_WALL_SOUTH | DINING_WALL_SOUTH_WINDOW | DINING_WALL_WEST | DINING_WALL_WEST_WINDOW | KITCHEN_CEILING | KITCHEN_FLOOR | KITCHEN_INTERNALMASS_1 | KITCHEN_WALL_EAST | KITCHEN_WALL_EAST_DOOR | KITCHEN_WALL_NORTH | KITCHEN_WALL_WEST,
+Aggregated_Zone_1,Surface Inside Face Lights Radiation Heat Gain Rate,Surface_Inside_Face_Lights_Radiation_Heat_Gain_Rate_,Surface,aggregated,16,ATTIC-FLOOR-KITCHEN | DINING_CEILING | DINING_FLOOR | DINING_INTERNALMASS_1 | DINING_WALL_EAST | DINING_WALL_NORTH | DINING_WALL_NORTH-PPAUTOCREATEOTHER | DINING_WALL_SOUTH | DINING_WALL_WEST | KITCHEN_CEILING | KITCHEN_FLOOR | KITCHEN_INTERNALMASS_1 | KITCHEN_WALL_EAST | KITCHEN_WALL_EAST_DOOR | KITCHEN_WALL_NORTH | KITCHEN_WALL_WEST,
+Aggregated_Zone_1,Surface Inside Face Solar Radiation Heat Gain Rate,Surface_Inside_Face_Solar_Radiation_Heat_Gain_Rate_,Surface,aggregated,16,ATTIC-FLOOR-KITCHEN | DINING_CEILING | DINING_FLOOR | DINING_INTERNALMASS_1 | DINING_WALL_EAST | DINING_WALL_NORTH | DINING_WALL_NORTH-PPAUTOCREATEOTHER | DINING_WALL_SOUTH | DINING_WALL_WEST | KITCHEN_CEILING | KITCHEN_FLOOR | KITCHEN_INTERNALMASS_1 | KITCHEN_WALL_EAST | KITCHEN_WALL_EAST_DOOR | KITCHEN_WALL_NORTH | KITCHEN_WALL_WEST,
+Aggregated_Zone_1,Surface Inside Face Temperature,Surface_Inside_Face_Temperature_,Surface,aggregated,19,ATTIC-FLOOR-KITCHEN | DINING_CEILING | DINING_FLOOR | DINING_INTERNALMASS_1 | DINING_WALL_EAST | DINING_WALL_EAST_WINDOW | DINING_WALL_NORTH | DINING_WALL_NORTH-PPAUTOCREATEOTHER | DINING_WALL_SOUTH | DINING_WALL_SOUTH_WINDOW | DINING_WALL_WEST | DINING_WALL_WEST_WINDOW | KITCHEN_CEILING | KITCHEN_FLOOR | KITCHEN_INTERNALMASS_1 | KITCHEN_WALL_EAST | KITCHEN_WALL_EAST_DOOR | KITCHEN_WALL_NORTH | KITCHEN_WALL_WEST,
+Aggregated_Zone_1,Zone Windows Total Transmitted Solar Radiation Rate,Zone_Windows_Total_Transmitted_Solar_Radiation_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Air Temperature,Zone_Air_Temperature_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone People Convective Heating Rate,Zone_People_Convective_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Lights Convective Heating Rate,Zone_Lights_Convective_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Electric Equipment Convective Heating Rate,Zone_Electric_Equipment_Convective_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Gas Equipment Convective Heating Rate,Zone_Gas_Equipment_Convective_Heating_Rate_,Zone,aggregated,1,KITCHEN,
+Aggregated_Zone_1,Zone People Radiant Heating Rate,Zone_People_Radiant_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Lights Radiant Heating Rate,Zone_Lights_Radiant_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Electric Equipment Radiant Heating Rate,Zone_Electric_Equipment_Radiant_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Gas Equipment Radiant Heating Rate,Zone_Gas_Equipment_Radiant_Heating_Rate_,Zone,aggregated,1,KITCHEN,
+Aggregated_Zone_1,Zone Lights Visible Radiation Heating Rate,Zone_Lights_Visible_Radiation_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Total Internal Convective Heating Rate,Zone_Total_Internal_Convective_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Total Internal Radiant Heating Rate,Zone_Total_Internal_Radiant_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Total Internal Total Heating Rate,Zone_Total_Internal_Total_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Total Internal Visible Radiation Heating Rate,Zone_Total_Internal_Visible_Radiation_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Air System Sensible Cooling Rate,Zone_Air_System_Sensible_Cooling_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,Zone Air System Sensible Heating Rate,Zone_Air_System_Sensible_Heating_Rate_,Zone,aggregated,2,DINING | KITCHEN,
+Aggregated_Zone_1,System Node Temperature,System_Node_Temperature_,System,aggregated,2,DINING DIRECT AIR INLET NODE NAME | KITCHEN DIRECT AIR INLET NODE NAME,
+Aggregated_Zone_1,System Node Mass Flow Rate,System_Node_Mass_Flow_Rate_,System,aggregated,2,DINING DIRECT AIR INLET NODE NAME | KITCHEN DIRECT AIR INLET NODE NAME,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_People,Schedule,aggregated,1,BLDG_OCC_SCH,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_Lights,Schedule,aggregated,2,BLDG_LIGHT_DINING_SCH | BLDG_LIGHT_KITCHEN_SCH,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_ElectricEquipment,Schedule,aggregated,3,ALWAYS_ON | BLDG_EQUIP_SCH | EXTERIOR_LGT_ALWAYS_ON,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_GasEquipment,Schedule,aggregated,1,FF_GAS_EQUIP_SCH,
+Aggregated_Zone_1,Zone Gas Equipment Convective Heating Rate,Zone_Gas_Equipment_Convective_Heating_Rate_,Zone,warning,0,,no key_values matched source zone
+Aggregated_Zone_1,Zone Gas Equipment Radiant Heating Rate,Zone_Gas_Equipment_Radiant_Heating_Rate_,Zone,warning,0,,no key_values matched source zone
+Aggregated_Zone_1,Schedule Value,Schedule_Value_OtherEquipment,Schedule,warning,0,,no Schedule Value key_values matched EIO schedule names
+Aggregated_Zone_1,Schedule Value,Schedule_Value_HotWaterEquipment,Schedule,warning,0,,no Schedule Value key_values matched EIO schedule names
+Aggregated_Zone_1,Schedule Value,Schedule_Value_SteamEquipment,Schedule,warning,0,,no Schedule Value key_values matched EIO schedule names

@@ -1,0 +1,1940 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\title{Part 1: RC Representations and Phase-D Architectures}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+We will do this as five mathematical blocks, one at a time, and \textbf{nothing in Parts 2--5 will be allowed to redefine the RC architectures established here}.
+
+\section*{Part 1 --- RC Representations and Phase-D Architectures}
+
+We have two RC structures:
+
+\begin{align}
+\boxed{\text{1R1C}}
+\qquad\text{and}\qquad
+\boxed{\text{2R2C}}
+\end{align}
+
+and four effective Phase-D modeling architectures:
+
+\begin{align}
+\boxed{\text{All-to-One}}
+\end{align}
+
+\begin{align}
+\boxed{\text{Identity / IND}}
+\end{align}
+
+\begin{align}
+\boxed{\text{Identity / DEP1}}
+\end{align}
+
+\begin{align}
+\boxed{\text{Identity / DEP2}}.
+\end{align}
+
+For all-to-one, the Phase-D \texttt{ind/dep1/dep2} products were numerically identical, so there is only one unique all-to-one model to train. For identity, all three architectures are genuinely different.
+
+\section*{1. Common notation}
+
+The RestaurantFastFood identity representation has two thermal zones:
+
+\begin{align}
+i\in\{D,K\}
+\end{align}
+
+where
+
+\begin{align}
+D&=\text{Dining},\\
+K&=\text{Kitchen}.
+\end{align}
+
+The all-to-one representation has one aggregate zone:
+
+\begin{align}
+A=\text{RestaurantFastFood\_All}.
+\end{align}
+
+The sampling interval is
+
+\begin{align}
+\boxed{\Delta t=300\ {\rm s}}
+\end{align}
+
+but the RC equations are formulated in continuous time.
+
+The Phase-D \texttt{l1\_h1} data provide the measured state and forcing quantities at \(t_k\), with the temperature target at \(t_{k+1}\).
+
+\section*{2. Heat-input definitions}
+
+This distinction is now locked.
+
+For any zone \(i\), the \textbf{convective} heat input is
+
+\begin{align}
+\boxed{
+Q_{c,i}
+=
+Q_{\mathrm{ZIC},i}
++
+Q_{\mathrm{Sol1},i}
++
+Q_{\mathrm{AC},i}.
+}
+\end{align}
+
+The \textbf{radiative} heat input is
+
+\begin{align}
+\boxed{
+Q_{r,i}
+=
+Q_{\mathrm{ZIR},i}
++
+Q_{\mathrm{Sol2},i}.
+}
+\end{align}
+
+Thus
+
+\begin{align}
+Q_{c,i}
+&=
+Q_{zic,i}+Q_{sol1,i}+Q_{ac,i},
+\\
+Q_{r,i}
+&=
+Q_{zir,i}+Q_{sol2,i}.
+\end{align}
+
+There are no independent gain parameters multiplying these five Phase-D signals in the primary paper models.
+
+In particular,
+
+\begin{align}
+\boxed{\alpha_{AC}=1}
+\end{align}
+
+because \texttt{QAC} has already been constructed/calibrated through Phase C.
+
+For a structurally absent Phase-D signal, such as Kitchen solar gains in the audited identity data,
+
+\begin{align}
+Q_{\mathrm{Sol1},K}=Q_{\mathrm{Sol2},K}=0
+\end{align}
+
+by structural definition; we are not imputing an unknown solar signal.
+
+\section*{3. 1R1C elemental zone model}
+
+For one zone \(i\), define
+
+\begin{align}
+T_i &= \text{zone-air/effective lumped temperature},\\
+T_o &= \text{outdoor temperature},\\
+C_i &>0=\text{effective thermal capacitance},\\
+R_{io} &>0=\text{effective zone-to-outdoor resistance}.
+\end{align}
+
+Because there is only one capacitance, the radiative input has no explicit surface/mass state into which it can be deposited.
+
+Therefore we use the previously agreed effective radiative participation factor
+
+\begin{align}
+\boxed{
+0\le \eta_{r,i}^{(1C)}\le1.
+}
+\end{align}
+
+The isolated-zone equation is
+
+\begin{align}
+\boxed{
+C_i\dot T_i
+=
+\frac{T_o-T_i}{R_{io}}
++
+Q_{c,i}
++
+\eta_{r,i}^{(1C)}Q_{r,i}.
+}
+\tag{1}
+\end{align}
+
+Expanding the heat channels,
+
+\begin{align}
+\boxed{
+C_i\dot T_i
+=
+\frac{T_o-T_i}{R_{io}}
++
+Q_{\mathrm{ZIC},i}
++
+Q_{\mathrm{Sol1},i}
++
+Q_{\mathrm{AC},i}
++
+\eta_{r,i}^{(1C)}
+\left(
+Q_{\mathrm{ZIR},i}
++
+Q_{\mathrm{Sol2},i}
+\right).
+}
+\tag{2}
+\end{align}
+
+For 1R1C, \(\eta_r\) means:
+
+\begin{quote}
+effective fraction of the radiative heat represented as contributing to the single lumped thermal state.
+\end{quote}
+
+It is \textbf{not} an air/mass split because no mass state exists.
+
+The options are
+
+\begin{align}
+\eta_r^{(1C)}=
+\begin{cases}
+1, & \texttt{full},\\[2mm]
+0, & \texttt{zero},\\[2mm]
+\eta_{\rm fixed}, & \texttt{fixed},\\[2mm]
+\sigma(\rho_\eta), & \texttt{learnable},
+\end{cases}
+\tag{3}
+\end{align}
+
+where
+
+\begin{align}
+\sigma(z)=\frac{1}{1+e^{-z}}.
+\end{align}
+
+The main/default physical case is
+
+\begin{align}
+\boxed{\eta_r^{(1C)}=1.}
+\end{align}
+
+\section*{4. 2R2C elemental zone model}
+
+For 2R2C, every zone has two physical states:
+
+\begin{align}
+T_{a,i}&=\text{zone-air temperature},\\
+T_{m,i}&=\text{effective thermal-mass/surface temperature}.
+\end{align}
+
+The state is
+
+\begin{align}
+\boxed{
+x_i=
+\begin{bmatrix}
+T_{a,i}\\
+T_{m,i}
+\end{bmatrix}.
+}
+\end{align}
+
+Only \(T_{a,i}\) is measured:
+
+\begin{align}
+\boxed{
+y_i=
+H_ix_i,
+\qquad
+H_i=
+\begin{bmatrix}
+1&0
+\end{bmatrix}.
+}
+\tag{4}
+\end{align}
+
+The parameters are
+
+\begin{align}
+C_{a,i}&>0,
+\qquad
+C_{m,i}>0,
+\\
+R_{ao,i}&>0,
+\qquad
+R_{am,i}>0.
+\end{align}
+
+Here \(\eta_r\) has a different, stronger physical interpretation:
+
+\begin{align}
+\boxed{
+0\le\eta_{r,i}^{(2C)}\le1
+}
+\end{align}
+
+is the fraction of radiative heat initially deposited in the effective mass state.
+
+Therefore
+
+\begin{align}
+Q_{r\rightarrow m,i}
+=
+\eta_{r,i}^{(2C)}Q_{r,i},
+\tag{5}
+\end{align}
+
+and
+
+\begin{align}
+Q_{r\rightarrow a,i}
+=
+\left(1-\eta_{r,i}^{(2C)}\right)Q_{r,i}.
+\tag{6}
+\end{align}
+
+Conservation gives
+
+\begin{align}
+Q_{r\rightarrow a,i}
++
+Q_{r\rightarrow m,i}
+=
+Q_{r,i}.
+\tag{7}
+\end{align}
+
+The air equation is
+
+\begin{align}
+\boxed{
+C_{a,i}\dot T_{a,i}
+=
+\frac{T_o-T_{a,i}}{R_{ao,i}}
++
+\frac{T_{m,i}-T_{a,i}}{R_{am,i}}
++
+Q_{c,i}
++
+(1-\eta_{r,i}^{(2C)})Q_{r,i}.
+}
+\tag{8}
+\end{align}
+
+The mass equation is
+
+\begin{align}
+\boxed{
+C_{m,i}\dot T_{m,i}
+=
+\frac{T_{a,i}-T_{m,i}}{R_{am,i}}
++
+\eta_{r,i}^{(2C)}Q_{r,i}.
+}
+\tag{9}
+\end{align}
+
+Adding (8) and (9),
+
+\begin{align}
+\boxed{
+C_{a,i}\dot T_{a,i}
++
+C_{m,i}\dot T_{m,i}
+=
+\frac{T_o-T_{a,i}}{R_{ao,i}}
++
+Q_{c,i}
++
+Q_{r,i}.
+}
+\tag{10}
+\end{align}
+
+Notice something fundamental:
+
+\begin{align}
+R_{am,i}
+\end{align}
+
+and
+
+\begin{align}
+\eta_{r,i}
+\end{align}
+
+cancel from the total-energy equation.
+
+That fact will become central to EBP-PINODE.
+
+The options for 2R2C are
+
+\begin{align}
+\eta_r^{(2C)}=
+\begin{cases}
+1, & \texttt{mass\_only},\\
+0, & \texttt{air\_only},\\
+\eta_{\rm fixed}, & \texttt{fixed},\\
+\sigma(\rho_\eta), & \texttt{learnable}.
+\end{cases}
+\tag{11}
+\end{align}
+
+The main/default model is
+
+\begin{align}
+\boxed{\eta_r^{(2C)}=1.}
+\end{align}
+
+\section*{5. Architecture A --- All-to-One}
+
+The entire Dining+Kitchen building representation is reduced to one aggregate thermal zone \(A\).
+
+Phase D supplies
+
+\begin{align}
+T_A,
+\quad
+Q_{AC,A},
+\quad
+T_o,
+\end{align}
+
+\begin{align}
+Q_{ZIC,A},
+\quad
+Q_{ZIR,A},
+\quad
+Q_{Sol1,A},
+\quad
+Q_{Sol2,A}.
+\end{align}
+
+Define
+
+\begin{align}
+Q_{c,A}
+=
+Q_{ZIC,A}+Q_{Sol1,A}+Q_{AC,A},
+\tag{12}
+\end{align}
+
+\begin{align}
+Q_{r,A}
+=
+Q_{ZIR,A}+Q_{Sol2,A}.
+\tag{13}
+\end{align}
+
+There is no inter-zone resistance because only one aggregate state remains.
+
+\subsection*{5.1 All-to-One 1R1C}
+
+State:
+
+\begin{align}
+\boxed{x_A=T_A.}
+\end{align}
+
+Parameters:
+
+\begin{align}
+\boxed{
+\theta_{A,1C}
+=
+\{R_{Ao},C_A,\eta_{r,A}\}.
+}
+\end{align}
+
+Dynamics:
+
+\begin{align}
+\boxed{
+C_A\dot T_A
+=
+\frac{T_o-T_A}{R_{Ao}}
++
+Q_{c,A}
++
+\eta_{r,A}Q_{r,A}.
+}
+\tag{14}
+\end{align}
+
+Equivalently,
+
+\begin{align}
+\dot T_A
+=
+\frac{1}{C_A}
+\left[
+\frac{T_o-T_A}{R_{Ao}}
++
+Q_{c,A}
++
+\eta_{r,A}Q_{r,A}
+\right].
+\tag{15}
+\end{align}
+
+The measured output is
+
+\begin{align}
+y_A=T_A.
+\end{align}
+
+\section*{6. All-to-One 2R2C}
+
+State:
+
+\begin{align}
+\boxed{
+x_A=
+\begin{bmatrix}
+T_{a,A}\\
+T_{m,A}
+\end{bmatrix}.
+}
+\end{align}
+
+Measured output:
+
+\begin{align}
+y_A=T_{a,A}.
+\end{align}
+
+Parameters:
+
+\begin{align}
+\boxed{
+\theta_{A,2C}
+=
+\{
+R_{Ao},
+R_{Am},
+C_{a,A},
+C_{m,A},
+\eta_{r,A}
+\}.
+}
+\end{align}
+
+Dynamics:
+
+\begin{align}
+\boxed{
+C_{a,A}\dot T_{a,A}
+=
+\frac{T_o-T_{a,A}}{R_{Ao}}
++
+\frac{T_{m,A}-T_{a,A}}{R_{Am}}
++
+Q_{c,A}
++
+(1-\eta_{r,A})Q_{r,A}.
+}
+\tag{16}
+\end{align}
+
+\begin{align}
+\boxed{
+C_{m,A}\dot T_{m,A}
+=
+\frac{T_{a,A}-T_{m,A}}{R_{Am}}
++
+\eta_{r,A}Q_{r,A}.
+}
+\tag{17}
+\end{align}
+
+Only
+
+\begin{align}
+T_{m,A}(t_0)
+\end{align}
+
+is hidden.
+
+\section*{7. Architecture B --- Identity / IND}
+
+Phase D's IND architecture treats Dining and Kitchen as \textbf{two independent systems}.
+
+This means no inter-zone state is supplied to the other zone's model.
+
+Therefore
+
+\begin{align}
+\boxed{R_{DK}\text{ does not exist in IND}.}
+\end{align}
+
+This is an architectural constraint, not merely setting some learned coupling to a large value.
+
+\section*{8. Identity / IND --- 1R1C}
+
+Dining:
+
+\begin{align}
+\boxed{
+C_D\dot T_D
+=
+\frac{T_o-T_D}{R_{Do}}
++
+Q_{c,D}
++
+\eta_{r,D}Q_{r,D}.
+}
+\tag{18}
+\end{align}
+
+Kitchen:
+
+\begin{align}
+\boxed{
+C_K\dot T_K
+=
+\frac{T_o-T_K}{R_{Ko}}
++
+Q_{c,K}
++
+\eta_{r,K}Q_{r,K}.
+}
+\tag{19}
+\end{align}
+
+These are two independent models:
+
+\begin{align}
+f_D(T_D,u_D,d_D)
+\end{align}
+
+and
+
+\begin{align}
+f_K(T_K,u_K,d_K).
+\end{align}
+
+Their state dimensions are each
+
+\begin{align}
+n_x=1.
+\end{align}
+
+The complete building simulator may still execute both simultaneously, but mathematically they do not communicate.
+
+For Kitchen,
+
+\begin{align}
+Q_{Sol1,K}=Q_{Sol2,K}=0,
+\end{align}
+
+so
+
+\begin{align}
+Q_{c,K}=Q_{ZIC,K}+Q_{AC,K},
+\tag{20}
+\end{align}
+
+\begin{align}
+Q_{r,K}=Q_{ZIR,K}.
+\tag{21}
+\end{align}
+
+We retain the generic equations so the architecture does not need special code other than the absence mask.
+
+\section*{9. Identity / IND --- 2R2C}
+
+Dining state:
+
+\begin{align}
+x_D=
+\begin{bmatrix}
+T_{a,D}\\T_{m,D}
+\end{bmatrix}.
+\end{align}
+
+Kitchen state:
+
+\begin{align}
+x_K=
+\begin{bmatrix}
+T_{a,K}\\T_{m,K}
+\end{bmatrix}.
+\end{align}
+
+Dining:
+
+\begin{align}
+\boxed{
+C_{a,D}\dot T_{a,D}
+=
+\frac{T_o-T_{a,D}}{R_{Do}}
++
+\frac{T_{m,D}-T_{a,D}}{R_{Dm}}
++
+Q_{c,D}
++
+(1-\eta_{r,D})Q_{r,D}.
+}
+\tag{22}
+\end{align}
+
+\begin{align}
+\boxed{
+C_{m,D}\dot T_{m,D}
+=
+\frac{T_{a,D}-T_{m,D}}{R_{Dm}}
++
+\eta_{r,D}Q_{r,D}.
+}
+\tag{23}
+\end{align}
+
+Kitchen:
+
+\begin{align}
+\boxed{
+C_{a,K}\dot T_{a,K}
+=
+\frac{T_o-T_{a,K}}{R_{Ko}}
++
+\frac{T_{m,K}-T_{a,K}}{R_{Km}}
++
+Q_{c,K}
++
+(1-\eta_{r,K})Q_{r,K}.
+}
+\tag{24}
+\end{align}
+
+\begin{align}
+\boxed{
+C_{m,K}\dot T_{m,K}
+=
+\frac{T_{a,K}-T_{m,K}}{R_{Km}}
++
+\eta_{r,K}Q_{r,K}.
+}
+\tag{25}
+\end{align}
+
+Again,
+
+\begin{align}
+R_{DK}
+\end{align}
+
+is absent.
+
+\section*{10. Architecture C --- Identity / DEP1}
+
+This is our primary physically coupled identity architecture.
+
+Phase D supplies both zone temperatures:
+
+\begin{align}
+T_D,\quad T_K,
+\end{align}
+
+both zone QAC values:
+
+\begin{align}
+Q_{AC,D},\quad Q_{AC,K},
+\end{align}
+
+and zone-specific disturbances.
+
+We therefore introduce one physical inter-zone resistance:
+
+\begin{align}
+\boxed{R_{DK}>0.}
+\end{align}
+
+We use reciprocal coupling:
+
+\begin{align}
+Q_{D\rightarrow K}
+=
+\frac{T_D-T_K}{R_{DK}},
+\tag{26}
+\end{align}
+
+and therefore
+
+\begin{align}
+Q_{K\rightarrow D}
+=
+-\,
+Q_{D\rightarrow K}
+=
+\frac{T_K-T_D}{R_{DK}}.
+\tag{27}
+\end{align}
+
+Thus inter-zone exchange conserves energy:
+
+\begin{align}
+Q_{D\rightarrow K}+Q_{K\rightarrow D}=0.
+\tag{28}
+\end{align}
+
+This reciprocal/shared \(R_{DK}\) assumption is important for both physical interpretation and the later EBP projection.
+
+\section*{11. Identity / DEP1 --- coupled 1R1C}
+
+State:
+
+\begin{align}
+\boxed{
+x=
+\begin{bmatrix}
+T_D\\
+T_K
+\end{bmatrix}.
+}
+\end{align}
+
+Mass/capacitance matrix:
+
+\begin{align}
+\boxed{
+M_{1C}
+=
+\begin{bmatrix}
+C_D&0\\
+0&C_K
+\end{bmatrix}.
+}
+\tag{29}
+\end{align}
+
+Dynamics:
+
+\begin{align}
+\boxed{
+C_D\dot T_D
+=
+\frac{T_o-T_D}{R_{Do}}
++
+\frac{T_K-T_D}{R_{DK}}
++
+Q_{c,D}
++
+\eta_{r,D}Q_{r,D}.
+}
+\tag{30}
+\end{align}
+
+\begin{align}
+\boxed{
+C_K\dot T_K
+=
+\frac{T_o-T_K}{R_{Ko}}
++
+\frac{T_D-T_K}{R_{DK}}
++
+Q_{c,K}
++
+\eta_{r,K}Q_{r,K}.
+}
+\tag{31}
+\end{align}
+
+Define
+
+\begin{align}
+b_D=
+\frac{T_o-T_D}{R_{Do}}
++
+\frac{T_K-T_D}{R_{DK}}
++
+Q_{c,D}
++
+\eta_{r,D}Q_{r,D},
+\tag{32}
+\end{align}
+
+\begin{align}
+b_K=
+\frac{T_o-T_K}{R_{Ko}}
++
+\frac{T_D-T_K}{R_{DK}}
++
+Q_{c,K}
++
+\eta_{r,K}Q_{r,K}.
+\tag{33}
+\end{align}
+
+Then
+
+\begin{align}
+\boxed{
+M_{1C}\dot x=
+\begin{bmatrix}
+b_D\\b_K
+\end{bmatrix}.
+}
+\tag{34}
+\end{align}
+
+or
+
+\begin{align}
+\boxed{
+\dot x
+=
+M_{1C}^{-1}
+b(x,u,d;\theta).
+}
+\tag{35}
+\end{align}
+
+\section*{12. Identity / DEP1 --- coupled 2R2C}
+
+State ordering:
+
+\begin{align}
+\boxed{
+x=
+\begin{bmatrix}
+T_{a,D}\\
+T_{m,D}\\
+T_{a,K}\\
+T_{m,K}
+\end{bmatrix}.
+}
+\tag{36}
+\end{align}
+
+Measured output:
+
+\begin{align}
+\boxed{
+y=
+\begin{bmatrix}
+T_{a,D}\\
+T_{a,K}
+\end{bmatrix}
+=
+Hx,
+}
+\end{align}
+
+with
+
+\begin{align}
+\boxed{
+H=
+\begin{bmatrix}
+1&0&0&0\\
+0&0&1&0
+\end{bmatrix}.
+}
+\tag{37}
+\end{align}
+
+The two hidden states are
+
+\begin{align}
+T_{m,D},\qquad T_{m,K}.
+\end{align}
+
+Capacitance matrix:
+
+\begin{align}
+\boxed{
+M_{2C}
+=
+\operatorname{diag}
+(C_{a,D},C_{m,D},C_{a,K},C_{m,K}).
+}
+\tag{38}
+\end{align}
+
+Dining air:
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_{a,D}\dot T_{a,D}
+={}&
+\frac{T_o-T_{a,D}}{R_{Do}}
++
+\frac{T_{m,D}-T_{a,D}}{R_{Dm}}\\
+&+
+\frac{T_{a,K}-T_{a,D}}{R_{DK}}
++
+Q_{c,D}
++
+(1-\eta_{r,D})Q_{r,D}.
+\end{aligned}
+}
+\tag{39}
+\end{align}
+
+Dining mass:
+
+\begin{align}
+\boxed{
+C_{m,D}\dot T_{m,D}
+=
+\frac{T_{a,D}-T_{m,D}}{R_{Dm}}
++
+\eta_{r,D}Q_{r,D}.
+}
+\tag{40}
+\end{align}
+
+Kitchen air:
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_{a,K}\dot T_{a,K}
+={}&
+\frac{T_o-T_{a,K}}{R_{Ko}}
++
+\frac{T_{m,K}-T_{a,K}}{R_{Km}}\\
+&+
+\frac{T_{a,D}-T_{a,K}}{R_{DK}}
++
+Q_{c,K}
++
+(1-\eta_{r,K})Q_{r,K}.
+\end{aligned}
+}
+\tag{41}
+\end{align}
+
+Kitchen mass:
+
+\begin{align}
+\boxed{
+C_{m,K}\dot T_{m,K}
+=
+\frac{T_{a,K}-T_{m,K}}{R_{Km}}
++
+\eta_{r,K}Q_{r,K}.
+}
+\tag{42}
+\end{align}
+
+This is the most spatially detailed physical RC representation in the paper.
+
+\section*{13. Total-energy equations for DEP1 2R2C}
+
+Add Dining equations (39)+(40):
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_{a,D}\dot T_{a,D}
++
+C_{m,D}\dot T_{m,D}
+={}&
+\frac{T_o-T_{a,D}}{R_{Do}}\\
+&+
+\frac{T_{a,K}-T_{a,D}}{R_{DK}}
++
+Q_{c,D}+Q_{r,D}.
+\end{aligned}
+}
+\tag{43}
+\end{align}
+
+Likewise,
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_{a,K}\dot T_{a,K}
++
+C_{m,K}\dot T_{m,K}
+={}&
+\frac{T_o-T_{a,K}}{R_{Ko}}\\
+&+
+\frac{T_{a,D}-T_{a,K}}{R_{DK}}
++
+Q_{c,K}+Q_{r,K}.
+\end{aligned}
+}
+\tag{44}
+\end{align}
+
+Again,
+
+\begin{align}
+\eta_r
+\end{align}
+
+and the air-mass conductances disappear from these total balances.
+
+If we add the two zone totals,
+
+\begin{align}
+&C_{a,D}\dot T_{a,D}
++C_{m,D}\dot T_{m,D}
++
+C_{a,K}\dot T_{a,K}
++C_{m,K}\dot T_{m,K},
+\end{align}
+
+then the inter-zone exchange also cancels:
+
+\begin{align}
+\frac{T_K-T_D}{R_{DK}}
++
+\frac{T_D-T_K}{R_{DK}}
+=0.
+\end{align}
+
+Therefore the complete two-zone building balance is
+
+\begin{align}
+\boxed{
+\begin{aligned}
+\dot E_{\rm building}
+={}&
+\frac{T_o-T_{a,D}}{R_{Do}}
++
+\frac{T_o-T_{a,K}}{R_{Ko}}\\
+&+
+Q_{c,D}+Q_{r,D}
++
+Q_{c,K}+Q_{r,K}.
+\end{aligned}
+}
+\tag{45}
+\end{align}
+
+This will be valuable later for both our aggregation theorem and EBP derivation.
+
+\section*{14. Architecture D --- Identity / DEP2}
+
+DEP2 requires the most care.
+
+Phase D gives us:
+
+\subsection*{Zone-specific states}
+
+\begin{align}
+T_D,\quad T_K.
+\end{align}
+
+\subsection*{Zone-specific HVAC thermal controls}
+
+\begin{align}
+Q_{AC,D},
+\quad
+Q_{AC,K}.
+\end{align}
+
+\subsection*{Common all-to-one non-HVAC disturbances}
+
+\begin{align}
+Q_{ZIC,A},
+\quad
+Q_{Sol1,A},
+\end{align}
+
+\begin{align}
+Q_{ZIR,A},
+\quad
+Q_{Sol2,A}.
+\end{align}
+
+So define the aggregate non-HVAC convective signal
+
+\begin{align}
+\boxed{
+\bar Q_c^{\,nh}
+=
+Q_{ZIC,A}+Q_{Sol1,A}.
+}
+\tag{46}
+\end{align}
+
+and aggregate radiative signal
+
+\begin{align}
+\boxed{
+\bar Q_r
+=
+Q_{ZIR,A}+Q_{Sol2,A}.
+}
+\tag{47}
+\end{align}
+
+I use the overbar deliberately because these came from the equal-weight all-to-one aggregation.
+
+The numerical audit is consistent with those signals behaving as equal-weight aggregate quantities rather than zone-resolved individual heat gains.
+
+Therefore we must not write
+
+\begin{align}
+Q_D=\bar Q
+\end{align}
+
+and
+
+\begin{align}
+Q_K=\bar Q
+\end{align}
+
+without qualification.
+
+That would duplicate the aggregate heat.
+
+\section*{15. DEP2 effective disturbance allocation}
+
+We introduce separate allocation factors for the convective non-HVAC and radiative disturbances:
+
+\begin{align}
+\lambda_{c,D},
+\quad
+\lambda_{c,K},
+\end{align}
+
+\begin{align}
+\lambda_{r,D},
+\quad
+\lambda_{r,K}.
+\end{align}
+
+Since the all-to-one signals are equal-weight two-zone aggregate quantities, impose
+
+\begin{align}
+\boxed{
+\lambda_{c,D}+\lambda_{c,K}=2,
+}
+\tag{48}
+\end{align}
+
+\begin{align}
+\boxed{
+\lambda_{r,D}+\lambda_{r,K}=2.
+}
+\tag{49}
+\end{align}
+
+Then
+
+\begin{align}
+\boxed{
+Q_{c,D}^{DEP2}
+=
+Q_{AC,D}
++
+\lambda_{c,D}\bar Q_c^{nh},
+}
+\tag{50}
+\end{align}
+
+\begin{align}
+\boxed{
+Q_{c,K}^{DEP2}
+=
+Q_{AC,K}
++
+\lambda_{c,K}\bar Q_c^{nh}.
+}
+\tag{51}
+\end{align}
+
+Radiative:
+
+\begin{align}
+\boxed{
+Q_{r,D}^{DEP2}
+=
+\lambda_{r,D}\bar Q_r,
+}
+\tag{52}
+\end{align}
+
+\begin{align}
+\boxed{
+Q_{r,K}^{DEP2}
+=
+\lambda_{r,K}\bar Q_r.
+}
+\tag{53}
+\end{align}
+
+This preserves
+
+\begin{align}
+\frac{
+\lambda_{c,D}\bar Q_c^{nh}
++
+\lambda_{c,K}\bar Q_c^{nh}
+}{2}
+=
+\bar Q_c^{nh},
+\end{align}
+
+and likewise for radiation.
+
+\section*{16. Convenient constrained parameterization}
+
+With two zones, we only need one unconstrained parameter for each allocation family.
+
+Let
+
+\begin{align}
+\alpha_c\in\mathbb R,
+\qquad
+\alpha_r\in\mathbb R.
+\end{align}
+
+Set
+
+\begin{align}
+\boxed{
+\lambda_{c,D}=2\sigma(\alpha_c)
+}
+\tag{54}
+\end{align}
+
+and
+
+\begin{align}
+\boxed{
+\lambda_{c,K}=2[1-\sigma(\alpha_c)].
+}
+\tag{55}
+\end{align}
+
+Then automatically
+
+\begin{align}
+\lambda_{c,D}>0,
+\qquad
+\lambda_{c,K}>0,
+\end{align}
+
+and
+
+\begin{align}
+\lambda_{c,D}+\lambda_{c,K}=2.
+\end{align}
+
+Similarly,
+
+\begin{align}
+\boxed{
+\lambda_{r,D}=2\sigma(\alpha_r),
+}
+\tag{56}
+\end{align}
+
+\begin{align}
+\boxed{
+\lambda_{r,K}=2[1-\sigma(\alpha_r)].
+}
+\tag{57}
+\end{align}
+
+Equal allocation corresponds to
+
+\begin{align}
+\alpha_c=\alpha_r=0
+\end{align}
+
+because
+
+\begin{align}
+\sigma(0)=\frac12
+\end{align}
+
+and therefore
+
+\begin{align}
+\lambda_D=\lambda_K=1.
+\end{align}
+
+This is a natural initialization.
+
+These are \textbf{DEP2 information-allocation parameters}, not generic heat multipliers.
+
+That distinction should remain explicit in the paper.
+
+\section*{17. Identity / DEP2 --- 1R1C}
+
+The state structure is exactly the same as DEP1:
+
+\begin{align}
+x=
+\begin{bmatrix}
+T_D\\T_K
+\end{bmatrix}.
+\end{align}
+
+The coupling is also the same:
+
+\begin{align}
+R_{DK}>0.
+\end{align}
+
+What changes is only the non-HVAC disturbance information supplied to each zone.
+
+Dining:
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_D\dot T_D
+={}&
+\frac{T_o-T_D}{R_{Do}}
++
+\frac{T_K-T_D}{R_{DK}}\\
+&+
+Q_{AC,D}
++
+\lambda_{c,D}\bar Q_c^{nh}\\
+&+
+\eta_{r,D}
+\lambda_{r,D}\bar Q_r.
+\end{aligned}
+}
+\tag{58}
+\end{align}
+
+Kitchen:
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_K\dot T_K
+={}&
+\frac{T_o-T_K}{R_{Ko}}
++
+\frac{T_D-T_K}{R_{DK}}\\
+&+
+Q_{AC,K}
++
+\lambda_{c,K}\bar Q_c^{nh}\\
+&+
+\eta_{r,K}
+\lambda_{r,K}\bar Q_r.
+\end{aligned}
+}
+\tag{59}
+\end{align}
+
+\section*{18. Identity / DEP2 --- 2R2C}
+
+Same four-state structure as DEP1:
+
+\begin{align}
+x=
+\begin{bmatrix}
+T_{a,D}\\T_{m,D}\\T_{a,K}\\T_{m,K}
+\end{bmatrix}.
+\end{align}
+
+Dining air:
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_{a,D}\dot T_{a,D}
+={}&
+\frac{T_o-T_{a,D}}{R_{Do}}
++
+\frac{T_{m,D}-T_{a,D}}{R_{Dm}}\\
+&+
+\frac{T_{a,K}-T_{a,D}}{R_{DK}}
++
+Q_{AC,D}
++
+\lambda_{c,D}\bar Q_c^{nh}\\
+&+
+(1-\eta_{r,D})
+\lambda_{r,D}\bar Q_r.
+\end{aligned}
+}
+\tag{60}
+\end{align}
+
+Dining mass:
+
+\begin{align}
+\boxed{
+C_{m,D}\dot T_{m,D}
+=
+\frac{T_{a,D}-T_{m,D}}{R_{Dm}}
++
+\eta_{r,D}
+\lambda_{r,D}\bar Q_r.
+}
+\tag{61}
+\end{align}
+
+Kitchen air:
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_{a,K}\dot T_{a,K}
+={}&
+\frac{T_o-T_{a,K}}{R_{Ko}}
++
+\frac{T_{m,K}-T_{a,K}}{R_{Km}}\\
+&+
+\frac{T_{a,D}-T_{a,K}}{R_{DK}}
++
+Q_{AC,K}
++
+\lambda_{c,K}\bar Q_c^{nh}\\
+&+
+(1-\eta_{r,K})
+\lambda_{r,K}\bar Q_r.
+\end{aligned}
+}
+\tag{62}
+\end{align}
+
+Kitchen mass:
+
+\begin{align}
+\boxed{
+C_{m,K}\dot T_{m,K}
+=
+\frac{T_{a,K}-T_{m,K}}{R_{Km}}
++
+\eta_{r,K}
+\lambda_{r,K}\bar Q_r.
+}
+\tag{63}
+\end{align}
+
+\section*{19. DEP2 total-energy balances}
+
+Dining:
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_{a,D}\dot T_{a,D}
++
+C_{m,D}\dot T_{m,D}
+={}&
+\frac{T_o-T_{a,D}}{R_{Do}}
++
+\frac{T_{a,K}-T_{a,D}}{R_{DK}}\\
+&+
+Q_{AC,D}
++
+\lambda_{c,D}\bar Q_c^{nh}
++
+\lambda_{r,D}\bar Q_r.
+\end{aligned}
+}
+\tag{64}
+\end{align}
+
+Kitchen:
+
+\begin{align}
+\boxed{
+\begin{aligned}
+C_{a,K}\dot T_{a,K}
++
+C_{m,K}\dot T_{m,K}
+={}&
+\frac{T_o-T_{a,K}}{R_{Ko}}
++
+\frac{T_{a,D}-T_{a,K}}{R_{DK}}\\
+&+
+Q_{AC,K}
++
+\lambda_{c,K}\bar Q_c^{nh}
++
+\lambda_{r,K}\bar Q_r.
+\end{aligned}
+}
+\tag{65}
+\end{align}
+
+Again,
+
+\begin{align}
+\eta_r
+\end{align}
+
+cancels from the total balance.
+
+\section*{20. What exactly is observed versus hidden?}
+
+This needs to remain fixed for all four learning methods.
+
+\subsection*{1R1C}
+
+Everything in the physical state is observed:
+
+\begin{align}
+x=y=T_z.
+\end{align}
+
+No latent thermal state exists.
+
+\subsection*{2R2C}
+
+Only zone air is observed.
+
+For one zone:
+
+\begin{align}
+x=
+\begin{bmatrix}
+T_a\\T_m
+\end{bmatrix},
+\qquad
+y=T_a.
+\end{align}
+
+For coupled identity:
+
+\begin{align}
+x=
+\begin{bmatrix}
+T_{a,D}\\
+T_{m,D}\\
+T_{a,K}\\
+T_{m,K}
+\end{bmatrix}.
+\end{align}
+
+\begin{align}
+y=
+\begin{bmatrix}
+T_{a,D}\\
+T_{a,K}
+\end{bmatrix}.
+\end{align}
+
+Thus the unobserved variables are exactly
+
+\begin{align}
+T_{m,D},T_{m,K}.
+\end{align}
+
+No learning method gets to invent a latent coordinate system that replaces the physical states.
+
+That becomes particularly important for NODE/PINODE/EBP.
+
+\section*{21. Exact Phase-D architecture map}
+
+This is the interface I would freeze for the later TeX.
+
+\begin{center}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Architecture & State information & QAC & Non-HVAC disturbances & Inter-zone coupling\\
+\hline
+All-to-One & aggregate & aggregate & aggregate & none\\
+Identity/IND & zone-specific, separate & zone-specific & zone-specific & none\\
+Identity/DEP1 & joint zone-specific & zone-specific & zone-specific & yes\\
+Identity/DEP2 & joint zone-specific & zone-specific & all-to-one aggregate & yes + allocation map\\
+\hline
+\end{tabular}
+\end{center}
+
+And by RC type:
+
+\begin{center}
+\begin{tabular}{|l|c|c|}
+\hline
+Architecture & 1R1C states & 2R2C states\\
+\hline
+All-to-One & \(T_A\) & \(T_{a,A},T_{m,A}\)\\
+IND Dining & \(T_D\) & \(T_{a,D},T_{m,D}\)\\
+IND Kitchen & \(T_K\) & \(T_{a,K},T_{m,K}\)\\
+DEP1 & \(T_D,T_K\) & \(T_{a,D},T_{m,D},T_{a,K},T_{m,K}\)\\
+DEP2 & \(T_D,T_K\) & \(T_{a,D},T_{m,D},T_{a,K},T_{m,K}\)\\
+\hline
+\end{tabular}
+\end{center}
+
+\section*{22. Physical parameter sets}
+
+This is useful because Parts 2, 4 and 5 will estimate these.
+
+\subsection*{All-to-One 1R1C}
+
+\begin{align}
+\boxed{
+\theta=
+\{R_{Ao},C_A,\eta_{r,A}\}.
+}
+\end{align}
+
+\subsection*{All-to-One 2R2C}
+
+\begin{align}
+\boxed{
+\theta=
+\{
+R_{Ao},
+R_{Am},
+C_{a,A},
+C_{m,A},
+\eta_{r,A}
+\}.
+}
+\end{align}
+
+\subsection*{Identity/IND 1R1C}
+
+Dining:
+
+\begin{align}
+\theta_D=
+\{R_{Do},C_D,\eta_{r,D}\}.
+\end{align}
+
+Kitchen:
+
+\begin{align}
+\theta_K=
+\{R_{Ko},C_K,\eta_{r,K}\}.
+\end{align}
+
+\subsection*{Identity/IND 2R2C}
+
+\begin{align}
+\theta_D=
+\{
+R_{Do},R_{Dm},
+C_{a,D},C_{m,D},
+\eta_{r,D}
+\},
+\end{align}
+
+and similarly for Kitchen.
+
+\subsection*{Identity/DEP1 1R1C}
+
+\begin{align}
+\boxed{
+\theta=
+\{
+R_{Do},R_{Ko},R_{DK},
+C_D,C_K,
+\eta_{r,D},\eta_{r,K}
+\}.
+}
+\end{align}
+
+\subsection*{Identity/DEP1 2R2C}
+
+\begin{align}
+\boxed{
+\begin{aligned}
+\theta=\{&
+R_{Do},R_{Ko},R_{DK},
+R_{Dm},R_{Km},\\
+&
+C_{a,D},C_{m,D},
+C_{a,K},C_{m,K},\\
+&
+\eta_{r,D},\eta_{r,K}
+\}.
+\end{aligned}
+}
+\end{align}
+
+\subsection*{DEP2}
+
+Add
+
+\begin{align}
+\boxed{\alpha_c,\alpha_r}
+\end{align}
+
+or equivalently the constrained
+
+\begin{align}
+\lambda_{c,D},\lambda_{c,K},
+\lambda_{r,D},\lambda_{r,K}.
+\end{align}
+
+\section*{23. Positivity constraints}
+
+Every resistance and capacitance must satisfy
+
+\begin{align}
+R>0,\qquad C>0.
+\end{align}
+
+For trainable models I recommend parameterizing them as
+
+\begin{align}
+\boxed{
+R=R_{\min}+\operatorname{softplus}(\rho_R)
+}
+\tag{66}
+\end{align}
+
+and
+
+\begin{align}
+\boxed{
+C=C_{\min}+\operatorname{softplus}(\rho_C).
+}
+\tag{67}
+\end{align}
+
+This is better than optimizing \(R,C\) directly and clipping afterward because positivity is maintained throughout differentiation.
+
+Likewise,
+
+\begin{align}
+\eta_r=\sigma(\rho_\eta)
+\end{align}
+
+when learnable.
+
+\section*{24. Important modeling decision: same RC architecture across all four methods}
+
+This is critical for experimental fairness.
+
+Inverse PINN-RC, NODE, base PINODE and EBP-PINODE will \textbf{not} be allowed to change what:
+
+\begin{itemize}
+\item all-to-one means,
+\item IND means,
+\item DEP1 means,
+\item DEP2 means,
+\item 1R1C means,
+\item 2R2C means,
+\item convective heat means,
+\item radiative heat means,
+\item \(\eta_r\) means,
+\item inter-zone coupling means.
+\end{itemize}
+
+The methods may differ in \textbf{how the vector field is learned}, but the data/information architecture remains identical.
+
+That gives us a clean scientific comparison.
+
+\section*{25. Do we have all required thermal training data from Phase D?}
+
+For these RC representations:
+
+\begin{align}
+\boxed{\text{Yes.}}
+\end{align}
+
+The audited \texttt{ML\_SciML / l1\_h1} Phase-D products supply:
+
+\begin{itemize}
+\item observed zone temperature;
+\item one-step target zone temperature;
+\item outdoor temperature;
+\item QAC;
+\item ZIC;
+\item ZIR;
+\item Sol1 where applicable;
+\item Sol2 where applicable;
+\item train/validation/test membership;
+\item timestamps;
+\item IND/DEP1/DEP2 information architecture.
+\end{itemize}
+
+The only quantities \textbf{not measured in Phase D} are the 2R2C hidden mass temperatures
+
+\begin{align}
+T_m,
+\end{align}
+
+but those are intentionally latent model states, not missing training inputs. Their initialization/estimation belongs to Parts 2--5.
+
+DEP2's zone-level non-HVAC disturbances are likewise deliberately absent by construction, which is why we have introduced the explicit constrained allocation map rather than pretending those measurements exist.
+
+So we do \textbf{not} need another upstream dataset to train the thermal models themselves.
+
+Phase B/C becomes necessary later for Sim3 and MPC because of the
+
+\begin{align}
+\dot m\rightarrow Q_{AC}
+\end{align}
+
+and
+
+\begin{align}
+Q_{AC}\rightarrow P_{HVAC}
+\end{align}
+
+mappings---not because Phase D is insufficient for training the thermal dynamics.
+
+\section*{Part 1 conclusion}
+
+I recommend we now treat equations (1)--(67) above as the candidate locked RC architecture.
+
+The key decisions are:
+
+\begin{align}
+\boxed{
+Q_c=Q_{ZIC}+Q_{Sol1}+Q_{AC}
+}
+\end{align}
+
+\begin{align}
+\boxed{
+Q_r=Q_{ZIR}+Q_{Sol2}
+}
+\end{align}
+
+with no individual gain coefficients;
+
+\begin{align}
+\boxed{
+\eta_r^{1C}
+=
+\text{effective radiative participation}
+}
+\end{align}
+
+while
+
+\begin{align}
+\boxed{
+\eta_r^{2C}
+=
+\text{radiative mass-allocation fraction};
+}
+\end{align}
+
+IND has \textbf{no inter-zone resistance};
+
+DEP1 uses a reciprocal physical
+
+\begin{align}
+R_{DK};
+\end{align}
+
+and DEP2 uses the same coupled thermal structure but adds constrained effective allocation parameters
+
+\begin{align}
+\boxed{\lambda_c,\lambda_r}
+\end{align}
+
+for the aggregate non-HVAC disturbances.
+
+\end{document}

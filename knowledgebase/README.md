@@ -3,8 +3,8 @@
 **Repository:** `scalebridge-research`  
 **Python package:** `scalebridge`  
 **Project context:** PhD_Code_Framework / ScaleBridge research software stack  
-**Primary current focus:** Stage A generation and the complete 240-object Stage B aggregation matrix are validated. Phase C C1–C8 is now fully validated on the controlled QAC/PHVAC smoke campaign with all separate validators enabled, 33 PyTorch CUDA models, and full-year inference. C9 MLflow registration remains implemented and previously smoke-validated, but has not yet been executed for the latest fully validated run. The next execution target is the unrestricted full Phase C lab-PC campaign, followed by Phase D canonical thermal-model dataset assembly and Phase E multi-family thermal-model training/estimation.  
-**Current date context:** July 2026  
+**Primary current focus:** Stage A generation and the complete 240-object Stage B aggregation matrix are validated. Phase C C1–C9 is now fully availability-aware and end-to-end validated on the controlled laptop campaign, including CUDA `pytorch_linear` training, full-year inference, hierarchical MLflow registration, and runtime-derived C9 task-count validation. The immediate execution target is the unrestricted main Phase C lab-PC campaign with MLflow enabled and separate validators disabled. Phase D canonical thermal-model dataset assembly follows and must consume per-zone component-availability metadata rather than assuming that every zone has every People, Lights, equipment, QAC, or PHVAC model.  
+**Current date context:** August 2, 2026  
 
 ScaleBridge is a professional research-software framework for scalable building thermal modeling, EnergyPlus data generation, one-zone commercial building datasets, grey-box and Bayesian estimation, scientific machine learning, PyTorch baselines, MLflow experiment tracking, automated hyperparameter tuning, and later building-grid co-simulation and control experiments.
 
@@ -3833,3 +3833,332 @@ Phase E:
 ```
 
 This section supersedes earlier “next step” statements elsewhere in this document.
+
+
+---
+
+## 56. August 2, 2026 Authoritative Phase C Availability-Aware Completion
+
+This section supersedes earlier Phase C status statements in this README.
+
+### 56.1 Controlled end-to-end validation
+
+The authoritative controlled Phase C run is:
+
+```text
+campaign_id:
+p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3
+
+matrix_run_id:
+aggregation_matrix_20260715_114242
+
+phase_c_run_id:
+phase_c_full_updated_test_laptop_20260802_172455
+
+machine:
+laptop
+
+environment:
+scalebridge-dev-gpu-laptop
+
+estimator:
+pytorch_linear
+
+training device:
+cuda
+
+validation profile:
+full
+
+MLflow:
+enabled
+```
+
+Final orchestration result:
+
+```text
+status: completed
+passed_command_count: 19
+failed_command_count: 0
+```
+
+The 19 commands consist of C1-C9 plus all configured source, feature,
+timestamp, coalescence, split, dataset, training, evaluation, inference, and
+MLflow validators.
+
+### 56.2 Final availability-aware counts
+
+```text
+candidate_model_count:                  57
+applicable_model_count:                 33
+structurally_inapplicable_model_count:  20
+invalid_model_count:                     4
+missing_expected_data_model_count:       0
+
+created_dataset_count:                  33
+trained_model_count:                    33
+evaluated_model_count:                  33
+inferred_component_count:               33
+
+inference_zone_count:                    3
+zero_component_zone_count:               0
+```
+
+The core cross-stage invariant passed:
+
+```text
+C1 applicable models
+= C4 model datasets
+= C6 trained models
+= C7 evaluated models
+= C8 inferred components
+= 33
+```
+
+Controlled per-zone component counts:
+
+```text
+RestaurantFastFood_All: 12
+Dining:                11
+Kitchen:               10
+```
+
+### 56.3 Structural model availability is now part of the Phase C contract
+
+A candidate Phase C component model is no longer assumed to exist for every
+aggregate zone.
+
+Each candidate relationship is classified independently as one of:
+
+```text
+applicable
+structurally_inapplicable
+invalid
+missing_expected_data
+fatal/unexpected failure
+```
+
+Examples of structural availability differences include:
+
+- a zone with no People object has no People convective/radiant model;
+- a zone with no Lights object has no Lights convective/radiant/visible model;
+- a zone may lack one or more electric, gas, other, hot-water, or steam
+  equipment components;
+- a zone with no mapped HVAC supply/system node cannot support QAC;
+- PHVAC depends on QAC and is structurally inapplicable when QAC is unavailable;
+- an unconditioned or common zone can still have valid solar or equipment
+  components even when QAC and PHVAC are absent.
+
+Phase C must never create fake models or silently substitute zeros merely to
+force a fixed model count.
+
+### 56.4 Availability propagation through C1-C9
+
+C1 writes the authoritative model-applicability inventory, including:
+
+```text
+model_applicability.csv
+applicable_models.csv
+inapplicable_models.csv
+```
+
+Important fields include:
+
+```text
+applicability_class
+reason_code
+missing_required_signals
+dependency_status
+fatal_for_zone
+```
+
+C2 snapshots this availability beside each zone's features and builds only
+feature families required by applicable models.
+
+C3 carries the zone-level availability counts and IDs through split provenance.
+
+C4 materializes only C1-approved model datasets. A valid zero-model zone may
+complete with zero model datasets.
+
+C5 validates the estimator API against discovered C4 datasets.
+
+C6 trains only discovered C4 datasets and supports valid zero-task runs.
+
+C7 evaluates only completed C6 artifacts and supports valid zero-artifact runs.
+
+C8 uses the C2 feature inventory as the authoritative zone inventory. It
+therefore preserves zones even when they have zero evaluated components. Each
+zone receives a `component_applicability.csv` snapshot beside its prediction
+package.
+
+C9 logs availability-aware metrics, creates the parent/stage/task hierarchy,
+and validates that C6, C7, and C8 task runs are nested under the correct stage
+runs.
+
+### 56.5 Final C9 MLflow validation
+
+The authoritative controlled run registered:
+
+```text
+stage_run_count:             8
+training_task_run_count:    33
+evaluation_task_run_count:  33
+inference_task_run_count:    3
+total_task_run_count:       69
+misplaced_task_run_count:    0
+failed_registration_count:   0
+```
+
+The C9 validator derives expected C6-C8 task counts at runtime from the
+completed registration manifest. The campaign runner must not freeze these
+counts while planning a fresh run.
+
+### 56.6 Authoritative controlled artifacts
+
+```text
+<testing_campaign_root>/heat_input_regression/campaign_runs/
+  phase_c_full_updated_test_laptop_20260802_172455/
+    phase_c_campaign_run_manifest.json
+
+<testing_campaign_root>/heat_input_regression/mlflow_registration_runs/
+  phase_c_full_updated_test_laptop_20260802_172455/
+    phase_c_mlflow_registration_manifest.json
+```
+
+### 56.7 Main lab-PC Phase C production run
+
+Main campaign:
+
+```text
+campaign_id:
+p1_compact_4b4c_labpc_1w_v1
+
+matrix_run_id:
+aggregation_matrix_20260712_215839
+
+machine:
+lab-pc
+
+environment:
+scalebridge-dev-gpu-labpc
+```
+
+The production run should use:
+
+```text
+validation: none
+MLflow validation mode: none
+estimator: pytorch_linear
+device: cuda
+MLflow: enabled
+```
+
+`--validation none` disables separate stage validator subprocesses. It does not
+disable stage-internal assertions or ordinary failure handling. MLflow remains
+enabled because `--disable-mlflow` is not supplied.
+
+```powershell
+conda activate scalebridge-dev-gpu-labpc
+
+chcp 65001
+
+$CampaignRoot = "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1"
+$MatrixRunId = "aggregation_matrix_20260712_215839"
+
+$env:SCALEBRIDGE_MACHINE_ID = "lab-pc"
+$env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+$env:PYTHONDONTWRITEBYTECODE = "1"
+$env:PYTHONIOENCODING = "utf-8"
+$env:PYTHONUTF8 = "1"
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+$OutputEncoding = [System.Text.Encoding]::UTF8
+
+$Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
+$PhaseCRunId = "phase_c_full_main_labpc_$Timestamp"
+$LogFile = ".\Phase_C_Full_Main_LabPC_$Timestamp.log"
+
+python `
+  ".\scripts\heat_input_regression\run_phase_c_campaign.py" `
+  --campaign-root "$CampaignRoot" `
+  --matrix-run-id "$MatrixRunId" `
+  --phase-c-run-id "$PhaseCRunId" `
+  --start-stage C1 `
+  --stop-stage C9 `
+  --validation none `
+  --mlflow-validation-mode none `
+  --estimator-type pytorch_linear `
+  --pytorch-device cuda `
+  --overwrite-existing `
+  2>&1 | Tee-Object -FilePath "$LogFile"
+```
+
+Do not add `--disable-mlflow`. Do not add `--continue-on-error` for the first
+authoritative production run; fail fast on an unexpected error.
+
+The authoritative production manifest will be:
+
+```text
+<main_campaign_root>/heat_input_regression/campaign_runs/<phase_c_run_id>/
+phase_c_campaign_run_manifest.json
+```
+
+---
+
+## 57. Phase D Interface Consequence of Phase C Availability
+
+Phase D must not assume a fixed 12-component input vector for every zone.
+
+For every aggregate zone, Phase D must consume:
+
+```text
+component_applicability.csv
+annual_component_predictions_manifest.json
+annual_component_predictions.parquet
+zone_feature_manifest.json
+model_applicability_snapshot.csv
+```
+
+when available.
+
+For each component, Phase D must preserve an explicit state such as:
+
+```text
+available_and_predicted
+structurally_inapplicable
+invalid_upstream_relationship
+missing_expected_data
+not_trained
+training_failed
+evaluation_failed
+inference_failed
+```
+
+Structural absence is not equivalent to zero and is not equivalent to data
+corruption.
+
+Grouped totals such as `QZic_total` and `QZir_total` must record:
+
+- which component terms were available;
+- which terms were structurally absent;
+- whether the grouped total is complete relative to the zone's applicable
+  component set;
+- the exact aggregation formula;
+- measured versus predicted source;
+- whether any missing applicable term forced the grouped total to be marked
+  incomplete.
+
+QAC and PHVAC require special handling:
+
+```text
+QAC:
+    available only when the required mapped system-node mass-flow and
+    temperature signals exist for that aggregate zone.
+
+PHVAC:
+    depends on QAC and must be marked structurally inapplicable when QAC is
+    unavailable.
+```
+
+No Phase D or Phase E model may interpret an absent QAC/PHVAC model as a
+physical zero without an explicit, scientifically justified transformation.

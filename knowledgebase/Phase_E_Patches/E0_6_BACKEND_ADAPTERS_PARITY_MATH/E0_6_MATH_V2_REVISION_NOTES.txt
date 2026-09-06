@@ -1,0 +1,13 @@
+E0-6 MATHEMATICS V2 REVISION NOTES
+
+Reason for revision
+-------------------
+The v1 contract correctly defined common RC physics and transformed training coordinates, but it over-constrained CasADi by making the same raw rho coordinate mandatory for production optimization. The project method-family architecture requires separate estimation coordinates:
+
+1. Pure black-box ML: no RC equations.
+2. Pure Neural ODE: no explicit RC equations required.
+3. Inverse PINN-RC / differentiable RC ODE / Base PINODE / EBP-PINODE: PyTorch/Neuromancer RC equations with transformed rho -> Theta.
+4. Deterministic optimization: CasADi + IPOPT with direct physical RC master variables, explicit bounds and equality/inequality constraints, and E0-5 discrete dynamics.
+5. Bayesian RC estimation: physical Theta forward model, with NumPy as independent/default likelihood reference; sampler-specific transforms/backends may differ later.
+
+No E0-3 flavour equation, E0-4 runtime rule, E0-5 solver rule, current 2R2C heat grouping, DEP2 conservation equation, PHVAC exclusion, or parity tolerance was changed.

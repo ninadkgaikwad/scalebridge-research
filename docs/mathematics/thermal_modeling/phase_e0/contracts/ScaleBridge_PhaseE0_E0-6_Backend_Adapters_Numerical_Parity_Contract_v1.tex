@@ -1,0 +1,1154 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools,amsthm}
+\usepackage{booktabs,array,longtable,multirow}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\SB}{\textsc{ScaleBridge}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\diagmat}{\operatorname{diag}}
+\newcommand{\softmax}{\operatorname{softmax}}
+\newcommand{\logit}{\operatorname{logit}}
+\newcommand{\sigmoid}{\sigma}
+\newcommand{\Einf}{E_{\infty}}
+\newtheorem{proposition}{Proposition}
+\newtheorem{invariant}{Invariant}
+
+\title{\SB{} Phase E0 --- E0-6\\
+Backend Adapters, Trainable Physical Parameterization,\\
+and Numerical Parity\\
+Mathematical Contract v1}
+\author{ScaleBridge Research Framework}
+\date{Ratified August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document freezes the E0-6 mathematical contract for representing one
+compiled linear resistance--capacitance (RC) thermal graph in multiple numerical
+and differentiable computing backends without changing its physics. E0-6 sits
+after the E0-3 generic continuous-time RC compiler, E0-4 runtime
+state/input realization, and E0-5 common fixed-step discretization engine.
+It introduces a canonical dimensionless raw trainable coordinate vector,
+physically admissible parameter transforms, exact master-parameter sharing,
+backend-native graph reconstruction, differentiable DEP2 allocation, and layered
+cross-backend parity.
+
+The contract is graph-general and zone-count-general. Let an arbitrary E0-3
+compiled linear RC model contain $n_x$ dynamic thermal states, $n_b$ boundary
+temperature ports, $n_q$ applicable thermal-power ports, arbitrary reciprocal
+state--state RC edges, arbitrary state--boundary RC edges, arbitrary compiler-
+approved parameter-sharing groups, and arbitrary compiler-approved heat-routing
+basis functions. E0-6 uses the same equations for one zone, two zones, or $N$
+zones and for present or future linear RC flavours. Flavour-specific details
+remain data carried by E0-3 metadata rather than branches in E0-6.
+
+For the current paper-compatible 2R2C semantics, the five canonical thermal
+channels are retained separately,
+\[
+Q_{AC},\quad Q_{ZIC},\quad Q_{ZIR},\quad Q_{Sol1},\quad Q_{Sol2},
+\]
+while the physical routing groups are
+\[
+Q_c=Q_{AC}+Q_{ZIC}+Q_{Sol1},
+\qquad
+Q_r=Q_{ZIR}+Q_{Sol2}.
+\]
+Thus $Q_{Sol1}$ is the solar component assigned to the convective/air-side
+thermal bucket and $Q_{Sol2}$ is the solar component assigned to the
+radiative/mass-side thermal bucket. This is a frozen ScaleBridge/PINODE semantic
+contract; it is not a claim that incident solar radiation is itself a convective
+phenomenon. For current 2R2C models, $Q_{ZIR}$ and $Q_{Sol2}$ share the same
+radiative partition parameter $\eta_r$. Future linear RC flavours may define a
+different compiler-approved routing basis, but E0-6 evaluates that basis with the
+same backend machinery.
+
+The authoritative backend family is NumPy, PyTorch, Neuromancer/PyTorch, and
+CasADi. NumPy is an independent numerical reference, PyTorch owns differentiable
+trainable coordinates, Neuromancer is a thin ODE-system facade over the PyTorch
+physical realization, and CasADi provides an independent symbolic/algorithmic-
+differentiation realization. At a common raw coordinate $\rho$, all backends
+must reconstruct the same physical parameters, matrices, continuous right-hand
+side, derivatives, and common discrete propagation within frozen tolerances.
+\end{abstract}
+
+% =============================================================================
+\section{Scientific and software provenance}
+
+Thermal-network state-space construction from thermal circuits and RC networks
+is standard in building thermal modelling and is the basis of the already-frozen
+E0-3 contract \cite{GhiausAhmad2020ThermalCircuits,BacherMadsen2011HeatDynamics,
+ArroyoSpiessensHelsen2020MultiZone,VallianosAthienitisDelcroix2022MultiZoneRC}.
+The E0-5 exact linear zero-order-hold propagation follows standard matrix-
+exponential theory \cite{Higham2009MatrixExponential,VanLoan1978MatrixExponentialIntegrals}.
+
+Automatic differentiation (AD) evaluates exact derivatives of implemented
+numerical programs up to floating-point effects by systematically applying the
+chain rule \cite{Baydin2018AD}. PyTorch provides imperative tensor computation,
+registered model parameters, automatic differentiation, and matrix-exponential
+operations \cite{Paszke2019PyTorch,PyTorchParameterDocs2026,PyTorchMatrixExpDocs2026}.
+Neuromancer is a PyTorch-based differentiable programming and scientific-machine-
+learning framework and exposes ODE abstractions used by the E0-5 integrator layer
+\cite{Neuromancer2023,NeuromancerDocs2026}. CasADi provides symbolic expression
+graphs, algorithmic differentiation, ODE/DAE tools, and nonlinear/optimal-control
+interfaces \cite{Andersson2019CasADi,CasADiDocs2026}. NumPy provides the
+independent array-computing numerical reference \cite{Harris2020NumPy}.
+
+Simplex-valued compositions and log-ratio coordinates are classical objects in
+compositional-data analysis \cite{Aitchison1982Compositional}. E0-6 uses this
+background only as mathematical motivation: the centered anchored-softmax
+parameterization defined below, the exact choice of anchor, the centered
+baseline, the DEP2 contribution-simplex variable $p_i=w_i\lambda_i$, the
+cross-backend tolerance profiles, and the parity ladder are explicitly
+\SB{}-defined design choices.
+
+\subsection*{Provenance convention}
+In this document:
+\begin{itemize}[leftmargin=*]
+\item \textbf{Externally established mathematics/software behavior} is cited.
+\item \textbf{Adapted mathematics} cites its basis and states the ScaleBridge
+adaptation.
+\item \textbf{ScaleBridge-specific design} is labelled as such and is not
+presented as a literature claim.
+\end{itemize}
+
+% =============================================================================
+\section{E0-6A: Authority boundary and graph generality}
+
+E0-3 defines the compiled continuous thermal graph. E0-4 defines valid runtime
+state and canonical forcing. E0-5 defines numerical time advancement. E0-6 owns
+only backend-native parameter realization, admissible trainable coordinates,
+and numerical/derivative parity:
+\[
+\boxed{\text{E0-3: graph physics and continuous RHS}}
+\]
+\[
+\boxed{\text{E0-4: runtime state and canonical forcing realization}}
+\]
+\[
+\boxed{\text{E0-5: fixed-step ZOH numerical evolution}}
+\]
+\[
+\boxed{\text{E0-6: backend realization, trainable physical coordinates, parity}}
+\]
+
+Let the compiled model be
+\[
+\mathcal G_c=
+(\kappa_X,\kappa_B,\kappa_Q,
+\mathcal E_{CC},\mathcal E_{CB},
+\mathcal S_{share},\mathcal S_{route},H,\mathcal P),
+\]
+where $\kappa_X,\kappa_B,\kappa_Q$ are deterministic state/boundary/thermal-port
+orders; $\mathcal E_{CC}$ and $\mathcal E_{CB}$ are graph edges;
+$\mathcal S_{share}$ identifies master-parameter sharing; $\mathcal S_{route}$
+defines compiler-approved routing bases/support; $H$ is the immutable observation
+matrix; and $\mathcal P$ is physical-parameter metadata.
+
+For arbitrary dimensions
+\[
+n_x=|\kappa_X|,\qquad n_b=|\kappa_B|,\qquad n_q=|\kappa_Q|,
+\]
+E0-6 operates on the same generic matrix shapes
+\[
+C\in\R^{n_x\times n_x},\quad
+L_{CC}\in\R^{n_x\times n_x},\quad
+L_{CB}\in\R^{n_x\times n_b},\quad
+\Gamma\in\R^{n_x\times n_q}.
+\]
+No E0-6 equation depends on a fixed number of zones or a fixed RC flavour.
+
+\begin{proposition}[Zone-count and topology generality]
+If an E0-3 compiler emits a valid linear RC graph satisfying the E0-3
+invariants, then the E0-6 parameter transforms, master-parameter expansion,
+incidence/selector matrix construction, continuous RHS, derivative oracles, and
+backend parity definitions apply without modification for any finite $n_x,n_b,n_q$.
+\end{proposition}
+
+\paragraph{ScaleBridge design implication.}
+Flavour-specific knowledge such as ``current 2R2C radiative gains share
+$\eta_r$'' belongs in $\mathcal S_{route}$. E0-6 does not contain hard-coded
+branches such as ``if flavour is 2R2C'' in its generic algebra.
+
+% =============================================================================
+\section{E0-6B: One physical model, multiple computational backends}
+
+Define the authoritative backend family
+\[
+\boxed{\mathbb B=\{N,T,NM,C\}},
+\]
+where $N$ is NumPy, $T$ is PyTorch, $NM$ is Neuromancer/PyTorch, and $C$ is
+CasADi. For backend $b\in\mathbb B$, let
+\[
+\mathcal R_b(\mathcal G_c,\rho)
+\]
+be the backend-native realization at canonical raw coordinate $\rho$.
+
+E0-6 requires one physical interpretation:
+\[
+\boxed{
+\Theta_N(\rho)\equiv\Theta_T(\rho)\equiv
+\Theta_{NM}(\rho)\equiv\Theta_C(\rho)
+}
+\]
+and similarly for matrices and RHS up to explicit numerical tolerances.
+Neuromancer is not an independent physical model: it reuses the PyTorch physical
+parameter owner and wraps its RHS in the Neuromancer ODE API.
+
+% =============================================================================
+\section{E0-6C: Immutable semantics versus trainable physics}
+
+Partition the compiled authority as
+\[
+\boxed{\mathcal G_c=(\mathcal K,\Theta)},
+\]
+where $\mathcal K$ contains immutable semantics and $\Theta$ contains physical
+quantities. Immutable semantics include state ordering, boundary ordering,
+thermal-port ordering, graph adjacency, parameter-sharing maps, routing support,
+observation matrix $H$, and structural zero patterns.
+
+Candidate trainable physical master quantities include positive capacitances,
+positive resistances, bounded routing parameters, and compiler-approved DEP2
+allocation parameters. Derived matrices and quantities are never independent
+optimizer variables:
+\[
+\boxed{L_{CC},L_{CB},A,B_T,B_Q,g,H\ \text{are derived/immutable as appropriate}.}
+\]
+In particular, resistance and conductance are never trained simultaneously.
+
+% =============================================================================
+\section{E0-6D: Canonical raw optimization coordinates}
+
+Define the dimensionless raw coordinate vector
+\[
+\boxed{\rho\in\R^{n_\rho}}.
+\]
+A deterministic physical transform gives
+\[
+\boxed{\Theta=\mathcal T(\rho;\Theta^{(0)},\mathcal P)}.
+\]
+The transform is centered so that
+\[
+\boxed{\rho=0\Longrightarrow\Theta=\Theta^{(0)}}.
+\]
+Thus the already-qualified E0-3/E0-4/E0-5 model is exactly the E0-6 initial
+model.
+
+The raw ordering
+\[
+\kappa_\rho:\{\text{trainable master coordinates}\}\to\{1,\ldots,n_\rho\}
+\]
+is deterministic and identical in NumPy, PyTorch, Neuromancer, and CasADi.
+It may not depend on dictionary order, device, optimizer, or operating system.
+
+% =============================================================================
+\section{E0-6E: Positive and bounded physical transforms}
+
+\subsection{Strictly positive parameters}
+For a positive parameter $p$ with baseline $p^{(0)}>0$, E0-6 uses the
+ScaleBridge-centered log-ratio transform
+\[
+\boxed{p(\rho)=p^{(0)}e^{\rho}.}
+\]
+More generally, for strict lower bound $\ell$,
+\[
+\boxed{p(\rho)=\ell+(p^{(0)}-\ell)e^{\rho},\qquad p^{(0)}>\ell.}
+\]
+This guarantees $p>\ell$ structurally and gives
+\[
+\frac{\partial p}{\partial\rho}=p-\ell.
+\]
+No post-update clipping is permitted.
+
+\subsection{Finite physical interval}
+For $\ell<p<u$ and $\ell<p^{(0)}<u$, define
+\[
+a_0=\logit\left(\frac{p^{(0)}-\ell}{u-\ell}\right)
+\]
+and
+\[
+\boxed{p(\rho)=\ell+(u-\ell)\sigmoid(a_0+\rho).}
+\]
+Again $p(0)=p^{(0)}$. Invalid baseline/bound combinations fail at construction.
+
+\subsection{Fixed and unrestricted parameters}
+A fixed quantity has no raw coordinate. A future compiler-approved unrestricted
+parameter may use
+\[
+\boxed{p(\rho)=p^{(0)}+s_p\rho,\qquad s_p>0,}
+\]
+with explicit scale metadata. Current standard RC resistances/capacitances do not
+use the unrestricted family.
+
+% =============================================================================
+\section{E0-6F: Simplex routing and exact structural zeros}
+
+Let thermal port $s$ have compiler-approved receiving-state support
+$\mathcal I_s$. A routing composition obeys
+\[
+\gamma_{i,s}\ge0,\qquad
+\sum_{i\in\mathcal I_s}\gamma_{i,s}=1,
+\qquad
+\gamma_{i,s}=0\ \text{for }i\notin\mathcal I_s.
+\]
+For a trainable routing group with strictly positive baseline composition
+$\gamma_s^{(0)}$ on its support, choose one deterministic anchor
+$a_s\in\mathcal I_s$, set its raw offset to zero, and train only
+$|\mathcal I_s|-1$ coordinates. Define
+\[
+\ell_{i,s}=\log\gamma_{i,s}^{(0)}+\rho_{i,s},
+\]
+then
+\[
+\boxed{
+\gamma_{i,s}=
+\frac{e^{\ell_{i,s}}}{\sum_{j\in\mathcal I_s}e^{\ell_{j,s}}}
+=\softmax_i(\log\gamma_s^{(0)}+\rho_s).
+}
+\]
+The anchored coordinate removes the ordinary additive-logit redundancy.
+Simplex/log-ratio thinking is classical \cite{Aitchison1982Compositional}; the
+centered baseline and anchor policy are ScaleBridge-specific.
+
+A structural zero is topology and receives no raw coordinate. A fixed routing
+vector may contain exact zeros. A declared trainable simplex baseline must be
+strictly positive on its declared support; E0-6 never silently injects epsilon.
+
+% =============================================================================
+\section{E0-6G: Current five-channel thermal semantics and generic routing basis}
+
+The canonical thermal signals remain separately identified because provenance,
+availability, DEP2 allocation, diagnostics, and uncertainty can differ:
+\[
+\boxed{Q_{AC},Q_{ZIC},Q_{ZIR},Q_{Sol1},Q_{Sol2}.}
+\]
+PHVAC is electrical auxiliary information and is excluded from the thermal RHS.
+
+For the current paper-compatible 2R2C family, define
+\[
+\boxed{Q_c=Q_{AC}+Q_{ZIC}+Q_{Sol1}},
+\qquad
+\boxed{Q_r=Q_{ZIR}+Q_{Sol2}}.
+\]
+Let $e_a$ and $e_m$ select the zone air and mass states. Then
+\[
+\boxed{
+\gamma_{AC}=\gamma_{ZIC}=\gamma_{Sol1}=e_a
+}
+\]
+and
+\[
+\boxed{
+\gamma_{ZIR}=\gamma_{Sol2}=(1-\eta_r)e_a+\eta_r e_m,
+\qquad 0<\eta_r<1.
+}
+\]
+Thus $Q_{ZIR}$ and $Q_{Sol2}$ share one master routing parameter $\eta_r$ in the
+current 2R2C semantics.
+
+This is not an E0-6 hard-coded universal rule. The generic rule is:
+\[
+\boxed{\Gamma=\Gamma(\mathcal S_{route},\rho_{route})}
+\]
+where E0-3 supplies compiler-approved routing basis/support and sharing.
+A future linear RC flavour with envelope, slab, wall, or other thermal states may
+provide a different basis; E0-6 evaluates it unchanged across backends.
+
+% =============================================================================
+\section{E0-6H: DEP2 contribution-simplex parameterization}
+
+For DEP2 group $g$, the frozen aggregation row is
+\[
+A_g=[w_1,\ldots,w_N].
+\]
+The back-allocation vector contains $\lambda_i$. The coordinate-preservation
+condition is
+\[
+\boxed{A_gB_g=\sum_iw_i\lambda_i=1.}
+\]
+Define the contribution variables
+\[
+\boxed{p_i=w_i\lambda_i.}
+\]
+Then
+\[
+\boxed{\sum_i p_i=1.}
+\]
+so the trainable object is the contribution simplex $p$, not $\lambda$ directly.
+For positive-weight support $\mathcal I_g^+=\{i:w_i>0\}$, apply the same anchored
+centered-softmax transform to $p$. Recover
+\[
+\boxed{\lambda_i=p_i/w_i\quad(w_i>0).}
+\]
+Zero-weight entries are outside trainable allocation support and receive
+$\lambda_i=0$.
+
+The neutral baseline is
+\[
+\lambda_i^{(0)}=\frac{1}{\sum_jw_j},
+\qquad
+p_i^{(0)}=\frac{w_i}{\sum_jw_j}.
+\]
+If $\sum_jw_j=1$, then $\lambda_i^{(0)}=1$ and $p_i^{(0)}=w_i$.
+
+Different non-HVAC channels may have different DEP2 allocation maps:
+\[
+B_{ZIC},\quad B_{ZIR},\quad B_{Sol1},\quad B_{Sol2}.
+\]
+Their equality is never assumed unless explicitly declared. QAC remains local
+and is never passed through DEP2 back-allocation.
+
+% =============================================================================
+\section{E0-6I: Spatial allocation versus within-zone state routing}
+
+Two allocation operations are distinct and ordered:
+\begin{enumerate}[leftmargin=*]
+\item \textbf{DEP2 spatial allocation:} aggregate non-HVAC coordinate $\bar Q_s$
+becomes per-zone source values through $B_s$.
+\item \textbf{RC-state routing:} each per-zone source enters compiler-approved
+thermal states through $\Gamma$.
+\end{enumerate}
+Symbolically,
+\[
+\bar Q_s\xrightarrow{B_s}Q_{s,1:N}
+\xrightarrow{\Gamma_s}Q_{state}.
+\]
+These mechanisms must not share parameters unless the compiler explicitly says
+so.
+
+% =============================================================================
+\section{E0-6J: Exact master-parameter sharing}
+
+Let $\theta^M$ denote master physical parameters and $M$ a zero-one gather/
+selector matrix with exactly one selected master per physical occurrence. Then
+\[
+\boxed{\theta^{inst}=M\theta^M.}
+\]
+For capacitances and resistance occurrence groups,
+\[
+c=M_Cc^M,\qquad
+r_{CC}=M_{R,CC}r_R^M,\qquad
+r_{CB}=M_{R,CB}r_R^M.
+\]
+This applies equally to shared routing master parameters such as current 2R2C
+$\eta_r$ used by both $Q_{ZIR}$ and $Q_{Sol2}$.
+
+No backend creates duplicate trainable variables and later penalizes their
+difference. Sharing is structural and exact.
+
+% =============================================================================
+\section{E0-6K: Conductance and generic graph-matrix reconstruction}
+
+For every resistance occurrence,
+\[
+\boxed{g_e=1/R_e.}
+\]
+Conductance is derived and never separately optimized.
+
+Choose any deterministic orientation for state--state edges and let
+\[
+D_{CC}\in\{-1,0,1\}^{n_{ECC}\times n_x}
+\]
+be the oriented incidence matrix. Let
+\[
+G_{CC}=\diagmat(g_{CC}).
+\]
+For state--boundary edges, let
+\[
+P_X\in\{0,1\}^{n_{ECB}\times n_x},\qquad
+P_B\in\{0,1\}^{n_{ECB}\times n_b}
+\]
+select state and boundary endpoints, with
+\[
+G_{CB}=\diagmat(g_{CB}).
+\]
+Then
+\[
+\boxed{
+L_{CC}=D_{CC}^{\mathsf T}G_{CC}D_{CC}
++P_X^{\mathsf T}G_{CB}P_X
+}
+\]
+and
+\[
+\boxed{
+L_{CB}=-P_X^{\mathsf T}G_{CB}P_B.
+}
+\]
+This construction is adapted from standard network/Laplacian thermal-circuit
+formulations \cite{GhiausAhmad2020ThermalCircuits} and exactly matches the frozen
+E0-3 sign convention
+\[
+C\dot X=-L_{CC}X-L_{CB}T_B+\Gamma Q.
+\]
+
+The capacitance matrix is
+\[
+\boxed{C=\diagmat(c).}
+\]
+and $H$ remains immutable.
+
+% =============================================================================
+\section{E0-6L: State-space matrices without a dense inverse}
+
+Because $C$ is positive diagonal, define row-scaling vector
+\[
+d_C=[1/c_1,\ldots,1/c_{n_x}]^{\mathsf T}.
+\]
+Then
+\[
+\boxed{A=-\diagmat(d_C)L_{CC}},
+\]
+\[
+\boxed{B_T=-\diagmat(d_C)L_{CB}},
+\]
+and
+\[
+\boxed{B_Q=\diagmat(d_C)\Gamma.}
+\]
+No backend forms a generic dense numerical inverse of $C$.
+
+The column-vector continuous RHS is
+\[
+\boxed{
+f(x,T_B,Q;\rho)=A(\rho)x+B_T(\rho)T_B+B_Q(\rho)Q.
+}
+\]
+Equivalently,
+\[
+\boxed{
+f=\diagmat(1/c)
+\left[-L_{CC}x-L_{CB}T_B+\Gamma Q\right].
+}
+\]
+
+% =============================================================================
+\section{E0-6M: Canonical batch orientation}
+
+For PyTorch/Neuromancer batch-major tensors
+\[
+X\in\R^{N_b\times n_x},\quad
+T_B\in\R^{N_b\times n_b},\quad
+Q\in\R^{N_b\times n_q},
+\]
+use
+\[
+\boxed{
+\dot X=XA^{\mathsf T}+T_BB_T^{\mathsf T}+QB_Q^{\mathsf T}.
+}
+\]
+CasADi may use column-oriented single-trajectory symbols. Orientation is an
+interface convention and never changes canonical state/port ordering.
+
+% =============================================================================
+\section{E0-6N: Backend-native ownership and differentiation}
+
+\subsection{NumPy}
+NumPy receives ordinary numerical $\rho$, evaluates the same transforms and
+matrix equations, and owns no automatic-differentiation graph. It is an
+independent numerical reference \cite{Harris2020NumPy}.
+
+\subsection{PyTorch}
+PyTorch owns the raw trainable coordinates as registered parameters. A
+\texttt{torch.nn.Parameter} assigned to a module is registered as a module
+parameter \cite{PyTorchParameterDocs2026}. Physical parameters and all derived
+matrices remain tensors connected to $\rho$ through PyTorch autograd. No
+\texttt{detach()}, NumPy conversion, or scalar extraction is allowed in the
+trainable forward path. PyTorch's matrix exponential is available for square
+float/double tensors and batched matrices \cite{PyTorchMatrixExpDocs2026}.
+
+\subsection{Neuromancer}
+Neuromancer reuses the same PyTorch physical parameter owner. Its ODE system is a
+facade over the same differentiable RHS; it does not duplicate $\rho$, $R$, $C$,
+$\Gamma$, or DEP2 parameters \cite{Neuromancer2023,NeuromancerDocs2026}.
+
+\subsection{CasADi}
+CasADi receives symbolic $\rho$ in the identical ordering and constructs
+$\Theta_C(\rho)$, matrices, RHS, Jacobians, and gradients symbolically/through AD.
+CasADi supports forward/reverse AD and complete sparse Jacobians
+\cite{Andersson2019CasADi,CasADiDocs2026}. Its matrix exponential capability is
+used for exact-linear-ZOH parity when supported by the chosen symbolic path.
+
+% =============================================================================
+\section{E0-6O: Backend-native differentiable DEP2 realization}
+
+E0-4 freezes the equation-level semantics. If allocation is fixed, E0-4 may
+provide the already-effective $Q$. If allocation parameters are trainable, E0-6
+must realize the same E0-4 equation inside the active differentiable backend so
+the gradient is not broken.
+
+Let $q_{local}$ contain local canonical forcing, including local QAC, and let
+$\bar q_s$ denote all-to-one non-HVAC signals. With immutable injection maps
+$J_{local},J_s$,
+\[
+\boxed{
+Q_{eff}(\rho)=J_{local}q_{local}
++\sum_{s\in\{ZIC,ZIR,Sol1,Sol2\}}
+J_sB_s(\rho)\bar q_s.
+}
+\]
+Only those $B_s$ declared trainable depend on $\rho$. QAC remains local.
+
+% =============================================================================
+\section{E0-6P: Parameters are constant within an E0-5 numerical step}
+
+For one forward integration interval and all of its E0-5 substeps/RK stages,
+\[
+\boxed{\rho(t)=\rho^{model}\ \text{is constant}.}
+\]
+Thus $C,L,\Gamma,A,B$ are constant during the numerical step, while intermediate
+states vary. The same ZOH forcing contract from E0-5 remains active.
+Optimizer updates occur only between complete training forward/backward passes.
+
+Because $\rho$ is fixed during one numerical call, derived matrices may be
+materialized once and reused across RK stages while retaining their AD graph.
+\[
+\boxed{\text{reuse is allowed; detached training caches are not}.}
+\]
+
+% =============================================================================
+\section{E0-6Q: Dynamic exact-linear-ZOH oracle}
+
+Let
+\[
+B(\rho)=[B_T(\rho)\;B_Q(\rho)],\qquad
+U=[T_B^{\mathsf T},Q^{\mathsf T}]^{\mathsf T}.
+\]
+The live augmented matrix is
+\[
+\mathcal A(\rho)=
+\begin{bmatrix}
+A(\rho)&B(\rho)\\
+0&0
+\end{bmatrix}.
+\]
+Under the frozen E0-5 ZOH forcing,
+\[
+\boxed{
+\exp(\mathcal A(\rho)\Delta t)=
+\begin{bmatrix}
+A_d(\rho)&B_d(\rho)\\
+0&I
+\end{bmatrix}
+}
+\]
+and
+\[
+\boxed{X_{k+1}=A_d(\rho)X_k+B_d(\rho)U_k.}
+\]
+This remains graph-general and zone-count-general because dimensions are taken
+from the compiled graph. It uses the E0-5 matrix-exponential oracle mathematics
+\cite{Higham2009MatrixExponential,VanLoan1978MatrixExponentialIntegrals}.
+
+Exact ZOH remains the primary discrete oracle for linear RC dynamics. E0-5 RK4
+remains the default generic ODE training path unless configured otherwise.
+
+% =============================================================================
+\section{E0-6R: Analytical derivative oracles}
+
+For
+\[
+f(x,T_B,Q;\rho)=A(\rho)x+B_T(\rho)T_B+B_Q(\rho)Q,
+\]
+the continuous state/input Jacobians are exactly
+\[
+\boxed{\frac{\partial f}{\partial x}=A},
+\qquad
+\boxed{\frac{\partial f}{\partial T_B}=B_T},
+\qquad
+\boxed{\frac{\partial f}{\partial Q}=B_Q}.
+\]
+These are backend-independent derivative oracles.
+
+For any deterministic probe $v\in\R^{n_x}$, define
+\[
+\ell_f(\rho)=v^{\mathsf T}f(x,T_B,Q;\rho).
+\]
+PyTorch autograd and CasADi AD must agree on
+\[
+\boxed{\nabla_\rho\ell_f}
+\]
+within derivative tolerances. For a discrete solver,
+\[
+\ell_\Phi(\rho)=v^{\mathsf T}\Phi_{\Delta t}(x,U;\rho)
+\]
+provides the analogous discrete sensitivity parity check.
+
+As an independent diagnostic only, a central finite difference is
+\[
+\boxed{
+g_j^{FD}=
+\frac{\ell(\rho+\delta_je_j)-\ell(\rho-\delta_je_j)}{2\delta_j},
+}
+\]
+with ScaleBridge diagnostic step
+\[
+\boxed{\delta_j=\epsilon_{mach}^{1/3}(1+|\rho_j|).}
+\]
+Finite differences do not replace production AD.
+
+% =============================================================================
+\section{E0-6S: Layered backend parity}
+
+Parity is diagnosed hierarchically:
+\[
+P_0:\Theta_b(\rho),
+\quad
+P_1:(C,L_{CC},L_{CB},\Gamma,H)_b,
+\]
+\[
+P_2:f_b,
+\quad
+P_3:(J_x,J_{T_B},J_Q)_b,
+\quad
+P_4:\nabla_\rho\ell_b,
+\quad
+P_5:\Phi_{\Delta t,b}.
+\]
+A downstream parity failure is not interpreted until lower layers are checked.
+
+Solver parity and backend parity are distinct. The mandatory common discrete
+qualification set is
+\[
+\boxed{\mathcal S_{E06}^{common}=\{Euler,RK2,RK4,ExactZOH\}.}
+\]
+Neuromancer's additional E0-5 fixed-step solvers remain valid E0-5 choices but
+need not be independently reimplemented in every backend.
+
+% =============================================================================
+\section{E0-6T: Dtype, error metric, and tolerance profiles}
+
+Authoritative cross-backend qualification uses float64/double. PyTorch and
+Neuromancer may subsequently train in float32 when explicitly configured.
+No hidden dtype/device conversion is permitted.
+
+For arrays $a,b$, define elementwise normalized error
+\[
+e_i=\frac{|a_i-b_i|}{a_{tol}+r_{tol}\max(|a_i|,|b_i|)}
+\]
+and
+\[
+\boxed{\Einf(a,b)=\max_i e_i.}
+\]
+Pass condition:
+\[
+\boxed{\Einf\le1.}
+\]
+
+ScaleBridge validation-policy tolerances are:
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+Comparison & $a_{tol}$ & $r_{tol}$\\
+\midrule
+float64 parameters/matrices/RHS & $10^{-10}$ & $10^{-9}$\\
+float64 discrete propagation & $10^{-9}$ & $10^{-9}$\\
+float64 Jacobians/gradients & $10^{-8}$ & $10^{-7}$\\
+float32 values & $10^{-5}$ & $10^{-4}$\\
+float32 derivatives & $10^{-4}$ & $10^{-3}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+These are QA policy choices rather than external constants.
+
+% =============================================================================
+\section{E0-6U: Mandatory structural invariants}
+
+For every backend and valid $\rho$:
+\begin{enumerate}[leftmargin=*]
+\item $\rho=0$ reconstructs the already-qualified E0-3/E0-4/E0-5 model.
+\item Positive physical parameters remain positive without clipping.
+\item Finite-bounded parameters remain inside their declared open interval.
+\item Shared physical occurrences remain exactly equal.
+\item $g=1/R$ and is never independently trainable.
+\item $L_{CC}=L_{CC}^{\mathsf T}$ for reciprocal state-state networks.
+\item Routing compositions are nonnegative and unit-sum on their supports.
+\item Structural routing zeros remain exact zeros.
+\item DEP2 contribution compositions are nonnegative and unit-sum.
+\item $A_gB_g=1$ for each trainable DEP2 allocation group.
+\item QAC remains local under DEP2.
+\item PHVAC is absent from the thermal RHS.
+\item $Y=HX$ with immutable $H$.
+\item Recursive model state is not overwritten by observations.
+\item No backend-specific physical clipping, projection, or repair is permitted.
+\end{enumerate}
+
+% =============================================================================
+\section{E0-6V: Continuous worked example used throughout qualification}
+
+This section carries one example from graph semantics through trainable
+coordinates, full five-channel forcing, exact matrices, derivatives, and
+discrete propagation.
+
+\subsection{Graph and state}
+Consider two coupled 2R2C zones $A$ and $B$ with deterministic state order
+\[
+\boxed{X=[T_{a,A},T_{m,A},T_{a,B},T_{m,B}]^{\mathsf T}}
+\]
+and outdoor boundary $T_o$. The graph contains outdoor--air resistances
+$R_{ao,A},R_{ao,B}$, a shared air--mass resistance $R_{am}$ used by both zones,
+and inter-zone air--air resistance $R_{AB}$.
+
+Baseline physical values are
+\[
+C_{a,A}^{(0)}=1.0\times10^6,\quad
+C_{m,A}^{(0)}=5.0\times10^6,
+\]
+\[
+C_{a,B}^{(0)}=1.2\times10^6,\quad
+C_{m,B}^{(0)}=6.0\times10^6\quad\text{J/K},
+\]
+\[
+R_{ao,A}^{(0)}=0.010,\quad
+R_{am}^{(0)}=0.020,\quad
+R_{ao,B}^{(0)}=0.012,\quad
+R_{AB}^{(0)}=0.030\quad\text{K/W}.
+\]
+
+\subsection{Trainable raw coordinates}
+Use the ordered raw vector
+\[
+\boxed{
+\rho=
+[\rho_{C_{a,A}},\rho_{C_{a,B}},\rho_{R_{ao,A}},
+\rho_{R_{am}},\rho_{R_{ao,B}},\rho_{\eta_{r,A}},
+\rho_{DEP2,ZIR}]^{\mathsf T}.
+}
+\]
+Keep $C_{m,A},C_{m,B},R_{AB}$ and $\eta_{r,B}$ fixed.
+Choose
+\[
+\rho_{C_{a,A}}=\log1.1,
+\quad
+\rho_{C_{a,B}}=\log0.9,
+\]
+\[
+\rho_{R_{ao,A}}=\log0.8,
+\quad
+\rho_{R_{am}}=\log1.2.
+\]
+Thus
+\[
+C_{a,A}=1.1\times10^6,
+\quad C_{a,B}=1.08\times10^6,
+\]
+\[
+R_{ao,A}=0.008,
+\quad R_{am}=0.024.
+\]
+
+For $R_{ao,B}$ impose $0.006<R_{ao,B}<0.024$ with baseline $0.012$ and
+$\rho_{R_{ao,B}}=0.3$. Since
+\[
+a_0=\logit\left(\frac{0.012-0.006}{0.024-0.006}\right)=\logit(1/3),
+\]
+\[
+\boxed{R_{ao,B}=0.006+0.018\sigmoid(a_0+0.3)\approx0.0132533\;\text{K/W}.}
+\]
+
+For Zone A, baseline $\eta_{r,A}^{(0)}=0.8$. Set
+$\rho_{\eta_{r,A}}=-\log2$ so
+\[
+\eta_{r,A}=\sigmoid(\logit(0.8)-\log2)=\boxed{2/3}.
+\]
+Keep $\eta_{r,B}=0.7$ fixed.
+
+\subsection{Full canonical forcing and DEP2 spatial allocation}
+Let the local HVAC thermal powers be
+\[
+Q_{AC,A}=-1200\;\text{W},\qquad Q_{AC,B}=-800\;\text{W}.
+\]
+Let the all-to-one non-HVAC signals be
+\[
+\bar Q_{ZIC}=1000,\quad
+\bar Q_{ZIR}=600,\quad
+\bar Q_{Sol1}=800,\quad
+\bar Q_{Sol2}=300\;\text{W},
+\]
+with aggregation row
+\[
+A_g=[0.4,0.6].
+\]
+Use neutral allocation for ZIC, Sol1, and Sol2, giving
+\[
+Q_{ZIC,A}=Q_{ZIC,B}=1000,
+\]
+\[
+Q_{Sol1,A}=Q_{Sol1,B}=800,
+\qquad
+Q_{Sol2,A}=Q_{Sol2,B}=300.
+\]
+
+For ZIR, set the Zone-B contribution tilt to $\rho_{DEP2,ZIR}=\log2$ with Zone A
+as anchor. The centered contribution simplex is
+\[
+p_{ZIR}=\softmax(\log[0.4,0.6]+[0,\log2])=[0.25,0.75].
+\]
+Therefore
+\[
+\lambda_A=0.25/0.4=0.625,
+\qquad
+\lambda_B=0.75/0.6=1.25,
+\]
+and
+\[
+\boxed{Q_{ZIR,A}=375\;\text{W},\qquad Q_{ZIR,B}=750\;\text{W}.}
+\]
+The aggregate coordinate is preserved:
+\[
+0.4(375)+0.6(750)=600\;\text{W}.
+\]
+
+The full canonical thermal-port vector is therefore
+\[
+\boxed{
+Q=
+[-1200,1000,375,800,300,-800,1000,750,800,300]^{\mathsf T}\;\text{W},
+}
+\]
+ordered as
+\[
+[AC_A,ZIC_A,ZIR_A,Sol1_A,Sol2_A,
+AC_B,ZIC_B,ZIR_B,Sol1_B,Sol2_B].
+\]
+
+\subsection{Current 2R2C convective/radiative grouping}
+For Zone A,
+\[
+Q_{c,A}=-1200+1000+800=\boxed{600\;\text{W}},
+\]
+\[
+Q_{r,A}=375+300=\boxed{675\;\text{W}}.
+\]
+With $\eta_{r,A}=2/3$, the radiative bucket contributes 225 W to air and 450 W
+to mass. Total state forcing is
+\[
+\boxed{Q_{air,A}=825\;\text{W},\qquad Q_{mass,A}=450\;\text{W}.}
+\]
+
+For Zone B,
+\[
+Q_{c,B}=-800+1000+800=\boxed{1000\;\text{W}},
+\]
+\[
+Q_{r,B}=750+300=\boxed{1050\;\text{W}}.
+\]
+With $\eta_{r,B}=0.7$,
+\[
+\boxed{Q_{air,B}=1315\;\text{W},\qquad Q_{mass,B}=735\;\text{W}.}
+\]
+
+The complete routing matrix is
+\[
+\boxed{
+\Gamma=
+\begin{bmatrix}
+1&1&1/3&1&1/3&0&0&0&0&0\\
+0&0&2/3&0&2/3&0&0&0&0&0\\
+0&0&0&0&0&1&1&0.3&1&0.3\\
+0&0&0&0&0&0&0&0.7&0&0.7
+\end{bmatrix}.
+}
+\]
+Hence
+\[
+\boxed{\Gamma Q=[825,450,1315,735]^{\mathsf T}\;\text{W}.}
+\]
+
+\subsection{Conductances and graph matrices}
+Conductances are
+\[
+g_{ao,A}=125,
+\quad g_{am}=41.6667,
+\quad g_{ao,B}\approx75.4530,
+\quad g_{AB}=33.3333\;\text{W/K}.
+\]
+The resulting state Laplacian is approximately
+\[
+\boxed{
+L_{CC}=\begin{bmatrix}
+200.0000&-41.6667&-33.3333&0\\
+-41.6667&41.6667&0&0\\
+-33.3333&0&150.4530&-41.6667\\
+0&0&-41.6667&41.6667
+\end{bmatrix}.
+}
+\]
+The boundary matrix is
+\[
+\boxed{
+L_{CB}=\begin{bmatrix}-125&0&-75.4530&0\end{bmatrix}^{\mathsf T}.
+}
+\]
+The capacitance matrix is
+\[
+C=\diagmat(1.1\!\times\!10^6,5\!\times\!10^6,
+1.08\!\times\!10^6,6\!\times\!10^6).
+\]
+
+For
+\[
+X_k=[22,22,24,24]^{\mathsf T}\;^\circ\mathrm C,
+\qquad T_o=10^\circ\mathrm C,
+\]
+the RHS is approximately
+\[
+\boxed{
+\dot X_k\approx
+[-5.53030\times10^{-4},
+9.00000\times10^{-5},
+1.77769\times10^{-4},
+1.22500\times10^{-4}]^{\mathsf T}\;\text{K/s}.
+}
+\]
+Every backend must reproduce this probe within parity tolerance.
+
+\subsection{Derivative examples}
+Because $C_{a,A}=C_{a,A}^{(0)}e^{\rho_{C_{a,A}}}$ and the air-node heat-balance
+numerator is independent of this capacitance coordinate,
+\[
+\boxed{
+\frac{\partial f_{a,A}}{\partial\rho_{C_{a,A}}}=-f_{a,A}
+\approx5.53030\times10^{-4}\;\text{K/s}.
+}
+\]
+For the physical radiative fraction,
+\[
+\frac{\partial \dot T_{a,A}}{\partial\eta_{r,A}}
+=-\frac{Q_{r,A}}{C_{a,A}}
+\approx-6.13636\times10^{-4},
+\]
+\[
+\frac{\partial \dot T_{m,A}}{\partial\eta_{r,A}}
+=\frac{Q_{r,A}}{C_{m,A}}
+=1.35\times10^{-4}.
+\]
+The raw-coordinate derivative additionally multiplies by
+$\partial\eta_r/\partial\rho=\eta_r(1-\eta_r)$.
+These quantities provide physically interpretable AD parity probes.
+
+\subsection{Discrete E0-5 propagation}
+For $\Delta t=600$ s and ZOH forcing, the exact linear oracle using the live
+E0-6 parameters produces approximately
+\[
+\boxed{
+X_{k+1}^{exact}\approx
+[21.68712,22.05307,24.10028,24.07356]^{\mathsf T}\;^\circ\mathrm C.
+}
+\]
+Euler, RK2, RK4, and exact ZOH become P5 cross-backend parity tests. The E0-5
+solver semantics themselves are unchanged by E0-6.
+
+% =============================================================================
+\section{E0-6W: Qualification matrix}
+
+The implementation qualification must span:
+\begin{longtable}{p{0.27\textwidth}p{0.66\textwidth}}
+\toprule
+Axis & Required cases\\
+\midrule
+RC flavour & 1R1C, 2R2C, 3R2C, 4R3C, plus future compiler-valid linear RC fixtures\\
+Zone count & one-zone, two-zone, and multi-zone\\
+Spatial topology & uncoupled, coupled, explicit adjacency, disconnected valid components where permitted\\
+Parameter policy & fixed, mixed fixed/trainable, fully trainable where physically meaningful\\
+Parameter sharing & independent and shared master parameters\\
+Positive transforms & multiple $R$ and $C$ groups\\
+Bounded transforms & routing fractions and at least one finite-bounded physical parameter fixture\\
+Thermal ports & QAC, QZIC, QZIR, QSol1, QSol2 with structural absence cases\\
+Current 2R2C routing & convective group $\{QAC,QZIC,QSol1\}$ and shared-radiative group $\{QZIR,QSol2\}$\\
+DEP2 & fixed, neutral, and estimated allocation for multiple non-HVAC channel families\\
+Aggregation weights & equal, unequal, zero-weight exclusion fixture\\
+Raw probes & $\rho=0$, positive perturbation, negative perturbation\\
+Runtime modes & IND, DEP1, DEP2\\
+Backends & NumPy, PyTorch, Neuromancer, CasADi SX/MX as supported\\
+Continuous parity & physical parameters, matrices, RHS\\
+Derivative parity & state/input Jacobians and parameter gradients\\
+Discrete parity & Euler, RK2, RK4, exact ZOH\\
+Dtype & authoritative float64; PyTorch/Neuromancer float32 secondary\\
+\bottomrule
+\end{longtable}
+
+% =============================================================================
+\section{E0-6X: Ratified lock}
+
+The following decisions are frozen for E0-6 implementation:
+\begin{enumerate}[leftmargin=*]
+\item E0-6 is generic to any valid E0-3-compiled linear RC structure and any finite number of zones.
+\item E0-6 does not redefine E0-3 topology, E0-4 runtime semantics, or E0-5 discretization.
+\item Flavour-specific routing semantics are compiler metadata; backend algebra is flavour-independent.
+\item The canonical backends are NumPy, PyTorch, Neuromancer/PyTorch, and CasADi.
+\item One compiled physical model feeds every backend; no backend independently reinterprets topology.
+\item State, boundary, thermal-port, sharing, routing-support, and observation semantics are immutable.
+\item The canonical trainable coordinate is deterministic dimensionless $\rho$ with common ordering across backends.
+\item $\rho=0$ exactly reconstructs the already-qualified baseline model.
+\item Positive $R,C$ use centered exponential/log-ratio transforms.
+\item Explicit finite bounds use a centered sigmoid transform.
+\item Fixed parameters receive no trainable raw coordinate.
+\item Trainable simplex routing uses support-restricted anchored centered softmax with $K-1$ degrees of freedom.
+\item Structural zeros are exact and never epsilon-filled.
+\item Trainable simplex baselines are strictly positive on declared support.
+\item Current canonical thermal signals remain separately identified as QAC, QZIC, QZIR, QSol1, QSol2.
+\item For current paper-compatible 2R2C semantics, $Q_c=QAC+QZIC+QSol1$ and $Q_r=QZIR+QSol2$.
+\item Current 2R2C QAC/QZIC/QSol1 share direct air routing.
+\item Current 2R2C QZIR/QSol2 share one radiative master fraction $\eta_r$.
+\item The QSol1/QSol2 grouping is a frozen ScaleBridge/PINODE semantic mapping, not a statement that incident solar radiation is intrinsically convective/radiative in that literal sense.
+\item Future linear RC flavours may define other compiler-approved routing bases without changing E0-6 backend machinery.
+\item DEP2 trains contribution simplex $p_i=w_i\lambda_i$, not $\lambda$ independently.
+\item DEP2 derives $\lambda_i=p_i/w_i$ on positive-weight support and therefore preserves $A_gB_g=1$.
+\item QAC remains local and is never DEP2-back-allocated.
+\item ZIC, ZIR, Sol1, and Sol2 may have distinct DEP2 maps unless explicitly shared.
+\item DEP2 between-zone allocation and within-zone RC-state routing are distinct operations.
+\item Parameter sharing uses exact master-to-occurrence gather/selector maps rather than equality penalties.
+\item Conductance is always derived as $1/R$ and is never separately trainable.
+\item Backend matrices are rebuilt from generic incidence/selectors, master parameters, and routing metadata.
+\item $C,L_{CC},L_{CB},\Gamma,A,B_T,B_Q$ follow the frozen equations in this contract.
+\item No backend uses a generic dense inverse of diagonal $C$.
+\item NumPy is an independent numerical reference with no PyTorch/CasADi dependency.
+\item PyTorch owns trainable raw coordinates as registered parameters and preserves the AD graph through physical transforms and matrices.
+\item Neuromancer reuses the PyTorch parameter owner and is not a duplicate physical implementation.
+\item CasADi uses the same raw ordering and physical transforms symbolically and provides independent AD parity.
+\item Trainable DEP2 allocation is realized inside the active backend so gradients are preserved.
+\item Parameters and derived matrices are constant through each E0-5 numerical step, substep, and RK stage.
+\item Derived matrices may be reused within a forward call but may not be detached during training.
+\item Dynamic exact ZOH uses live $A(\rho),B(\rho)$ and remains graph-general.
+\item E0-5 RK4 remains the default generic ODE training path.
+\item Analytical continuous derivative oracles are $J_x=A$, $J_{T_B}=B_T$, and $J_Q=B_Q$.
+\item Parameter-sensitivity parity compares PyTorch autograd and CasADi AD.
+\item Central finite differences in raw coordinates are diagnostic only.
+\item Backend parity is layered P0 physical parameters, P1 matrices, P2 RHS, P3 state/input Jacobians, P4 parameter sensitivities, P5 discrete propagation.
+\item Mandatory common discrete parity methods are Euler, RK2, RK4, and exact ZOH.
+\item Additional Neuromancer E0-5 solvers need not be duplicated in every backend.
+\item Authoritative cross-backend qualification uses float64/double.
+\item No hidden dtype/device conversion is allowed.
+\item The combined absolute-relative normalized error metric and frozen tolerance profiles in this contract govern parity qualification.
+\item Sharing, Laplacian symmetry, routing normalization, structural zeros, DEP2 coordinate preservation, PHVAC exclusion, and immutable $H$ are mandatory invariants.
+\item E0-6 does not own losses, optimizer choice, learning rates, epochs, HPO, MLflow, Bayesian priors, or training regularization.
+\item E0-6 does not reset recursive states or change evaluation semantics.
+\item No backend clips, projects, repairs, or silently changes physical/numerical state.
+\item Unsupported or malformed parameter domains fail fast.
+\item E0-6 exposes canonical raw and physical parameter state for later portable-model serialization; persistence belongs to E0-7.
+\end{enumerate}
+
+\section{Authority boundary after E0-6}
+\[
+\boxed{\text{E0-3: generic continuous RC graph semantics}}
+\]
+\[
+\boxed{\text{E0-4: runtime state and forcing semantics}}
+\]
+\[
+\boxed{\text{E0-5: fixed-step ZOH numerical propagation}}
+\]
+\[
+\boxed{\text{E0-6: constrained trainable parameterization, backend realization, parity}}
+\]
+The next phase may build runtime/portable model bundles and higher-level training
+workflows, but it must consume rather than reinterpret this E0-6 authority.
+
+\bibliographystyle{plain}
+\bibliography{../../references/ScaleBridge_Thermal_Modeling_References}
+
+\end{document}

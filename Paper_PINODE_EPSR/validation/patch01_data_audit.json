@@ -1,0 +1,492 @@
+{
+  "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "dt_seconds": 300.0,
+  "cases": {
+    "all_to_one": {
+      "dependency_mode": "independent",
+      "zones": [
+        "RestaurantFastFood_All"
+      ],
+      "phase_d_paths": [
+        "aggregation_runs/aggr_20260715_114247_0001_a8695a44_smoke_l01_all_to_one_equal/silos/ml/ind/RestaurantFastFood_All/grp_vrin/l1_h1/mdh"
+      ],
+      "aliases": [
+        "ind",
+        "dep1",
+        "dep2"
+      ],
+      "manifest_rows": [
+        105120
+      ],
+      "partition_counts": [
+        {
+          "excluded": 36,
+          "test": 15754,
+          "train": 73567,
+          "validation": 15763
+        }
+      ],
+      "numeric_audit": {
+        "case": "all_to_one",
+        "rows": 105120,
+        "zones": [
+          "RestaurantFastFood_All"
+        ],
+        "dependency_mode": "independent",
+        "partition_counts": {
+          "train": 73567,
+          "validation": 15763,
+          "test": 15754,
+          "excluded": 36
+        },
+        "columns": {
+          "RestaurantFastFood_All__zone_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 15.557568925440478,
+            "max": 28.857666132571662,
+            "mean": 22.313191992283844
+          },
+          "RestaurantFastFood_All__qac__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -15672.155407665863,
+            "max": 2751.872294085409,
+            "mean": -4664.023874225671
+          },
+          "outdoor_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -18.9,
+            "max": 31.7,
+            "mean": 9.049128614916283
+          },
+          "RestaurantFastFood_All__qsol1__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 0.0,
+            "max": 1880.1623225591356,
+            "mean": 289.3240100972672
+          },
+          "RestaurantFastFood_All__qsol2__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 0.0,
+            "max": 1859.7053850471511,
+            "mean": 286.1760461559303
+          },
+          "RestaurantFastFood_All__zic__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 1158.018330911658,
+            "max": 3732.7985992129115,
+            "mean": 2209.668825420893
+          },
+          "RestaurantFastFood_All__zir__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 1615.4101257072143,
+            "max": 7987.060938615381,
+            "mean": 5117.96315590417
+          },
+          "RestaurantFastFood_All__zone_temperature__target_1": {
+            "finite_count": 105119,
+            "nonfinite_count": 1,
+            "min": 15.557568925440478,
+            "max": 28.857666132571662,
+            "mean": 22.313239770965474
+          }
+        },
+        "monotonic_timestamp": true
+      }
+    },
+    "identity_ind": {
+      "dependency_mode": "independent",
+      "zones": [
+        "Dining",
+        "Kitchen"
+      ],
+      "phase_d_paths": [
+        "aggregation_runs/aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal/silos/ml/ind/Dining/grp_vrin/l1_h1/mdh",
+        "aggregation_runs/aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal/silos/ml/ind/Kitchen/grp_vrin/l1_h1/mdh"
+      ],
+      "aliases": [],
+      "manifest_rows": [
+        105120,
+        105120
+      ],
+      "partition_counts": [
+        {
+          "excluded": 36,
+          "test": 15754,
+          "train": 73567,
+          "validation": 15763
+        },
+        {
+          "excluded": 36,
+          "test": 15754,
+          "train": 73567,
+          "validation": 15763
+        }
+      ],
+      "numeric_audit": {
+        "case": "identity_ind",
+        "rows": 105120,
+        "zones": [
+          "Dining",
+          "Kitchen"
+        ],
+        "dependency_mode": "independent",
+        "partition_counts": {
+          "train": 73567,
+          "validation": 15763,
+          "test": 15754,
+          "excluded": 36
+        },
+        "columns": {
+          "Dining__zone_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 15.55917083338175,
+            "max": 27.285687871899704,
+            "mean": 21.925544200216287
+          },
+          "Kitchen__zone_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 15.555716780057264,
+            "max": 30.952263548346505,
+            "mean": 22.700839784351405
+          },
+          "Dining__qac__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -12051.169882636377,
+            "max": 19333.48990499661,
+            "mean": -449.05616806314003
+          },
+          "Kitchen__qac__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -20487.67128141075,
+            "max": 0.0,
+            "mean": -8660.647755133617
+          },
+          "outdoor_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -18.9,
+            "max": 31.7,
+            "mean": 9.049128614916283
+          },
+          "Dining__qsol1__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 0.0,
+            "max": 3760.3246451182713,
+            "mean": 578.6480201945344
+          },
+          "Dining__qsol2__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 0.0,
+            "max": 3719.4107700943023,
+            "mean": 572.3520923118606
+          },
+          "Dining__zic__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 127.38857584782164,
+            "max": 5650.894947169624,
+            "mean": 2621.3057123590665
+          },
+          "Dining__zir__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 133.9628142911657,
+            "max": 3023.431667292415,
+            "mean": 1543.8288257715421
+          },
+          "Kitchen__zic__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 1398.6134936877518,
+            "max": 2099.8778184784146,
+            "mean": 1760.549170278842
+          },
+          "Kitchen__zir__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 2205.736787526425,
+            "max": 8558.512855108474,
+            "mean": 5641.410207634275
+          },
+          "Dining__zone_temperature__target_1": {
+            "finite_count": 105119,
+            "nonfinite_count": 1,
+            "min": 15.55917083338175,
+            "max": 27.285687871899704,
+            "mean": 21.925578634457352
+          },
+          "Kitchen__zone_temperature__target_1": {
+            "finite_count": 105119,
+            "nonfinite_count": 1,
+            "min": 15.555716780057264,
+            "max": 30.952263548346505,
+            "mean": 22.700900907473592
+          }
+        },
+        "monotonic_timestamp": true
+      }
+    },
+    "identity_dep1": {
+      "dependency_mode": "dependent1",
+      "zones": [
+        "Dining",
+        "Kitchen"
+      ],
+      "phase_d_paths": [
+        "aggregation_runs/aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal/silos/ml/dep1/grp_vrin/l1_h1/mdh"
+      ],
+      "aliases": [],
+      "manifest_rows": [
+        105120
+      ],
+      "partition_counts": [
+        {
+          "excluded": 36,
+          "test": 15754,
+          "train": 73567,
+          "validation": 15763
+        }
+      ],
+      "numeric_audit": {
+        "case": "identity_dep1",
+        "rows": 105120,
+        "zones": [
+          "Dining",
+          "Kitchen"
+        ],
+        "dependency_mode": "dependent1",
+        "partition_counts": {
+          "train": 73567,
+          "validation": 15763,
+          "test": 15754,
+          "excluded": 36
+        },
+        "columns": {
+          "Dining__zone_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 15.55917083338175,
+            "max": 27.285687871899704,
+            "mean": 21.925544200216287
+          },
+          "Kitchen__zone_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 15.555716780057264,
+            "max": 30.952263548346505,
+            "mean": 22.700839784351405
+          },
+          "Dining__qac__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -12051.169882636377,
+            "max": 19333.48990499661,
+            "mean": -449.05616806314003
+          },
+          "Kitchen__qac__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -20487.67128141075,
+            "max": 0.0,
+            "mean": -8660.647755133617
+          },
+          "outdoor_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -18.9,
+            "max": 31.7,
+            "mean": 9.049128614916283
+          },
+          "Dining__qsol1__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 0.0,
+            "max": 3760.3246451182713,
+            "mean": 578.6480201945344
+          },
+          "Dining__qsol2__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 0.0,
+            "max": 3719.4107700943023,
+            "mean": 572.3520923118606
+          },
+          "Dining__zic__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 127.38857584782164,
+            "max": 5650.894947169624,
+            "mean": 2621.3057123590665
+          },
+          "Dining__zir__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 133.9628142911657,
+            "max": 3023.431667292415,
+            "mean": 1543.8288257715421
+          },
+          "Kitchen__zic__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 1398.6134936877518,
+            "max": 2099.8778184784146,
+            "mean": 1760.549170278842
+          },
+          "Kitchen__zir__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 2205.736787526425,
+            "max": 8558.512855108474,
+            "mean": 5641.410207634275
+          },
+          "Dining__zone_temperature__target_1": {
+            "finite_count": 105119,
+            "nonfinite_count": 1,
+            "min": 15.55917083338175,
+            "max": 27.285687871899704,
+            "mean": 21.925578634457352
+          },
+          "Kitchen__zone_temperature__target_1": {
+            "finite_count": 105119,
+            "nonfinite_count": 1,
+            "min": 15.555716780057264,
+            "max": 30.952263548346505,
+            "mean": 22.700900907473592
+          }
+        },
+        "monotonic_timestamp": true
+      }
+    },
+    "identity_dep2": {
+      "dependency_mode": "dependent2",
+      "zones": [
+        "Dining",
+        "Kitchen"
+      ],
+      "phase_d_paths": [
+        "aggregation_runs/aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal/silos/ml/dep2/grp_vrin/l1_h1/mdh"
+      ],
+      "aliases": [],
+      "manifest_rows": [
+        105120
+      ],
+      "partition_counts": [
+        {
+          "excluded": 36,
+          "test": 15754,
+          "train": 73567,
+          "validation": 15763
+        }
+      ],
+      "numeric_audit": {
+        "case": "identity_dep2",
+        "rows": 105120,
+        "zones": [
+          "Dining",
+          "Kitchen"
+        ],
+        "dependency_mode": "dependent2",
+        "partition_counts": {
+          "train": 73567,
+          "validation": 15763,
+          "test": 15754,
+          "excluded": 36
+        },
+        "columns": {
+          "Dining__zone_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 15.55917083338175,
+            "max": 27.285687871899704,
+            "mean": 21.925544200216287
+          },
+          "Kitchen__zone_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 15.555716780057264,
+            "max": 30.952263548346505,
+            "mean": 22.700839784351405
+          },
+          "Dining__qac__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -12051.169882636377,
+            "max": 19333.48990499661,
+            "mean": -449.05616806314003
+          },
+          "Kitchen__qac__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -20487.67128141075,
+            "max": 0.0,
+            "mean": -8660.647755133617
+          },
+          "outdoor_temperature__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": -18.9,
+            "max": 31.7,
+            "mean": 9.049128614916283
+          },
+          "RestaurantFastFood_All__qsol1__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 0.0,
+            "max": 1880.1623225591356,
+            "mean": 289.3240100972672
+          },
+          "RestaurantFastFood_All__qsol2__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 0.0,
+            "max": 1859.7053850471511,
+            "mean": 286.1760461559303
+          },
+          "RestaurantFastFood_All__zic__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 1158.018330911658,
+            "max": 3732.7985992129115,
+            "mean": 2209.668825420893
+          },
+          "RestaurantFastFood_All__zir__lag_0": {
+            "finite_count": 105120,
+            "nonfinite_count": 0,
+            "min": 1615.4101257072143,
+            "max": 7987.060938615381,
+            "mean": 5117.96315590417
+          },
+          "Dining__zone_temperature__target_1": {
+            "finite_count": 105119,
+            "nonfinite_count": 1,
+            "min": 15.55917083338175,
+            "max": 27.285687871899704,
+            "mean": 21.925578634457352
+          },
+          "Kitchen__zone_temperature__target_1": {
+            "finite_count": 105119,
+            "nonfinite_count": 1,
+            "min": 15.555716780057264,
+            "max": 30.952263548346505,
+            "mean": 22.700900907473592
+          }
+        },
+        "monotonic_timestamp": true
+      }
+    }
+  }
+}

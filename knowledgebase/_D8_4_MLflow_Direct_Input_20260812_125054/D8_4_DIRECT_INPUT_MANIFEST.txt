@@ -1,0 +1,25 @@
+﻿PHASE D D8.4 MLFLOW DIRECT INPUT BUNDLE
+========================================
+
+Generated: 2026-08-12 13:00:26
+Repository: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+
+Purpose:
+    Direct implementation input for Phase D D8.4 MLflow tracking.
+
+This is NOT a discovery bundle.
+
+Included:
+    Current Phase D production runner and builders
+    Current Phase D D8/D7/D6 tests
+    Existing ScaleBridge generation/aggregation/Phase-C MLflow implementations
+    MLflow client and semantic helpers
+    MLflow export/merge utilities
+    Current Phase D design locks
+    Existing MLflow configuration/validation notes
+    Current Phase D CLI output
+    Current thermal-modeling test result
+    Git commit/working-tree state
+
+Required D8.4 development goal:
+    Add Phase D MLflow tracking without changing Phase D scientific datasets.

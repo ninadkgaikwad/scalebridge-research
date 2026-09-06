@@ -1,0 +1,83 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm,booktabs,array,longtable}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{natbib}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\ones}{\mathbf{1}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\col}{\operatorname{col}}
+\newcommand{\ScaleBridge}{\textsc{ScaleBridge}}
+
+\title{ScaleBridge Phase E0 E0-3: Generic Elemental RC Mathematical Contract v2}
+\author{ScaleBridge / PhD\_Code\_Framework}
+\date{Math freeze: 26 August 2026}
+\begin{document}
+\maketitle
+
+\section{Status, scope, and provenance}
+This document is the citation-grounded v2 freeze of the generic \emph{elemental} resistance--capacitance (RC) contract.  It supersedes the mathematical authority of the earlier v1 contract while preserving that file as historical provenance.  Standard thermal-circuit and grey-box RC concepts are grounded in the literature \citep{GhiausAhmad2020ThermalCircuits,BacherMadsen2011HeatDynamics,WangChenLi2019RCSimplification,BelicSliskovicHocenski2021MultiZoneRC}.  The exact canonical-port vocabulary, routing policy, parameter-registry semantics, and the precise built-in topologies are \ScaleBridge{} design contracts unless explicitly stated otherwise.
+
+\section{Canonical physical ports}
+A provider maps training or runtime data into canonical physical ports before the RC model is evaluated.  Typical ports are the observed zone-air temperature $T_a$, prescribed boundary temperature $T_o$, and atomic thermal-power inputs
+\[
+Q_{AC},\;Q_{ZIC},\;Q_{ZIR},\;Q_{Sol1},\;Q_{Sol2},\ldots .
+\]
+The sign convention for $Q_{AC}$ is thermal: positive heating and negative cooling.  Electrical HVAC power $P_{HVAC}$ is never a thermal RHS input.  Each port is declared required, optional, or unused for a given model.  Missing required applicable physical signals are errors rather than silently inserted zeros.
+
+\section{Elemental graph contract}
+For one modeled aggregate zone, define
+\[
+\mathcal M_{RC}=(\mathcal V_C,\mathcal V_B,\mathcal E_{CC},\mathcal E_{CB},\mathcal P,\Gamma,H,\Theta).
+\]
+Here $\mathcal V_C$ is the finite set of capacitive state nodes, $\mathcal V_B$ is the set of prescribed boundary-temperature nodes, $\mathcal E_{CC}$ is the set of undirected state--state resistance edges, $\mathcal E_{CB}$ the set of undirected state--boundary resistance edges, $\mathcal P$ the canonical thermal-port set, $\Gamma$ the heat-routing map, $H$ the observation operator, and $\Theta$ the physical-parameter registry.  Boundary--boundary edges are outside the elemental state model.
+
+Each state has $C_i>0$ and each resistance edge has $R_e>0$.  For state $i$,
+\[
+C_i\dot T_i
+=
+\sum_{\{i,j\}\in\mathcal E_{CC}}\frac{T_j-T_i}{R_{ij}}
++
+\sum_{\{i,b\}\in\mathcal E_{CB}}\frac{T_b-T_i}{R_{ib}}
++
+\sum_s\gamma_{is}Q_s.
+\]
+This is the standard reciprocal thermal-network balance underlying lumped RC models \citep{GhiausAhmad2020ThermalCircuits,BelicSliskovicHocenski2021MultiZoneRC}.
+
+\section{Heat routing}
+A conservatively routed thermal source satisfies
+\[
+\gamma_{is}\ge0,\qquad \sum_i\gamma_{is}=1.
+\]
+For a two-state radiative split,
+\[
+\gamma_r=\begin{bmatrix}1-\eta_r\\\eta_r\end{bmatrix},\qquad 0\le\eta_r\le1.
+\]
+The symbol $\eta_r$ is therefore only a parameterization of a routing column; it is not a new physical source.  Grouped terms such as $Q_c$ and $Q_r$ are derived aliases only; the atomic canonical ports remain authoritative.
+
+\section{Observation and parameters}
+The observation equation is
+\[
+y=Hx.
+\]
+Every parameter declaration records physical type, units, fixed/estimated status, positivity/bounds or transform, initialization, optional prior, and optional explicit sharing group.  Physical model parameters are distinct from hyperparameters used by Optuna or another tuning engine.  Grey-box literature supports estimation of physically interpretable RC parameters and also warns of identifiability/correlation issues as complexity grows \citep{BacherMadsen2011HeatDynamics,WangChenLi2019RCSimplification,MartyJourjonEtAl2022RCIdentifiability}.
+
+\section{Elemental conservation invariant}
+For every state--state edge $e=\{i,j\}$,
+\[
+Q_{e,i}=\frac{T_j-T_i}{R_e},\qquad
+Q_{e,j}=\frac{T_i-T_j}{R_e},
+\]
+and hence
+\[
+Q_{e,i}+Q_{e,j}=0.
+\]
+Thus internal RC edges redistribute stored thermal energy but do not create or destroy it.  Conservative routing likewise preserves each declared thermal-power source.
+
+\section{Scope boundary}
+The elemental contract deliberately does not contain modeled-zone adjacency, IND/DEP1/DEP2 semantics, aggregation operator $A_g$, allocation operator $B_g$, or $\lambda$ allocation factors.  Those belong to the spatial compiler contract.  Numerical discretization/integration is also outside this continuous-time physical contract.
+
+\bibliographystyle{plainnat}
+\bibliography{../../references/ScaleBridge_Thermal_Modeling_References}
+\end{document}

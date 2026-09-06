@@ -1,0 +1,68 @@
+ScaleBridge Phase D - D7 Final Dataset Builders
+================================================
+
+D7 purpose
+----------
+Materialize the final Phase D modeling datasets from D4 canonical assemblies,
+D5 counterpart lineage, and D6 silo contracts.
+
+No D3/D4 intermediate time-series is persisted. D4 is reconstructed directly
+from authoritative Phase B/C Parquets in memory and immediately consumed by D7.
+
+Locked default policies
+-----------------------
+ML/SciML mdh:
+- monthly_distributed_holdout
+- per-month contiguous partition order: Train -> Test -> Validation
+- defaults inherited from validated Phase C:
+    train_fraction = 0.70
+    test_fraction = 0.15
+    validation_fraction = 0.15
+- same fractions independently applied to every month
+- samples crossing partition or non-contiguous lag/target boundaries are excluded
+
+Opt/Bayes sd:
+- seasonal_distributed
+- meteorological seasons:
+    winter = Dec, Jan, Feb
+    spring = Mar, Apr, May
+    summer = Jun, Jul, Aug
+    fall   = Sep, Oct, Nov
+- global season_offset_days, default 0
+- train_days = 21 contiguous days
+- test_days = 7 contiguous days immediately after training
+- all remaining annual rows retained as excluded
+- lag = 1, target_horizon = 1
+- samples whose one-step target crosses selection/partition boundary are excluded
+
+Final products
+--------------
+Both silos:
+- ind: one final data.parquet per current aggregate zone
+- dep1: one wide final data.parquet for all current-zone states/controls/disturbances
+- dep2: one wide final data.parquet with current-zone states/controls and D5-selected
+        all-to-one disturbances
+
+Compact paths are inherited from D6:
+- ml / ob
+- ind / dep1 / dep2
+- grp_vrin / grp_vrsep / cmp
+- l<L>_h<H>
+- mdh / sd / other D6 policy tokens
+
+Storage
+-------
+One final data.parquet + manifest.json per unique realization.
+No train/test/validation split Parquets.
+No persisted aligned/assembly/canonical/normalized/preview time-series.
+Atomic temporary files are removed via os.replace on successful write.
+
+Controlled identity expectation
+-------------------------------
+Current run has Dining and Kitchen.
+Per silo:
+- ind/Dining
+- ind/Kitchen
+- dep1
+- dep2
+Two silos => 8 final Parquets.

@@ -1,0 +1,140 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\title{ScaleBridge Phase E.0 --- E0-3\\Generic Elemental RC-Network Mathematical Contract\\\large Version 1.0 --- LOCKED}
+\author{ScaleBridge / PhD Code Framework}
+\date{2026-08-25}
+\newcommand{\Vc}{\mathcal{V}_{C}}
+\newcommand{\Vb}{\mathcal{V}_{B}}
+\newcommand{\Ecc}{\mathcal{E}_{CC}}
+\newcommand{\Ecb}{\mathcal{E}_{CB}}
+\newcommand{\Er}{\mathcal{E}_{R}}
+\newcommand{\Pset}{\mathcal{P}}
+\newcommand{\PQ}{\mathcal{P}_{Q}}
+\begin{document}
+\maketitle
+\section*{Status and scope}
+This document is the locked ScaleBridge Phase-E.0 E0-3 elemental RC-network contract. It freezes only the mathematics ratified for a single modeled aggregate zone. It deliberately does not freeze the later spatial compiler, IND/DEP1/DEP2 construction, zonal adjacency expansion, aggregation operators, or DEP2 allocation operators.
+
+The elemental RC model is independent of Phase-B, Phase-C, and Phase-D storage formats. It consumes canonical physical ports. Phase D is currently a training/testing provider of those ports. A future simulator/runtime provider will recreate the same canonical ports from Phase-B-like measurements/actions and Phase-C models.
+
+\section{Canonical provider-to-model boundary}
+\[
+\boxed{\text{provider}\longrightarrow\text{canonical physical ports}\longrightarrow\text{elemental Phase-E RC model}.}
+\]
+During training/testing, Phase D is the provider. During future runtime, Phase-B-like measurements/actions and Phase-C model outputs will provide the same physical quantities. The RC model shall not depend on Phase-D parquet column names, filesystem locations, or Phase-D storage conventions.
+
+\section{Canonical physical port classes}
+\subsection{Observed thermal-state ports}
+An observed thermal-state port provides a measured thermal state such as zone air temperature. For the current ScaleBridge RC flavours, the canonical observed state is $T_a(t)$, the zone-air temperature.
+
+\subsection{Boundary/disturbance temperature ports}
+A boundary-temperature port provides a prescribed temperature that influences the RC network but is not integrated as a state. Outdoor temperature is the canonical current example $T_o(t)$ and is explicitly a disturbance/boundary-temperature input. Future models may define other prescribed boundary temperatures.
+
+\subsection{Atomic thermal-power ports}
+Thermal-power ports remain atomic at the canonical interface. Current examples are
+\[
+Q_{AC},\quad Q_{ZIC},\quad Q_{ZIR},\quad Q_{Sol1},\quad Q_{Sol2}.
+\]
+All thermal-power ports use W. Positive power adds heat to the routed thermal state(s). The HVAC thermal input is signed:
+\[
+Q_{AC}>0 \text{ for heating},\qquad Q_{AC}<0 \text{ for cooling}.
+\]
+Convenience groupings
+\[
+Q_c=Q_{AC}+Q_{ZIC}+Q_{Sol1},\qquad Q_r=Q_{ZIR}+Q_{Sol2}
+\]
+may be used for notation, but they are not the fundamental interface. Electrical HVAC power $P_{HVAC}$ is not a thermal-power port and never enters the RC balance.
+
+\subsection{Context/auxiliary ports}
+A later method may consume non-physical context, but such inputs are not automatically thermal-energy injections and require their own method-specific mathematical contract.
+
+\section{Port availability}
+Each elemental RC specification classifies a port as required, optional, or unused. A signal that is structurally not applicable or explicitly structurally zero may be absent according to the authoritative upstream availability contract. A required applicable signal that cannot be supplied is an error. The RC model shall never silently invent zero for an applicable required physical signal.
+
+\section{Generic elemental RC specification}
+A user-defined elemental RC model is
+\[
+\boxed{\mathcal{M}_{RC}=(\Vc,\Vb,\Ecc,\Ecb,\Pset,\Gamma,H,\Theta).}
+\]
+The components are: capacitive/state nodes $\Vc$; prescribed boundary-temperature nodes $\Vb$; undirected state-to-state resistance edges $\Ecc$; undirected state-to-boundary resistance edges $\Ecb$; declared canonical physical ports $\Pset$; heat-routing operator $\Gamma$; observation operator $H$; and parameter declarations $\Theta$.
+\[
+\boxed{\Er=\Ecc\cup\Ecb.}
+\]
+The user defines nodes, edges, ports, routing, observations, and parameter declarations. The user does not manually write differential equations.
+
+\section{Thermal state nodes}
+For every $i\in\Vc$, define a physically named temperature state $T_i$ and positive capacitance
+\[
+\boxed{C_i>0.}
+\]
+A user may define any finite number of physically meaningful thermal-state nodes. Current examples include air, envelope, and internal mass. Each state is explicitly observed or latent. Latent states are physical RC states; they are not fabricated by Phase D.
+
+\section{Boundary-temperature nodes}
+For each $b\in\Vb$, $T_b(t)$ is prescribed by a canonical disturbance-temperature port and is not integrated. Boundary nodes may connect to state nodes by resistance edges. Boundary-to-boundary resistance edges are excluded from the elemental state model because they do not directly contribute to a modeled state equation.
+
+\section{Resistance edges and state interaction}
+Every physical thermal connection is an undirected edge with one positive resistance $R_e>0$. For a state-to-state edge $e=\{i,j\}\in\Ecc$,
+\[
+\boxed{\Phi_{j\rightarrow i}=\frac{T_j-T_i}{R_e}},\qquad
+\Phi_{i\rightarrow j}=\frac{T_i-T_j}{R_e}=-\Phi_{j\rightarrow i}.
+\]
+Thus there is one physical parameter per undirected connection, not two directional resistances. For a state-to-boundary edge $e=\{i,b\}\in\Ecb$,
+\[
+\boxed{\Phi_{b\rightarrow i}=\frac{T_b-T_i}{R_e}.}
+\]
+
+\section{Thermal-power routing}
+Let $\PQ\subseteq\Pset$ be the thermal-power ports. For source $s\in\PQ$, the injected power into state $i$ is $\gamma_{is}Q_s$. For an energy-conservative source,
+\[
+\boxed{\gamma_{is}\ge0,\qquad \sum_{i\in\Vc}\gamma_{is}=1.}
+\]
+A routing rule may be fixed, estimated, shared between ports, or parameterized by a flavour-specific quantity. The current two-state radiative split uses
+\[
+\boxed{\gamma_r=\begin{bmatrix}1-\eta_r\\\eta_r\end{bmatrix},\qquad 0\le\eta_r\le1.}
+\]
+Thus $\eta_r$ is a special two-state parametrization of the generic routing vector rather than a primitive concept required by the generic engine.
+
+\section{Observation operator}
+Let $x=[T_1,\ldots,T_n]^\top$. Observed states are selected by
+\[
+\boxed{y=Hx.}
+\]
+Every observed state must map to a canonical observed-state port. Every non-observed physical state is latent.
+
+\section{Parameter declarations}
+Every parameter declaration includes, as applicable: physical type; units; fixed or estimated status; positivity/bounds/transform; optional parameter-sharing group; initialization value; and optional prior metadata. Resistance and capacitance parameters are always positive. Routing fractions are constrained to their physical domain. Physical/model parameters are distinct from training hyperparameters.
+
+\section{Generic elemental node equation}
+For every state node $i\in\Vc$,
+\[
+\boxed{
+C_i\dot T_i
+=
+\sum_{\{i,j\}\in\Ecc}\frac{T_j-T_i}{R_{ij}}
++
+\sum_{\{i,b\}\in\Ecb}\frac{T_b-T_i}{R_{ib}}
++
+\sum_{s\in\PQ}\gamma_{is}Q_s.
+}
+\tag{E0.3-1}
+\]
+The first sum contains state-to-state thermal interactions, the second state-to-boundary interactions, and the third routed external thermal-power injections. The equation is generated from the declared graph and routing contract.
+
+\section{Matrix form}
+With $C=\operatorname{diag}(C_1,\ldots,C_n)$, the resistance graph may be compiled into a weighted thermal Laplacian, yielding
+\[
+\boxed{C\dot x=-L_{CC}x-L_{CB}T_B+\Gamma q.}
+\tag{E0.3-2}
+\]
+This is the compact equivalent of (E0.3-1). No time discretization is part of this elemental contract.
+
+\section{Elemental versus spatial responsibility}
+This contract describes one modeled aggregate zone only. It excludes replication over multiple zones; user zonal adjacency; fallback chain adjacency; one or multiple inter-zone node-pair rules; inter-zone resistance parameters; IND/DEP1/DEP2 compilation; aggregation operators $A_g$; DEP2 allocation operators $B_g$; and lambda-style DEP2 parameterizations. Those belong to the later spatial-compiler mathematical contract.
+
+\section*{Lock statement}
+The provider-independent canonical ports, elemental RC graph specification, state/boundary/edge conventions, heat-routing contract, observation contract, parameter declarations, and generic continuous-time node equation in this document are locked for ScaleBridge Phase-E.0 E0-3 implementation.
+\end{document}

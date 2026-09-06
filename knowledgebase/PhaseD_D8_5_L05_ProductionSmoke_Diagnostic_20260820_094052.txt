@@ -1,0 +1,841 @@
+﻿================================================================================
+PHASE D D8.5 L05 PRODUCTION SMOKE DIAGNOSTIC
+================================================================================
+Generated: 2026-08-20 09:40:52
+Campaign: p1_compact_4b4c_labpc_1w_v1
+Phase D smoke: phase_d_d8_5_smoke_l05_20260819_185828
+Run root: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_d8_5_smoke_l05_20260819_185828
+Failure rows: 
+
+================================================================================
+FAILURE RECORD
+================================================================================
+case_id: epcase_4abb05aa9c546958efafe7c4
+aggregation_run_id: aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal
+aggregation_id: p1_l05_identity
+aggregation_level: L05
+aggregation_level_index: 5
+aggregation_family: identity
+weight_mode: equal
+plan_strategy: custom_groups
+rule_set: legacy_v1
+building_type: ApartmentMidRise
+climate_zone: 5A
+weather_location: Buffalo
+aggregate_zone_count: 27
+source_zone_count: 27
+matrix_record_order: 65
+sequence: 1
+phase_d_run_id: phase_d_d8_5_smoke_l05_20260819_185828
+status: failed
+run_root: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\cases\epcase_4abb05aa9c546958efafe7c4\aggregation_runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal
+final_dataset_count: 0
+return_code: 1
+runtime_seconds: 1.242565399967134
+log_path: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_d8_5_smoke_l05_20260819_185828\logs\0001_aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal.log
+
+Resolved log path: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_d8_5_smoke_l05_20260819_185828\logs\0001_aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal.log
+
+--------------------------------------------------------------------------------
+ERROR / TRACEBACK MATCHES
+--------------------------------------------------------------------------------
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: Phase C zone directory not found for case=epcase_4abb05aa9c546958efafe7c4, aggregation_run_id=aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal, aggregation_id=p1_l05_identity, weight=equal, zone=G Corridor, root=F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\heat_input_regression\audit_runs\heat_input_audit_20260802_201259
+
+--------------------------------------------------------------------------------
+LAST 200 LOG LINES
+--------------------------------------------------------------------------------
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 581, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 658, in discover_phase_d_sources
+    phase_c_zone = resolve_phase_c_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 530, in resolve_phase_c_zone
+    audit_zone_root = _resolve_zone_leaf(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 474, in _resolve_zone_leaf
+    raise PhaseDDiscoveryError(
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: Phase C zone directory not found for case=epcase_4abb05aa9c546958efafe7c4, aggregation_run_id=aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal, aggregation_id=p1_l05_identity, weight=equal, zone=G Corridor, root=F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\heat_input_regression\audit_runs\heat_input_audit_20260802_201259
+
+================================================================================
+STAGE B IDENTITY RUN INSPECTION
+================================================================================
+Stage B run root: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal
+Zones root: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones
+
+ACTUAL ZONE DIRECTORIES:
+  G_Corridor
+  G_N1_Apartment
+  G_N2_Apartment
+  G_NE_Apartment
+  G_NW_Apartment
+  G_S1_Apartment
+  G_S2_Apartment
+  G_SW_Apartment
+  M_Corridor
+  M_N1_Apartment
+  M_N2_Apartment
+  M_NE_Apartment
+  M_NW_Apartment
+  M_S1_Apartment
+  M_S2_Apartment
+  M_SE_Apartment
+  M_SW_Apartment
+  Office
+  T_Corridor
+  T_N1_Apartment
+  T_N2_Apartment
+  T_NE_Apartment
+  T_NW_Apartment
+  T_S1_Apartment
+  T_S2_Apartment
+  T_SE_Apartment
+  T_SW_Apartment
+
+CORRIDOR-LIKE DIRECTORIES:
+  G_Corridor
+  M_Corridor
+  T_Corridor
+
+================================================================================
+CORRIDOR REFERENCES IN STAGE B METADATA
+================================================================================
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\inputs\aggregation_plan.json
+  Line 5: "aggregate_zone_id": "G Corridor",
+  Line 7: "G CORRIDOR"
+  Line 53: "aggregate_zone_id": "M Corridor",
+  Line 55: "M CORRIDOR"
+  Line 113: "aggregate_zone_id": "T Corridor",
+  Line 115: "T CORRIDOR"
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\inputs\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G_Corridor\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G_N1_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G_N2_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G_NE_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G_NW_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G_S1_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G_S2_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G_SW_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_Corridor\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_N1_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_N2_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_NE_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_NW_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_S1_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_S2_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_SE_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\M_SW_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\Office\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_Corridor\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_N1_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_N2_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_NE_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_NW_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_S1_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_S2_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_SE_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+FILE: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\T_SW_Apartment\zone_mapping.csv
+  Line 2: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,G Corridor,G CORRIDOR,77.66,236.69,Yes
+  Line 10: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,M Corridor,M CORRIDOR,77.66,236.69,Yes
+  Line 20: epcase_4abb05aa9c546958efafe7c4,epvwr_320a2924c4bd,p1_compact_4b4c_labpc_1w_v1,ApartmentMidRise,Buffalo,5A,p1_l05_identity,custom_groups,legacy_v1,equal,T Corridor,T CORRIDOR,77.66,236.69,Yes
+
+================================================================================
+CURRENT DISCOVERY.PY STORAGE-NAME LOGIC
+================================================================================
+
+Around line 170:
+167:     )
+168: 
+169: 
+170: def _storage_token(value: str) -> str:
+171:     """Normalize a logical zone ID to the stable Phase B storage-token form."""
+172: 
+173:     import re
+174: 
+175:     return re.sub(r"[^A-Za-z0-9]+", "_", str(value)).strip("_").casefold()
+
+Around line 171:
+168: 
+169: 
+170: def _storage_token(value: str) -> str:
+171:     """Normalize a logical zone ID to the stable Phase B storage-token form."""
+172: 
+173:     import re
+174: 
+175:     return re.sub(r"[^A-Za-z0-9]+", "_", str(value)).strip("_").casefold()
+176: 
+
+Around line 178:
+175:     return re.sub(r"[^A-Za-z0-9]+", "_", str(value)).strip("_").casefold()
+176: 
+177: 
+178: def _resolve_aggregation_zone_root(
+179:     aggregation_run: AggregationRunRef,
+180:     aggregate_zone_id: str,
+181: ) -> Path:
+182:     """Resolve a Phase B zone directory without changing its logical zone ID.
+183: 
+
+Around line 180:
+177: 
+178: def _resolve_aggregation_zone_root(
+179:     aggregation_run: AggregationRunRef,
+180:     aggregate_zone_id: str,
+181: ) -> Path:
+182:     """Resolve a Phase B zone directory without changing its logical zone ID.
+183: 
+184:     Phase B may store filesystem-safe directory names (for example
+185:     ``G_Corridor``) while lineage retains the logical aggregate-zone ID
+
+Around line 184:
+181: ) -> Path:
+182:     """Resolve a Phase B zone directory without changing its logical zone ID.
+183: 
+184:     Phase B may store filesystem-safe directory names (for example
+185:     ``G_Corridor``) while lineage retains the logical aggregate-zone ID
+186:     (for example ``G Corridor``). Exact path identity remains authoritative
+187:     when available. Otherwise a unique storage-token-equivalent directory is
+188:     accepted; zero or multiple matches remain hard discovery failures.
+189:     """
+
+Around line 187:
+184:     Phase B may store filesystem-safe directory names (for example
+185:     ``G_Corridor``) while lineage retains the logical aggregate-zone ID
+186:     (for example ``G Corridor``). Exact path identity remains authoritative
+187:     when available. Otherwise a unique storage-token-equivalent directory is
+188:     accepted; zero or multiple matches remain hard discovery failures.
+189:     """
+190: 
+191:     zones_root = _required_dir(
+192:         aggregation_run.run_root / "zones",
+
+Around line 195:
+192:         aggregation_run.run_root / "zones",
+193:         "aggregation zones root",
+194:     )
+195:     exact = zones_root / aggregate_zone_id
+196:     if exact.is_dir():
+197:         return exact.resolve()
+198: 
+199:     wanted = _storage_token(aggregate_zone_id)
+200:     matches = [
+
+Around line 199:
+196:     if exact.is_dir():
+197:         return exact.resolve()
+198: 
+199:     wanted = _storage_token(aggregate_zone_id)
+200:     matches = [
+201:         path.resolve()
+202:         for path in zones_root.iterdir()
+203:         if path.is_dir() and _storage_token(path.name) == wanted
+204:     ]
+
+Around line 203:
+200:     matches = [
+201:         path.resolve()
+202:         for path in zones_root.iterdir()
+203:         if path.is_dir() and _storage_token(path.name) == wanted
+204:     ]
+205:     if len(matches) == 1:
+206:         return matches[0]
+207:     if len(matches) > 1:
+208:         raise PhaseDDiscoveryError(
+
+Around line 209:
+206:         return matches[0]
+207:     if len(matches) > 1:
+208:         raise PhaseDDiscoveryError(
+209:             "Aggregation zone storage-name resolution is ambiguous for "
+210:             f"{aggregate_zone_id!r}: {matches}"
+211:         )
+212:     raise PhaseDDiscoveryError(
+213:         "Missing required aggregation zone root for logical zone "
+214:         f"{aggregate_zone_id!r} under {zones_root}"
+
+Around line 210:
+207:     if len(matches) > 1:
+208:         raise PhaseDDiscoveryError(
+209:             "Aggregation zone storage-name resolution is ambiguous for "
+210:             f"{aggregate_zone_id!r}: {matches}"
+211:         )
+212:     raise PhaseDDiscoveryError(
+213:         "Missing required aggregation zone root for logical zone "
+214:         f"{aggregate_zone_id!r} under {zones_root}"
+215:     )
+
+Around line 214:
+211:         )
+212:     raise PhaseDDiscoveryError(
+213:         "Missing required aggregation zone root for logical zone "
+214:         f"{aggregate_zone_id!r} under {zones_root}"
+215:     )
+216: 
+217: 
+218: def resolve_aggregation_zone(
+219:     *,
+
+Around line 221:
+218: def resolve_aggregation_zone(
+219:     *,
+220:     aggregation_run: AggregationRunRef,
+221:     aggregate_zone_id: str,
+222: ) -> AggregationZoneRef:
+223:     """Resolve one aggregate-zone output from a selected Phase B run."""
+224: 
+225:     zone_root = _resolve_aggregation_zone_root(
+226:         aggregation_run,
+
+Around line 225:
+222: ) -> AggregationZoneRef:
+223:     """Resolve one aggregate-zone output from a selected Phase B run."""
+224: 
+225:     zone_root = _resolve_aggregation_zone_root(
+226:         aggregation_run,
+227:         aggregate_zone_id,
+228:     )
+229:     wide_parquet = _required_file(
+230:         zone_root / "aggregated_timeseries_wide.parquet",
+
+Around line 227:
+224: 
+225:     zone_root = _resolve_aggregation_zone_root(
+226:         aggregation_run,
+227:         aggregate_zone_id,
+228:     )
+229:     wide_parquet = _required_file(
+230:         zone_root / "aggregated_timeseries_wide.parquet",
+231:         "Phase B wide Parquet",
+232:     )
+
+Around line 230:
+227:         aggregate_zone_id,
+228:     )
+229:     wide_parquet = _required_file(
+230:         zone_root / "aggregated_timeseries_wide.parquet",
+231:         "Phase B wide Parquet",
+232:     )
+233:     return AggregationZoneRef(
+234:         aggregation_run=aggregation_run,
+235:         aggregate_zone_id=aggregate_zone_id,
+
+Around line 235:
+232:     )
+233:     return AggregationZoneRef(
+234:         aggregation_run=aggregation_run,
+235:         aggregate_zone_id=aggregate_zone_id,
+236:         zone_root=zone_root,
+237:         wide_parquet_path=wide_parquet,
+238:         wide_preview_path=_optional_file(
+239:             zone_root / "aggregated_timeseries_wide_preview.csv"
+240:         ),
+
+Around line 236:
+233:     return AggregationZoneRef(
+234:         aggregation_run=aggregation_run,
+235:         aggregate_zone_id=aggregate_zone_id,
+236:         zone_root=zone_root,
+237:         wide_parquet_path=wide_parquet,
+238:         wide_preview_path=_optional_file(
+239:             zone_root / "aggregated_timeseries_wide_preview.csv"
+240:         ),
+241:         long_parquet_path=_optional_file(
+
+Around line 239:
+236:         zone_root=zone_root,
+237:         wide_parquet_path=wide_parquet,
+238:         wide_preview_path=_optional_file(
+239:             zone_root / "aggregated_timeseries_wide_preview.csv"
+240:         ),
+241:         long_parquet_path=_optional_file(
+242:             zone_root / "aggregated_timeseries_long.parquet"
+243:         ),
+244:         zone_mapping_path=_optional_file(zone_root / "zone_mapping.csv"),
+
+Around line 242:
+239:             zone_root / "aggregated_timeseries_wide_preview.csv"
+240:         ),
+241:         long_parquet_path=_optional_file(
+242:             zone_root / "aggregated_timeseries_long.parquet"
+243:         ),
+244:         zone_mapping_path=_optional_file(zone_root / "zone_mapping.csv"),
+245:         static_equipment_path=_optional_file(
+246:             zone_root / "aggregated_static_equipment.csv"
+247:         ),
+
+Around line 244:
+241:         long_parquet_path=_optional_file(
+242:             zone_root / "aggregated_timeseries_long.parquet"
+243:         ),
+244:         zone_mapping_path=_optional_file(zone_root / "zone_mapping.csv"),
+245:         static_equipment_path=_optional_file(
+246:             zone_root / "aggregated_static_equipment.csv"
+247:         ),
+248:     )
+249: 
+
+Around line 246:
+243:         ),
+244:         zone_mapping_path=_optional_file(zone_root / "zone_mapping.csv"),
+245:         static_equipment_path=_optional_file(
+246:             zone_root / "aggregated_static_equipment.csv"
+247:         ),
+248:     )
+249: 
+250: 
+251: _CHILD_KEYS: dict[str, tuple[str, ...]] = {
+
+Around line 405:
+402:     *,
+403:     run_root: Path,
+404:     case_id: str,
+405:     aggregate_zone_id: str,
+406:     aggregation_run_id: str | None = None,
+407:     aggregation_id: str | None = None,
+408:     weight_mode: str | None = None,
+409: ) -> Path:
+410:     """Resolve one Phase C zone across authoritative upstream layouts.
+
+Around line 427:
+424:             / "cases"
+425:             / case_id
+426:             / aggregation_run_id
+427:             / aggregate_zone_id
+428:         )
+429: 
+430:     if aggregation_id and weight_mode:
+431:         preferred_paths.append(
+432:             run_root
+
+Around line 437:
+434:             / case_id
+435:             / aggregation_id
+436:             / weight_mode
+437:             / aggregate_zone_id
+438:         )
+439: 
+440:     for preferred in preferred_paths:
+441:         if preferred.is_dir():
+442:             return preferred.resolve()
+
+Around line 446:
+443: 
+444:     matches: list[Path] = []
+445: 
+446:     for candidate in run_root.rglob(aggregate_zone_id):
+447:         if not candidate.is_dir():
+448:             continue
+449: 
+450:         if candidate.name != aggregate_zone_id:
+451:             continue
+
+Around line 450:
+447:         if not candidate.is_dir():
+448:             continue
+449: 
+450:         if candidate.name != aggregate_zone_id:
+451:             continue
+452: 
+453:         if case_id not in candidate.parts:
+454:             continue
+455: 
+
+Around line 480:
+477:             f"aggregation_run_id={aggregation_run_id}, "
+478:             f"aggregation_id={aggregation_id}, "
+479:             f"weight={weight_mode}, "
+480:             f"zone={aggregate_zone_id}, "
+481:             f"root={run_root}"
+482:         )
+483: 
+484:     if len(unique_matches) > 1:
+485:         raise PhaseDDiscoveryError(
+
+Around line 512:
+509:     aggregation_run_id: str,
+510:     aggregation_id: str,
+511:     weight_mode: str,
+512:     aggregate_zone_id: str,
+513: ) -> PhaseCZoneRef:
+514:     """Resolve applicability, inference, and split artifacts for one zone."""
+515: 
+516:     heat_root = Path(campaign_root).resolve() / "heat_input_regression"
+517:     audit_root = _required_dir(
+
+Around line 530:
+527:         "Phase C split run root",
+528:     )
+529: 
+530:     audit_zone_root = _resolve_zone_leaf(
+531:         run_root=audit_root,
+532:         case_id=case_id,
+533:         aggregation_run_id=aggregation_run_id,
+534:         aggregation_id=aggregation_id,
+535:         weight_mode=weight_mode,
+
+Around line 536:
+533:         aggregation_run_id=aggregation_run_id,
+534:         aggregation_id=aggregation_id,
+535:         weight_mode=weight_mode,
+536:         aggregate_zone_id=aggregate_zone_id,
+537:     )
+538:     inference_zone_root = _resolve_zone_leaf(
+539:         run_root=inference_root,
+540:         case_id=case_id,
+541:         aggregation_id=aggregation_id,
+
+Around line 538:
+535:         weight_mode=weight_mode,
+536:         aggregate_zone_id=aggregate_zone_id,
+537:     )
+538:     inference_zone_root = _resolve_zone_leaf(
+539:         run_root=inference_root,
+540:         case_id=case_id,
+541:         aggregation_id=aggregation_id,
+542:         weight_mode=weight_mode,
+543:         aggregate_zone_id=aggregate_zone_id,
+
+Around line 543:
+540:         case_id=case_id,
+541:         aggregation_id=aggregation_id,
+542:         weight_mode=weight_mode,
+543:         aggregate_zone_id=aggregate_zone_id,
+544:     )
+545: 
+546:     split_zone_root = _resolve_zone_leaf(
+547:         run_root=split_root,
+548:         case_id=case_id,
+
+Around line 546:
+543:         aggregate_zone_id=aggregate_zone_id,
+544:     )
+545: 
+546:     split_zone_root = _resolve_zone_leaf(
+547:         run_root=split_root,
+548:         case_id=case_id,
+549:         aggregation_run_id=aggregation_run_id,
+550:         aggregation_id=aggregation_id,
+551:         weight_mode=weight_mode,
+
+Around line 552:
+549:         aggregation_run_id=aggregation_run_id,
+550:         aggregation_id=aggregation_id,
+551:         weight_mode=weight_mode,
+552:         aggregate_zone_id=aggregate_zone_id,
+553:     )
+554: 
+555:     predictions_parquet = _first_existing(
+556:         inference_zone_root,
+557:         (
+
+Around line 556:
+553:     )
+554: 
+555:     predictions_parquet = _first_existing(
+556:         inference_zone_root,
+557:         (
+558:             "annual_component_predictions.parquet",
+559:             "predictions.parquet",
+560:             "full_year_predictions.parquet",
+561:             "component_predictions.parquet",
+
+Around line 571:
+568:         case_id=case_id,
+569:         aggregation_id=aggregation_id,
+570:         weight_mode=weight_mode,
+571:         aggregate_zone_id=aggregate_zone_id,
+572:         applicable_models_path=_required_file(
+573:             audit_zone_root / "applicable_models.csv",
+574:             "Phase C applicable-model catalog",
+575:         ),
+576:         unavailable_models_path=_required_file(
+
+Around line 573:
+570:         weight_mode=weight_mode,
+571:         aggregate_zone_id=aggregate_zone_id,
+572:         applicable_models_path=_required_file(
+573:             audit_zone_root / "applicable_models.csv",
+574:             "Phase C applicable-model catalog",
+575:         ),
+576:         unavailable_models_path=_required_file(
+577:             audit_zone_root / "unavailable_models.csv",
+578:             "Phase C unavailable-model catalog",
+
+Around line 577:
+574:             "Phase C applicable-model catalog",
+575:         ),
+576:         unavailable_models_path=_required_file(
+577:             audit_zone_root / "unavailable_models.csv",
+578:             "Phase C unavailable-model catalog",
+579:         ),
+580:         signal_catalog_path=_required_file(
+581:             audit_zone_root / "heat_input_signal_catalog.csv",
+582:             "Phase C signal catalog",
+
+Around line 581:
+578:             "Phase C unavailable-model catalog",
+579:         ),
+580:         signal_catalog_path=_required_file(
+581:             audit_zone_root / "heat_input_signal_catalog.csv",
+582:             "Phase C signal catalog",
+583:         ),
+584:         inference_zone_root=inference_zone_root,
+585:         predictions_parquet_path=predictions_parquet,
+586:         predictions_preview_path=_first_existing(
+
+Around line 584:
+581:             audit_zone_root / "heat_input_signal_catalog.csv",
+582:             "Phase C signal catalog",
+583:         ),
+584:         inference_zone_root=inference_zone_root,
+585:         predictions_parquet_path=predictions_parquet,
+586:         predictions_preview_path=_first_existing(
+587:             inference_zone_root,
+588:             (
+589:                 "annual_component_predictions_preview.csv",
+
+Around line 587:
+584:         inference_zone_root=inference_zone_root,
+585:         predictions_parquet_path=predictions_parquet,
+586:         predictions_preview_path=_first_existing(
+587:             inference_zone_root,
+588:             (
+589:                 "annual_component_predictions_preview.csv",
+590:                 "predictions_preview.csv",
+591:                 "full_year_predictions_preview.csv",
+592:                 "component_predictions_preview.csv",
+
+Around line 597:
+594:             required=False,
+595:         ),
+596:         component_prediction_summary_path=_optional_file(
+597:             inference_zone_root / "component_prediction_summary.csv"
+598:         ),
+599:         timestamp_component_availability_path=_optional_file(
+600:             inference_zone_root / "timestamp_component_availability.csv"
+601:         ),
+602:         split_zone_root=split_zone_root,
+
+Around line 600:
+597:             inference_zone_root / "component_prediction_summary.csv"
+598:         ),
+599:         timestamp_component_availability_path=_optional_file(
+600:             inference_zone_root / "timestamp_component_availability.csv"
+601:         ),
+602:         split_zone_root=split_zone_root,
+603:         split_assignments_parquet_path=(
+604:             _first_existing(
+605:                 split_zone_root,
+
+Around line 602:
+599:         timestamp_component_availability_path=_optional_file(
+600:             inference_zone_root / "timestamp_component_availability.csv"
+601:         ),
+602:         split_zone_root=split_zone_root,
+603:         split_assignments_parquet_path=(
+604:             _first_existing(
+605:                 split_zone_root,
+606:                 (
+607:                     "split_assignments.parquet",
+
+Around line 605:
+602:         split_zone_root=split_zone_root,
+603:         split_assignments_parquet_path=(
+604:             _first_existing(
+605:                 split_zone_root,
+606:                 (
+607:                     "split_assignments.parquet",
+608:                     "timestamp_split_assignments.parquet",
+609:                 ),
+610:                 required=False,
+
+Around line 612:
+609:                 ),
+610:                 required=False,
+611:             )
+612:             if split_zone_root else None
+613:         ),
+614:         split_assignments_preview_path=(
+615:             _first_existing(
+616:                 split_zone_root,
+617:                 (
+
+Around line 616:
+613:         ),
+614:         split_assignments_preview_path=(
+615:             _first_existing(
+616:                 split_zone_root,
+617:                 (
+618:                     "split_assignments_preview.csv",
+619:                     "timestamp_split_assignments_preview.csv",
+620:                 ),
+621:                 required=False,
+
+Around line 623:
+620:                 ),
+621:                 required=False,
+622:             )
+623:             if split_zone_root else None
+624:         ),
+625:         metadata={
+626:             "audit_zone_root": str(audit_zone_root),
+627:             "audit_run_id": child_runs.audit_run_id,
+628:             "split_run_id": child_runs.split_run_id,
+
+Around line 626:
+623:             if split_zone_root else None
+624:         ),
+625:         metadata={
+626:             "audit_zone_root": str(audit_zone_root),
+627:             "audit_run_id": child_runs.audit_run_id,
+628:             "split_run_id": child_runs.split_run_id,
+629:             "inference_run_id": child_runs.inference_run_id,
+630:         },
+631:     )
+
+Around line 640:
+637:     matrix_run_id: str,
+638:     aggregation_run_id: str,
+639:     phase_c_campaign_run_id: str,
+640:     aggregate_zone_id: str,
+641: ) -> PhaseDDiscoveryResult:
+642:     """Resolve all D2 sources required for one Phase D aggregate-zone product."""
+643: 
+644:     campaign_root = Path(campaign_root).expanduser().resolve()
+645:     aggregation_run = resolve_aggregation_run(
+
+Around line 652:
+649:     )
+650:     aggregation_zone = resolve_aggregation_zone(
+651:         aggregation_run=aggregation_run,
+652:         aggregate_zone_id=aggregate_zone_id,
+653:     )
+654:     phase_c_runs = resolve_phase_c_child_runs(
+655:         campaign_root=campaign_root,
+656:         phase_c_campaign_run_id=phase_c_campaign_run_id,
+657:     )
+
+Around line 665:
+662:         aggregation_run_id=aggregation_run.aggregation_run_id,
+663:         aggregation_id=aggregation_run.aggregation_id,
+664:         weight_mode=aggregation_run.weight_mode,
+665:         aggregate_zone_id=aggregate_zone_id,
+666:     )
+667:     return PhaseDDiscoveryResult(
+668:         campaign_root=campaign_root,
+669:         aggregation_zone=aggregation_zone,
+670:         phase_c_runs=phase_c_runs,

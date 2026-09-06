@@ -1,0 +1,39 @@
+ScaleBridge Phase D — D4.2 Storage Policy Update
+================================================
+
+Purpose
+-------
+D4.2 changes operational storage behavior only. D3 alignment, D4 signal
+classification, canonical schema construction, ZIC/ZIR grouping, and scientific
+validation are unchanged.
+
+Locked defaults
+---------------
+- Compact JSON assembly manifest: written.
+- Full annual D4 assembled Parquet: not written by default.
+- D4 preview Parquet: not written by default.
+- CSV time-series output: never written.
+- Existing stale zone artifacts: removed before a controlled rerun.
+- One Python process per zone: retained for operating-system memory release.
+
+Opt-in controlled debugging
+---------------------------
+Edit scripts/thermal_modeling/D4_RUN_CONTROLLED_ASSEMBLY.ps1:
+
+    $WriteAssembledTable = $true
+    $WritePreview = $true
+
+Any time-series artifact written by these options uses Parquet with Zstandard
+compression. These outputs are validation artifacts, not production silos.
+
+Production flow
+---------------
+Phase B projected read + Phase C projected read + split projected read
+    -> D3 alignment in memory
+    -> D4 canonical assembly in memory
+    -> final Phase D silo builder
+    -> final silo Parquets only
+    -> release zone memory
+
+D4.2 does not yet implement the final silo builder. It prevents the current D4
+validation runner from duplicating annual time-series storage by default.

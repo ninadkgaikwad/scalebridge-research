@@ -1,0 +1,1520 @@
+SETTINGS -> MLFLOW VALIDATED CONFIGURATION
+==========================================
+
+Context
+-------
+This document summarizes the current validated MLflow configuration used by
+ScaleBridge for the Building-Grid Intelligence Research Studio Settings -> MLflow
+page.
+
+The Settings -> MLflow page should be an inspect-and-validate configuration page.
+It should not silently start or stop MLflow servers unless a future managed
+server-control policy is explicitly implemented.
+
+
+1. CURRENT VALIDATED MLFLOW CONFIGURATION
+=========================================
+
+Core validated setup
+--------------------
+Tracking URI:
+    http://127.0.0.1:5000
+
+Local MLflow UI:
+    http://127.0.0.1:5000
+
+Validated lab-PC backend store:
+    sqlite:///D:/ScaleBridge_MLflow/backend/mlflow_labpc.sqlite
+
+Validated lab-PC artifact root:
+    file:///$dataRoot/mlflow_artifacts
+
+where:
+    $dataRoot = <SCALEBRIDGE_GENERATED_DATA_ROOT>
+
+Export root:
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_exports/<machine_id>/
+
+Merged registry:
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>/experiment_registry/
+
+Machine IDs:
+    laptop
+    home-pc
+    lab-pc
+    kamiak
+
+Validated Stage A generation experiment:
+    p1_compact_4b4c_labpc_1w_v1_generation
+
+Validated Stage B aggregation test experiment:
+    ScaleBridge_P1_Aggregation_Test
+
+Recommended Stage B compact aggregation experiment:
+    ScaleBridge_P1_Aggregation_4b4c_1w
+
+Important MLflow files:
+    src/scalebridge/tracking/mlflow/generation.py
+    src/scalebridge/tracking/mlflow/semantic.py
+    scripts/mlflow/export_mlflow_runs.py
+    scripts/mlflow/merge_mlflow_exports.py
+    scripts/mlflow/start_local_tracking_server.ps1
+
+
+2. TRACKING URI SELECTION LOGIC
+===============================
+
+Field: MLflow Tracking URI
+--------------------------
+Label:
+    MLflow Tracking URI
+
+Value / behavior:
+    MLFLOW_TRACKING_URI, usually http://127.0.0.1:5000
+
+Source of truth:
+    Environment variable setup in README/context.
+
+Validation rule:
+    URI is nonempty and reachable by MLflow client or HTTP health check.
+
+Pass meaning:
+    Server responds and experiments can be listed.
+
+Warning meaning:
+    Environment variable is missing, but default localhost is assumed.
+
+Failure meaning:
+    Client cannot connect.
+
+Help-popup explanation:
+    This is the MLflow tracking endpoint used by ScaleBridge scripts. For local
+    Windows runs, use http://127.0.0.1:5000.
+
+
+Field: Tracking URI fallback
+----------------------------
+Label:
+    Tracking URI fallback
+
+Value / behavior:
+    Export script defaults to MLFLOW_TRACKING_URI or localhost if not provided.
+
+Source of truth:
+    scripts/mlflow/export_mlflow_runs.py argument behavior.
+
+Validation rule:
+    If user leaves the field blank, the app should show the inferred value.
+
+Pass meaning:
+    Inferred URI resolves.
+
+Warning meaning:
+    Inferred URI is shown but not validated.
+
+Failure meaning:
+    No URI and no localhost server.
+
+Help-popup explanation:
+    Leave blank to use the environment/default local MLflow server, or override
+    for inspection.
+
+
+Field: Machine identity
+-----------------------
+Label:
+    Machine ID
+
+Value / behavior:
+    SCALEBRIDGE_MACHINE_ID
+
+Source of truth:
+    README/context environment variables.
+
+Validation rule:
+    Must be one of the known machine labels or use hostname fallback.
+
+Pass meaning:
+    One of laptop, home-pc, lab-pc, kamiak.
+
+Warning meaning:
+    Hostname fallback is used.
+
+Failure meaning:
+    Empty or unknown in strict mode.
+
+Help-popup explanation:
+    Machine ID is used as metadata/tag and export folder identity, not as a
+    top-level artifact root.
+
+
+3. BACKEND-STORE PATH BY MACHINE
+================================
+
+Only the lab-PC backend store is explicitly validated in the current source.
+The other machines are known roles, but their backend-store SQLite paths are not
+validated in the current handoff.
+
+
+Machine: lab-pc
+---------------
+Label:
+    Backend Store URI
+
+Value:
+    sqlite:///D:/ScaleBridge_MLflow/backend/mlflow_labpc.sqlite
+
+Source of truth:
+    Validated lab-PC server startup command.
+
+Validation rule:
+    File path parent exists and MLflow server starts.
+
+Pass meaning:
+    SQLite backend exists or is created and MLflow UI is reachable.
+
+Warning meaning:
+    Parent folder is missing but creatable.
+
+Failure meaning:
+    Server cannot create or use the SQLite database.
+
+Help-popup explanation:
+    Validated lab-PC uses a D-drive SQLite backend to avoid C-drive space issues.
+
+
+Machine: laptop
+---------------
+Label:
+    Backend Store URI
+
+Value:
+    Not explicitly defined in current validated source.
+
+Source of truth:
+    Current source only gives tracking URI and machine ID.
+
+Validation rule:
+    Do not invent path. Inspect environment/server configuration.
+
+Pass meaning:
+    Running server provides backend information.
+
+Warning meaning:
+    Backend path is unknown.
+
+Failure meaning:
+    No server or configuration found.
+
+Help-popup explanation:
+    Laptop MLflow backend path is not currently documented; Settings should
+    inspect rather than assume.
+
+
+Machine: home-pc
+----------------
+Label:
+    Backend Store URI
+
+Value:
+    Not explicitly defined in current validated source.
+
+Source of truth:
+    Current source only gives tracking URI and machine ID.
+
+Validation rule:
+    Do not invent path. Inspect environment/server configuration.
+
+Pass meaning:
+    Running server provides backend information.
+
+Warning meaning:
+    Backend path is unknown.
+
+Failure meaning:
+    No server or configuration found.
+
+Help-popup explanation:
+    Home-PC backend path is not validated in the current handoff.
+
+
+Machine: kamiak
+---------------
+Label:
+    Backend Store URI
+
+Value:
+    Not explicitly defined; likely environment-dependent.
+
+Source of truth:
+    Kamiak environment setup gives MLFLOW_TRACKING_URI, not a backend path.
+
+Validation rule:
+    Must be provided explicitly by user/HPC configuration.
+
+Pass meaning:
+    Explicit tracking backend is available.
+
+Warning meaning:
+    Localhost URI may not be meaningful on a compute node.
+
+Failure meaning:
+    No accessible MLflow server.
+
+Help-popup explanation:
+    Kamiak may require a job/session-specific MLflow server or external URI;
+    current source does not define a validated backend path.
+
+
+4. ARTIFACT ROOT BY MACHINE
+===========================
+
+Machine: lab-pc
+---------------
+Label:
+    Artifact Root
+
+Value:
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_artifacts
+
+Source of truth:
+    Validated lab-PC server startup uses:
+        --default-artifact-root "file:///$dataRoot/mlflow_artifacts"
+
+Validation rule:
+    Directory exists or is creatable; MLflow run artifact URI points under it.
+
+Pass meaning:
+    Artifact root exists and runs log artifacts.
+
+Warning meaning:
+    Directory is missing but can be created.
+
+Failure meaning:
+    Artifact logging fails.
+
+Help-popup explanation:
+    MLflow artifacts should live under the generated data root, not inside the
+    repo.
+
+
+Machine: laptop
+---------------
+Label:
+    Artifact Root
+
+Value:
+    Not explicitly validated in current source.
+
+Source of truth:
+    Export path is documented, but artifact root is not machine-specific.
+
+Validation rule:
+    Inspect experiment artifact_location.
+
+Pass meaning:
+    Artifact location resolves.
+
+Warning meaning:
+    Unknown local path.
+
+Failure meaning:
+    Missing or inaccessible artifact location.
+
+Help-popup explanation:
+    Settings should read artifact locations from MLflow experiments rather than
+    assume a laptop path.
+
+
+Machine: home-pc
+----------------
+Label:
+    Artifact Root
+
+Value:
+    Not explicitly validated in current source.
+
+Source of truth:
+    Export path is documented, but artifact root is not machine-specific.
+
+Validation rule:
+    Inspect experiment artifact_location.
+
+Pass meaning:
+    Artifact location resolves.
+
+Warning meaning:
+    Unknown local path.
+
+Failure meaning:
+    Missing or inaccessible artifact location.
+
+Help-popup explanation:
+    Home-PC artifact root should be inspected from MLflow metadata.
+
+
+Machine: kamiak
+---------------
+Label:
+    Artifact Root
+
+Value:
+    Not explicitly validated in current source.
+
+Source of truth:
+    Export path is documented, but artifact root is not machine-specific.
+
+Validation rule:
+    Inspect experiment artifact_location.
+
+Pass meaning:
+    Artifact location resolves.
+
+Warning meaning:
+    Unknown or machine-local path.
+
+Failure meaning:
+    Missing or inaccessible artifact location.
+
+Help-popup explanation:
+    Kamiak artifact roots are likely HPC-storage-specific and must be configured
+    explicitly.
+
+
+Important design rule:
+    Generated and MLflow data should stay outside the repo. Avoid repo-root
+    mlruns, mlartifacts, data, outputs, and scratch. Use the external generated
+    data root.
+
+
+5. LOCAL MLFLOW UI ADDRESS
+==========================
+
+Field: Local MLflow UI
+----------------------
+Label:
+    Local MLflow UI
+
+Value:
+    http://127.0.0.1:5000
+
+Source of truth:
+    README/context MLflow architecture.
+
+Validation rule:
+    Open or GET server URL, or list experiments with MLflow client.
+
+Pass meaning:
+    UI is reachable.
+
+Warning meaning:
+    Port is closed but startup command is available.
+
+Failure meaning:
+    Cannot connect and no startup configuration is available.
+
+Help-popup explanation:
+    Use this local address to view runs, experiments, metrics, params, and
+    artifacts during ScaleBridge development.
+
+
+6. SERVER STARTUP COMMAND
+=========================
+
+Validated lab-PC startup command:
+
+    $dataRoot = "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge"
+
+    mlflow server `
+      --backend-store-uri "sqlite:///D:/ScaleBridge_MLflow/backend/mlflow_labpc.sqlite" `
+      --default-artifact-root "file:///$dataRoot/mlflow_artifacts" `
+      --host 127.0.0.1 `
+      --port 5000
+
+Field: Server startup command
+-----------------------------
+Label:
+    Server Startup Command
+
+Source of truth:
+    README/context and scripts/mlflow/start_local_tracking_server.ps1.
+
+Validation rule:
+    Command uses validated backend/artifact roots; process starts; UI reachable.
+
+Pass meaning:
+    Server is listening at 127.0.0.1:5000.
+
+Warning meaning:
+    Existing server is already using the port.
+
+Failure meaning:
+    Process exits or port is unavailable.
+
+Help-popup explanation:
+    This starts the local MLflow tracking server. The Dash app should display or
+    copy this command, not silently launch long-lived services unless that becomes
+    an explicit tool action.
+
+
+7. SERVER SHUTDOWN BEHAVIOR
+===========================
+
+Field: Server shutdown behavior
+-------------------------------
+Label:
+    Server Shutdown Behavior
+
+Current validated status:
+    Not defined in current validated handoff.
+
+Source of truth:
+    No shutdown policy is specified in the provided README/context.
+
+Validation rule:
+    Settings should report "not defined".
+
+Pass meaning:
+    User manually stops the server terminal.
+
+Warning meaning:
+    No managed shutdown script.
+
+Failure meaning:
+    App claims managed shutdown exists when it does not.
+
+Help-popup explanation:
+    Current workflow starts MLflow in a terminal. Shutdown is manual unless a
+    future script defines managed behavior.
+
+Implementation note:
+    Do not claim there is a validated shutdown script unless an existing MLflow
+    script explicitly defines one.
+
+
+8. CONNECTION VALIDATION COMMAND
+================================
+
+Current practical validation command:
+
+    python scripts\mlflow\export_mlflow_runs.py `
+      --experiment-name p1_compact_4b4c_labpc_1w_v1_generation
+
+Validated expected generation export result:
+
+    experiment_count = 1
+    run_count = 16
+
+
+Field: MLflow export health check
+---------------------------------
+Label:
+    MLflow Export Health Check
+
+Source of truth:
+    scripts/mlflow/export_mlflow_runs.py
+
+Validation rule:
+    Export selected experiment from current tracking URI.
+
+Pass meaning:
+    Export completes and writes manifest/CSV/JSONL.
+
+Warning meaning:
+    Experiment is missing but server is reachable.
+
+Failure meaning:
+    Export crashes or cannot connect.
+
+Help-popup explanation:
+    Exporting a known experiment confirms the tracking URI, machine ID, and
+    export folder behavior.
+
+
+Field: Expected generation export result
+----------------------------------------
+Label:
+    Expected Generation Export Result
+
+Source of truth:
+    Validated compact campaign export.
+
+Validation rule:
+    Check export manifest or console output.
+
+Pass meaning:
+    Exactly 1 experiment and 16 runs.
+
+Warning meaning:
+    Different run count due to reruns or filters.
+
+Failure meaning:
+    No runs found.
+
+Help-popup explanation:
+    The validated Stage A compact campaign logged 16 generation runs.
+
+
+9. EXPERIMENT NAMING RULES
+==========================
+
+Field: Generation experiment
+----------------------------
+Label:
+    Generation Experiment Name
+
+Rule / validated example:
+    <campaign_id>_generation
+
+Validated example:
+    p1_compact_4b4c_labpc_1w_v1_generation
+
+Source of truth:
+    Validated generation command and MLflow export.
+
+Validation rule:
+    Experiment exists and run count matches campaign cases.
+
+Pass meaning:
+    Experiment exists with expected run count.
+
+Warning meaning:
+    Experiment exists but run count is incomplete or different.
+
+Failure meaning:
+    Experiment is missing after run.
+
+Help-popup explanation:
+    Generation experiments append _generation to the campaign ID.
+
+
+Field: Aggregation test experiment
+----------------------------------
+Label:
+    Aggregation Test Experiment Name
+
+Rule / validated example:
+    ScaleBridge_P1_Aggregation_Test
+
+Source of truth:
+    Stage B MLflow status.
+
+Validation rule:
+    Experiment exists after smoke.
+
+Pass meaning:
+    Experiment exists.
+
+Warning meaning:
+    Not present if not run on this machine.
+
+Failure meaning:
+    Missing when expected.
+
+Help-popup explanation:
+    Used for aggregation MLflow smoke validation.
+
+
+Field: Aggregation production experiment
+----------------------------------------
+Label:
+    Aggregation Production Experiment Name
+
+Rule / recommended example:
+    ScaleBridge_P1_Aggregation_4b4c_1w
+
+Source of truth:
+    Stage B recommendation.
+
+Validation rule:
+    Experiment exists after campaign aggregation run.
+
+Pass meaning:
+    Experiment exists.
+
+Warning meaning:
+    Not yet run.
+
+Failure meaning:
+    Missing when expected.
+
+Help-popup explanation:
+    Recommended compact 4x4 aggregation experiment name.
+
+
+Field: Connectivity test experiment
+-----------------------------------
+Label:
+    Connectivity Test Experiment Name
+
+Rule / validated example:
+    scalebridge_connectivity_test
+
+Source of truth:
+    Merged registry examples include it.
+
+Validation rule:
+    Optional experiment.
+
+Pass meaning:
+    Exists.
+
+Warning meaning:
+    Missing is acceptable.
+
+Failure meaning:
+    Not a failure.
+
+Help-popup explanation:
+    Used to verify cross-machine MLflow/export plumbing.
+
+
+10. MACHINE ID TAGS
+===================
+
+Field: Machine ID
+-----------------
+Label:
+    Machine ID
+
+Value:
+    laptop, home-pc, lab-pc, kamiak
+
+Source of truth:
+    Environment variables section.
+
+Validation rule:
+    Export manifest and runs contain expected machine_id.
+
+Pass meaning:
+    Matches selected machine.
+
+Warning meaning:
+    Hostname fallback used.
+
+Failure meaning:
+    Missing or inconsistent across export.
+
+Help-popup explanation:
+    Machine identity is metadata/tag and export identity, not a separate artifact
+    root.
+
+
+Field: Export machine folder
+----------------------------
+Label:
+    Export Machine Folder
+
+Value:
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_exports/<machine_id>/
+
+Source of truth:
+    Export script behavior and README/context.
+
+Validation rule:
+    Folder exists after export.
+
+Pass meaning:
+    Export folder exists.
+
+Warning meaning:
+    Folder not created yet.
+
+Failure meaning:
+    Export path is invalid.
+
+Help-popup explanation:
+    Each machine exports local MLflow metadata into its own machine folder for
+    later merge.
+
+
+11. RUN NAMING RULES
+====================
+
+The current source validates examples of run IDs/names, but does not define a
+complete formal run naming rule for all workflows.
+
+
+Field: Generation run name
+--------------------------
+Label:
+    Generation Run Name
+
+Current behavior:
+    EnergyPlus variable-wise generation creates MLflow runs such as epvwr_<id>.
+
+Source of truth:
+    Console logs and generation tracker context.
+
+Validation rule:
+    Run exists under generation experiment.
+
+Pass meaning:
+    One run per completed case.
+
+Warning meaning:
+    Duplicate or incomplete runs.
+
+Failure meaning:
+    No run for completed case.
+
+Help-popup explanation:
+    Generation runs use internally generated run IDs/names, usually epvwr_..., 
+    corresponding to EnergyPlus variable-wise run folders.
+
+
+Field: Aggregation run name
+---------------------------
+Label:
+    Aggregation Run Name
+
+Current behavior:
+    Not fully specified in current source.
+
+Source of truth:
+    Aggregation MLflow helper docs are not fully provided.
+
+Validation rule:
+    Inspect actual MLflow run name.
+
+Pass meaning:
+    Run exists and params identify campaign/weight mode.
+
+Warning meaning:
+    Name is generic but params are complete.
+
+Failure meaning:
+    Missing run metadata.
+
+Help-popup explanation:
+    Aggregation run identity should be resolved from params/tags if run name is
+    not enough.
+
+
+Important duplicate-run design:
+    The runner creates/configures one MLflowGenerationTracker and passes it into
+    the generation function. The generation function owns run start/finish.
+
+
+12. EXPORT SCRIPTS
+==================
+
+Script: scripts/mlflow/export_mlflow_runs.py
+--------------------------------------------
+Label:
+    Export MLflow Runs Script
+
+Behavior:
+    Exports experiments/runs to CSV and JSONL.
+
+Source of truth:
+    README/context and script help.
+
+Validation rule:
+    Console says "MLflow export completed"; output folder contains experiments.csv,
+    runs.csv, runs.jsonl, and export_manifest.json.
+
+Pass meaning:
+    Export completes.
+
+Warning meaning:
+    Experiment filter returns 0 runs.
+
+Failure meaning:
+    Script fails or connectivity issue.
+
+Help-popup explanation:
+    Use this to snapshot local MLflow metadata from each machine into the shared
+    generated data root.
+
+
+Argument: --experiment-name
+---------------------------
+Label:
+    Export Experiment Name Filter
+
+Behavior:
+    Can be repeated; omitted means export all experiments.
+
+Source of truth:
+    Export script help.
+
+Validation rule:
+    Selected experiment names match expectation.
+
+Pass meaning:
+    Correct experiment exported.
+
+Warning meaning:
+    No matching experiment.
+
+Failure meaning:
+    Export empty or wrong experiment.
+
+Help-popup explanation:
+    Use this to export a specific campaign instead of all local experiments.
+
+
+Argument: --machine-id
+----------------------
+Label:
+    Export Machine ID
+
+Behavior:
+    Defaults to SCALEBRIDGE_MACHINE_ID or hostname.
+
+Source of truth:
+    Export script help.
+
+Validation rule:
+    Machine ID matches selected machine.
+
+Pass meaning:
+    Correct machine folder.
+
+Warning meaning:
+    Hostname fallback.
+
+Failure meaning:
+    Wrong or blank machine identity.
+
+Help-popup explanation:
+    Controls export folder and machine metadata.
+
+
+Argument: --output-dir
+----------------------
+Label:
+    Export Output Directory
+
+Behavior:
+    Defaults to <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_exports/<machine_id>.
+
+Source of truth:
+    Export script help.
+
+Validation rule:
+    Folder exists after export.
+
+Pass meaning:
+    Output written.
+
+Warning meaning:
+    Custom path used.
+
+Failure meaning:
+    Cannot write path.
+
+Help-popup explanation:
+    Usually leave blank to use the standard ScaleBridge export layout.
+
+
+Validated generation export command:
+
+    python scripts\mlflow\export_mlflow_runs.py `
+      --experiment-name p1_compact_4b4c_labpc_1w_v1_generation
+
+Validated result:
+
+    experiment_count = 1
+    run_count = 16
+
+
+13. MERGE SCRIPTS
+=================
+
+Script: scripts/mlflow/merge_mlflow_exports.py
+----------------------------------------------
+Label:
+    Merge MLflow Exports Script
+
+Behavior:
+    Merges machine exports into shared experiment registry.
+
+Source of truth:
+    README/context.
+
+Validation rule:
+    Console says "MLflow exports merged"; registry contains merged files.
+
+Pass meaning:
+    Merge completes.
+
+Warning meaning:
+    Some machines are missing exports.
+
+Failure meaning:
+    Merge fails or duplicate corruption occurs.
+
+Help-popup explanation:
+    Use this after exporting from one or more machines to create a shared registry
+    view.
+
+
+Field: Merged registry path
+---------------------------
+Label:
+    Merged Registry Path
+
+Value:
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>/experiment_registry/
+
+Source of truth:
+    README/context.
+
+Validation rule:
+    Folder exists and contains merged outputs.
+
+Pass meaning:
+    Present.
+
+Warning meaning:
+    Not yet created.
+
+Failure meaning:
+    Cannot write registry.
+
+Help-popup explanation:
+    This is the Dash-friendly cross-machine summary source.
+
+
+Validated merge behavior:
+    The merged registry has been validated with machine IDs including home-pc,
+    lab-pc, and laptop, and experiment names including the validated Stage A
+    generation campaign and aggregation test experiments.
+
+
+14. ARTIFACT LOOKUP BEHAVIOR
+============================
+
+Field: MLflow artifact lookup
+-----------------------------
+Label:
+    MLflow Artifact Lookup
+
+Behavior:
+    Read artifact locations from MLflow experiment/run metadata; do not assume
+    machine folder by artifact root.
+
+Source of truth:
+    Design decision: machine identity is metadata/tag, not top-level artifact
+    folder.
+
+Validation rule:
+    Run artifact URI resolves.
+
+Pass meaning:
+    Artifacts browse or open.
+
+Warning meaning:
+    Artifact path exists only on the source machine.
+
+Failure meaning:
+    Missing or inaccessible artifact path.
+
+Help-popup explanation:
+    Artifact locations come from MLflow. The machine ID tells where the run was
+    produced, but does not define a separate artifact folder.
+
+
+Field: Export lookup
+--------------------
+Label:
+    Export Lookup
+
+Behavior:
+    Use:
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_exports/<machine_id>/runs.csv
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_exports/<machine_id>/experiments.csv
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_exports/<machine_id>/runs.jsonl
+        <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_exports/<machine_id>/export_manifest.json
+
+Source of truth:
+    Export script output schema.
+
+Validation rule:
+    Files exist and parse.
+
+Pass meaning:
+    All files are readable.
+
+Warning meaning:
+    Some files are missing.
+
+Failure meaning:
+    Export is invalid.
+
+Help-popup explanation:
+    These files are the stable Dash-readable export outputs.
+
+
+Field: Registry lookup
+----------------------
+Label:
+    Registry Lookup
+
+Behavior:
+    Use <SCALEBRIDGE_GENERATED_DATA_ROOT>/experiment_registry/.
+
+Source of truth:
+    Merge docs.
+
+Validation rule:
+    Merged registry exists.
+
+Pass meaning:
+    Registry readable.
+
+Warning meaning:
+    Registry stale.
+
+Failure meaning:
+    Registry missing or corrupt.
+
+Help-popup explanation:
+    The dashboard should prefer the merged registry for cross-machine summary
+    tables.
+
+
+15. KNOWN PATH DIFFERENCES ACROSS MACHINES
+==========================================
+
+Machine: lab-pc
+---------------
+Validated/current path information:
+    Generated root:
+        F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge
+
+    MLflow backend:
+        D:\ScaleBridge_MLflow\backend\mlflow_labpc.sqlite
+
+    Temp/work roots:
+        D:\Temp
+        D:\ScaleBridge_EPlus_Work\...
+
+Source support:
+    Explicitly validated in handoff/README.
+
+Dash setting behavior:
+    Pre-fill these values when machine is lab-pc.
+
+
+Machine: laptop
+---------------
+Validated/current path information:
+    Machine ID known.
+    Generated root generally follows repo-relative ../../Data/ScaleBridge.
+    Backend path not validated.
+
+Source support:
+    Machine ID/environment contract only.
+
+Dash setting behavior:
+    Show environment-derived paths; mark backend path as not validated unless
+    detected.
+
+
+Machine: home-pc
+----------------
+Validated/current path information:
+    Machine ID known.
+    Backend/artifact roots not explicitly validated.
+
+Source support:
+    Machine ID/environment contract only.
+
+Dash setting behavior:
+    Show environment-derived paths; mark backend path as not validated unless
+    detected.
+
+
+Machine: kamiak
+---------------
+Validated/current path information:
+    Linux environment setup uses:
+        realpath ../../Data
+        work root under ${TMPDIR:-/tmp/$USER}/ScaleBridge_EPlus_Work
+        MLFLOW_TRACKING_URI shown as localhost if applicable
+
+Source support:
+    README/context environment setup.
+
+Dash setting behavior:
+    Require explicit URI/backend for real HPC use; do not assume Windows paths.
+
+
+16. SHOULD DASH INSPECT MLFLOW OR START THE SERVER?
+===================================================
+
+Current Settings -> MLflow implementation policy:
+
+    Dash should inspect and validate MLflow configuration.
+    Dash should display/copy the validated server startup command.
+    Dash should not automatically start or stop the MLflow server by default.
+
+Reason:
+    The validated workflow starts MLflow with a terminal command, and no server
+    shutdown behavior is defined in the current handoff. The Settings page can
+    safely check whether the UI is reachable, show the active tracking URI,
+    inspect export/registry files, and show pass/warning/failure states.
+
+Future possibility:
+    Starting a long-lived server from Dash should only be added as an explicit
+    future action after process ownership, logging, shutdown, and port-conflict
+    behavior are defined.
+
+
+17. SUGGESTED SETTINGS -> MLFLOW FIELD SCHEMA
+=============================================
+
+Field: Machine ID
+-----------------
+Label:
+    Machine ID
+
+Source of truth:
+    SCALEBRIDGE_MACHINE_ID
+
+Validation rule:
+    Must be known or explicitly accepted.
+
+Pass meaning:
+    Known machine selected.
+
+Warning meaning:
+    Hostname fallback or unknown machine.
+
+Failure meaning:
+    Missing in strict workflow.
+
+Help-popup explanation:
+    Identifies where the run was created and where exports are written.
+
+
+Field: Tracking URI
+-------------------
+Label:
+    Tracking URI
+
+Source of truth:
+    MLFLOW_TRACKING_URI or script argument.
+
+Validation rule:
+    MLflow client can connect.
+
+Pass meaning:
+    Server reachable.
+
+Warning meaning:
+    Environment variable missing but default used.
+
+Failure meaning:
+    Cannot connect.
+
+Help-popup explanation:
+    Endpoint for reading/writing MLflow experiments.
+
+
+Field: MLflow UI URL
+--------------------
+Label:
+    MLflow UI URL
+
+Source of truth:
+    Tracking URI if HTTP.
+
+Validation rule:
+    Browser can open URL.
+
+Pass meaning:
+    UI reachable.
+
+Warning meaning:
+    URI reachable only by client.
+
+Failure meaning:
+    HTTP unavailable.
+
+Help-popup explanation:
+    Open this to inspect experiments and runs manually.
+
+
+Field: Backend Store URI
+------------------------
+Label:
+    Backend Store URI
+
+Source of truth:
+    Server startup configuration.
+
+Validation rule:
+    Path/URI valid for selected machine.
+
+Pass meaning:
+    Validated path exists/usable.
+
+Warning meaning:
+    Path unknown for machine.
+
+Failure meaning:
+    Invalid or inaccessible.
+
+Help-popup explanation:
+    Where MLflow stores experiment/run metadata.
+
+
+Field: Artifact Root
+--------------------
+Label:
+    Artifact Root
+
+Source of truth:
+    Server startup config or experiment artifact location.
+
+Validation rule:
+    Artifact root exists or run locations resolve.
+
+Pass meaning:
+    Artifacts can be found.
+
+Warning meaning:
+    Location is machine-local or stale.
+
+Failure meaning:
+    Artifacts missing.
+
+Help-popup explanation:
+    Where MLflow stores run artifacts.
+
+
+Field: Export Root
+------------------
+Label:
+    Export Root
+
+Source of truth:
+    <generated_root>/mlflow_exports/<machine_id>
+
+Validation rule:
+    Export folder exists and contains manifest.
+
+Pass meaning:
+    Latest export present.
+
+Warning meaning:
+    Export folder missing or stale.
+
+Failure meaning:
+    Cannot write or read.
+
+Help-popup explanation:
+    Machine-local MLflow export folder.
+
+
+Field: Merged Registry
+----------------------
+Label:
+    Merged Registry
+
+Source of truth:
+    <generated_root>/experiment_registry
+
+Validation rule:
+    Registry folder exists after merge.
+
+Pass meaning:
+    Cross-machine registry present.
+
+Warning meaning:
+    Registry stale.
+
+Failure meaning:
+    Missing or corrupt.
+
+Help-popup explanation:
+    Dash should use this for cross-machine summaries.
+
+
+Field: Generation Experiment Name
+---------------------------------
+Label:
+    Generation Experiment Name
+
+Source of truth:
+    <campaign_id>_generation
+
+Validation rule:
+    Experiment exists.
+
+Pass meaning:
+    Run count matches case count.
+
+Warning meaning:
+    Experiment exists but incomplete.
+
+Failure meaning:
+    Missing.
+
+Help-popup explanation:
+    Generation experiments append _generation to campaign IDs.
+
+
+Field: Aggregation Experiment Name
+----------------------------------
+Label:
+    Aggregation Experiment Name
+
+Source of truth:
+    Recommended ScaleBridge_P1_Aggregation_4b4c_1w
+
+Validation rule:
+    Experiment exists after aggregation.
+
+Pass meaning:
+    Runs present.
+
+Warning meaning:
+    Not yet run.
+
+Failure meaning:
+    Missing when expected.
+
+Help-popup explanation:
+    Aggregation experiment groups compact campaign aggregation runs.
+
+
+Field: Run Count
+----------------
+Label:
+    Run Count
+
+Source of truth:
+    Export or MLflow client.
+
+Validation rule:
+    Count matches expected.
+
+Pass meaning:
+    Validated campaign complete.
+
+Warning meaning:
+    Count differs due to reruns.
+
+Failure meaning:
+    Zero or missing runs.
+
+Help-popup explanation:
+    Shows whether all expected cases logged MLflow runs.
+
+
+Field: Export Status
+--------------------
+Label:
+    Export Status
+
+Source of truth:
+    export_manifest.json
+
+Validation rule:
+    Manifest parses.
+
+Pass meaning:
+    Export complete.
+
+Warning meaning:
+    Stale timestamp.
+
+Failure meaning:
+    Missing or corrupt.
+
+Help-popup explanation:
+    Last machine export status.
+
+
+Field: Merge Status
+-------------------
+Label:
+    Merge Status
+
+Source of truth:
+    Experiment registry outputs.
+
+Validation rule:
+    Merged registry parses.
+
+Pass meaning:
+    Merge complete.
+
+Warning meaning:
+    Some machines missing.
+
+Failure meaning:
+    Merge failed.
+
+Help-popup explanation:
+    Last cross-machine merge status.
+
+
+Field: Artifact Lookup Mode
+---------------------------
+Label:
+    Artifact Lookup Mode
+
+Source of truth:
+    MLflow metadata plus exports.
+
+Validation rule:
+    Paths resolve.
+
+Pass meaning:
+    Artifacts accessible.
+
+Warning meaning:
+    Machine-local artifact path.
+
+Failure meaning:
+    Missing artifacts.
+
+Help-popup explanation:
+    Artifacts are located from MLflow metadata, not guessed from machine ID.
+
+
+Field: Server Control Mode
+--------------------------
+Label:
+    Server Control Mode
+
+Source of truth:
+    Current policy.
+
+Validation rule:
+    Inspect-only by default.
+
+Pass meaning:
+    Safe inspect mode.
+
+Warning meaning:
+    Server command available but not running.
+
+Failure meaning:
+    App claims control without process policy.
+
+Help-popup explanation:
+    Current Dash settings should inspect MLflow and show commands, not manage
+    server lifecycle automatically.
+
+
+18. SETTINGS-PAGE SUMMARY
+=========================
+
+The Settings -> MLflow page should answer four questions:
+
+    1. What MLflow server/config am I pointing to?
+    2. Is it reachable and consistent with the selected machine?
+    3. What experiments/runs have been exported and merged?
+    4. Where should Dash look for artifacts and registry summaries?
+
+It should not silently start or stop servers yet. It should present validated
+commands, validation checks, and clear pass/warning/failure statuses.
+
+END OF DOCUMENT.

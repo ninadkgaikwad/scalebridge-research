@@ -1,0 +1,35 @@
+{
+  "contract": "E0-6 v2 physical-Theta authority",
+  "flavours": {
+    "1r1c": {
+      "decision_dimension": 2,
+      "constraint_count": 0,
+      "finite": true
+    },
+    "2r2c": {
+      "decision_dimension": 3,
+      "constraint_count": 0,
+      "finite": true
+    },
+    "3r2c": {
+      "decision_dimension": 3,
+      "constraint_count": 0,
+      "finite": true
+    },
+    "4r3c": {
+      "decision_dimension": 5,
+      "constraint_count": 1,
+      "finite": true
+    }
+  },
+  "running_example": {
+    "raw_dimension": 9,
+    "physical_dimension": 10,
+    "physical_constraint_count": 1,
+    "chain_rule_p4": true,
+    "ipopt_smoke": true,
+    "neuromancer_owner_shared": true,
+    "transformed_casadi_reference": "CasadiTransformedRCBackend"
+  },
+  "qualified": true
+}

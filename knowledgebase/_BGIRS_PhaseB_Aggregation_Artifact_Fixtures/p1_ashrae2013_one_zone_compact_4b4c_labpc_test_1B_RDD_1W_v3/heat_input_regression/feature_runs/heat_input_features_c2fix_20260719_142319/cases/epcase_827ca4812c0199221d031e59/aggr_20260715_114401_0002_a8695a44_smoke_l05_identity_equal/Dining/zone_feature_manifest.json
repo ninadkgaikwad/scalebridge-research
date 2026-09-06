@@ -1,0 +1,233 @@
+{
+  "aggregate_zone_id": "Dining",
+  "aggregation_family": "custom",
+  "aggregation_id": "smoke_l05_identity",
+  "aggregation_level": "smoke_l05_identity",
+  "aggregation_run_id": "aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal",
+  "aggregation_run_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal",
+  "applicable_model_ids": [
+    "QSol1",
+    "QSol2",
+    "QZic_P",
+    "QZir_P",
+    "QZic_L",
+    "QZir_L",
+    "QZic_EE",
+    "QZir_EE",
+    "QZivr_L",
+    "QAC"
+  ],
+  "building_type": "RestaurantFastFood",
+  "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "canonical_timestamp_metadata": {
+    "canonical_cadence_seconds": 300.0,
+    "duplicate_audit_rows": [
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 9418,
+        "__canonical_timestamp": "2001-02-02T16:55:00",
+        "timestamp_raw": " 02/02  16:55:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 10117,
+        "__canonical_timestamp": "2001-02-05T03:10:00",
+        "timestamp_raw": " 02/05  03:10:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 17272,
+        "__canonical_timestamp": "2001-03-01T23:25:00",
+        "timestamp_raw": " 03/01  23:25:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 21731,
+        "__canonical_timestamp": "2001-03-17T11:00:00",
+        "timestamp_raw": " 03/17  11:00:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 23316,
+        "__canonical_timestamp": "2001-03-22T23:05:00",
+        "timestamp_raw": " 03/22  23:05:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 29774,
+        "__canonical_timestamp": "2001-04-14T09:15:00",
+        "timestamp_raw": " 04/14  09:15:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 39646,
+        "__canonical_timestamp": "2001-05-18T15:55:00",
+        "timestamp_raw": " 05/18  15:55:00"
+      },
+      {
+        "__canonical_non_null_score": 26,
+        "__canonical_original_position": 43728,
+        "__canonical_timestamp": "2001-06-01T20:05:00",
+        "timestamp_raw": " 06/01  20:05:00"
+      },
+      {
+        "__canonical_non_null_score": 26,
+        "__canonical_original_position": 47936,
+        "__canonical_timestamp": "2001-06-16T10:45:00",
+        "timestamp_raw": " 06/16  10:45:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 53457,
+        "__canonical_timestamp": "2001-07-05T14:50:00",
+        "timestamp_raw": " 07/05  14:50:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 57119,
+        "__canonical_timestamp": "2001-07-18T08:00:00",
+        "timestamp_raw": " 07/18  08:00:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 73432,
+        "__canonical_timestamp": "2001-09-12T23:25:00",
+        "timestamp_raw": " 09/12  23:25:00"
+      },
+      {
+        "__canonical_non_null_score": 28,
+        "__canonical_original_position": 81727,
+        "__canonical_timestamp": "2001-10-11T18:40:00",
+        "timestamp_raw": " 10/11  18:40:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105120,
+        "__canonical_timestamp": "2001-02-02T16:55:00",
+        "timestamp_raw": "02/02  16:55:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105121,
+        "__canonical_timestamp": "2001-02-05T03:10:00",
+        "timestamp_raw": "02/05  03:10:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105122,
+        "__canonical_timestamp": "2001-03-01T23:25:00",
+        "timestamp_raw": "03/01  23:25:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105123,
+        "__canonical_timestamp": "2001-03-17T11:00:00",
+        "timestamp_raw": "03/17  11:00:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105124,
+        "__canonical_timestamp": "2001-03-22T23:05:00",
+        "timestamp_raw": "03/22  23:05:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105125,
+        "__canonical_timestamp": "2001-04-14T09:15:00",
+        "timestamp_raw": "04/14  09:15:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105126,
+        "__canonical_timestamp": "2001-05-18T15:55:00",
+        "timestamp_raw": "05/18  15:55:00"
+      },
+      {
+        "__canonical_non_null_score": 3,
+        "__canonical_original_position": 105127,
+        "__canonical_timestamp": "2001-06-01T20:05:00",
+        "timestamp_raw": "06/01  20:05:00"
+      },
+      {
+        "__canonical_non_null_score": 3,
+        "__canonical_original_position": 105128,
+        "__canonical_timestamp": "2001-06-16T10:45:00",
+        "timestamp_raw": "06/16  10:45:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105129,
+        "__canonical_timestamp": "2001-07-05T14:50:00",
+        "timestamp_raw": "07/05  14:50:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105130,
+        "__canonical_timestamp": "2001-07-18T08:00:00",
+        "timestamp_raw": "07/18  08:00:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105131,
+        "__canonical_timestamp": "2001-09-12T23:25:00",
+        "timestamp_raw": "09/12  23:25:00"
+      },
+      {
+        "__canonical_non_null_score": 1,
+        "__canonical_original_position": 105132,
+        "__canonical_timestamp": "2001-10-11T18:40:00",
+        "timestamp_raw": "10/11  18:40:00"
+      }
+    ],
+    "duplicate_input_row_count": 26,
+    "duplicate_parsed_timestamp_count": 13,
+    "input_row_count": 105133,
+    "noncanonical_gap_count": 0,
+    "output_duplicate_parsed_timestamp_count": 0,
+    "output_row_count": 105120,
+    "output_timestamp_monotonic": true,
+    "removed_duplicate_row_count": 13,
+    "selection_policy": "maximum_non_null_source_values_then_earliest_original_row"
+  },
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "climate_zone": "5A",
+  "column_count": 8,
+  "created_at_utc": "2026-07-19T21:31:46.257608+00:00",
+  "derived_feature_columns": [
+    "derived_GHI_W_per_m2",
+    "derived_Corrected_Schedule_ElectricEquipment",
+    "derived_Corrected_Schedule_Lights",
+    "derived_Corrected_Schedule_People",
+    "derived_QHVAC_X_W",
+    "derived_QHVAC_Y_W"
+  ],
+  "hvac_target_method": "signed_zone_sensible",
+  "internal_gain_predictor_method": "aggregate_average",
+  "output_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_c2fix_20260719_142319\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining",
+  "outputs": {
+    "derived_feature_catalog": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_c2fix_20260719_142319\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining\\derived_feature_catalog.csv",
+    "derived_feature_validation": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_c2fix_20260719_142319\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining\\derived_feature_validation.csv",
+    "derived_features_parquet": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_c2fix_20260719_142319\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining\\derived_heat_input_features.parquet",
+    "derived_features_preview": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_c2fix_20260719_142319\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining\\derived_heat_input_features_preview.csv"
+  },
+  "row_count": 105120,
+  "rule_set": "legacy_v1",
+  "schema_version": "0.1.0",
+  "source_audit_run_id": "heat_input_audit_c2fix_20260719_142319",
+  "source_generation_run_id": "epvwr_a8695a44ed3f",
+  "source_matrix_run_id": "aggregation_matrix_20260715_114242",
+  "status": "completed",
+  "strategy": "custom_groups",
+  "timestamp_metadata": {
+    "duplicate_timestamp_raw_count": 0,
+    "parsed_timestamp_column": "timestamp",
+    "parsed_timestamp_count": 105120,
+    "row_count": 105120,
+    "timestamp_column": "timestamp_raw",
+    "timestamp_raw_monotonic": true,
+    "unparsed_timestamp_count": 0
+  },
+  "weather_location": "Buffalo",
+  "weight_mode": "equal",
+  "zone_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\zones\\Dining"
+}

@@ -1,0 +1,34 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{booktabs,longtable,array}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\setlength{\parindent}{0pt}
+\renewcommand{\arraystretch}{1.15}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\title{PINODE/EPSR Production Source-of-Truth Map}
+\date{September 2, 2026}
+\begin{document}\maketitle
+\begin{longtable}{L{0.28\textwidth}L{0.34\textwidth}L{0.30\textwidth}}
+\toprule
+Item & Runtime source & Notes \\
+\midrule\endhead
+32 scientific configurations & \path{production/matrix.py} & 4 methods $\times$ 2 RC orders $\times$ 4 cases. \\
+Priority A/B/C & \path{production/matrix.py} & A=all\_to\_one; B=identity\_ind; C=dep1+dep2. \\
+Scope strings & \path{production/cli.py} & priority-a, priority-ab, full. \\
+Method HPO search spaces & \path{training/trainer.py} & Scientific method-owned Optuna spaces. \\
+Method search dispatch & \path{training/experiment.py} & Calls method-specific suggestion functions. \\
+HPO protocol defaults & \path{production/contracts.py} & HPOConfig. \\
+Production HPO CLI budgets & \path{production/cli.py} & Constructs HPOConfig from CLI arguments. \\
+HPO persistence/resume & \path{production/hpo.py} & SQLite + TPE + protocol ID. \\
+HPO sample/floor rules & \path{production/sampling.py} & Month-wise TRAIN-only floor budgets. \\
+Objective formulas & \path{production/objectives.py} & Recursive normalized/RMSE/MAE/CVRMSE. \\
+Final training defaults & \path{production/contracts.py} & ProductionTrainingConfig. \\
+Restart seeds & \path{production/cli.py}, \path{campaign.py} & CLI \texttt{--seeds}; seeds are multi-start restarts. \\
+Checkpoint gates & \path{production/checkpoints.py} & Finite/reload/provenance/Sim1/Sim2 gates. \\
+Offline Sim1/2/3 & \path{production/evaluation.py} & Production uses all TEST episodes for Sim2/3. \\
+Controller YAML & \path{configs/production.yaml} & \textbf{Active} controller section. \\
+HPO/training/evaluation YAML & \path{configs/production.yaml} & \textbf{Not currently loaded by campaign CLI}; reference/default documentation only. \\
+\bottomrule
+\end{longtable}
+\end{document}

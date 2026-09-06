@@ -1,0 +1,646 @@
+\documentclass[11pt]{article}
+\usepackage[margin=0.7in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs,longtable,tabularx,array}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\usepackage{microtype}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{5pt}
+\renewcommand{\arraystretch}{1.16}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{PINODE/EPSR Production Campaign and HPO Reference}
+\rhead{DOC01 / 2026-09-02}
+\cfoot{Page \thepage\ of \pageref{LastPage}}
+\title{\textbf{PINODE/EPSR Production Campaigns, HPO, Training, Checkpoint, and Offline Evaluation Reference}\\[0.4em]
+\large ScaleBridge Day-1 Production Infrastructure -- Qualified Patch01R2B Baseline}
+\author{ScaleBridge / PINODE-EPSR Technical Documentation}
+\date{September 2, 2026}
+\begin{document}
+\maketitle
+\tableofcontents
+\newpage
+
+\section{Purpose and Authority}
+This document records the current executable Day-1 production architecture for the PINODE/EPSR paper after Patch01R2B qualification. It is intended to answer, in one place, the following questions:
+\begin{itemize}[nosep]
+  \item What constitutes a scientific model configuration and how are the 32 configurations formed?
+  \item What campaign scopes exist and how many configurations does each run?
+  \item Which HPO parameters exist for each method and RC order, and what are their exact Optuna search spaces?
+  \item Which values are campaign/HPO protocol settings rather than method hyperparameters?
+  \item Where is each item defined in code, and which source is actually authoritative at runtime?
+  \item How are HPO data selected, split, persisted, resumed, frozen, and handed to final training?
+  \item How are multi-start training, checkpoint acceptance, restart selection, Sim1/Sim2/Sim3, Phase-C HVAC power, and controller overrides organized?
+\end{itemize}
+
+\subsection{Current qualified baseline}
+The implementation documented here corresponds to the installed Patch01R2B production infrastructure. The targeted real-data validator passed 135/135 tests, and the Micro32 campaign completed and accepted all 32 configurations with zero rejected and zero failed configurations. Micro32 is a plumbing qualification and is not a model-performance result.
+
+\section{Source-of-Truth Architecture}
+\begin{longtable}{L{0.23\textwidth}L{0.34\textwidth}L{0.36\textwidth}}
+\toprule
+\textbf{Responsibility} & \textbf{Authoritative code/source} & \textbf{Runtime role} \\
+\midrule
+\endhead
+Scientific matrix & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/matrix.py} & Defines methods, RC orders, cases, priorities, configuration IDs, and the 32-model matrix. \\
+Campaign CLI & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/cli.py} & Parses campaign scope, HPO budgets, training budgets, seeds, failure policy, and controller-config path. \\
+Campaign orchestration & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/campaign.py} & Executes HPO $\rightarrow$ frozen HP $\rightarrow$ multi-start training $\rightarrow$ checkpoint gates $\rightarrow$ validation-based restart selection $\rightarrow$ Sim1/2/3. \\
+HPO protocol dataclass & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/contracts.py} & Defines HPO percentage, holdout, objective, trials, per-trial epochs/patience, seed, batch/window cap, sampling blocks, and geometry limits. \\
+Method-specific HPO search spaces & \path{Paper_PINODE_EPSR/src/pinode_epsr/training/trainer.py} & \textbf{Actual Optuna search spaces}. Search-space science is method-owned; it is not embedded in the campaign matrix. \\
+Method HPO dispatch & \path{Paper_PINODE_EPSR/src/pinode_epsr/training/experiment.py} & Routes each method to its search-space function and applies frozen hyperparameters to the real model factory. \\
+Persistent HPO engine & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/hpo.py} & Creates/resumes SQLite Optuna studies, applies geometry restrictions, trains each trial, scores recursive holdout predictions, and freezes best HPs. \\
+HPO sampling & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/sampling.py} & Month-balanced TRAIN-only target-row selection, floor arithmetic, fit/holdout separation, context rules, and legality checks. \\
+HPO objective formulas & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/objectives.py} & Implements normalized recursive temperature objective, RMSE, MAE, and CVRMSE. \\
+Production training & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/training.py} & Executes bounded/full training and early stopping using the frozen HP configuration. \\
+Checkpoint gates/registry & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/checkpoints.py} & Saves candidates, reload checks, finite checks, short Sim1/Sim2 functionality gates, and JSONL registry records. \\
+Offline evaluation wrapper & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/evaluation.py} & Runs and stores Sim1, Sim2, and Sim3 for the selected accepted restart. \\
+Controller override config & \path{Paper_PINODE_EPSR/configs/production.yaml} \newline plus \path{production/contracts.py} & The \code{controller} section is actively loaded by default; null preserves data-derived calibration. \\
+Human-readable production defaults & \path{Paper_PINODE_EPSR/configs/production.yaml} & Contains HPO/training/evaluation reference defaults and active controller overrides. \textbf{Current campaign CLI does not load the HPO/training/evaluation blocks.} \\
+\bottomrule
+\end{longtable}
+
+\subsection{Important current authority rule}
+The method-specific HPO ranges are \textbf{not campaign-definition fields}. The campaign says which scientific configurations to run and supplies the HPO/training protocol budget. The method trainer owns the scientific search space. In addition, the current CLI constructs \code{HPOConfig} and \code{ProductionTrainingConfig} directly from command-line arguments/defaults. Editing only the \code{hpo:}, \code{training:}, or \code{evaluation:} sections of \path{configs/production.yaml} does not currently change a \code{campaign} run. The \code{controller:} section is different: it is actively read by default.
+
+\section{Scientific Campaign Matrix}
+The scientific matrix is
+\[
+4\;\text{methods}\times 2\;\text{RC orders}\times 4\;\text{cases}=32\;\text{configurations}.
+\]
+Training seeds are stochastic multi-start restarts of the same scientific configuration; they do not increase the number of scientific configurations.
+
+\subsection{Methods, RC orders, and cases}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.22\textwidth}YY}
+\toprule
+\textbf{Dimension} & \textbf{Values} & \textbf{Interpretation} \\
+\midrule
+Method & \code{inverse_pinn}, \code{neural_ode}, \code{base_pinode}, \code{ebp_pinode} & Four paper modeling methods. \\
+RC order & 1C, 2C & One-capacitance and two-capacitance thermal representations. \\
+Case & \code{all_to_one}, \code{identity_ind}, \code{identity_dep1}, \code{identity_dep2} & Four controlled Phase-D modeling cases. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Priority scopes}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.18\textwidth}L{0.16\textwidth}YL{0.15\textwidth}}
+\toprule
+\textbf{CLI scope} & \textbf{Priorities} & \textbf{Cases included} & \textbf{Configurations} \\
+\midrule
+\code{priority-a} & A & \code{all_to_one} & 8 \\
+\code{priority-ab} & A+B & \code{all_to_one}, \code{identity_ind} & 16 \\
+\code{full} & A+B+C & all four cases & 32 \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Complete 32-configuration table}
+\small
+\begin{longtable}{rccclL{0.37\textwidth}}
+\toprule
+\textbf{\#} & \textbf{Priority} & \textbf{Case} & \textbf{RC} & \textbf{Method} & \textbf{Configuration ID} \\
+\midrule
+\endhead
+1 & A & \texttt{all\_to\_one} & 1C & \texttt{inverse\_pinn} & \path{all_to_one__1C__inverse_pinn} \\
+2 & A & \texttt{all\_to\_one} & 1C & \texttt{neural\_ode} & \path{all_to_one__1C__neural_ode} \\
+3 & A & \texttt{all\_to\_one} & 1C & \texttt{base\_pinode} & \path{all_to_one__1C__base_pinode} \\
+4 & A & \texttt{all\_to\_one} & 1C & \texttt{ebp\_pinode} & \path{all_to_one__1C__ebp_pinode} \\
+5 & A & \texttt{all\_to\_one} & 2C & \texttt{inverse\_pinn} & \path{all_to_one__2C__inverse_pinn} \\
+6 & A & \texttt{all\_to\_one} & 2C & \texttt{neural\_ode} & \path{all_to_one__2C__neural_ode} \\
+7 & A & \texttt{all\_to\_one} & 2C & \texttt{base\_pinode} & \path{all_to_one__2C__base_pinode} \\
+8 & A & \texttt{all\_to\_one} & 2C & \texttt{ebp\_pinode} & \path{all_to_one__2C__ebp_pinode} \\
+9 & B & \texttt{identity\_ind} & 1C & \texttt{inverse\_pinn} & \path{identity_ind__1C__inverse_pinn} \\
+10 & B & \texttt{identity\_ind} & 1C & \texttt{neural\_ode} & \path{identity_ind__1C__neural_ode} \\
+11 & B & \texttt{identity\_ind} & 1C & \texttt{base\_pinode} & \path{identity_ind__1C__base_pinode} \\
+12 & B & \texttt{identity\_ind} & 1C & \texttt{ebp\_pinode} & \path{identity_ind__1C__ebp_pinode} \\
+13 & B & \texttt{identity\_ind} & 2C & \texttt{inverse\_pinn} & \path{identity_ind__2C__inverse_pinn} \\
+14 & B & \texttt{identity\_ind} & 2C & \texttt{neural\_ode} & \path{identity_ind__2C__neural_ode} \\
+15 & B & \texttt{identity\_ind} & 2C & \texttt{base\_pinode} & \path{identity_ind__2C__base_pinode} \\
+16 & B & \texttt{identity\_ind} & 2C & \texttt{ebp\_pinode} & \path{identity_ind__2C__ebp_pinode} \\
+17 & C & \texttt{identity\_dep1} & 1C & \texttt{inverse\_pinn} & \path{identity_dep1__1C__inverse_pinn} \\
+18 & C & \texttt{identity\_dep1} & 1C & \texttt{neural\_ode} & \path{identity_dep1__1C__neural_ode} \\
+19 & C & \texttt{identity\_dep1} & 1C & \texttt{base\_pinode} & \path{identity_dep1__1C__base_pinode} \\
+20 & C & \texttt{identity\_dep1} & 1C & \texttt{ebp\_pinode} & \path{identity_dep1__1C__ebp_pinode} \\
+21 & C & \texttt{identity\_dep1} & 2C & \texttt{inverse\_pinn} & \path{identity_dep1__2C__inverse_pinn} \\
+22 & C & \texttt{identity\_dep1} & 2C & \texttt{neural\_ode} & \path{identity_dep1__2C__neural_ode} \\
+23 & C & \texttt{identity\_dep1} & 2C & \texttt{base\_pinode} & \path{identity_dep1__2C__base_pinode} \\
+24 & C & \texttt{identity\_dep1} & 2C & \texttt{ebp\_pinode} & \path{identity_dep1__2C__ebp_pinode} \\
+25 & C & \texttt{identity\_dep2} & 1C & \texttt{inverse\_pinn} & \path{identity_dep2__1C__inverse_pinn} \\
+26 & C & \texttt{identity\_dep2} & 1C & \texttt{neural\_ode} & \path{identity_dep2__1C__neural_ode} \\
+27 & C & \texttt{identity\_dep2} & 1C & \texttt{base\_pinode} & \path{identity_dep2__1C__base_pinode} \\
+28 & C & \texttt{identity\_dep2} & 1C & \texttt{ebp\_pinode} & \path{identity_dep2__1C__ebp_pinode} \\
+29 & C & \texttt{identity\_dep2} & 2C & \texttt{inverse\_pinn} & \path{identity_dep2__2C__inverse_pinn} \\
+30 & C & \texttt{identity\_dep2} & 2C & \texttt{neural\_ode} & \path{identity_dep2__2C__neural_ode} \\
+31 & C & \texttt{identity\_dep2} & 2C & \texttt{base\_pinode} & \path{identity_dep2__2C__base_pinode} \\
+32 & C & \texttt{identity\_dep2} & 2C & \texttt{ebp\_pinode} & \path{identity_dep2__2C__ebp_pinode} \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Campaign Types and Lifecycle}
+\subsection{Micro32 qualification campaign}
+Micro32 runs all 32 configurations with deliberately tiny budgets. Its purpose is to prove end-to-end plumbing, not scientific accuracy.
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.30\textwidth}Y}
+\toprule
+\textbf{Micro32 setting} & \textbf{Current value/behavior} \\
+\midrule
+Configurations & All 32 \\
+Default HPO TRAIN percentage & 0.5\% \\
+HPO holdout & 20\% of selected target rows, floored per month \\
+HPO trials & 1 \\
+Per-trial epochs / patience & 1 / 1 \\
+HPO max batch windows & 2 \\
+HPO rollout geometry & $N_r\le 3$ \\
+HPO encoder geometry & $L_e\le 12$ \\
+Post-HPO training & 1 epoch; first up-to-256 TRAIN indices; first 4 legal TRAIN rollout windows and first 4 VALIDATION windows; batch size 2 \\
+Checkpoint/evaluation & Real checkpoint save/reload/gates; micro Sim1/2/3 outputs \\
+Micro Sim1 & up to 12 TEST points \\
+Micro Sim2/Sim3 & horizon 12 on a bounded TEST segment, not all monthly TEST episodes \\
+Acceptance result & Accepted or rejected via the same functionality/integrity gate machinery \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Production campaign}
+For each selected scientific configuration, production follows:
+\[
+\boxed{\text{HPO once}}\rightarrow
+\boxed{\text{freeze HP}}\rightarrow
+\boxed{\text{full TRAIN multi-start}}\rightarrow
+\boxed{\text{acceptance gates}}\rightarrow
+\boxed{\text{VALIDATION chooses restart}}\rightarrow
+\boxed{\text{final TEST Sim1/2/3}}.
+\]
+
+\begin{enumerate}
+  \item Load the real Phase-D case and Phase-C models.
+  \item Calibrate aggregate/Dining/Kitchen thermostat behavior from exact 300-s TRAIN transitions, subject to explicit user overrides.
+  \item Run persistent TRAIN-only HPO once for the scientific configuration.
+  \item Freeze the best HPO values.
+  \item For each requested restart seed, rebuild the model with frozen HPs and train on full authoritative TRAIN.
+  \item Use Phase-D VALIDATION for early stopping/best validation score and for choosing among accepted restarts.
+  \item Save a candidate checkpoint and apply integrity/functionality acceptance gates. Short TEST smokes are gates only; they do not choose the restart.
+  \item Select the accepted restart with lowest validation score (seed breaks ties deterministically).
+  \item Run final Sim1, Sim2, and Sim3 on TEST only; production Sim2 and Sim3 process all contiguous monthly TEST episodes.
+\end{enumerate}
+
+\section{Campaign CLI Parameters}
+\subsection{Production campaign CLI}
+\begin{longtable}{L{0.28\textwidth}L{0.18\textwidth}L{0.46\textwidth}}
+\toprule
+\textbf{Argument} & \textbf{Default} & \textbf{Meaning} \\
+\midrule
+\endhead
+\code{--scope} & \code{priority-a} & Scientific matrix scope: \code{priority-a}, \code{priority-ab}, or \code{full}. \\
+\code{--seeds} & \code{0} & Comma-separated multi-start training restart seeds. \\
+\code{--hpo-percentage} & 2.0 & Percent of each monthly Phase-D TRAIN block used as HPO target-row budget. \\
+\code{--hpo-holdout-percentage} & 20.0 & Inner HPO holdout percent of selected monthly HPO target rows. \\
+\code{--hpo-objective} & \code{recursive_temperature_normalized} & Recursive holdout objective minimized by Optuna. \\
+\code{--hpo-trials} & 12 & Target total completed trials in the persistent study. Increasing this resumes the same compatible study. \\
+\code{--hpo-epochs} & 25 & Maximum epochs per HPO trial. \\
+\code{--hpo-patience} & 5 & HPO trial early-stopping patience. \\
+\code{--training-epochs} & 500 & Final full-TRAIN maximum epochs per restart. \\
+\code{--training-patience} & 50 & Final training early-stopping patience. \\
+\code{--validation-max-windows} & 256 & Representative VALIDATION rollout-window cap for final training. \\
+\code{--fail-fast} & false & Default behavior records individual failures and continues. Flag switches to fail-fast. \\
+\code{--controller-config} & \path{configs/production.yaml} & YAML/JSON containing a \code{controller} section. \\
+\bottomrule
+\end{longtable}
+
+\subsection{HPOConfig fields not exposed as production CLI flags}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.30\textwidth}L{0.18\textwidth}Y}
+\toprule
+\textbf{HPOConfig field} & \textbf{Default} & \textbf{Current production behavior} \\
+\midrule
+\code{seed} & 42 & TPE sampler seed and base HPO model/training seed; not exposed by \code{campaign} CLI. \\
+\code{timeout_seconds} & null & No HPO timeout by default; excluded from scientific study identity. \\
+\code{max_batch_windows} & 32 & Caps the effective HPO trial batch size. \\
+\code{sampling_blocks_per_month} & 4 & Sampling geometry setting passed to month-balanced sampler. \\
+\code{max_rollout_steps} & 12 & Production HPO geometry permits $N_r\le12$. \\
+\code{max_encoder_history_steps} & 12 & Production HPO geometry permits $L_e\le12$. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{HPO Data Contract}
+\subsection{Partition ownership}
+HPO uses Phase-D TRAIN only. Phase-D VALIDATION and TEST never enter HPO. After HPO is frozen, full TRAIN is used for production fitting, VALIDATION is used for early stopping/restart selection, and TEST is reserved for final Sim1/2/3 and short checkpoint functionality gates.
+
+\subsection{Month-balanced floor arithmetic}
+For month $m$ with $N_m$ authoritative TRAIN rows and requested HPO percentage $p$,
+\[
+N_{\mathrm{HPO},m}=\left\lfloor N_m\frac{p}{100}\right\rfloor.
+\]
+For requested inner holdout fraction $h$,
+\[
+N_{\mathrm{hold},m}=\left\lfloor N_{\mathrm{HPO},m}\frac{h}{100}\right\rfloor,
+\qquad
+N_{\mathrm{fit},m}=N_{\mathrm{HPO},m}-N_{\mathrm{hold},m}.
+\]
+The sampler never rounds upward, oversamples, or silently changes the requested HPO/holdout percentages. Encoder-history rows may be read as causal context from the same TRAIN segment, but context rows are not HPO optimization/holdout target rows and do not inflate the percentage.
+
+\subsection{Controlled TRAIN counts and representative HPO budgets}
+The controlled real case has 73,567 TRAIN target rows distributed over 12 monthly contiguous TRAIN blocks. The strict month-wise floor rule produces:
+\begin{table}[h]
+\centering
+\begin{tabular}{rrrr}
+\toprule
+\textbf{Requested HPO \%} & \textbf{Selected target rows} & \textbf{Actual HPO \%} & \textbf{20\% holdout rows / actual \%} \\
+\midrule
+0.5 & 365 & 0.4961 & 71 / 19.4521 \\
+2.0 & 1,460 & 1.9846 & 286 / 19.5890 \\
+5.0 & 3,674 & 4.9941 & 730 / 19.8694 \\
+10.0 & 7,348 & 9.9882 & 1,460 / 19.8694 \\
+20.0 & 14,707 & 19.9913 & 2,932 / 19.9361 \\
+25.0 & 18,388 & 24.9949 & 3,674 / 19.9804 \\
+100.0 & 73,567 & 100.0000 & 14,707 / 19.9913 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Geometry feasibility}
+The sampler guarantees at least one legal fit and holdout rollout for the HPO protocol's declared conservative geometry. If the floored budget cannot support the selected $N_r/L_e$ geometry, the request fails explicitly and reports that the user should either increase the HPO percentage or reduce the allowed geometry. Micro32 intentionally uses $N_r\le3$ so 0.5\% remains feasible. Production retains $N_r\le12$ and $L_e\le12$.
+
+\section{Optuna Study, Persistence, and Resume Contract}
+Production uses \code{optuna.samplers.TPESampler}. The study is stored in SQLite at a configuration/protocol-specific path and is created with \code{load_if_exists=True}.
+
+\subsection{Scientific protocol identity}
+Study identity contains the scientific configuration plus the HPO protocol, including the sampling protocol version. The current implementation removes only \code{n_trials} and \code{timeout_seconds} from the identity payload. Therefore:
+\begin{itemize}
+  \item Increasing only \code{n_trials} resumes the same compatible study and runs only enough additional trials to reach the requested total completed-trial target.
+  \item Changing TRAIN percentage, holdout, objective, per-trial epoch/patience budget, HPO seed, batch/window policy, sampling blocks, rollout/history geometry, or the scientific configuration creates a distinct protocol ID/study.
+  \item Trial count is an execution budget, not a scientific protocol field.
+\end{itemize}
+
+\subsection{Per-study artifacts}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.33\textwidth}Y}
+\toprule
+\textbf{Artifact} & \textbf{Purpose} \\
+\midrule
+\code{study.db} & Persistent Optuna SQLite study. \\
+\code{hpo_sample_manifest.json} & Exact TRAIN-only monthly target/context/fit/holdout sampling provenance. \\
+\code{study_manifest.json} & Study name, protocol ID, spec, config, sample, completed trials, best trial/value. \\
+\code{trials.csv} & Optuna trial table. \\
+\code{frozen_hyperparameters.json} & Best trial parameters frozen for full production training. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{HPO Objectives}
+All objectives are minimized over recursive predictions on the inner HPO holdout windows.
+\begin{longtable}{L{0.35\textwidth}L{0.57\textwidth}}
+\toprule
+\textbf{Objective name} & \textbf{Definition} \\
+\midrule
+\endhead
+\code{recursive_temperature_normalized} & $\displaystyle \mathrm{mean}\left[\left((\hat{T}-T)/S_y\right)^2\right]$, where $S_y$ is the model temperature scaling vector; this is the default. \\
+\code{recursive_temperature_rmse_C} & $\displaystyle \sqrt{\mathrm{mean}[(\hat{T}-T)^2]}$ in $^\circ$C. \\
+\code{recursive_temperature_mae_C} & $\displaystyle \mathrm{mean}[|\hat{T}-T|]$ in $^\circ$C. \\
+\code{recursive_temperature_cvrmse} & $\displaystyle \sqrt{\mathrm{mean}[(\hat{T}-T)^2]}/\mathrm{mean}(|T|)$. \\
+\bottomrule
+\end{longtable}
+
+\section{Method-Specific HPO Search Spaces}
+These ranges are defined in \path{training/trainer.py}. Optuna does not enumerate a Cartesian grid. Categorical values are discrete choices; \code{suggest_float(continuous, log=True)} parameters are continuous log-scaled distributions; \code{delta_T_m_max} is continuous linear.
+
+\subsection{Common architecture choices}
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+\textbf{Hyperparameter} & \textbf{Distribution/type} & \textbf{Search space} \\
+\midrule
+\code{hidden_layers} & integer & 1--4 inclusive \\
+\code{hidden_width} & categorical & 16, 32, 64, 128 \\
+\code{activation} & categorical & tanh, silu, gelu \\
+\code{learning_rate} & log-continuous & $10^{-4}$ to $3\times10^{-2}$ \\
+\code{optimizer} & categorical & adam, rmsprop \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Inverse PINN}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.28\textwidth}L{0.22\textwidth}Y}
+\toprule
+\textbf{Parameter} & \textbf{Search/fixed value} & \textbf{Role} \\
+\midrule
+\code{hidden_layers} & 1--4 & Network depth. \\
+\code{hidden_width} & 16,32,64,128 & Network width. \\
+\code{activation} & tanh/silu/gelu & Activation. \\
+\code{learning_rate} & $10^{-4}$--$3\times10^{-2}$ log & Optimizer learning rate. \\
+\code{lambda_y} & fixed 1.0 & Reference data-loss scale. \\
+\code{lambda_f} & $10^{-2}$--10 log & Physics residual weight. \\
+\code{optimizer} & adam/rmsprop & Optimizer family. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+Inverse PINN does not currently HPO-tune $N_r$, $N_s$, $L_e$, batch size, weight decay, or $\Delta T_{m,\max}$. Physical R/C/allocation parameters are learned scientific parameters, not Optuna HPO knobs.
+
+\subsection{Neural ODE}
+\begin{longtable}{L{0.24\textwidth}L{0.25\textwidth}L{0.43\textwidth}}
+\toprule
+\textbf{Parameter} & \textbf{Search} & \textbf{Applicability/meaning} \\
+\midrule
+\endhead
+\code{hidden_layers} & 1--4 & 1C and 2C \\
+\code{hidden_width} & 16,32,64,128 & 1C and 2C \\
+\code{activation} & tanh/silu/gelu & 1C and 2C \\
+\code{learning_rate} & $10^{-4}$--$3\times10^{-2}$ log & 1C and 2C \\
+\code{optimizer} & adam/rmsprop & 1C and 2C \\
+\code{N_r} & 1,3,6,12 & Recursive rollout steps; at 300 s this is 5,15,30,60 min. Geometry-restricted by HPO protocol. \\
+\code{N_s} & 1,2,5,10 & RK4 substeps per 300-s model step. \\
+\code{lambda_wd} & $10^{-8}$--$10^{-3}$ log & Explicit weight-decay/regularization coefficient. \\
+\code{batch_size} & 8,16,32,64 & Trial batch size request; see effective-cap caveat below. \\
+\code{L_e} & 3,6,12 & 2C only; causal encoder history = 15,30,60 min. \\
+\code{delta_T_m_max} & 2--15 $^\circ$C continuous & 2C only; latent-mass temperature offset bound. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Base PINODE}
+Base PINODE uses the Neural-ODE architecture/rollout/integration choices plus a soft-physics weight:
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.28\textwidth}L{0.24\textwidth}Y}
+\toprule
+\textbf{Additional/fixed parameter} & \textbf{Search/fixed value} & \textbf{Meaning} \\
+\midrule
+\code{lambda_y} & fixed 1.0 & Reference data-loss scale. \\
+\code{lambda_f} & $10^{-4}$--10 log & Soft-physics loss weight. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+Thus Base PINODE tunes 10 quantities for 1C and 12 for 2C.
+
+\subsection{EBP-PINODE}
+EBP-PINODE uses hard projection and therefore does not tune Base-PINODE-style $\lambda_f$; the model factory sets $\lambda_f=0$.
+\begin{longtable}{L{0.28\textwidth}L{0.24\textwidth}L{0.40\textwidth}}
+\toprule
+\textbf{EBP parameter} & \textbf{Search/fixed value} & \textbf{Meaning} \\
+\midrule
+\endhead
+\code{lambda_f} & fixed 0 & No Base-style soft-physics penalty. \\
+\code{lambda_corr} & $10^{-6}$--1 log & EBP correction loss weight; 1C and 2C. \\
+\code{lambda_int} & $10^{-4}$--10 log & Internal-state loss weight; 2C only. \\
+\bottomrule
+\end{longtable}
+EBP also tunes hidden architecture, learning rate, optimizer, $N_r$, $N_s$, $\lambda_{wd}$, batch size, and (for 2C) $L_e$ and $\Delta T_{m,\max}$. It therefore tunes 10 quantities for 1C and 13 for 2C.
+
+\subsection{Cross-method comparison}
+\small
+\begin{longtable}{L{0.24\textwidth}ccccc}
+\toprule
+\textbf{Hyperparameter} & \textbf{Inv PINN} & \textbf{NODE 1C} & \textbf{NODE 2C} & \textbf{Base 1C/2C} & \textbf{EBP 1C/2C} \\
+\midrule
+\endhead
+hidden layers/width/activation & yes & yes & yes & yes & yes \\
+learning rate/optimizer & yes & yes & yes & yes & yes \\
+batch size & no & yes & yes & yes & yes \\
+$N_r$ & no & yes & yes & yes & yes \\
+$N_s$ & no & yes & yes & yes & yes \\
+$\lambda_{wd}$ & no & yes & yes & yes & yes \\
+$\lambda_f$ & yes & no & no & yes & fixed 0 \\
+$\lambda_{corr}$ & no & no & no & no & yes \\
+$\lambda_{int}$ & no & no & no & no & 2C only \\
+$L_e$ & no & no & 2C only & 2C only & 2C only \\
+$\Delta T_{m,\max}$ & no & no & 2C only & 2C only & 2C only \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\subsection{Effective batch-size caveat}
+The method-owned NODE/PINODE search space includes \code{batch_size=64}, but \code{run_persistent_hpo} executes each trial with
+\[
+\text{effective HPO batch size}=\min(\text{sampled batch size},\;\texttt{HPOConfig.max\_batch\_windows}).
+\]
+The default HPO cap is 32. Consequently, a trial whose recorded Optuna parameter is 64 is actually evaluated with an effective HPO batch size of 32. Frozen hyperparameters still record 64, and final production training uses
+\[
+\min(\text{frozen batch size},\;\texttt{ProductionTrainingConfig.max\_batch\_windows}),
+\]
+whose default cap is 64. Therefore the current implementation can evaluate a recorded HPO choice of 64 using effective 32 and then use 64 in final training. This is a current implementation detail that should be reviewed before interpreting batch-size HPO scientifically.
+
+\section{Final Training and Multi-Start Restarts}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.32\textwidth}Y}
+\toprule
+\textbf{Production training item} & \textbf{Contract} \\
+\midrule
+Hyperparameters & Best HPO parameters are frozen before final training. \\
+TRAIN ownership & Full authoritative Phase-D TRAIN indices/windows. \\
+VALIDATION ownership & Used for early stopping/best model and restart selection; representative window subset default cap 256. \\
+Restarts & Controlled by campaign \code{--seeds}; seeds are not separate scientific configurations. \\
+Default max epochs/patience & 500 / 50. \\
+Gradient clipping & Default norm 10.0 in \code{ProductionTrainingConfig}. \\
+Batch-size final cap & Default 64; actual = min(frozen batch size, cap). \\
+Resume & Already accepted deterministic run IDs/checkpoints may be reloaded as \code{resumed_accepted}. \\
+Restart selection & Accepted restart with lowest VALIDATION score; seed breaks ties. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Checkpoint Registry and Acceptance Gates}
+A candidate checkpoint is not automatically accepted. The current gates include:
+\begin{longtable}{L{0.36\textwidth}L{0.56\textwidth}}
+\toprule
+\textbf{Gate} & \textbf{Meaning} \\
+\midrule
+\endhead
+\code{finite_parameters} & All model parameters finite. \\
+\code{reload_state_dict_parity} & Save/reload reproduces exact state dictionary. \\
+\code{reload_prediction_finite} & Deterministic reload prediction probe is finite. \\
+\code{checkpoint_provenance_present} & Checkpoint contains provenance payload. \\
+\code{inverse_physical_parameters_finite} & Inverse PINN physical parameter map finite. \\
+\code{inverse_RC_positive} & Identified R/C values positive where available. \\
+\code{sim1_smoke_finite} & Short Sim1 numeric output finite. \\
+\code{sim2_smoke_finite} & Short Sim2 numeric output finite. \\
+\bottomrule
+\end{longtable}
+Short TEST smokes are functionality gates only; they do not choose among restart seeds.
+
+\section{Offline Evaluation Contract}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.18\textwidth}L{0.36\textwidth}Y}
+\toprule
+\textbf{Mode} & \textbf{Production coverage} & \textbf{Purpose} \\
+\midrule
+Sim1 & all TEST one-step points & One-step predictive evaluation. \\
+Sim2 & all contiguous monthly TEST episodes, reset per episode & Pure recursive thermal-model evaluation. \\
+Sim3 & all contiguous monthly TEST episodes, reset per episode & Recursive model + thermostat-generated $\dot m,T_s$ + Phase-C HVAC heat/power chain. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+For each evaluation, the production wrapper saves \code{trajectory.parquet}, \code{metrics.json}, and \code{provenance.json}.
+
+\section{Sim3 Thermostat and Controller Overrides}
+The default thermostat deadband is derived from exact 300-s adjacent TRAIN pairs. Explicit override values are half-widths about the active setpoint:
+\[
+T_{\mathrm{lower}}=T_{\mathrm{set}}-\Delta T_{db},\qquad
+T_{\mathrm{upper}}=T_{\mathrm{set}}+\Delta T_{db}.
+\]
+Thus \code{deadband_half_width_C: 1.0} means $\pm1^\circ$C and a 2 $^\circ$C total hysteresis band.
+
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.34\textwidth}Y}
+\toprule
+\textbf{Override field} & \textbf{Meaning} \\
+\midrule
+Global \code{deadband_half_width_C} & Applies to all controlled zones unless a zone-local override exists. \\
+Global \code{heating_mode_deadband_half_width_C} & Same precedence for heating-mode switching deadband. \\
+Zone-local deadband fields & Override global deadband for that physical controller. \\
+\code{cooling/heating.T_supply_C} & User supply-temperature override. \\
+\code{cooling/heating.mdot_nominal_kg_s} & User nominal mass-flow override. \\
+\code{cooling/heating.mdot_max_kg_s} & User maximum mass-flow override; must be $\ge$ nominal. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+Resolution precedence is
+\[
+\boxed{\text{user override}} > \boxed{\text{observed TRAIN data}} > \boxed{\text{documented fallback}}.
+\]
+Kitchen heating remains explicitly extrapolative/OOD if heating was unobserved in TRAIN, even when a user provides heating actuation values. Backward-compatible provenance strings are preserved while richer source-class fields are recorded separately.
+
+\section{Phase-C HVAC Chain in Sim3}
+The offline controller/power chain is
+\[
+\dot m,T_s,T_z
+\rightarrow Q_{\mathrm{HVAC,physics}}
+\rightarrow Q_{\mathrm{HVAC,PhaseC}}
+\rightarrow |Q_{\mathrm{HVAC,PhaseC}}|
+\rightarrow P_{\mathrm{HVAC,model\ raw}}
+\rightarrow P_{\mathrm{HVAC,physical}}\ge0,
+\]
+with
+\[
+Q_{\mathrm{HVAC,physics}}=1000(1.005)\dot m(T_s-T_z).
+\]
+The Phase-C model ID historically named \code{QAC} maps physics HVAC heat to corrected/effective HVAC heat. The PHVAC model consumes the absolute corrected HVAC heat. Both raw regression PHVAC and nonnegative physical PHVAC are retained in outputs/provenance.
+
+\section{Generated-Data Layout}
+The shared \path{Data/ScaleBridge/campaigns} tree is read-only scientific input. PINODE/EPSR-generated artifacts live beneath \path{Data/ScaleBridge/Paper_PINODE_EPSR}.
+\begin{longtable}{L{0.34\textwidth}L{0.58\textwidth}}
+\toprule
+\textbf{Relative directory} & \textbf{Contents} \\
+\midrule
+\endhead
+\code{01_hpo/studies/<configuration>/<protocol>/} & Production SQLite study, sample manifest, trial table, frozen HPs, study manifest. \\
+\code{01_hpo/micro_qualification/<campaign_id>/...} & Micro32 HPO artifacts. \\
+\code{02_training/<configuration>/<run_id>/} & Final training summaries and run manifests. \\
+\code{03_checkpoints/by_id/<checkpoint_id>/} & Model checkpoint and acceptance evidence. \\
+\code{03_checkpoints/registry.jsonl} & Append-only checkpoint registry records. \\
+\code{04_offline_results/sim1|sim2|sim3/<run_id>/} & Production TEST trajectories, metrics, provenance. \\
+\code{04_offline_results/micro_qualification/<campaign_id>/...} & Micro32 offline outputs. \\
+\code{05_closed_loop_mpc_runs/} & Reserved later closed-loop MPC outputs. \\
+\code{06_tables/} & Paper table outputs. \\
+\code{07_figures/} & Paper figure outputs. \\
+\code{08_manifests/production_campaigns/<production_id>/} & Campaign manifest, progress, controller config, thermostat calibration, summary. \\
+\code{08_manifests/micro_qualification/<campaign_id>/} & Micro32 progress/summary and controller/calibration manifests. \\
+\bottomrule
+\end{longtable}
+
+\section{Current Commands}
+\subsection{Inspection and qualification}
+\begin{verbatim}
+python Paper_PINODE_EPSR\scripts\run_day1_production.py paths
+python Paper_PINODE_EPSR\scripts\run_day1_production.py matrix
+python -m Paper_PINODE_EPSR.validate_day1_production
+python Paper_PINODE_EPSR\scripts\run_day1_production.py micro32 --hpo-percentage 0.5
+\end{verbatim}
+
+\subsection{Current first production Priority-A command}
+\begin{verbatim}
+python Paper_PINODE_EPSR\scripts\run_day1_production.py campaign `
+    --scope priority-a `
+    --seeds 0 `
+    --hpo-percentage 2 `
+    --hpo-holdout-percentage 20 `
+    --hpo-objective recursive_temperature_normalized `
+    --hpo-trials 12 `
+    --hpo-epochs 25
+\end{verbatim}
+This selects 8 all-to-one configurations (4 methods $\times$ 2 RC orders), performs one persistent HPO study per configuration, and then one final training restart because \code{--seeds 0} contains one seed.
+
+\section{Qualified Status as of September 2, 2026}
+\begin{table}[h]
+\centering
+\begin{tabularx}{\textwidth}{L{0.34\textwidth}L{0.18\textwidth}Y}
+\toprule
+\textbf{Qualification} & \textbf{Status} & \textbf{Evidence/interpretation} \\
+\midrule
+Patch01R2B bounded validator & PASS & 135/135 targeted tests plus real-data validation passed. \\
+Micro32 & PASS & expected 32, completed 32, accepted 32, rejected 0, failed 0, true exit code 0. \\
+Micro32 wall time & 48 min 34 s & Started 15:30:28, finished 16:19:02 on the qualified laptop environment. \\
+Production HPO & NOT YET RUN & Priority-A production is the next science/runtime measurement stage; Micro32 objectives are not paper-performance results. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\section{Implementation Notes to Preserve}
+\begin{enumerate}
+  \item Campaign matrix science, method search-space science, and execution budgets are intentionally separated.
+  \item TRAIN percentage and inner holdout are strict non-exceeding floor budgets per month.
+  \item HPO context never converts context rows into target rows and never crosses authoritative TRAIN boundaries.
+  \item Changing only target trial count resumes a compatible study; changing scientific HPO protocol creates a different study.
+  \item Seeds are training restarts, not new scientific model configurations.
+  \item VALIDATION selects among accepted restarts; TEST is not a model-selection partition.
+  \item Sim2/Sim3 production evaluation resets at monthly TEST episode boundaries.
+  \item Default controller behavior remains data-derived; user overrides are explicit and provenance-recorded.
+  \item The current \path{production.yaml} HPO/training/evaluation blocks are not authoritative for the \code{campaign} CLI; CLI arguments/dataclass defaults are. Do not assume editing YAML alone changes those campaign settings.
+  \item Before interpreting batch size as a scientifically tuned HPO parameter, review the current HPO effective cap of 32 versus the method search choice of 64 and final-training cap of 64.
+\end{enumerate}
+
+\appendix
+\section{Method HPO Parameter Counts}
+\begin{table}[h]
+\centering
+\begin{tabular}{lrr}
+\toprule
+\textbf{Method} & \textbf{1C tuned quantities} & \textbf{2C tuned quantities} \\
+\midrule
+Inverse PINN & 6 & 6 \\
+Neural ODE & 9 & 11 \\
+Base PINODE & 10 & 12 \\
+EBP-PINODE & 10 & 13 \\
+\bottomrule
+\end{tabular}
+\end{table}
+Counts treat fixed values such as $\lambda_y=1$ and EBP $\lambda_f=0$ as fixed, not tuned.
+
+\section{Key Code Paths}
+\begin{itemize}[leftmargin=*]
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/matrix.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/cli.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/contracts.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/campaign.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/hpo.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/sampling.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/objectives.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/training.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/checkpoints.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/production/evaluation.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/training/experiment.py}
+\item \path{Paper_PINODE_EPSR/src/pinode_epsr/training/trainer.py}
+\item \path{Paper_PINODE_EPSR/configs/production.yaml}
+\end{itemize}
+
+\end{document}

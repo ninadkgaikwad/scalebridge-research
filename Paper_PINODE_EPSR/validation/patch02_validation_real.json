@@ -1,0 +1,239 @@
+{
+  "framework_contract": {
+    "custom_rk4_in_paper_code": false,
+    "direct_torchdiffeq_calls_in_paper_code": false,
+    "hyperparameter_search": "optuna",
+    "integration": "neuromancer.dynamics.integrators.RK4",
+    "named_data_contract": "neuromancer.dataset.DictDataset + dataset.collate_fn",
+    "runtime": {
+      "mlp_class": "neuromancer.modules.blocks.MLP",
+      "node_class": "neuromancer.system.Node",
+      "penalty_loss_class": "neuromancer.loss.PenaltyLoss",
+      "problem_class": "neuromancer.problem.Problem",
+      "rk4_class": "neuromancer.dynamics.integrators.RK4",
+      "system_class": "neuromancer.system.System",
+      "version": "1.5.6"
+    },
+    "sciml": "neuromancer",
+    "tensor_autograd_optimizer": "pytorch",
+    "training_loss_key": "train_loss"
+  },
+  "math_contracts": [
+    "PINODE_EPSR_Part1_RC_Representations_v1.tex",
+    "PINODE_EPSR_Part2_Inverse_PINN_RC.tex",
+    "PINODE_EPSR_Part3_NeuralODE_Detailed.tex"
+  ],
+  "real_data": {
+    "cases": {
+      "all_to_one": {
+        "rc_orders": {
+          "1": {
+            "inverse_pinn_loss": [
+              1.8147796903601183,
+              1.8062465722824492
+            ],
+            "inverse_pinn_positive_rc": true,
+            "node_forcing_dimensions": {
+              "joint": 6
+            },
+            "node_loss": [
+              0.16249881255776494,
+              0.145404405996552
+            ]
+          },
+          "2": {
+            "inverse_pinn_loss": [
+              0.8627723393311427,
+              0.8580141802242673
+            ],
+            "inverse_pinn_positive_rc": true,
+            "node_forcing_dimensions": {
+              "joint": 6
+            },
+            "node_loss": [
+              0.00179933813627746,
+              0.00025775558135847696
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_dep1": {
+        "rc_orders": {
+          "1": {
+            "inverse_pinn_loss": [
+              1.0400357194484025,
+              1.0352965484331151
+            ],
+            "inverse_pinn_positive_rc": true,
+            "node_forcing_dimensions": {
+              "joint": 9
+            },
+            "node_loss": [
+              1.6188082706891618,
+              1.55655217218921
+            ]
+          },
+          "2": {
+            "inverse_pinn_loss": [
+              0.7536698869531768,
+              0.7498567991785473
+            ],
+            "inverse_pinn_positive_rc": true,
+            "node_forcing_dimensions": {
+              "joint": 9
+            },
+            "node_loss": [
+              0.20827553506969793,
+              0.16410590518167656
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_dep2": {
+        "rc_orders": {
+          "1": {
+            "inverse_pinn_loss": [
+              1.0400357194484025,
+              1.0352965484842809
+            ],
+            "inverse_pinn_positive_rc": true,
+            "node_forcing_dimensions": {
+              "joint": 7
+            },
+            "node_loss": [
+              0.455402641591298,
+              0.43119278917027065
+            ]
+          },
+          "2": {
+            "inverse_pinn_loss": [
+              0.7536698869531768,
+              0.7496587936104151
+            ],
+            "inverse_pinn_positive_rc": true,
+            "node_forcing_dimensions": {
+              "joint": 7
+            },
+            "node_loss": [
+              0.6667404095742373,
+              0.6111317755051218
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_ind": {
+        "rc_orders": {
+          "1": {
+            "inverse_pinn_loss": [
+              1.7009617012590657,
+              1.6935126456277954
+            ],
+            "inverse_pinn_positive_rc": true,
+            "node_forcing_dimensions": {
+              "Dining": 6,
+              "Kitchen": 4
+            },
+            "node_loss": [
+              1.8295273270880164,
+              1.7784171323051683
+            ]
+          },
+          "2": {
+            "inverse_pinn_loss": [
+              1.2535706263712976,
+              1.248789157429326
+            ],
+            "inverse_pinn_positive_rc": true,
+            "node_forcing_dimensions": {
+              "Dining": 6,
+              "Kitchen": 4
+            },
+            "node_loss": [
+              0.007555202793795653,
+              0.004459747842644748
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      }
+    },
+    "neuromancer_runtime": {
+      "mlp_class": "neuromancer.modules.blocks.MLP",
+      "node_class": "neuromancer.system.Node",
+      "penalty_loss_class": "neuromancer.loss.PenaltyLoss",
+      "problem_class": "neuromancer.problem.Problem",
+      "rk4_class": "neuromancer.dynamics.integrators.RK4",
+      "system_class": "neuromancer.system.System",
+      "version": "1.5.6"
+    },
+    "phase_c_models": {
+      "Dining": {
+        "phvac_predictions_W": [
+          1885.2522868134483,
+          469.1344057104418,
+          1885.2522868134483
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Dining\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Dining\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -5062.25666016127,
+          0.0,
+          5062.25666016127
+        ]
+      },
+      "Kitchen": {
+        "phvac_predictions_W": [
+          798.6467746757984,
+          -2.015029192885322,
+          798.6467746757984
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Kitchen\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Kitchen\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -5077.350325669809,
+          0.0,
+          5077.350325669809
+        ]
+      },
+      "RestaurantFastFood_All": {
+        "phvac_predictions_W": [
+          1209.0816505654336,
+          -333.1944130869106,
+          1209.0816505654336
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l01_all_to_one\\equal\\RestaurantFastFood_All\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l01_all_to_one\\equal\\RestaurantFastFood_All\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -2377.656109008064,
+          0.0,
+          2377.656109008064
+        ]
+      }
+    },
+    "status": "passed"
+  },
+  "real_data_requested": true,
+  "status": "passed",
+  "unit_contracts": "passed"
+}

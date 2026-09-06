@@ -1,0 +1,23 @@
+ScaleBridge Phase E0-6 Implementation v2 Patch
+
+Added:
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\casadi_physical_backend.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\numpy_physical_backend.py
+tests\thermal_modeling\test_phase_e0_backend_adapters_parity_v2.py
+knowledgebase\Phase_E_Patches\E0_6_BACKEND_ADAPTERS_PARITY_IMPLEMENTATION\E0_6_IMPLEMENTATION_V2_REVISION_NOTES.txt
+knowledgebase\Phase_E_Patches\E0_6_BACKEND_ADAPTERS_PARITY_IMPLEMENTATION\E0_6_IMPLEMENTATION_V2_PATCH_MANIFEST.txt
+
+Modified:
+docs\architecture\phase_e0_backend_adapters_parity.md
+knowledgebase\Phase_E_Patches\E0_6_BACKEND_ADAPTERS_PARITY_IMPLEMENTATION\E0_6_IMPLEMENTATION_NOTES.txt
+scripts\thermal_modeling\validate_phase_e0_backend_adapters_parity.py
+src\scalebridge\models\grey_box\rc_networks\__init__.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\__init__.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\casadi_backend.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\contracts.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\numpy_backend.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\schema.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\torch_backend.py
+
+Deleted:
+NONE

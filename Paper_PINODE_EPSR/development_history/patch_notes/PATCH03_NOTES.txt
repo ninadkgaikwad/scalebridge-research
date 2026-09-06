@@ -1,0 +1,187 @@
+================================================================================
+PINODE / EPSR DAY-4 PATCH 03 -- BASE PINODE
+================================================================================
+
+AUTHORITATIVE MATHEMATICS
+-------------------------
+Primary contract:
+  PINODE_EPSR_Part4_Base_PINODE_Detailed.tex
+
+Inherited shared contracts:
+  PINODE_EPSR_Part1_RC_Representations_v1.tex
+  PINODE_EPSR_Part3_NeuralODE_Detailed.tex
+
+Patch 03 implements Base PINODE only. It does NOT implement the Part-5 EBP
+projection.
+
+CORE METHOD CONTRACT
+--------------------
+Normalized neural dynamics:
+  dz/dtau = g_omega(z, v_tilde)
+
+Raw physical derivative:
+  f_tilde_omega = (S_x / Delta t) g_omega
+
+Full soft RC residual:
+  r_RC = M_theta f_tilde_omega - b_theta(x, v)
+
+The derivative integrated by the solver is always the raw g_omega / raw
+f_tilde_omega derivative. The RC residual is a soft loss only.
+
+No hard projection is present. No A/W/M/nu projection solve is present.
+Those belong exclusively to Day-5 / Part-5 EBP-PINODE.
+
+NEUROMANCER / PYTORCH / OPTUNA DIVISION
+----------------------------------------
+Neuromancer:
+  - MLP neural blocks
+  - Node/System recursive rollout
+  - RK4 numerical integration
+  - Problem/PenaltyLoss objective graph through the shared named-data trainer
+  - DictDataset + collate_fn named-data contract
+
+PyTorch:
+  - tensors
+  - autograd
+  - softplus/sigmoid physical parameter transforms
+  - tensor algebra
+  - optimizer
+
+Optuna:
+  - reduced training-only hyperparameter search and freeze
+
+Paper code contains no custom RK4 formula and no direct torchdiffeq call.
+
+RK4 STAGE PHYSICS
+-----------------
+BasePINODEModel._stage_rhs is the RHS passed to the already validated
+neuromancer_backend.rk4_interval wrapper. Neuromancer RK4 calls that RHS at its
+four internal RK stages for every N_s substep. Therefore each residual stored by
+Patch 03 is evaluated at an actual RK4 stage state.
+
+The RHS returns g_omega unchanged after recording the physical residual. Thus the
+physics penalty cannot alter the integrated vector field directly.
+
+For one rollout of N_r observed intervals and N_s substeps per interval, the
+expected residual count is:
+  4 * N_s * N_r
+
+PHYSICAL PARAMETERIZATION
+-------------------------
+R_j = R_j,min + softplus(rho_Rj)
+C_j = C_j,min + softplus(rho_Cj)
+eta_r,j = sigmoid(rho_eta_j) where Part 4 permits eta to be learned.
+
+DEP2:
+  lambda_c,D = 2 sigmoid(alpha_c)
+  lambda_c,K = 2 (1 - sigmoid(alpha_c))
+  lambda_r,D = 2 sigmoid(alpha_r)
+  lambda_r,K = 2 (1 - sigmoid(alpha_r))
+
+Therefore each allocation pair sums exactly to 2.
+
+Primary DEP2-1C identifiability safeguard:
+  eta_r,D = eta_r,K = 1
+while alpha_r/lambda_r remain learnable.
+
+DEP2-2C permits learnable within-zone eta_r together with the DEP2 allocation
+parameters, consistent with Part 4.
+
+RC INITIALIZATION
+-----------------
+The Bai Cui/ORNL residential-family-house values are retained only as an
+initialization/prior-scale reference. They are NOT RestaurantFastFood truth.
+Base PINODE initializes its own RC parameters independently; it does not inherit
+fitted RC parameters from Inverse PINN-RC.
+
+PHYSICS-RESIDUAL SCALE q_star
+-----------------------------
+Part 4 requires a training-only heat scale q_i^star and the same zone scale for
+both 2C air and mass residuals.
+
+For all_to_one, IND, and DEP1, q_star is computed directly from the corresponding
+training-only physical forcing channels.
+
+DEP2 implementation convention:
+  q_star must be frozen and must not be manipulable by trainable allocation
+  parameters. Patch 03 therefore computes the DEP2 training-only q_star at the
+  neutral initialization alpha_c=alpha_r=0, i.e. lambda_D=lambda_K=1, and then
+  freezes it. This is an implementation convention for the otherwise
+  under-specified normalization denominator; it does not change the DEP2 RC
+  equations or the trainable allocation equations.
+
+DATA LOSS
+---------
+Patch 03 follows Part 4 literally:
+  (1/N_r) sum || S_y^-1 (y_hat - y) ||_2^2
+so multiple output channels are summed inside the squared L2 norm before
+averaging across rollout steps/windows.
+
+PRE-EXISTING DAY-3 NODE SCALING DISCLOSURE
+------------------------------------------
+The existing Day-3 NeuralODEModel.rollout_loss uses torch.mean(err**2). For the
+single-output all_to_one case this is identical to the Part-3 squared-L2 form.
+For the two-output identity cases it additionally divides by two, i.e. differs
+only by a fixed output-dimension scaling constant.
+
+Patch 03 intentionally does NOT modify Day-3 NODE. Base PINODE follows the
+literal Part-4 L2 expression. This difference is explicitly recorded rather than
+silently changing an already validated Day-3 method.
+
+WEIGHT DECAY
+------------
+Part 4 regularizes omega and, for 2C, psi. Physical RC parameters theta_RC are
+not included in lambda_wd regularization.
+
+NODE WARM START
+---------------
+Base PINODE supports Part-4 NODE warm start. Only the neural vector-field omega
+and causal encoder psi are copied. Base-PINODE RC parameters remain independent.
+
+If lambda_f=0 and the same neural/scaler initialization is used, Base PINODE has
+the same integrated dynamics as NODE because the raw derivative is unchanged.
+
+HYPERPARAMETER SEARCH
+---------------------
+Patch 03 exposes the Part-4 tuning set:
+  hidden layers
+  hidden width
+  activation
+  N_r
+  L_e (2C)
+  N_s
+  lambda_f
+  lambda_wd
+  learning rate
+  batch size
+  optimizer
+  Delta T_m^max (2C)
+
+lambda_y remains the reference data-loss scale (1.0), consistent with the
+Part-4 hyperparameter set. Hyperparameters are selected on a reduced training-
+only subset and frozen before later full-data training.
+
+TINY VALIDATION INTENT
+----------------------
+Patch-03 validation is intentionally very small:
+  max_rows = 48
+  train_steps = 2
+  real-data model matrix = 4 architectures x 2 RC orders
+  tiny Optuna contract = 2 trials
+
+These runs validate code paths, gradients, parameter constraints, Neuromancer
+integration, Phase-D loading, and Phase-C artifact compatibility. They are NOT
+model-accuracy or convergence results.
+
+EXCLUDED FROM PATCH 03
+----------------------
+  - EBP-PINODE hard projection
+  - A/W/M/nu/rho_P projection machinery
+  - torch.linalg.solve projection
+  - Sim1/Sim2/Sim3 campaign evaluation
+  - thermostat control
+  - MPC/Sinergym
+  - full Optuna studies
+  - full-data final training
+  - paper result figures/tables
+================================================================================

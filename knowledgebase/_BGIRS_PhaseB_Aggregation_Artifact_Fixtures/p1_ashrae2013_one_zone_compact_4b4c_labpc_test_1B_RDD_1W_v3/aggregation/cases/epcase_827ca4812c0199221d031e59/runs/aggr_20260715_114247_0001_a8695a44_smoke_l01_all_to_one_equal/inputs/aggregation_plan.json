@@ -1,0 +1,30 @@
+{
+  "aggregate_zone_name_stem": "Aggregated_Zone",
+  "aggregate_zones": [
+    {
+      "aggregate_zone_id": "RestaurantFastFood_All",
+      "source_zones": [
+        "DINING",
+        "KITCHEN"
+      ]
+    }
+  ],
+  "aggregation_id": "smoke_l01_all_to_one",
+  "building_type": "RestaurantFastFood",
+  "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "climate_zone": "5A",
+  "rule_set": "legacy_v1",
+  "schema_version": "0.1.0",
+  "source_case_id": "epcase_827ca4812c0199221d031e59",
+  "source_generation_run_id": "epvwr_a8695a44ed3f",
+  "strategy": "custom_groups",
+  "system_node_name_pattern": "DIRECT AIR INLET NODE",
+  "thermal_zone_filter": {
+    "include_when": {
+      "Part of Total Building Area": "Yes"
+    },
+    "source_table": "Zone Information"
+  },
+  "weather_location": "Buffalo",
+  "weight_mode": "equal"
+}

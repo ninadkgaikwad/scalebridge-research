@@ -1,0 +1,19 @@
+{
+  "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "campaign_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "created_at_local": "2026-07-09T18:12:16.088921",
+  "custom_aggregation_ids": [
+    "rff_user_approved_k1_all_to_one"
+  ],
+  "custom_zone_groups": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\user_groupings\\user_grouping_20260709_163524\\cases\\epcase_827ca4812c0199221d031e59\\approved_custom_groups.csv",
+  "excluded_zone_row_count": 1,
+  "included_thermal_zone_row_count": 2,
+  "missing_plan_input_row_count": 0,
+  "output_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\plans\\plan_build_20260709_181216",
+  "plan_count": 1,
+  "rule_set": "legacy_v1",
+  "schema_version": "0.1.0",
+  "strategy": "custom_groups",
+  "weight_mode": "equal",
+  "zone_mapping_row_count": 2
+}

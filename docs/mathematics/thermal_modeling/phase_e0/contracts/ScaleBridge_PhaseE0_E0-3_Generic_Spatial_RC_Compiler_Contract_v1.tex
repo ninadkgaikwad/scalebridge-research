@@ -1,0 +1,311 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm,booktabs,array,longtable}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{natbib}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\ones}{\mathbf{1}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\col}{\operatorname{col}}
+\newcommand{\ScaleBridge}{\textsc{ScaleBridge}}
+
+\title{ScaleBridge Phase E0 E0-3: Generic Spatial RC Compiler Mathematical Contract v1}
+\author{ScaleBridge / PhD\_Code\_Framework}
+\date{Ratified 26 August 2026}
+\begin{document}
+\maketitle
+
+\section{Purpose and provenance discipline}
+This document freezes the ratified Step~4A--4I spatial compiler.  Standard thermal-circuit, multi-zone RC, aggregation, and identifiability concepts are grounded in the cited literature \citep{GhiausAhmad2020ThermalCircuits,DengGoyalBarooahMehta2014StructurePreserving,GuoCoffmanMunkEtAl2021Aggregation,ArroyoSpiessensHelsen2020MultiZoneGreyBox}.  The exact IND/DEP1/DEP2 semantics, chain fallback, connection-rule expansion, sharing registry, canonical-port conventions, and DEP2 $A_g/B_g$ design are \ScaleBridge{} contracts.
+
+\section{4A: modeled-zone replication}
+Let
+\[
+\mathcal Z_M=\{z_1,\ldots,z_{N_z}\}
+\]
+be the explicit modeled-zone set.  Replicate one selected elemental RC model per modeled zone:
+\[
+\{\mathcal M_{RC}^{(z)}\}_{z\in\mathcal Z_M}.
+\]
+If the elemental model has $n_x$ states, the stacked state has
+\[
+\dim X=N_zn_x.
+\]
+Each zone has its own applicable canonical-port set and its own parameter instances by default.  The modeled-zone set may differ from the raw/source-zone set.
+
+\section{4B: modeled-zone adjacency}
+Define the undirected modeled-zone graph
+\[
+\mathcal G_Z=(\mathcal Z_M,\mathcal E_Z).
+\]
+User-supplied adjacency is authoritative and no geometry/data/name inference is performed after explicit adjacency is provided.  If adjacency is entirely absent, use the supplied modeled-zone ordering and deterministic chain fallback
+\[
+\mathcal E_Z^{chain}=\{\{z_k,z_{k+1}\}:k=1,\ldots,N_z-1\}.
+\]
+Partial adjacency is not chain-filled.  Disconnected graphs are valid. Self-edges are invalid; reversed/duplicate undirected declarations canonicalize once.
+
+Multi-zone RC literature supports explicit inter-zone thermal interactions \citep{ArroyoSpiessensHelsen2020MultiZoneGreyBox,WangChenLi2019RCSimplification,BelicSliskovicHocenski2021MultiZoneRC}; the exact fallback and authority policies are \ScaleBridge{} design choices.
+
+\section{4C: inter-zone state-connection rules}
+Let the elemental state-label set be $\mathcal S$ (e.g., $\{a\}$, $\{a,m\}$, or $\{a,e,m\}$).  An inter-zone connection rule is an unordered pair
+\[
+\rho=\{p,q\},\qquad p,q\in\mathcal S.
+\]
+Multiple rules may be active simultaneously. For every adjacency $\{z_i,z_j\}\in\mathcal E_Z$:
+\begin{itemize}[leftmargin=*]
+\item same-type $\{p,p\}$ creates one edge $\{(z_i,p),(z_j,p)\}$;
+\item cross-type $\{p,q\}$ with $p\ne q$ creates the symmetric pair $\{(z_i,p),(z_j,q)\}$ and $\{(z_i,q),(z_j,p)\}$.
+\end{itemize}
+The symmetric pair makes expansion invariant to arbitrary ordering of the undirected zone adjacency.  Each generated physical edge gets its own resistance parameter by default; parameter equality is a separate sharing decision.  If no rule is supplied, default to air--air only.  If any rule is supplied, no default is added.  Referencing an unavailable state type is a compilation error.
+
+The complete dynamic-node set is
+\[
+\mathcal V_C^M=\{(z,p):z\in\mathcal Z_M,\;p\in\mathcal S\},
+\]
+and
+\[
+\mathcal E_R^{total}=\left(\bigsqcup_{z\in\mathcal Z_M}\mathcal E_R^{(z)}\right)\cup\mathcal E_R^{inter}.
+\]
+
+\section{4D: parameter sharing}
+All physical parameter instances are independent by default. Let $\Theta_{inst}$ be physical parameter instances and $\Theta_{master}$ independent numerical/master parameters. Define a sharing map
+\[
+\sigma:\Theta_{inst}\rightarrow\Theta_{master}.
+\]
+Instances in the same sharing group use one master value. Sharing may be global-by-family, subset-based, or an explicit compatible custom group. It may apply to elemental $R$, $C$, routing parameters, and inter-zone resistances. Cross-type symmetric edges remain independent unless explicitly tied.
+
+Sharing is permitted only among compatible physical type, units, and semantic family. Fixed/estimated status, bounds/transform, initialization, and prior belong consistently to the master parameter. Sharing changes parameterization, never graph topology. Shared-parameter coordination has precedent in multi-zone grey-box identification \citep{BaumeltDostal2020DistributedGreyBox}; exact sharing scopes here are \ScaleBridge{} contracts.
+
+\section{4E: IND, DEP1, DEP2 semantics}
+The three modes are a two-axis classification of physical coupling and information organization.
+\begin{align*}
+IND  &= (\text{uncoupled physics},\text{local forcing}),\\
+DEP1 &= (\text{coupled physics},\text{local forcing}),\\
+DEP2 &= (\text{same coupled physics as DEP1},\text{local states/QAC + all-to-one non-HVAC forcing}).
+\end{align*}
+IND has no inter-zone RC edges. DEP1 uses the compiled inter-zone graph and local zone disturbances. DEP2 uses exactly the DEP1 physical graph; observed states and $Q_{AC}^{(z)}$ remain local, while allocatable non-HVAC thermal-power signals come only from an authoritative all-to-one source. Global/boundary signals such as $T_o$ use broadcast/copy semantics rather than thermal-power allocation. DEP2 allocated disturbances are model allocations, not claims of recovered historical ground truth. Aggregation can lose zone-level disturbance information \citep{GuoCoffmanMunkEtAl2021Aggregation}.
+
+\section{4F: signal-aware aggregation operator $A_g$}
+For a spatially indexed signal family $g$,
+\[
+\bar q_g=A_gq_g,\qquad A_g\in\R^{N_a\times N_s}.
+\]
+Identity uses $A_g=I$. For a group $\mathcal G_k$ with positive raw weights $r_j$,
+\[
+[A_g]_{kj}=\begin{cases}
+\dfrac{r_j}{\sum_{\ell\in\mathcal G_k}r_\ell},&j\in\mathcal G_k,\\
+0,&j\notin\mathcal G_k.
+\end{cases}
+\]
+Equal, floor-area, and volume modes correspond to $r_j=1$, floor area, and volume. Standard groups form a non-overlapping partition of included source zones. For the normalized spatial aggregation used here,
+\[
+A_g\ge0,\qquad A_g\ones=\ones.
+\]
+$A_g$ is signal-family-aware and comes from authoritative upstream aggregation lineage; Phase E validates rather than invents it. Object-level preprocessing occurs upstream. Site/facility signals use broadcast/copy rather than ordinary zone aggregation. Structure-preserving aggregation and the nontriviality of aggregate building disturbances are supported by \citet{DengGoyalBarooahMehta2014StructurePreserving} and \citet{GuoCoffmanMunkEtAl2021Aggregation}.
+
+For DEP2 specifically,
+\[
+A_g^{DEP2}=w_g^\top\in\R^{1\times N_z},\qquad w_{g,i}>0,\qquad \sum_iw_{g,i}=1.
+\]
+
+\section{4G: DEP2 allocation operator $B_g$}
+For allocatable all-to-one thermal-power family $g$,
+\[
+\tilde q_g=B_g\bar q_g,
+\qquad
+B_g=\begin{bmatrix}\lambda_{g,1}&\cdots&\lambda_{g,N_z}\end{bmatrix}^\top.
+\]
+Hence $\tilde q_{g,i}=\lambda_{g,i}\bar q_g$.  Boundary/global signals are broadcast rather than allocated. Atomic canonical ports remain authoritative; compatible ports may explicitly share one allocation family.  $B_g$ may be fixed or estimated and is time-invariant in the base contract. $B_g$ is not an inverse of $A_g$.
+
+Desired aggregate-coordinate consistency is
+\[
+A_gB_g=1
+\quad\Longleftrightarrow\quad
+\sum_i w_{g,i}\lambda_{g,i}=1.
+\]
+For equal $N_z$-zone weights this reduces to $\sum_i\lambda_{g,i}=N_z$.
+
+Define normalized learned contribution coordinates
+\[
+p_{g,i}=w_{g,i}\lambda_{g,i},\qquad p_g\ge0,\qquad \ones^\top p_g=1.
+\]
+Use trainable unconstrained logits $\alpha_g$ with
+\[
+p_g=\operatorname{softmax}(\alpha_g),\qquad
+\lambda_{g,i}=\frac{p_{g,i}}{w_{g,i}}.
+\]
+The $\alpha$ values are optimization coordinates only; $p$ is the normalized allocation representation and $\lambda$ is the effective multiplier entering thermal dynamics.  Constrained aggregate-to-local allocation is broadly consistent with weighted allocation formulations in building-energy literature \citep{TelsangEtAl2021WeightedAllocation}; this exact parameterization is a \ScaleBridge{} design.
+
+\section{4H: feasibility, identifiability, and fallback}
+The feasible allocation set is
+\[
+\mathcal F_g=\{\lambda_g\in\R_{\ge0}^{N_z}:w_g^\top\lambda_g=1\}.
+\]
+Equivalently $p_g$ lies on the simplex $\Delta^{N_z-1}$. Therefore an unconstrained all-zone allocation has exactly $N_z-1$ independent degrees of freedom. To remove softmax common-shift redundancy, train $N_z-1$ logits and fix one reference logit to zero.
+
+Neutral initialization is $p^{(0)}=w$, $\lambda^{(0)}=\ones$. With zone $N_z$ as reference,
+\[
+\alpha_i^{(0)}=\log\frac{w_i}{w_{N_z}},\quad i<N_z,
+\qquad \alpha_{N_z}^{(0)}=0.
+\]
+Finite softmax yields the natural range $0<\lambda_i<1/w_i$. Optional bounds $\ell_i\le\lambda_i\le u_i$ are feasible only if
+\[
+\sum_iw_i\ell_i\le1\le\sum_iw_iu_i.
+\]
+
+Fixed $B_g$ must satisfy nonnegativity and $A_gB_g=1$ within tolerance. Partial-fixed allocation is supported. For fixed set $\mathcal F$ define residual
+\[
+r=1-\sum_{i\in\mathcal F}w_i\lambda_i^{fixed}.
+\]
+If $r<0$ the configuration is invalid; if $r=0$ remaining allocations are zero; if $r>0$, estimated set $\mathcal E$ uses simplex shares $s_i$ and
+\[
+\lambda_i=\frac{r s_i}{w_i},\qquad i\in\mathcal E.
+\]
+
+Allocation modes are \texttt{estimated}, \texttt{fixed}, and \texttt{neutral\_fixed}. Neutral allocation is a baseline/initialization, never a silent replacement for failed estimation. Feasibility is not identifiability: $\lambda$ can trade off with $R$, $C$, routing, and latent-state effects. Building RC literature documents structural/practical identifiability and parameter-correlation issues \citep{AgbiSongKrogh2012Identifiability,MartyJourjonEtAl2022RCIdentifiability}. Learned $\lambda$ values are effective aggregate-consistent model allocations, not unique recovered true zonal gains.
+
+\section{4I: compiled graph and continuous-time equations}
+\subsection{State, capacitance, and conductance}
+Stack all states
+\[
+X=\col\bigl(x^{(z_1)},\ldots,x^{(z_{N_z})}\bigr),
+\qquad
+\mathbf C=\diag(C_1,\ldots,C_{N_x})\succ0.
+\]
+For every resistance edge $e$, define conductance $G_e=1/R_e>0$ and collect conductances in diagonal $\mathbf G$.
+
+\subsection{Incidence matrix and thermal Laplacian}
+Assign each physically undirected state-state edge an arbitrary algebraic orientation solely for matrix bookkeeping. Let $\mathbf D$ be the node-edge incidence matrix. Define
+\[
+\boxed{\mathbf L=\mathbf D\mathbf G\mathbf D^\top.}
+\]
+Reversing an arbitrary incidence orientation changes a column sign in $\mathbf D$ but leaves $\mathbf L$ unchanged.  Thermal-circuit assembly and state-space extraction using network structure are standard \citep{GhiausAhmad2020ThermalCircuits}.
+
+Partition dynamic capacitive nodes $C$ and prescribed boundary nodes $B$:
+\[
+\mathbf L=\begin{bmatrix}L_{CC}&L_{CB}\\L_{BC}&L_{BB}\end{bmatrix}.
+\]
+Let $T_B$ be prescribed boundary temperatures and let $\Gamma Q$ be routed thermal-power injection. The authoritative continuous-time compiled equation is
+\[
+\boxed{
+\mathbf C\dot X=-L_{CC}X-L_{CB}T_B+\Gamma Q.
+}
+\]
+The observation equation is
+\[
+\boxed{Y=HX.}
+\]
+
+\subsection{Mode specialization}
+For IND, $L^{IND}$ contains only replicated elemental edges and is block-diagonal across modeled zones apart from shared prescribed boundary signals. For DEP1 and DEP2,
+\[
+L^{DEP1}=L^{DEP2}=L^{elem}+L^{inter}.
+\]
+DEP1 uses local thermal forcing. DEP2 keeps local $Q_{AC}$, broadcasts global/boundary quantities, and uses $B_g\bar q_g$ for allocatable all-to-one non-HVAC thermal-power families.
+
+\subsection{Default simulation initialization}
+The default Phase-E simulation initialization policy is explicit. Observed air states start from observed air temperature and every unobserved/latent thermal state in a zone starts equal to that same observed zone-air temperature:
+\[
+\boxed{T_\ell^{(z)}(t_0)=T_a^{(z)}(t_0)}
+\]
+for every latent thermal state $\ell$. Thus 2R2C/3R2C use $T_m(t_0)=T_a(t_0)$; 4R3C uses $T_e(t_0)=T_m(t_0)=T_a(t_0)$. This is an initialization assumption only; states may immediately diverge under the ODE.
+
+\section{Worked graph example}
+For two zones A and B using 2R2C with an air--air inter-zone edge, order states as
+\[
+X=[T_a^A,T_m^A,T_a^B,T_m^B]^\top.
+\]
+Choose arbitrary algebraic orientations $A_a\to A_m$, $B_a\to B_m$, $A_a\to B_a$. Then one valid incidence matrix is
+\[
+D=\begin{bmatrix}
+1&0&1\\
+-1&0&0\\
+0&1&-1\\
+0&-1&0
+\end{bmatrix}.
+\]
+With
+\[
+G=\diag(g_{am}^A,g_{am}^B,g_{AB}),
+\]
+$L_{internal}=DGD^\top$ is
+\[
+\begin{bmatrix}
+g_{am}^A+g_{AB}&-g_{am}^A&-g_{AB}&0\\
+-g_{am}^A&g_{am}^A&0&0\\
+-g_{AB}&0&g_{am}^B+g_{AB}&-g_{am}^B\\
+0&0&-g_{am}^B&g_{am}^B
+\end{bmatrix}.
+\]
+The first row produces
+\[
+g_{am}^A(T_m^A-T_a^A)+g_{AB}(T_a^B-T_a^A),
+\]
+which is exactly the ordinary RC heat-flow expression. Boundary conductances $g_{ao}^A,g_{ao}^B$ add the outdoor terms. For 2R2C routing,
+\[
+\Gamma=\begin{bmatrix}
+1&1-\eta_A&0&0\\
+0&\eta_A&0&0\\
+0&0&1&1-\eta_B\\
+0&0&0&\eta_B
+\end{bmatrix}
+\]
+for derived aliases $Q=[Q_c^A,Q_r^A,Q_c^B,Q_r^B]^\top$, while atomic ports remain authoritative upstream.
+
+\section{Compiler invariants / propositions}
+The term \emph{compiler invariant} means a property that follows algebraically from every valid compiled specification; it is stronger than observing the property in one numerical test.  These are not claimed as novel general thermodynamic theorems.
+
+\paragraph{Invariant 1: reciprocal internal-flow cancellation.}
+For each internal edge $e=\{i,j\}$,
+\[
+Q_{e,i}=\frac{T_j-T_i}{R_e},\qquad Q_{e,j}=\frac{T_i-T_j}{R_e},\qquad Q_{e,i}+Q_{e,j}=0.
+\]
+
+\paragraph{Invariant 2: whole-model RC energy balance.}
+If every conservative routing column satisfies $\ones^\top\Gamma_{:,s}=1$, all state-state and inter-zone edge flows cancel when the state equations are summed:
+\[
+\boxed{
+\ones^\top\mathbf C\dot X
+=
+\sum_{\{i,b\}\in\mathcal E_{CB}}\frac{T_b-T_i}{R_{ib}}
++\sum_s Q_s.
+}
+\]
+
+\paragraph{Invariant 3: DEP1/DEP2 physical-graph equivalence.}
+For identical elemental model, modeled zones, adjacency, connection rules, and physical parameters,
+\[
+\boxed{L^{DEP1}=L^{DEP2}.}
+\]
+Differences arise from information/forcing construction, not different RC topology.
+
+\paragraph{Invariant 4: DEP2 aggregate-coordinate consistency.}
+If $\tilde q_g=B_g\bar q_g$ and $A_gB_g=1$, then
+\[
+\boxed{A_g\tilde q_g=\bar q_g.}
+\]
+This is coordinate consistency and is not automatically physical sum-energy conservation when $A_g$ is a normalized weighted coordinate.
+
+\paragraph{Invariant 5: deterministic compilation.}
+A valid fully specified contract
+\[
+(\mathcal M_{RC},\mathcal Z_M,\mathcal E_Z,\mathcal R_Z,\Theta,\text{sharing},m,A_g,B_g)
+\]
+deterministically produces the same $\mathbf C$, $\mathbf L$, $\Gamma$, and $H$. Hidden topology inference is forbidden after the required inputs are resolved.
+
+\section{Validity and failure contracts}
+Compilation fails rather than guesses when any required condition is violated. Core checks include: unique state identities; $C_i>0$; $R_e>0$; exact boundary bindings; required thermal ports present; conservative routing validity; no zone self-adjacency; canonical duplicate handling; inter-zone rule state compatibility; sharing compatibility; authoritative DEP2 all-to-one lineage; positive participating DEP2 weights; allocation consistency; local $Q_{AC}$; and exclusion of electrical $P_{HVAC}$ from the thermal RHS. Exact duplicate generated physical-edge declarations canonicalize once; conflicting declarations fail.
+
+For a fixed modeled-zone set and elemental flavour,
+\[
+\dim X_{IND}=\dim X_{DEP1}=\dim X_{DEP2}.
+\]
+IND is the no-inter-zone-edge specialization of DEP1; DEP1 and DEP2 become identical when their effective disturbance vectors coincide. In the one-zone case there is no inter-zone edge and $A=B=[1]$, so the three modes are equivalent when source signals coincide.
+
+\section{Boundary to later E0 stages}
+E0-3 freezes the continuous ODE $\dot X=f(X,U;\Theta)$ and the default simulation initialization above. Numerical integration/discretization (Euler, RK4, adaptive solvers, Neural ODE backends, CasADi, Neuromancer, etc.) is outside RC physics and belongs to E0-5. Later initialization machinery may add explicitly selected alternatives, but must not silently change the default equal-to-observed latent-state policy.
+
+\bibliographystyle{plainnat}
+\bibliography{../../references/ScaleBridge_Thermal_Modeling_References}
+\end{document}

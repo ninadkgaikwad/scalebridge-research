@@ -1,0 +1,28 @@
+sim1:
+  state_feedback: measured_test_state_each_step
+  qac_source: recorded_test
+sim2:
+  state_feedback: recursive_predicted_state
+  qac_source: recorded_test
+sim3:
+  state_feedback: recursive_predicted_state
+  qac_source: thermostat_to_mass_flow_to_phase_c
+  setpoint_schedule: [medium, low, high, medium]
+  cooling_mdot_choice: nominal
+  heating_mdot_choice: nominal
+  unobserved_mode_policy: fallback
+  deadbands: data_derived_with_optional_override
+  actuator_mode_policy:
+    controller_capability: [cooling, heating]
+    training_mode_support_role: provenance_only
+    unobserved_mode_fallback: same_zone_opposite_mode_deltaT_and_mdot
+    unobserved_mode_qac: extrapolative_flagged
+    per_mode_overrides_supported: true
+    equipment_definition_lookup: false
+    other_run_lookup: false
+  setpoint_policy:
+    low: empirical_p10
+    medium: empirical_p50_if_separated_else_midpoint_low_high
+    high: empirical_p90
+    minimum_separation_C: 0.5
+  status: "Patch05B finalized Day-6 thermostat/control evaluation contract."

@@ -1,0 +1,11 @@
+{
+  "aggregation_run_id": "aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal",
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "created_at_utc": "2026-07-15T18:47:41.150453+00:00",
+  "manifest_path": "runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\aggregation_manifest.json",
+  "plan_aggregation_id": "smoke_l05_identity",
+  "rule_set": "legacy_v1",
+  "status": "completed",
+  "strategy": "custom_groups",
+  "weight_mode": "equal"
+}

@@ -1,0 +1,3 @@
+case_id,zone_name,normalized_zone_name,token,token_position,token_zone_count,token_frequency_ratio,token_is_numeric,token_is_case_common,token_is_informative
+epcase_827ca4812c0199221d031e59,DINING,DINING,DINING,0,1,0.5,False,False,True
+epcase_827ca4812c0199221d031e59,KITCHEN,KITCHEN,KITCHEN,0,1,0.5,False,False,True

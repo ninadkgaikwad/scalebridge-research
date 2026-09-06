@@ -1,0 +1,22 @@
+PINODE/EPSR DAY-1 PRODUCTION INFRASTRUCTURE + HPO PATCH 01
+
+Adds production matrix, month-balanced percentage HPO, persistent SQLite studies, frozen-hyperparameter application, multi-start training, checkpoint registry/acceptance, all-month Sim2/Sim3 evaluation, 300-s thermostat transition calibration, and explicit QHVAC/PHVAC provenance.
+
+No MPC, CasADi, IPOPT, EnergyPlus simulator, observer, forecast, or actuator-wrapper code is modified.
+No Git operation is performed or required.
+All generated paper artifacts are owned by Data/ScaleBridge/Paper_PINODE_EPSR.
+Persistent HPO study identity includes scientific sampling/objective protocol; increasing only trial count resumes safely.
+Production root resolution honors environment overrides and otherwise derives Data\ScaleBridge two levels above the embedding ScaleBridge repo.
+Sim3 switch counts are episode-local so monthly TEST gaps are never treated as 300-s transitions.
+
+
+PATCH01R1 CORRECTION (2026-09-02)
+---------------------------------
+The first validator correctly rejected the initial sampler because a requested
+5% synthetic monthly budget was silently expanded to 10% to pay for conservative
+context/rollout rows. R1 changes the scientific contract: the percentage controls
+selected fit+holdout target rows exactly (subject only to integer monthly rounding).
+Causal context may be read from earlier rows in the same authoritative TRAIN
+segment without becoming an HPO target. Impossible percentages fail explicitly
+with a minimum legal percentage. Persistent study identity includes sampling
+protocol version month_balanced_target_budget_v2.

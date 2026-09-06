@@ -1,0 +1,34 @@
+{
+  "aggregation_ids": [
+    "smoke_l01_all_to_one",
+    "smoke_l05_identity"
+  ],
+  "building_types": [
+    "RestaurantFastFood"
+  ],
+  "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "campaign_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "climate_zones": [
+    "5A"
+  ],
+  "created_at_utc": "2026-07-15T18:47:47.237036+00:00",
+  "failed_plan_count": 0,
+  "matrix_run_id": "aggregation_matrix_20260715_114242",
+  "outputs": {
+    "aggregation_matrix_case_runs": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\matrix_runs\\aggregation_matrix_20260715_114242\\aggregation_matrix_case_runs.csv",
+    "aggregation_matrix_outputs": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\matrix_runs\\aggregation_matrix_20260715_114242\\aggregation_matrix_outputs.csv",
+    "missing_generation_rows": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\matrix_runs\\aggregation_matrix_20260715_114242\\missing_generation_rows.csv",
+    "selected_aggregation_plans": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\matrix_runs\\aggregation_matrix_20260715_114242\\selected_aggregation_plans.csv"
+  },
+  "runtime_seconds": 299.9682491000276,
+  "schema_version": "0.1.0",
+  "selected_plan_count": 2,
+  "successful_plan_count": 2,
+  "summary_dir": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\matrix_runs\\aggregation_matrix_20260715_114242",
+  "weather_locations": [
+    "Buffalo"
+  ],
+  "weight_modes": [
+    "equal"
+  ]
+}

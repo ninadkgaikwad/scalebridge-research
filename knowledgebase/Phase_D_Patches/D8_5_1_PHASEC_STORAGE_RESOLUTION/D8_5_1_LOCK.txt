@@ -1,0 +1,38 @@
+ScaleBridge Phase D D8.5.1 - Phase C Storage-Safe Zone Resolution
+
+Purpose
+-------
+Fix the remaining ApartmentMidRise L05 production failure after D8.5.
+
+Observed production failure
+---------------------------
+Stage B correctly resolves logical aggregate-zone ID "G Corridor" to physical
+storage directory "G_Corridor". Phase C audit/inference/split discovery still
+searched only the logical directory name and therefore failed before dataset
+assembly.
+
+Locked correction
+-----------------
+1. Preserve logical aggregate_zone_id exactly (for example, "G Corridor").
+2. For Phase C audit/inference/split zone directories:
+   a. Prefer exact logical-name directory when present.
+   b. Otherwise accept exactly one storage-token-equivalent child directory
+      under an authoritative lineage parent.
+   c. Reject multiple normalized matches as ambiguous.
+   d. Preserve existing compatibility fallback, but apply the same normalized
+      comparison while enforcing case/run or case/aggregation/weight lineage.
+3. No changes to canonical data representation, temporal policies, heat
+   representation, QAC semantics, Parquet schema, or campaign resume behavior.
+4. D8.5 structurally-unavailable-QAC correction remains unchanged.
+5. The existing 204 successful production aggregation runs must not be rebuilt
+   or overwritten as part of this correction.
+
+Validation
+----------
+Local directed-bundle regression after applying D8.5 + D8.5.1:
+57 passed, 1 skipped for discovery + D6 + D7 focused tests.
+
+Lab-PC must additionally run:
+- D8_5_1_VALIDATE_PHASEC_STORAGE_RESOLUTION.ps1
+- one real L05 production-backed smoke
+before recovering the remaining failed production aggregation runs.

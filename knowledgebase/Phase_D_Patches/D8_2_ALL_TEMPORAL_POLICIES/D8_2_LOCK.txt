@@ -1,0 +1,84 @@
+PHASE D D8.2 — COMPLETE TEMPORAL POLICY CATALOG
+
+IMPLEMENTED ML / SciML POLICIES
+- mdh = monthly_distributed_holdout
+- ch  = chronological_holdout
+- sh  = seasonal_holdout
+
+IMPLEMENTED Opt / Bayes POLICIES
+- sd  = seasonal_distributed
+- sbh = seasonal_block_holdout
+- ci  = contiguous_identification
+- cdr = custom_datetime_ranges
+
+RUNNER INTERFACE
+- --ml-policy is repeatable. Default: mdh.
+- --ob-policy is repeatable. Default: sd.
+- aliases and long-form names are both accepted.
+- multiple selected policies are materialized in one Phase D aggregation run.
+- each policy has its own compact folder token, so outputs coexist safely.
+
+DEFAULTS
+ML common:
+  input_lag=12
+  target_horizon=6
+MDH/CH:
+  train_fraction=0.70
+  test_fraction=0.15
+  validation_fraction=0.15
+SH:
+  train_seasons=winter,spring
+  test_seasons=summer
+  validation_seasons=fall
+
+OB always:
+  input_lag=1
+  target_horizon=1
+SD:
+  season_offset_days=0
+  train_days=21
+  test_days=7
+SBH:
+  train_seasons=winter,spring,fall
+  test_seasons=summer
+CI:
+  start_datetime=first canonical timestamp if omitted
+  train_days=21
+  test_days=7
+CDR:
+  requires one or more --cdr-train-range and --cdr-test-range
+  syntax START/END
+  half-open semantics [START, END)
+  train/test ranges must not overlap
+
+PREPROGRAMMED LOGIC
+- canonical timestamp validation
+- meteorological seasons: winter=Dec/Jan/Feb, spring=Mar/Apr/May,
+  summer=Jun/Jul/Aug, fall=Sep/Oct/Nov
+- full annual axis retained in every final Parquet
+- unselected rows marked included=false, partition=excluded
+- ML lag/target boundary leakage protection
+- OB lag=1/horizon=1 contract
+- policy window_id generation where required
+- season labeling for seasonal policies
+- one data.parquet + one manifest.json per realization
+
+RESUME SAFETY
+D8.2 stores the exact runner configuration in each aggregation_manifest.json.
+--resume only skips a completed aggregation output when its stored runner
+configuration exactly matches the requested configuration. Changing selected
+policies or any policy parameter causes the aggregation output to be rebuilt.
+
+DATASET REGISTRY FIX
+D8.2 reads policy/lag/horizon/heat fields from the nested temporal_config and
+heat_representation sections of each final dataset manifest, making
+policy_name/policy_token authoritative in dataset_registry.csv.
+
+TESTING-CAMPAIGN ALL-POLICY VALIDATION
+The validation run selects all 7 policies simultaneously on the complete
+validated testing matrix and overwrites the previous 2-policy Phase D outputs.
+Expected final dataset count for the current testing campaign:
+- one-zone aggregation: 3 spatial products x 7 policies = 21
+- two-zone identity aggregation: 4 spatial products x 7 policies = 28
+- total = 49 final data.parquet realizations
+Then a config-identical --resume run must skip both aggregation runs.

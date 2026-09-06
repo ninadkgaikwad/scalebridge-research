@@ -1,0 +1,1634 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=0.85in]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{array,booktabs,longtable}
+\usepackage{enumitem}
+\usepackage{natbib}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Ts}{T_s}
+\newcommand{\Tz}{T_z}
+\newcommand{\mdot}{\dot m}
+\newcommand{\QAC}{Q_{\mathrm{AC}}}
+\newcommand{\QHX}{Q_{\mathrm{HVAC},X}}
+\newcommand{\PHVAC}{P_{\mathrm{HVAC}}}
+\newcommand{\dt}{\Delta t}
+\newcommand{\PhiM}{\Phi_{\Delta t}}
+\newcommand{\dd}{d}
+\newcommand{\E}{\mathbb{E}}
+
+\title{Part 6: Continuous-Time MPC, Observers, Forecasts, and Price-Aware Closed-Loop Control\\
+Detailed Mathematical and Implementation Contract for PINODE/EPSR}
+\author{}
+\date{August 25, 2026}
+
+\begin{document}
+\maketitle
+
+\section*{Purpose and relationship to Parts 1--5}
+
+This document is the \textbf{Day-7 mathematical contract} for embedding the four already-defined
+PINODE/EPSR thermal-model methods inside a continuous nonlinear model predictive controller (MPC).
+It does not redefine Parts 1--5.  Instead, it specifies how the already-frozen continuous-time
+thermal models, Phase-C HVAC surrogates, observers, forecasts, actuator limits, and EnergyPlus
+closed-loop plant are connected.
+
+The control formulation follows the standard receding-horizon MPC principle
+\citep{garcia1989mpc,rawlings2026mpc,drgona2020all,killian2016ten}, while preserving the
+continuous-time building-model structure used in grey-box building thermal modeling
+\citep{bacher2011heat} and the paper's Neural-ODE/PINN lineage
+\citep{chen2018node,raissi2019pinn}.
+
+\subsection*{Locked non-negotiable contracts}
+
+\begin{align}
+\boxed{\text{All four paper methods remain continuous-time models.}}
+\end{align}
+
+\begin{align}
+\boxed{\text{Every MPC state transition is produced by explicit numerical integration.}}
+\end{align}
+
+\begin{align}
+\boxed{\text{No binary heating/cooling decision variable is introduced into the MPC.}}
+\end{align}
+
+\begin{align}
+\boxed{\text{The final MPC uses }(\mdot,\Ts)\text{ as continuous physical control variables.}}
+\end{align}
+
+\begin{align}
+\boxed{\QHX\rightarrow G_Q\rightarrow\QAC\rightarrow f_\theta
+\quad\text{and}\quad
+|\QAC|\rightarrow G_P\rightarrow\PHVAC.}
+\end{align}
+
+\begin{align}
+\boxed{\PHVAC\text{ is an electrical objective/output quantity and never enters the thermal ODE RHS.}}
+\end{align}
+
+\begin{align}
+\boxed{\text{TRAIN-supported actuator boxes are used in the paper experiments.}}
+\end{align}
+
+\begin{align}
+\boxed{\text{Perfect and parameterized-noisy disturbance forecasts are both first-class modes.}}
+\end{align}
+
+\begin{align}
+\boxed{\text{2C latent states are estimated online by observers.}}
+\end{align}
+
+\begin{align}
+\boxed{\text{All Day-7 implementation remains inside }\texttt{Paper\_PINODE\_EPSR/src/pinode\_epsr}.}
+\end{align}
+
+\section{Sampled control time and continuous-time prediction}
+
+The canonical sampled interval inherited from Parts 1--5 is
+\begin{align}
+\boxed{\dt=300\ {\rm s}.}
+\end{align}
+At control step \(k\), the physical time is
+\begin{align}
+t_k=t_0+k\dt.
+\end{align}
+
+The thermal model is never replaced by a learned discrete map.  Instead,
+\begin{align}
+\boxed{\dot x(t)=f_\theta\!\left(x(t),\QAC(t),d(t)\right)}
+\tag{6.1}
+\end{align}
+is integrated over one sampled interval to form
+\begin{align}
+\boxed{
+x_{k+1}
+=
+\PhiM\!\left(x_k,{\QAC}_k,d_k\right).
+}
+\tag{6.2}
+\end{align}
+Here \(\PhiM\) is a numerical integration operator and not an independently identified
+discrete-time model.
+
+The use of a continuous-time model inside MPC is especially natural for RC models and Neural
+ODE models, where the governing object is the vector field itself
+\citep{bacher2011heat,chen2018node}.
+
+\section{Thermal forcing ownership}
+
+For each thermal zone \(i\), define the non-HVAC thermal disturbances
+\begin{align}
+d_i(t)
+=
+\left[
+T_o,\,
+Q_{ZIC,i},\,
+Q_{ZIR,i},\,
+Q_{Sol1,i},\,
+Q_{Sol2,i},\,
+\text{architecture-specific coupling/disturbance channels}
+\right].
+\end{align}
+
+The locked heat-channel decomposition is
+\begin{align}
+Q_{c,i}
+&=
+{\QAC}_i
++
+Q_{ZIC,i}
++
+Q_{Sol1,i},
+\tag{6.3}\\
+Q_{r,i}
+&=
+Q_{ZIR,i}
++
+Q_{Sol2,i}.
+\tag{6.4}
+\end{align}
+
+The terms \(Q_{ZIC}\), \(Q_{ZIR}\), \(Q_{Sol1}\), and \(Q_{Sol2}\) already contain the
+appropriate thermal consequences of occupancy, lighting, plug/electric equipment, and solar
+loading as defined upstream.  They remain \textbf{exogenous thermal disturbances}, not MPC
+decision variables.  Building MPC literature likewise treats occupancy, weather, and solar/internal
+loads as disturbances and forecasts rather than as HVAC actuation variables
+\citep{oldewurtel2013occupancy,killian2016ten,drgona2020all}.
+
+\section{RC dynamics used by MPC}
+
+\subsection{1R1C}
+
+For zone \(i\), the 1R1C state is
+\begin{align}
+x_i=T_i.
+\end{align}
+The continuous-time dynamics are
+\begin{align}
+\boxed{
+C_i\dot T_i
+=
+\frac{T_o-T_i}{R_{io}}
++
+Q_{c,i}
++
+\eta_{r,i}Q_{r,i}
++
+Q_{\mathrm{coupling},i}.
+}
+\tag{6.5}
+\end{align}
+
+For the paper's identifiable 1C construction, the radiative allocation is inherited unchanged
+from Part 1.  MPC does not introduce a new RC parameterization.
+
+\subsection{2R2C}
+
+For zone \(i\),
+\begin{align}
+x_i=
+\begin{bmatrix}
+T_{a,i}\\
+T_{m,i}
+\end{bmatrix},
+\end{align}
+and
+\begin{align}
+\boxed{
+C_{a,i}\dot T_{a,i}
+=
+\frac{T_o-T_{a,i}}{R_{io}}
++
+\frac{T_{m,i}-T_{a,i}}{R_{im}}
++
+Q_{c,i}
++
+(1-\eta_i)Q_{r,i}
++
+Q_{\mathrm{coupling},i},
+}
+\tag{6.6}
+\end{align}
+\begin{align}
+\boxed{
+C_{m,i}\dot T_{m,i}
+=
+\frac{T_{a,i}-T_{m,i}}{R_{im}}
++
+\eta_iQ_{r,i}.
+}
+\tag{6.7}
+\end{align}
+
+All-to-One, Identity/IND, Identity/DEP1, and Identity/DEP2 retain the exact state ownership,
+inter-zone coupling, and disturbance-allocation definitions established in Part 1.  In
+particular, DEP1 retains reciprocal shared thermal coupling and DEP2 retains the additional
+aggregate disturbance-allocation structure.  Part 6 only provides the MPC wrapper around those
+already-defined vector fields.
+
+The choice of reduced-order RC models as control-oriented building models is well established
+in the building-MPC literature \citep{bacher2011heat,ma2012predictive,afram2014review}.
+
+\section{Method-specific continuous-time MPC predictors}
+
+Let \(a\) denote the Phase-D architecture and \(r\in\{1C,2C\}\) the state order.
+
+\subsection{Inverse PINN-RC}
+
+The trajectory PINN is used only for identification.  The deployed MPC model is the identified
+physical RC ODE:
+\begin{align}
+\boxed{
+\dot x
+=
+f_{\mathrm{RC}}
+\left(
+x,\QAC,d;\widehat\theta_{\mathrm{RC}}
+\right).
+}
+\tag{6.8}
+\end{align}
+The identified parameters \(\widehat\theta_{\mathrm{RC}}\) are frozen before closed-loop MPC.
+The inverse-PINN principle follows the broader physics-informed inverse-problem lineage
+\citep{raissi2019pinn}.
+
+\subsection{Neural ODE}
+
+The normalized state is
+\begin{align}
+x=\mu_x+S_xz,
+\end{align}
+and normalized time is
+\begin{align}
+\boxed{
+\tau=\frac{t-t_{\mathrm{ref}}}{\dt}.
+}
+\tag{6.9}
+\end{align}
+The learned vector field is
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}
+=
+g_\omega(z,\widetilde v),
+}
+\tag{6.10}
+\end{align}
+which corresponds to the physical-time derivative
+\begin{align}
+\boxed{
+\dot x
+=
+\frac{S_x}{\dt}
+g_\omega(z,\widetilde v).
+}
+\tag{6.11}
+\end{align}
+The NODE contains no RC residual and no energy projection
+\citep{chen2018node}.
+
+\subsection{Base PINODE}
+
+The Base PINODE uses the same normalized-time neural derivative,
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}=g_\omega(z,\widetilde v),
+}
+\tag{6.12}
+\end{align}
+and therefore
+\begin{align}
+\boxed{
+\widetilde f_\omega
+=
+\frac{S_x}{\dt}g_\omega.
+}
+\tag{6.13}
+\end{align}
+The RC equations influenced training through a soft residual.  At MPC deployment, the frozen
+learned vector field is propagated exactly as defined in Part 4; no new hard projection is added.
+
+\subsection{EBP-PINODE}
+
+At each vector-field evaluation, the network first provides the raw physical derivative
+\begin{align}
+\widetilde f_\omega.
+\end{align}
+The exact energy-balance projection is
+\begin{align}
+f_P
+=
+\arg\min_f
+\frac12
+(f-\widetilde f_\omega)^\top
+W
+(f-\widetilde f_\omega)
+\quad
+\text{s.t.}
+\quad
+Af=b.
+\tag{6.14}
+\end{align}
+Define
+\begin{align}
+\rho&=A\widetilde f_\omega-b,
+\\
+M&=AW^{-1}A^\top.
+\end{align}
+The multiplier is obtained by solving
+\begin{align}
+\boxed{
+M\nu=\rho,
+}
+\tag{6.15}
+\end{align}
+and the projected derivative is
+\begin{align}
+\boxed{
+f_P
+=
+\widetilde f_\omega
+-
+W^{-1}A^\top\nu.
+}
+\tag{6.16}
+\end{align}
+No explicit matrix inverse of \(M\) is introduced.  For the normalized solver,
+\begin{align}
+\boxed{
+g_P
+=
+\dt S_x^{-1}f_P.
+}
+\tag{6.17}
+\end{align}
+The projection is evaluated at \textbf{every RK4 stage}, because \(A\) and \(b\) may depend on
+the current stage state.
+
+\section{Fixed-step RK4 contract}
+
+Let \(N_s\ge1\) be the number of numerical substeps per 5-minute control interval.
+
+\subsection{Physical-time form}
+
+For a physical-time vector field
+\begin{align}
+\dot x=f(x,u,d),
+\end{align}
+define
+\begin{align}
+h_t=\frac{\dt}{N_s}.
+\end{align}
+For substep \(n\),
+\begin{align}
+k_1&=f(x_n,u_k,d_k),
+\\
+k_2&=f\!\left(x_n+\frac{h_t}{2}k_1,u_k,d_k\right),
+\\
+k_3&=f\!\left(x_n+\frac{h_t}{2}k_2,u_k,d_k\right),
+\\
+k_4&=f\!\left(x_n+h_tk_3,u_k,d_k\right),
+\\
+x_{n+1}
+&=
+x_n
++
+\frac{h_t}{6}
+(k_1+2k_2+2k_3+k_4).
+\tag{6.18}
+\end{align}
+
+\subsection{Normalized-time form}
+
+For NODE/Base-PINODE/EBP-PINODE, one sampled interval has
+\begin{align}
+\Delta\tau=1,
+\end{align}
+so the normalized substep is
+\begin{align}
+h_\tau=\frac{1}{N_s}.
+\end{align}
+The same RK4 algebra is applied to \(g_\omega\) or \(g_P\).
+
+\subsection{Zero-order-hold forcing}
+
+Inside one 5-minute prediction interval,
+\begin{align}
+u(\tau)&=u_k,
+\\
+d(\tau)&=d_k,
+\qquad
+\tau\in[\tau_k,\tau_k+1),
+\tag{6.19}
+\end{align}
+unless a later explicitly documented experiment introduces an intra-interval forcing model.
+This preserves the Parts 3--5 numerical convention.
+
+\subsection{CasADi parity requirement}
+
+The CasADi expression for every frozen model must satisfy a direct numerical parity test against
+the authoritative PyTorch/Neuromancer implementation:
+\begin{align}
+\boxed{
+\left\|
+\Phi_{\mathrm{Torch}}(x,u,d)
+-
+\Phi_{\mathrm{CasADi}}(x,u,d)
+\right\|
+\le\epsilon_{\mathrm{parity}}.
+}
+\tag{6.20}
+\end{align}
+CasADi is used as a symbolic/algorithmic differentiation and nonlinear optimal-control framework
+\citep{andersson2019casadi}; it does not redefine the learned physics.
+
+\section{HVAC algebraic chain inside MPC}
+
+\subsection{Physical HVAC proxy}
+
+Let
+\begin{align}
+c_{p,a}=1000(1.005)=1005\ {\rm J/(kg\,K)}.
+\end{align}
+Then the Phase-C HVAC proxy is
+\begin{align}
+\boxed{
+\QHX
+=
+c_{p,a}\mdot(\Ts-\Tz).
+}
+\tag{6.21}
+\end{align}
+
+\subsection{Why \(G_Q\) remains necessary}
+
+The thermal-control signal used by the learned thermal models is
+\begin{align}
+\boxed{
+\QAC
+=
+G_Q(\QHX).
+}
+\tag{6.22}
+\end{align}
+For the current controlled paper case, \(G_Q\) is a persisted Phase-C one-input surrogate,
+typically affine:
+\begin{align}
+G_Q(q)=a_Qq+b_Q.
+\tag{6.23}
+\end{align}
+
+Although \(\QHX\) can be computed directly from \((\mdot,\Ts,\Tz)\), it is not generally
+identical to the Phase-D \(\QAC\) signal on which the thermal models were trained.  Therefore
+bypassing \(G_Q\) would change the learned model's input semantics after training.
+
+\subsection{HVAC electric power}
+
+The common Phase-C electric-power surrogate is
+\begin{align}
+\boxed{
+P_{\mathrm{raw}}
+=
+G_P(q^{\mathrm{abs}}),
+}
+\tag{6.24}
+\end{align}
+with \(G_P\) typically affine:
+\begin{align}
+G_P(q)=a_Pq+b_P.
+\tag{6.25}
+\end{align}
+The realized electrical quantity used for energy accounting is constrained to be nonnegative.
+
+\section{Smooth continuous epigraph for \texorpdfstring{\(|\QAC|\)}{|QAC|} and nonnegative power}
+
+To avoid introducing a nonsmooth absolute-value operator into IPOPT, introduce the continuous
+auxiliary variable
+\begin{align}
+q^{\mathrm{abs}}_j\ge0
+\end{align}
+and impose
+\begin{align}
+q^{\mathrm{abs}}_j&\ge {\QAC}_j,
+\\
+q^{\mathrm{abs}}_j&\ge-{\QAC}_j.
+\tag{6.26}
+\end{align}
+Introduce
+\begin{align}
+P_j\ge0
+\end{align}
+and impose
+\begin{align}
+P_j\ge G_P(q^{\mathrm{abs}}_j).
+\tag{6.27}
+\end{align}
+Provided the validated \(G_P\) has nonnegative slope and \(P_j\) carries a positive objective
+weight, minimization makes the epigraph tight:
+\begin{align}
+q^{\mathrm{abs}}_j&=|{\QAC}_j|,
+\\
+P_j&=\max\!\left(0,G_P(|{\QAC}_j|)\right).
+\tag{6.28}
+\end{align}
+Thus the NLP remains continuous and compatible with the smooth nonlinear-programming framework
+used by IPOPT \citep{wachter2006ipopt}.
+
+\section{Frozen continuous HVAC control architecture}
+
+Day-7 actuator forensics and the direct EnergyPlus Runtime-API implementation
+close the earlier actuator-architecture branch.  The final paper architecture
+uses both mass flow and supply-air temperature as continuous physical MPC
+variables:
+\begin{align}
+\boxed{
+u_{i,j}
+=
+\begin{bmatrix}
+\mdot_{i,j}\\
+{\Ts}_{i,j}
+\end{bmatrix},
+\qquad
+i\in\{D,K\}.
+}
+\tag{6.29}
+\end{align}
+
+For the identity two-zone plant the implemented first control move is therefore
+the four-command vector
+\begin{align}
+\boxed{
+u_k^\star
+=
+\begin{bmatrix}
+\mdot_{D,k}^\star &
+{\Ts}_{D,k}^\star &
+\mdot_{K,k}^\star &
+{\Ts}_{K,k}^\star
+\end{bmatrix}^{\!\top}.
+}
+\tag{6.30}
+\end{align}
+
+Heating and cooling emerge continuously from the sign of the air-side thermal
+delivery,
+\begin{align}
+{\QHX}_{i,j}
+=
+\mdot_{i,j}c_p({\Ts}_{i,j}-{\Tz}_{i,j}),
+\end{align}
+so no binary heating/cooling decision variable is introduced.
+
+The low-level EnergyPlus realization is identical for Dining and Kitchen:
+\begin{align}
+a_{m,i,j}
+&=
+\tfrac12\mdot_{i,j},
+\\
+a_{q,i,j}
+&=
+\mdot_{i,j}c_p({\Ts}_{i,j}-{\Tz}_{i,j}).
+\tag{6.31}
+\end{align}
+The fan command is issued inside the HVAC system iteration loop and the unitary
+sensible-load request is issued after the predictor/HVAC managers, as frozen by
+Part~7.
+
+The earlier \(\mdot\)-only alternative is retired from the final paper
+architecture.  It may remain in historical development notes, but it is not a
+second experimental actuator path and is not a factor in the final
+model-to-model comparison.
+
+\subsection{Generic per-zone feasibility supervisor}
+
+The simulator applies one symmetric numerical feasibility test to Dining and
+Kitchen and to both signs of \({\Ts}-{\Tz}\).  The current configured
+Day-7 envelope is
+\begin{align}
+0.50
+\le
+\frac{\mdot_i^\star}{\mdot_{i,\max}}
+\le
+0.80,
+\qquad
+4^\circ{\rm C}
+\le
+|{\Ts}_i^\star-{\Tz}_i|
+\le
+8^\circ{\rm C}.
+\tag{6.32}
+\end{align}
+
+All four regimes---Dining heating, Dining cooling, Kitchen heating, and Kitchen
+cooling---are MPC-commandable.  There is no categorical Kitchen-heating
+exclusion.  If the command for zone \(i\) is outside the configured envelope,
+both external overrides for that zone are released for the current 300-s
+interval and native EnergyPlus HVAC control is used for that zone only.  The
+other zone remains under MPC control if its command is feasible.
+
+The exact final optimization bounds may be tightened after learned-model
+training so that the MPC also respects model TRAIN support.  This does not
+change the simulator supervisor mechanism.
+
+\section{TRAIN-supported actuator boxes}
+
+For each zone \(i\) and observed HVAC regime \(m\), define the exact TRAIN+included active-mode
+sample set
+\begin{align}
+\mathcal A_{i,m}^{\mathrm{tr}}
+=
+\left\{
+(\mdot_k,{\Ts}_k):
+k\in\mathrm{TRAIN+included},\;
+\mathrm{mode}_k=m
+\right\}.
+\tag{6.35}
+\end{align}
+
+Store at least
+\begin{align}
+\min,\quad
+\max,\quad
+\mathrm{mean},\quad
+\mathrm{median},\quad
+\mathrm{std},\quad
+P_{05},P_{10},P_{25},P_{50},P_{75},P_{90},P_{95}
+\tag{6.36}
+\end{align}
+for both \(\mdot\) and \(\Ts\).
+
+The primary paper control boxes are data-supported:
+\begin{align}
+\boxed{
+\mdot_{i,m}^{\min,\mathrm{tr}}
+\le
+\mdot_{i,j}
+\le
+\mdot_{i,m}^{\max,\mathrm{tr}},
+}
+\tag{6.37}
+\end{align}
+and
+\begin{align}
+\boxed{
+{\Ts}_{i,m}^{\min,\mathrm{tr}}
+\le
+{\Ts}_{i,j}
+\le
+{\Ts}_{i,m}^{\max,\mathrm{tr}}.
+}
+\tag{6.38}
+\end{align}
+
+EnergyPlus hard actuator limits are recorded separately as plant constraints.  The paper
+experiments use the intersection
+\begin{align}
+\boxed{
+\mathcal U_{\mathrm{paper}}
+=
+\mathcal U_{\mathrm{TRAIN}}
+\cap
+\mathcal U_{\mathrm{act}},
+}
+\tag{6.39}
+\end{align}
+
+The simulator permits all four zone/mode combinations, but the predictive
+model must still be used responsibly.  If a final learned-model checkpoint has
+weak or absent TRAIN support for a requested region, that command is marked
+model-OOD and should not be part of the primary fair-comparison operating
+region unless explicitly studied as robustness/extrapolation.  This
+model-support rule is distinct from the generic EnergyPlus native-fallback
+supervisor.
+
+\section{Condensed All-to-One physical-input allocation}
+
+The All-to-One learned model predicts one aggregate thermal state, while the
+EnergyPlus plant still contains two physical PSZ systems.  Therefore the final
+architecture contains an explicit aggregate-to-zone allocation layer before
+the common actuator transform.
+
+Let
+\begin{align}
+u_{A,k}^{\star}
+=
+\begin{bmatrix}
+\mdot_{A,k}^{\star}\\
+{\Ts}_{A,k}^{\star}
+\end{bmatrix}.
+\tag{6.40}
+\end{align}
+The physical zone commands are
+\begin{align}
+\boxed{
+u_{k}^{z,\star}
+=
+\mathcal A_u
+\left(
+u_{A,k}^{\star},
+\xi_{D,k},
+\xi_{K,k}
+\right)
+=
+\begin{bmatrix}
+u_{D,k}^{\star}\\
+u_{K,k}^{\star}
+\end{bmatrix},
+}
+\tag{6.41}
+\end{align}
+where each \(u_{i,k}^{\star}=[\mdot_{i,k}^\star,{\Ts}_{i,k}^\star]^\top\).
+
+The allocator is required to preserve the aggregate physical-input meaning
+defined upstream.  With aggregation map \(P_u\), record
+\begin{align}
+\boxed{
+r_{u,k}
+=
+u_{A,k}^{\star}
+-
+P_u u_{k}^{z,\star}
+}
+\tag{6.42}
+\end{align}
+as an allocation-consistency diagnostic.
+
+The allocation rule is common across learned-model families and is frozen
+before final comparative testing.  After allocation, Dining and Kitchen pass
+through the same feasibility supervisor and the same low-level actuator
+transformation.  The aggregate predictive model therefore does not bypass or
+merge the two real EnergyPlus HVAC systems.
+
+\section{Disturbance forecasts}
+
+Building MPC obtains much of its value from using forecasts of weather and internal disturbances
+\citep{killian2016ten,oldewurtel2014stochastic,drgona2020all}.
+
+Let
+\begin{align}
+d_{k+j}
+\end{align}
+be the true exogenous non-HVAC disturbance vector over the horizon.
+
+\subsection{Perfect forecast}
+
+The perfect-information benchmark is
+\begin{align}
+\boxed{
+\widehat d_{k+j|k}
+=
+d_{k+j},
+\qquad
+j=0,\ldots,N_p-1.
+}
+\tag{6.42}
+\end{align}
+Future measured \(\Tz\) and future historical \(\QAC\) are never supplied as forecasts.
+
+\subsection{Parameterized noisy forecast}
+
+For disturbance component \(r\),
+\begin{align}
+\widehat d^{(r)}_{k+j|k}
+=
+d^{(r)}_{k+j}
++
+b_r
++
+\epsilon^{(r)}_{k+j|k},
+\tag{6.43}
+\end{align}
+where
+\begin{align}
+\epsilon^{(r)}_{k+j|k}
+=
+\rho_r\epsilon^{(r)}_{k+j-1|k}
++
+\sqrt{1-\rho_r^2}\,
+\sigma^{(r)}_j
+z^{(r)}_{k+j},
+\qquad
+z^{(r)}_{k+j}\sim\mathcal N(0,1).
+\tag{6.44}
+\end{align}
+Use
+\begin{align}
+\sigma^{(r)}_j
+=
+\gamma_r(j)
+\left(
+\sigma^{(r)}_{\mathrm{abs}}
++
+\sigma^{(r)}_{\mathrm{rel}}
+|d^{(r)}_{k+j}|
+\right),
+\tag{6.45}
+\end{align}
+where \(\gamma_r(j)\ge1\) optionally increases uncertainty with forecast lead time.
+
+The forecast configuration therefore exposes
+\begin{align}
+\boxed{
+b_r,\;
+\sigma^{(r)}_{\mathrm{abs}},\;
+\sigma^{(r)}_{\mathrm{rel}},\;
+\rho_r,\;
+\gamma_r(\cdot),\;
+\mathrm{seed}.
+}
+\tag{6.46}
+\end{align}
+Setting all error terms to zero exactly recovers the perfect forecast.
+
+\section{Observer contract}
+
+\subsection{1C models}
+
+For a 1C model, the complete thermal state is the measured EnergyPlus zone-air temperature:
+\begin{align}
+\boxed{
+\widehat x_k
+=
+T_{z,k}^{\mathrm{EP}}.
+}
+\tag{6.47}
+\end{align}
+No observer is required.
+
+\subsection{Learned 2C methods: causal encoder as online observer}
+
+For NODE-2C, Base-PINODE-2C, and EBP-PINODE-2C, let the rolling causal history be
+\begin{align}
+\mathcal H_k
+=
+\left\{
+T_{a,\ell}^{\mathrm{meas}},
+{\QAC}_{\ell}^{\mathrm{realized}},
+d_\ell
+\right\}_{\ell=k-L_e+1}^{k}.
+\tag{6.48}
+\end{align}
+The frozen trained causal encoder is re-evaluated at every \textbf{closed-loop control boundary}:
+\begin{align}
+\boxed{
+\widehat T_{m,k}
+=
+E_{\psi^\star}(\mathcal H_k),
+}
+\tag{6.49}
+\end{align}
+and
+\begin{align}
+\boxed{
+\widehat x_k
+=
+\begin{bmatrix}
+T_{a,k}^{\mathrm{EP}}\\
+\widehat T_{m,k}
+\end{bmatrix}.
+}
+\tag{6.50}
+\end{align}
+
+Inside one MPC prediction horizon, the encoder is \textbf{not} repeatedly called on predicted
+future measurements.  The horizon starts from \(\widehat x_k\) and then propagates only through
+the continuous-time model and numerical integrator.
+
+The realized historical control input supplied to the encoder is constructed causally from
+realized/commanded plant variables:
+\begin{align}
+{\QAC}_{\ell}^{\mathrm{realized}}
+=
+G_Q
+\left[
+c_{p,a}
+\mdot_{\ell}^{\mathrm{realized}}
+\left(
+{\Ts}_{\ell}^{\mathrm{realized}}
+-
+T_{z,\ell}^{\mathrm{meas}}
+\right)
+\right],
+\tag{6.51}
+\end{align}
+unless a directly measured authoritative plant signal is explicitly substituted with provenance.
+
+\subsection{Inverse PINN-RC 2C: Luenberger observer}
+
+For the identified RC model with output
+\begin{align}
+y=Hx,
+\qquad
+H=
+\begin{bmatrix}
+1&0
+\end{bmatrix},
+\tag{6.52}
+\end{align}
+a continuous Luenberger-style observer is
+\begin{align}
+\boxed{
+\dot{\widehat x}
+=
+f_{\mathrm{RC}}(\widehat x,\QAC,d)
++
+L
+\left(
+y-H\widehat x
+\right).
+}
+\tag{6.53}
+\end{align}
+For a linear RC realization
+\begin{align}
+\dot x=Ax+B_u u+B_dd,
+\end{align}
+the estimation error satisfies
+\begin{align}
+\dot e=(A-LH)e,
+\tag{6.54}
+\end{align}
+so \(L\) is chosen to place the observer error poles in the stable half-plane, following the
+classical observer construction of \citet{luenberger1966observer}.
+
+A sampled implementation may equivalently use
+\begin{align}
+\widehat x_{k|k-1}
+&=
+\Phi_{\mathrm{RC},\Delta t}
+(
+\widehat x_{k-1|k-1},{\QAC}_{k-1},d_{k-1}
+),
+\\
+\widehat x_{k|k}
+&=
+\widehat x_{k|k-1}
++
+L_d
+\left(
+y_k-H\widehat x_{k|k-1}
+\right).
+\tag{6.55}
+\end{align}
+
+\subsection{Inverse PINN-RC 2C: Kalman/Kalman-family observer}
+
+The second supported observer is covariance based.  The state prediction uses the \textbf{same
+numerically integrated RC transition}:
+\begin{align}
+\widehat x^-_k
+=
+\Phi_{\mathrm{RC},\Delta t}
+(
+\widehat x^+_{k-1},{\QAC}_{k-1},d_{k-1}
+).
+\tag{6.56}
+\end{align}
+Let
+\begin{align}
+F_{k-1}
+=
+\left.
+\frac{\partial
+\Phi_{\mathrm{RC},\Delta t}(x,{\QAC}_{k-1},d_{k-1})}
+{\partial x}
+\right|_{x=\widehat x^+_{k-1}}.
+\tag{6.57}
+\end{align}
+Then
+\begin{align}
+P^-_k
+&=
+F_{k-1}P^+_{k-1}F_{k-1}^\top+Q_o,
+\\
+K_k
+&=
+P^-_kH^\top
+\left(
+HP^-_kH^\top+R_o
+\right)^{-1},
+\\
+\widehat x^+_k
+&=
+\widehat x^-_k
++
+K_k
+\left(
+y_k-H\widehat x^-_k
+\right),
+\\
+P^+_k
+&=
+(I-K_kH)P^-_k.
+\tag{6.58}
+\end{align}
+For the linear RC case this is the standard Kalman filter; the Jacobian form also supports an
+extended-Kalman implementation if required.  The lineage is the classical state-estimation
+framework of \citet{kalman1960filter}.
+
+\section{Electricity price signal}
+
+Let \(\pi_k\) denote the electricity-price signal used by the economic MPC.
+
+The primary EPSR experiment uses the already-established daily normalized price profile from the
+MS-thesis workflow.  That profile is treated as experiment input data, not as a newly invented
+utility tariff.  If the stored profile has 10-minute resolution and the MPC interval is 5 minutes,
+use zero-order hold:
+\begin{align}
+\boxed{
+\pi_{2r}=\pi_{2r+1}=\pi_r^{10\mathrm{min}}.
+}
+\tag{6.59}
+\end{align}
+
+A normalized price produces a \textbf{normalized price-weighted energy metric}, not a monetary
+dollar cost.  If a future experiment substitutes a real tariff in \$/kWh, the same equations
+become a true monetary objective.
+
+Price-responsive HVAC MPC is directly motivated by demand-response and dynamic-pricing
+literature \citep{avci2013price,amin2020price,zanetti2025flex}.
+
+\section{Why non-HVAC electric loads are not optimized}
+
+Let
+\begin{align}
+P_{\mathrm{base},k}
+=
+P_{\mathrm{lights},k}
++
+P_{\mathrm{equipment},k}
++
+P_{\mathrm{other,nonHVAC},k}.
+\tag{6.60}
+\end{align}
+These loads may be reconstructed from Phase-B schedule/rating information for reporting, but they
+are \textbf{not controlled} in the present HVAC MPC.
+
+If the objective contained only linear energy/price terms,
+\begin{align}
+\sum_j
+\pi_j
+\left(
+{\PHVAC}_j
++
+P_{\mathrm{base},j}
+\right)\dt,
+\end{align}
+and \(P_{\mathrm{base},j}\) is exogenous, then
+\begin{align}
+\sum_j\pi_jP_{\mathrm{base},j}\dt
+\end{align}
+is constant with respect to the MPC decision variables and therefore does not change the optimizer.
+
+Thus the main MPC should optimize \(\PHVAC\) only.  For EPSR reporting, however, define
+\begin{align}
+\boxed{
+P_{\mathrm{building},k}
+=
+{\PHVAC}_k
++
+P_{\mathrm{base},k},
+}
+\tag{6.61}
+\end{align}
+so total-building demand, grid-facing peaks, and total price-weighted consumption can be plotted
+without claiming that lighting/equipment were controlled.
+
+An exception would arise if a later formulation adds a whole-building peak-demand charge,
+explicit controllable lighting/plug loads, or another coupling constraint.  In that case the
+non-HVAC electrical profile can affect optimal HVAC timing and must be included explicitly.
+That extension is outside the present Part-6 lock.
+
+\section{Comfort model}
+
+Let the desired setpoint and deadband/comfort width at horizon point \(j\) be
+\begin{align}
+T^{\mathrm{sp}}_j,
+\qquad
+\delta^{\mathrm{db}}_j\ge0.
+\end{align}
+Define
+\begin{align}
+T^{\mathrm{low}}_j
+&=
+T^{\mathrm{sp}}_j-\delta^{\mathrm{db}}_j,
+\\
+T^{\mathrm{high}}_j
+&=
+T^{\mathrm{sp}}_j+\delta^{\mathrm{db}}_j.
+\tag{6.62}
+\end{align}
+Introduce nonnegative comfort slacks
+\begin{align}
+s_j^-\ge0,
+\qquad
+s_j^+\ge0,
+\end{align}
+with
+\begin{align}
+T^{\mathrm{low}}_j-s_j^-
+\le
+T_{z,j}
+\le
+T^{\mathrm{high}}_j+s_j^+.
+\tag{6.63}
+\end{align}
+Soft comfort constraints prevent infeasibility while making violations explicit
+\citep{ma2012predictive,drgona2020all}.
+
+\section{Price-aware MPC objective}
+
+For the frozen two-input architecture, define
+\begin{align}
+J
+=
+\sum_{j=0}^{N_p-1}
+\Big[
+&
+w_c
+\left(
+(s_j^-)^2+(s_j^+)^2
+\right)
++
+w_e
+P_j\dt_h
++
+w_p
+\pi_jP_j\dt_h
+\nonumber\\
+&
++
+w_m
+(\mdot_j-\mdot_{j-1})^2
++
+w_T
+({\Ts}_j-{\Ts}_{j-1})^2
+\Big]
++
+J_f,
+\tag{6.64}
+\end{align}
+where
+\begin{align}
+\dt_h=\frac{\dt}{3600}
+\end{align}
+and \(J_f\) is an optional terminal comfort term.
+
+The terms have distinct purposes:
+\begin{align}
+J_{\mathrm{comfort}}
+&\rightarrow
+\text{maintain thermal comfort},
+\\
+J_{\mathrm{energy}}
+&\rightarrow
+\text{reduce HVAC electrical energy},
+\\
+J_{\mathrm{price}}
+&\rightarrow
+\text{shift HVAC electricity away from expensive periods},
+\\
+J_{\Delta u}
+&\rightarrow
+\text{avoid unnecessarily aggressive actuator movement}.
+\end{align}
+
+Keeping both \(w_eP_j\) and \(w_p\pi_jP_j\) is deliberate when \(\pi\) is a normalized synthetic
+price signal: energy is still penalized even during low-price periods.  Dynamic-price HVAC MPC
+has been widely studied as a building demand-response mechanism
+\citep{avci2013price,amin2020price,zanetti2025flex}.
+
+For the retired mass-flow-only alternative, remove the \(T_s\)-ramping term:
+\begin{align}
+w_T=0,
+\qquad
+{\Ts}_j\text{ known externally.}
+\tag{6.65}
+\end{align}
+
+\section{Complete nonlinear program: the frozen two-input architecture}
+
+At control time \(k\), the decision variables include
+\begin{align}
+\mathcal Z_k
+=
+\left\{
+x_j,\mdot_j,{\Ts}_j,
+q_j^{\mathrm{abs}},P_j,s_j^-,s_j^+
+\right\}_{j=0}^{N_p}.
+\tag{6.66}
+\end{align}
+Solve
+\begin{align}
+\boxed{
+\min_{\mathcal Z_k}J
+}
+\tag{6.67}
+\end{align}
+subject to:
+
+\paragraph{Observer-initialized state}
+\begin{align}
+x_0=\widehat x_k.
+\tag{6.68}
+\end{align}
+
+\paragraph{HVAC proxy and Phase-C thermal input}
+\begin{align}
+{\QHX}_j
+&=
+c_{p,a}\mdot_j({\Ts}_j-T_{z,j}),
+\\
+{\QAC}_j
+&=
+G_Q({\QHX}_j).
+\tag{6.69}
+\end{align}
+
+\paragraph{Continuous-time thermal prediction with numerical integration}
+\begin{align}
+x_{j+1}
+=
+\Phi_{\Delta t}
+\left(
+x_j,{\QAC}_j,\widehat d_{k+j|k};N_s
+\right).
+\tag{6.70}
+\end{align}
+
+\paragraph{Absolute-QAC epigraph}
+\begin{align}
+q_j^{\mathrm{abs}}&\ge{\QAC}_j,
+\\
+q_j^{\mathrm{abs}}&\ge-{\QAC}_j,
+\\
+q_j^{\mathrm{abs}}&\ge0.
+\tag{6.71}
+\end{align}
+
+\paragraph{PHVAC epigraph}
+\begin{align}
+P_j&\ge G_P(q_j^{\mathrm{abs}}),
+\\
+P_j&\ge0.
+\tag{6.72}
+\end{align}
+
+\paragraph{Comfort}
+\begin{align}
+T^{\mathrm{low}}_{k+j}-s_j^-
+\le
+T_{z,j}
+\le
+T^{\mathrm{high}}_{k+j}+s_j^+,
+\\
+s_j^\pm\ge0.
+\tag{6.73}
+\end{align}
+
+\paragraph{Data-supported actuator box}
+\begin{align}
+\mdot^{\min,\mathrm{tr}}
+&\le\mdot_j\le\mdot^{\max,\mathrm{tr}},
+\\
+{\Ts}^{\min,\mathrm{tr}}
+&\le{\Ts}_j\le{\Ts}^{\max,\mathrm{tr}}.
+\tag{6.74}
+\end{align}
+
+\paragraph{Optional single-regime sign constraint}
+\begin{align}
+{\QAC}_j\le0
+\quad\text{or}\quad
+{\QAC}_j\ge0.
+\tag{6.75}
+\end{align}
+
+The resulting problem is a continuous nonlinear program suitable for CasADi and IPOPT
+\citep{andersson2019casadi,wachter2006ipopt}.
+
+\section{Complete nonlinear program: the retired mass-flow-only alternative}
+
+the retired mass-flow-only alternative uses the same program except
+\begin{align}
+{\Ts}_j
+=
+{\Ts}_{m_j}^{\mathrm{fixed}}
+\end{align}
+is a known parameter and not a decision variable.  The control sequence becomes
+\begin{align}
+\mathcal U_k
+=
+\{\mdot_0,\ldots,\mdot_{N_p-1}\}.
+\tag{6.76}
+\end{align}
+All equations for \(\QHX\), \(G_Q\), the continuous thermal model, RK4, \(G_P\), comfort, price,
+and mass-flow ramping remain unchanged.
+
+\section{Multi-zone identity cases}
+
+For Dining/Kitchen identity architectures,
+\begin{align}
+u_j
+=
+\begin{bmatrix}
+u_{D,j}\\
+u_{K,j}
+\end{bmatrix}.
+\tag{6.77}
+\end{align}
+For the frozen two-input architecture,
+\begin{align}
+u_{i,j}
+=
+\begin{bmatrix}
+\mdot_{i,j}\\
+{\Ts}_{i,j}
+\end{bmatrix};
+\end{align}
+for the retired mass-flow-only alternative,
+\begin{align}
+u_{i,j}=\mdot_{i,j}.
+\end{align}
+
+IND, DEP1, and DEP2 change the thermal model structure and coupling, not the physical ownership of
+the Dining and Kitchen HVAC actuators.
+
+\section{Receding-horizon closed-loop algorithm}
+
+At each plant interval \(k\):
+
+\begin{enumerate}[leftmargin=2em]
+\item Read the current EnergyPlus measurements and realized actuator values.
+\item Update the causal history \(\mathcal H_k\).
+\item Estimate \(\widehat x_k\) with direct measurement (1C), causal encoder (learned 2C), or
+Luenberger/Kalman observer (Inverse PINN-RC 2C).
+\item Construct \(\widehat d_{k:k+N_p-1|k}\) using the selected forecast provider.
+\item Load the known price horizon \(\pi_{k:k+N_p-1}\).
+\item Solve the continuous NLP.
+\item Apply only the first optimized control command \(u_k^\star\) to EnergyPlus.
+\item Advance EnergyPlus by one control interval.
+\item Record commanded and realized actuators, solver diagnostics, predicted trajectories, observed
+temperatures, \(Q_{\mathrm{HVAC},X}\), \(\QAC\), \(\PHVAC\), comfort, and provenance.
+\item Repeat.
+\end{enumerate}
+
+This is the standard receding-horizon principle \citep{garcia1989mpc,rawlings2026mpc}.
+
+\section{Direct EnergyPlus Runtime-API plant boundary}
+
+The final plant interface is a project-owned synchronous wrapper around the
+EnergyPlus~24.1 Python Runtime/Data Exchange API.  the direct EnergyPlus wrapper and Gymnasium are
+not dependencies of the paper closed-loop stack.
+
+The interface is
+\begin{verbatim}
+observer / learned thermal model
+              |
+              v
+             MPC
+              |
+              v
+[m_dot_D*, Tsa_D*, m_dot_K*, Tsa_K*]
+              |
+              v
+generic EnergyPlus simulator
+  - feasibility supervisor
+  - actuator transformation
+  - callback execution
+  - broad history recorder
+              |
+              v
+       EnergyPlus 24.1
+\end{verbatim}
+
+The simulator records received physical commands, feasibility decisions,
+transformed low-level commands, effective actuator readback, raw API actuator
+values for forensics, zone/environment signals, the known PSZ air path,
+component signals, derived air-side quantities, and both EnergyPlus
+system-timestep and 300-s control-step histories.
+
+Scientific run artifacts are written under the separate
+\texttt{Data/ScaleBridge/Paper\_PINODE\_EPSR} root.  Clean source code, tests,
+configuration, and mathematical contracts remain under the repository
+\texttt{scalebridge-research/Paper\_PINODE\_EPSR} root.
+
+\section{Price and disturbance knowledge in the MPC horizon}
+
+For the primary perfect-information benchmark:
+\begin{align}
+\widehat d_{k+j|k}&=d_{k+j},
+\\
+\widehat \pi_{k+j|k}&=\pi_{k+j}.
+\tag{6.78}
+\end{align}
+The perfect disturbance benchmark is useful because it isolates model/controller quality from
+forecast error.  A second experiment introduces the parameterized noisy forecast of
+Eqs.~(6.43)--(6.46), following the broader building-MPC uncertainty literature
+\citep{oldewurtel2014stochastic,drgona2020all}.
+
+\section{Recommended primary EPSR control experiment}
+
+The primary MPC comparison should preferentially use a day/window satisfying:
+
+\begin{align}
+\boxed{\text{all controlled zones have direct TRAIN support for the active HVAC regime}}
+\end{align}
+and
+\begin{align}
+\boxed{\text{the selected actuator box remains inside the observed TRAIN envelope.}}
+\end{align}
+
+A cooling-dominated day remains an attractive primary comparison window
+because it is strongly represented in the actuator-validation evidence and
+typically provides simultaneous two-zone conditioning.  This is a
+comparability choice, not a categorical restriction on Kitchen heating.
+
+Heating windows may also be used.  All four zone/mode combinations are
+MPC-commandable when the numerical supervisor accepts the command.  Separate
+robustness tests should deliberately exercise per-zone native fallback.
+
+\section{Evaluation metrics}
+
+For each method, architecture, RC order, and forecast mode, save at least:
+
+\subsection*{Comfort}
+\begin{align}
+\mathrm{RMSE}_{sp},
+\quad
+\mathrm{MAE}_{sp},
+\quad
+\mathrm{degree\ hours\ outside\ deadband},
+\quad
+\mathrm{fraction\ within\ deadband}.
+\end{align}
+
+\subsection*{HVAC energy}
+\begin{align}
+\boxed{
+E_{\mathrm{HVAC}}
+=
+\sum_k
+{\PHVAC}_k
+\frac{\dt}{3600}
+\frac{1}{1000}
+\quad[\mathrm{kWh}].
+}
+\tag{6.79}
+\end{align}
+
+\subsection*{Normalized price-weighted HVAC energy}
+For dimensionless thesis price \(\pi_k\),
+\begin{align}
+\boxed{
+C_{\pi,\mathrm{HVAC}}^{\mathrm{norm}}
+=
+\sum_k
+\pi_k
+{\PHVAC}_k
+\frac{\dt}{3600}
+\frac{1}{1000}.
+}
+\tag{6.80}
+\end{align}
+This is \textbf{not} labeled dollars.
+
+\subsection*{Grid-facing reporting}
+\begin{align}
+P_{\mathrm{building},k}
+=
+{\PHVAC}_k+P_{\mathrm{base},k},
+\end{align}
+with
+\begin{align}
+\max_k P_{\mathrm{building},k},
+\qquad
+\sum_k\pi_kP_{\mathrm{building},k}\dt_h/1000
+\end{align}
+reported optionally.
+
+\subsection*{Actuation}
+\begin{align}
+\max|\Delta\mdot|,
+\quad
+\sum(\Delta\mdot)^2,
+\quad
+\max|\Delta\Ts|,
+\quad
+\sum(\Delta\Ts)^2,
+\end{align}
+as applicable.
+
+\subsection*{Optimization}
+\begin{align}
+\mathrm{IPOPT\ success\ fraction},
+\quad
+\mathrm{solve\ time\ mean/median/P95/max},
+\quad
+\mathrm{iteration\ count},
+\quad
+\mathrm{constraint\ residuals}.
+\end{align}
+
+\subsection*{Forecast robustness}
+\begin{align}
+\mathrm{forecast\ RMSE},
+\quad
+\mathrm{comfort\ degradation},
+\quad
+\mathrm{energy/cost\ degradation}
+\end{align}
+versus perfect forecast.
+
+\subsection*{Data-support/OOD}
+Record fractions of commands outside empirical model-support quantiles, on TRAIN-envelope
+boundaries, rejected by the configured actuator-feasibility supervisor, or marked model-OOD.
+
+\section{Fair-comparison contract}
+
+Across Inverse PINN-RC, NODE, Base PINODE, and EBP-PINODE:
+
+\begin{align}
+\boxed{\text{same plant episode}}
+\end{align}
+\begin{align}
+\boxed{\text{same price trajectory}}
+\end{align}
+\begin{align}
+\boxed{\text{same disturbance forecast realization and random seed}}
+\end{align}
+\begin{align}
+\boxed{\text{same comfort bounds}}
+\end{align}
+\begin{align}
+\boxed{\text{same four-command interface, supervisor, and data-supported bounds}}
+\end{align}
+\begin{align}
+\boxed{\text{same MPC horizon and objective weights}}
+\end{align}
+unless a method-specific requirement is declared before seeing final test outcomes.
+
+Model hyperparameters are frozen before final testing.  MPC weights and horizon are not retuned
+against final comparative outcomes.
+
+\section{Implementation invariants}
+
+The code implementation must satisfy all of the following:
+
+\begin{enumerate}[leftmargin=2em]
+\item No learned method is converted into a discrete neural predictor.
+\item Inverse PINN-RC is numerically integrated like the other continuous-time methods.
+\item EBP projection is applied at every RK4 stage.
+\item CasADi uses linear solves, not explicit projection-matrix inverses.
+\item \(G_Q\) is retained between \(\QHX\) and the thermal-model \(\QAC\) input.
+\item \(G_P\) receives the absolute-QAC epigraph quantity.
+\item \(\PHVAC\) never enters the thermal model.
+\item One frozen four-command HVAC architecture is used for all learned-model families.
+\item No binary heat/cool variable appears in the NLP.
+\item Learned 2C encoders are re-used as observers at real control boundaries.
+\item The Inverse PINN-RC 2C controller supports both Luenberger and Kalman/Kalman-family observers.
+\item Perfect and noisy forecasts share one forecast-provider interface.
+\item Non-HVAC thermal gains remain disturbances.
+\item Non-HVAC electrical loads are reporting quantities unless a later explicitly controllable
+grid formulation is introduced.
+\item All-to-One physical inputs pass through one recorded aggregate-to-zone allocator \(\mathcal A_u\).
+\item The main paper actuator bounds are generated from exact TRAIN+included support and intersected
+with the configured EnergyPlus actuator-feasibility envelope.
+\end{enumerate}
+
+\section{Scientific interpretation}
+
+This Part-6 design places the paper in a useful intersection of:
+
+\begin{align}
+\boxed{\text{continuous-time control-oriented building modeling}}
+\end{align}
+\begin{align}
+\boxed{\text{physics-informed / neural differential-equation models}}
+\end{align}
+\begin{align}
+\boxed{\text{observer-based output feedback}}
+\end{align}
+\begin{align}
+\boxed{\text{economic MPC under dynamic electricity prices}}
+\end{align}
+\begin{align}
+\boxed{\text{building-grid demand flexibility}}
+\end{align}
+
+MPC for building thermal systems has a mature control literature
+\citep{ma2012predictive,afram2014review,killian2016ten,drgona2020all}, and dynamic-price control
+connects building thermal flexibility directly to grid-oriented demand response
+\citep{avci2013price,amin2020price,zanetti2025flex}.  The paper's distinct contribution is not
+the existence of MPC itself; it is the controlled comparison of the four continuous-time learned
+thermal-model families, including the energy-balance-projected PINODE, inside the same
+observer/forecast/actuator/economic-control contract.
+
+\bibliographystyle{plainnat}
+\bibliography{PINODE_EPSR_Part6_MPC_Observers_References}
+
+\end{document}

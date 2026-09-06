@@ -1,0 +1,16 @@
+ScaleBridge Phase E0-6 Backend Adapters + Numerical Parity
+Implementation authority: v2 (physical-Theta architecture)
+
+Scientific correction from v1:
+1. Physical RC parameters Theta are the cross-backend authority.
+2. PyTorch/Neuromancer SciML keeps unconstrained rho -> Theta transforms.
+3. Production CasADi/IPOPT estimation uses physical Theta directly as NLP decision variables.
+4. CasadiTransformedRCBackend remains only for parity/reference; CasadiRCBackend is its compatibility alias.
+5. NumpyPhysicalRCBackend provides transform-free physical forward evaluation for Bayesian/reference workflows.
+6. 4R3C gamma routing and DEP2 p allocation are explicit physical variables plus equality constraints in the IPOPT plan.
+7. P4 parity uses grad_rho = J_T^T grad_Theta.
+8. Symbolic RK4 is the portable generic CasADi direct-transcription path; exact ZOH remains a linear oracle/optional value path.
+9. A real IPOPT smoke solve is required by the E0-6 v2 validator.
+10. Installer and validator explicitly return exit code zero on success.
+
+No E0-3 flavour equations, E0-4 runtime semantics, E0-5 solver science, or controlled PINODE/EPSR sources are changed.

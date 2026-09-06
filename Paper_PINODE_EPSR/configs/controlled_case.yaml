@@ -1,0 +1,14 @@
+study: PINODE_EPSR
+building: RestaurantFastFood
+climate: Buffalo
+aggregation_cases:
+  - all_to_one
+  - identity_ind
+  - identity_dep1
+  - identity_dep2
+rc_orders: [1, 2]
+dt_seconds: 300
+phase_d_silo: ML_SciML
+lag: 1
+horizon: 1
+notes: "Controlled paper case only; authoritative runtime IDs remain in core/config.py."

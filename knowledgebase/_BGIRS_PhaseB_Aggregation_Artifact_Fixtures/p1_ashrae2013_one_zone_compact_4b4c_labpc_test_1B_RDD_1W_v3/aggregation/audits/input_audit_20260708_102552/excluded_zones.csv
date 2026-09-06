@@ -1,0 +1,2 @@
+case_id,run_id,campaign_id,building_type,weather_location,climate_zone,zone_name,included_thermal_zone,exclusion_reason,part_of_total_building_area,floor_area_m2,volume_m3,zone_multiplier,zone_list_multiplier,ceiling_height_m,number_of_surfaces,number_of_subsurfaces,centroid_x_m,centroid_y_m,centroid_z_m
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3,RestaurantFastFood,Buffalo,5A,ATTIC,false,Part of Total Building Area != Yes,No,232.34,262.34,1,1,1.27,6,0,7.62,7.62,3.64

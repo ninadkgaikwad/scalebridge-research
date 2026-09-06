@@ -1,0 +1,12 @@
+aggregate_zone_id,source_variable_name,output_variable_name,rule_family,status,source_key_count,source_keys,message
+Aggregated_Zone_1,Facility Total HVAC Electric Demand Power,Facility_Total_HVAC_Electric_Demand_Power_,Facility,aggregated,1,Whole Building,
+Aggregated_Zone_1,Site Diffuse Solar Radiation Rate per Area,Site_Diffuse_Solar_Radiation_Rate_per_Area_,Site,aggregated,1,Environment,
+Aggregated_Zone_1,Site Direct Solar Radiation Rate per Area,Site_Direct_Solar_Radiation_Rate_per_Area_,Site,aggregated,1,Environment,
+Aggregated_Zone_1,Site Outdoor Air Drybulb Temperature,Site_Outdoor_Air_Drybulb_Temperature_,Site,aggregated,1,Environment,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_People,Schedule,aggregated,1,BLDG_OCC_SCH,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_Lights,Schedule,aggregated,2,BLDG_LIGHT_DINING_SCH | BLDG_LIGHT_KITCHEN_SCH,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_ElectricEquipment,Schedule,aggregated,3,ALWAYS_ON | BLDG_EQUIP_SCH | EXTERIOR_LGT_ALWAYS_ON,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_GasEquipment,Schedule,aggregated,1,FF_GAS_EQUIP_SCH,
+Aggregated_Zone_1,Schedule Value,Schedule_Value_OtherEquipment,Schedule,warning,0,,no Schedule Value key_values matched EIO schedule names
+Aggregated_Zone_1,Schedule Value,Schedule_Value_HotWaterEquipment,Schedule,warning,0,,no Schedule Value key_values matched EIO schedule names
+Aggregated_Zone_1,Schedule Value,Schedule_Value_SteamEquipment,Schedule,warning,0,,no Schedule Value key_values matched EIO schedule names

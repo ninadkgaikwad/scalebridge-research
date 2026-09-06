@@ -1,0 +1,17 @@
+ScaleBridge Phase D D5 implementation
+
+Implements:
+- authoritative Phase B aggregation lineage
+- aggregate-zone/source-zone membership
+- structural all-to-one detection
+- exact configuration counterpart matching
+- deterministic first-candidate selection for ambiguous compatible counterparts
+- Phase C C8 inference usability checks
+- metadata-only D5 validation outputs
+
+Controlled expected results:
+- all-to-one/equal -> matched_self
+- identity/equal -> matched_exact to the all-to-one/equal run
+- Dependent 2 available only when selected counterpart has usable Phase C inference lineage
+
+No Phase D time-series output is created in D5.

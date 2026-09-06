@@ -1,0 +1,1144 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\title{Part 2: Detailed Inverse PINN-RC Formulation}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Part 2 --- Detailed Inverse PINN-RC Formulation}
+
+We now define \textbf{only the inverse PINN-RC baseline}, using the Part-1 RC architectures without changing any of them.
+
+The role of the inverse PINN is very specific:
+\begin{align}
+\boxed{\text{use a neural trajectory surrogate only to identify the physical RC parameters}}
+\end{align}
+and, after identification,
+\begin{align}
+\boxed{\text{discard the PINN trajectory network and retain only the identified RC model.}}
+\end{align}
+The inverse PINN-RC is the interpretable physics baseline, and the deployed model is the identified RC ODE rather than the PINN itself.
+
+\section*{1. What the inverse PINN is actually solving}
+For a given RC architecture, let the true physical state be
+\begin{align}
+x(t)\in\mathbb R^{n_x},
+\end{align}
+the measured output be
+\begin{align}
+y(t)=Hx(t),
+\end{align}
+and the measured forcing vector be
+\begin{align}
+v(t).
+\end{align}
+The physical RC model from Part 1 is written generally as
+\begin{align}
+\boxed{\mathcal F\left(x,\dot x,v;\theta\right)=0}
+\tag{P2.1}
+\end{align}
+where \(\theta\) contains the unknown RC parameters. For example,
+\begin{align}
+\theta&=\{R,C,\eta_r\},
+\end{align}
+or
+\begin{align}
+\theta&=\{R_{Do},R_{Ko},R_{DK},C_D,C_K,\eta_{r,D},\eta_{r,K}\},
+\end{align}
+or the corresponding 2R2C parameter set. For DEP2, \(\theta\) also contains \(\alpha_c,\alpha_r\).
+
+The PINN introduces a neural approximation
+\begin{align}
+\boxed{\widehat x_\phi(t)}
+\tag{P2.2}
+\end{align}
+to the unknown physical state trajectory. The neural parameters \(\phi\) and physical parameters \(\theta\) are estimated jointly:
+\begin{align}
+\boxed{(\widehat\phi,\widehat\theta)=\arg\min_{\phi,\theta}\mathcal L_{\mathrm{InvPINN}}(\phi,\theta).}
+\tag{P2.3}
+\end{align}
+But only
+\begin{align}
+\boxed{\widehat\theta}
+\end{align}
+is retained afterward.
+
+\section*{2. Phase-D training data used by the inverse PINN}
+Let
+\begin{align}
+t_k=t_0+k\Delta t,
+\end{align}
+with
+\begin{align}
+\boxed{\Delta t=300\ {\rm s}.}
+\tag{P2.4}
+\end{align}
+The Phase-D \texttt{ML\_SciML/l1\_h1} silo provides at each sample the measured output
+\begin{align}
+y_k=y(t_k),
+\end{align}
+the measured forcing
+\begin{align}
+v_k=v(t_k),
+\end{align}
+and the one-step target
+\begin{align}
+y_{k+1}.
+\end{align}
+For PINN parameter identification we use the \texttt{lag\_0} observed state and forcing values. Define
+\begin{align}
+\boxed{\mathcal I_{\rm tr}=\left\{k:\operatorname{partition}(k)=\text{train}\right\}.}
+\tag{P2.5}
+\end{align}
+No validation or test temperature observation enters the inverse-PINN training objective. The \texttt{target\_1} columns are therefore not required to define the PINN physics residual. They remain useful for validation, test evaluation, Sim1, and downstream comparison.
+
+\section*{3. Why the PINN trajectory network depends on time only}
+For a fixed RestaurantFastFood/Buffalo realization, the measured exogenous forcing trajectories are known functions of time. Therefore we define
+\begin{align}
+\boxed{\widehat x_\phi(t)=\mathcal N_\phi(t)}
+\tag{P2.6}
+\end{align}
+rather than
+\begin{align}
+\widehat x_\phi=\mathcal N_\phi(x,u,d).
+\end{align}
+The inverse PINN is not learning the dynamical vector field. It is learning a differentiable representation of the realized trajectory so that
+\begin{align}
+\frac{d\widehat x_\phi}{dt}
+\end{align}
+can be obtained by automatic differentiation. The learned physical parameters then make that trajectory satisfy the RC equations.
+
+\section*{4. Time normalization and exact derivative conversion}
+Define
+\begin{align}
+t_{\min}&=\min_{k\in\mathcal I_{\rm tr}}t_k,\\
+t_{\max}&=\max_{k\in\mathcal I_{\rm tr}}t_k,\\
+t_c&=\frac{t_{\max}+t_{\min}}{2},\\
+s_t&=\frac{t_{\max}-t_{\min}}{2}.
+\end{align}
+Define normalized time
+\begin{align}
+\boxed{\tau=\frac{t-t_c}{s_t}.}
+\tag{P2.7}
+\end{align}
+Hence
+\begin{align}
+\tau\in[-1,1].
+\end{align}
+By the chain rule,
+\begin{align}
+\boxed{\frac{d\widehat x_\phi}{dt}=\frac{1}{s_t}\frac{\partial\widehat x_\phi}{\partial\tau}.}
+\tag{P2.8}
+\end{align}
+This factor must be included explicitly; otherwise the learned capacitances would absorb the time-normalization error.
+
+\section*{5. State-output normalization without corrupting physics}
+For numerical conditioning, let \(\mu_x\) and diagonal scale matrix \(S_x\) be computed from the training partition only. Let the raw network output be \(z_\phi(\tau)\). We define the physical state represented by the PINN as
+\begin{align}
+\boxed{\widehat x_\phi(t)=\mu_x+S_xz_\phi(\tau).}
+\tag{P2.9}
+\end{align}
+Therefore
+\begin{align}
+\boxed{\dot{\widehat x}_\phi(t)=\frac{S_x}{s_t}\frac{\partial z_\phi}{\partial\tau}.}
+\tag{P2.10}
+\end{align}
+Every physical residual is evaluated using \(\widehat x_\phi\) in degrees Celsius, \(\dot{\widehat x}_\phi\) in degrees Celsius per second, \(Q\) in watts, \(R\) in kelvin per watt, and \(C\) in joules per kelvin. We do not write the RC equations directly in arbitrary normalized coordinates.
+
+\section*{6. Detailed derivation of the output scaling matrix \(S_y\)}
+The data loss must combine measured temperature channels without allowing one output to dominate merely because its numerical spread is larger. Let the number of measured outputs be
+\begin{align}
+n_y.
+\end{align}
+At each training time \(t_k\),
+\begin{align}
+y_k=\begin{bmatrix}y_{k,1}\\ \vdots\\ y_{k,n_y}\end{bmatrix}.
+\end{align}
+All normalization quantities are computed only from \(\mathcal I_{\rm tr}\). Define
+\begin{align}
+N_{\rm tr}=|\mathcal I_{\rm tr}|.
+\end{align}
+For each measured output channel \(j\), define the training mean
+\begin{align}
+\boxed{\mu_{y,j}=\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}y_{k,j}.}
+\tag{P2.11}
+\end{align}
+The centered training observations are
+\begin{align}
+\widetilde y^{\,c}_{k,j}=y_{k,j}-\mu_{y,j}.
+\tag{P2.12}
+\end{align}
+Define the training variance as
+\begin{align}
+\boxed{\sigma_{y,j}^2=\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left(y_{k,j}-\mu_{y,j}\right)^2.}
+\tag{P2.13}
+\end{align}
+The training standard deviation is
+\begin{align}
+\boxed{\sigma_{y,j}=\sqrt{\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left(y_{k,j}-\mu_{y,j}\right)^2}.}
+\tag{P2.14}
+\end{align}
+To avoid numerical singularity if a channel has extremely small variance, introduce
+\begin{align}
+\epsilon_y>0.
+\end{align}
+The scale used in the loss is
+\begin{align}
+\boxed{s_{y,j}=\max\left(\sigma_{y,j},\epsilon_y\right).}
+\tag{P2.15}
+\end{align}
+The output scaling matrix is therefore
+\begin{align}
+\boxed{S_y=\operatorname{diag}\left(s_{y,1},s_{y,2},\ldots,s_{y,n_y}\right).}
+\tag{P2.16}
+\end{align}
+Its inverse is
+\begin{align}
+\boxed{S_y^{-1}=\operatorname{diag}\left(\frac{1}{s_{y,1}},\frac{1}{s_{y,2}},\ldots,\frac{1}{s_{y,n_y}}\right).}
+\tag{P2.17}
+\end{align}
+For prediction error
+\begin{align}
+e_k=\widehat y_k-y_k,
+\end{align}
+the scaled error is
+\begin{align}
+\boxed{\widetilde e_k=S_y^{-1}e_k.}
+\tag{P2.18}
+\end{align}
+Thus
+\begin{align}
+\boxed{\left\|S_y^{-1}(\widehat y_k-y_k)\right\|_2^2=\sum_{j=1}^{n_y}\left(\frac{\widehat y_{k,j}-y_{k,j}}{s_{y,j}}\right)^2.}
+\tag{P2.19}
+\end{align}
+Each output therefore contributes in units of its own training standard deviation.
+
+For a single-output architecture such as all-to-one or an IND zone,
+\begin{align}
+n_y=1,
+\end{align}
+and
+\begin{align}
+\boxed{S_y=\begin{bmatrix}s_T\end{bmatrix}.}
+\tag{P2.20}
+\end{align}
+The scaled squared error becomes
+\begin{align}
+\boxed{\left\|S_y^{-1}(\widehat y_k-y_k)\right\|_2^2=\left(\frac{\widehat T_k-T_k}{s_T}\right)^2.}
+\tag{P2.21}
+\end{align}
+For coupled DEP1/DEP2 with Dining and Kitchen outputs,
+\begin{align}
+n_y=2,
+\end{align}
+and
+\begin{align}
+\boxed{S_y=\begin{bmatrix}s_{T_D}&0\\0&s_{T_K}\end{bmatrix}.}
+\tag{P2.22}
+\end{align}
+Hence
+\begin{align}
+\boxed{\begin{aligned}
+\left\|S_y^{-1}(\widehat y_k-y_k)\right\|_2^2={}&\left(\frac{\widehat T_{D,k}-T_{D,k}}{s_{T_D}}\right)^2\\
+&+\left(\frac{\widehat T_{K,k}-T_{K,k}}{s_{T_K}}\right)^2.
+\end{aligned}}
+\tag{P2.23}
+\end{align}
+The mean vector is
+\begin{align}
+\boxed{\mu_y=\begin{bmatrix}\mu_{y,1}\\ \vdots\\ \mu_{y,n_y}\end{bmatrix}.}
+\tag{P2.24}
+\end{align}
+If explicit output standardization is used, define
+\begin{align}
+\boxed{\widetilde y_k=S_y^{-1}(y_k-\mu_y).}
+\tag{P2.25}
+\end{align}
+The corresponding inverse transformation is
+\begin{align}
+\boxed{y_k=\mu_y+S_y\widetilde y_k.}
+\tag{P2.26}
+\end{align}
+The means cancel from the prediction-error normalization because
+\begin{align}
+\left[(\widehat y_k-\mu_y)-(y_k-\mu_y)\right]=\widehat y_k-y_k.
+\tag{P2.27}
+\end{align}
+Therefore the data loss needs \(S_y\) explicitly, while \(\mu_y\) is needed only if the network inputs/outputs themselves are standardized.
+
+The leakage rule is
+\begin{align}
+\boxed{\mu_y,\;S_y\text{ are computed from training data only.}}
+\tag{P2.28}
+\end{align}
+Validation and test observations are transformed using the frozen training values. We do not recompute validation/test means or scales. The final output-scaling contract is
+\begin{align}
+\boxed{S_y=\operatorname{diag}\left[\max(\sigma_{y,1},\epsilon_y),\ldots,\max(\sigma_{y,n_y},\epsilon_y)\right].}
+\tag{P2.29}
+\end{align}
+
+\section*{7. Observed and hidden PINN outputs}
+For 1R1C, all physical states are observed. For all-to-one,
+\begin{align}
+\boxed{\widehat x_\phi=\widehat T_A.}
+\tag{P2.30}
+\end{align}
+For coupled identity,
+\begin{align}
+\boxed{\widehat x_\phi=\begin{bmatrix}\widehat T_D\\\widehat T_K\end{bmatrix}.}
+\tag{P2.31}
+\end{align}
+No hidden PINN state exists.
+
+For 2R2C, the PINN produces both observed air temperature and hidden mass temperature. For all-to-one,
+\begin{align}
+\boxed{\widehat x_\phi=\begin{bmatrix}\widehat T_{a,A}\\\widehat T_{m,A}\end{bmatrix}.}
+\tag{P2.32}
+\end{align}
+For coupled identity,
+\begin{align}
+\boxed{\widehat x_\phi=\begin{bmatrix}\widehat T_{a,D}\\\widehat T_{m,D}\\\widehat T_{a,K}\\\widehat T_{m,K}\end{bmatrix}.}
+\tag{P2.33}
+\end{align}
+The observation matrix remains
+\begin{align}
+\boxed{H=\begin{bmatrix}1&0&0&0\\0&0&1&0\end{bmatrix}.}
+\tag{P2.34}
+\end{align}
+Thus
+\begin{align}
+\boxed{\widehat y_\phi=H\widehat x_\phi.}
+\tag{P2.35}
+\end{align}
+The mass temperatures are not given artificial targets; they are inferred through the physical residual.
+
+\section*{8. Physical parameter transformations}
+For every resistance,
+\begin{align}
+\boxed{R_j=R_{j,\min}+\operatorname{softplus}(\rho_{R_j}).}
+\tag{P2.36}
+\end{align}
+For every capacitance,
+\begin{align}
+\boxed{C_j=C_{j,\min}+\operatorname{softplus}(\rho_{C_j}).}
+\tag{P2.37}
+\end{align}
+with
+\begin{align}
+R_{j,\min}>0,\qquad C_{j,\min}>0.
+\end{align}
+The optimization variables are therefore
+\begin{align}
+\rho_R,\rho_C\in\mathbb R.
+\end{align}
+
+\section*{9. Radiative parameter \(\eta_r\)}
+For 1R1C,
+\begin{align}
+\eta_r^{(1C)}=\begin{cases}
+1,&\texttt{full},\\
+0,&\texttt{zero},\\
+\eta_{\rm fixed},&\texttt{fixed},\\
+\sigma(\rho_\eta),&\texttt{learnable}.
+\end{cases}
+\tag{P2.38}
+\end{align}
+For 2R2C,
+\begin{align}
+\eta_r^{(2C)}=\begin{cases}
+1,&\texttt{mass\_only},\\
+0,&\texttt{air\_only},\\
+\eta_{\rm fixed},&\texttt{fixed},\\
+\sigma(\rho_\eta),&\texttt{learnable}.
+\end{cases}
+\tag{P2.39}
+\end{align}
+If the option is not \texttt{learnable}, \(\rho_\eta\) does not belong to the optimization variables.
+
+\section*{10. DEP2 allocation parameters}
+DEP2 uses
+\begin{align}
+\boxed{\lambda_{c,D}=2\sigma(\alpha_c),}
+\tag{P2.40}
+\end{align}
+\begin{align}
+\boxed{\lambda_{c,K}=2[1-\sigma(\alpha_c)],}
+\tag{P2.41}
+\end{align}
+\begin{align}
+\boxed{\lambda_{r,D}=2\sigma(\alpha_r),}
+\tag{P2.42}
+\end{align}
+\begin{align}
+\boxed{\lambda_{r,K}=2[1-\sigma(\alpha_r)].}
+\tag{P2.43}
+\end{align}
+Hence
+\begin{align}
+\boxed{\lambda_{c,D}+\lambda_{c,K}=2,}
+\tag{P2.44}
+\end{align}
+and
+\begin{align}
+\boxed{\lambda_{r,D}+\lambda_{r,K}=2.}
+\tag{P2.45}
+\end{align}
+The unconstrained trainable variables are
+\begin{align}
+\boxed{\alpha_c,\alpha_r\in\mathbb R.}
+\tag{P2.46}
+\end{align}
+
+\section*{11. Important identifiability safeguard for DEP2}
+For DEP2 1R1C, the radiative terms contain the products
+\begin{align}
+\eta_{r,D}\lambda_{r,D}\bar Q_r,
+\end{align}
+and
+\begin{align}
+\eta_{r,K}\lambda_{r,K}\bar Q_r.
+\end{align}
+If both \(\eta_r\) and \(\lambda_r\) are freely learned, the temperature equations primarily see their products. Therefore, for the primary DEP2 inverse-PINN experiment,
+\begin{align}
+\boxed{\text{learn }\lambda_r\quad\Longrightarrow\quad\eta_r^{(1C)}=1.}
+\tag{P2.47}
+\end{align}
+Thus
+\begin{align}
+\boxed{\eta_{r,D}=\eta_{r,K}=1}
+\tag{P2.48}
+\end{align}
+and \(\alpha_r\) is estimated. An optional ablation may instead fix
+\begin{align}
+\lambda_{r,D}=\lambda_{r,K}=1
+\end{align}
+and learn \(\eta_r\), but both are not learned simultaneously in the primary DEP2 1R1C model.
+
+\section*{12. Data loss}
+Define
+\begin{align}
+\widehat y_k=H\widehat x_\phi(t_k).
+\end{align}
+Using the training-only matrix \(S_y\) derived above,
+\begin{align}
+\boxed{\mathcal L_y=\frac{1}{|\mathcal I_{\rm tr}|}\sum_{k\in\mathcal I_{\rm tr}}\left\|S_y^{-1}(\widehat y_k-y_k)\right\|_2^2.}
+\tag{P2.49}
+\end{align}
+For all-to-one \(n_y=1\); for DEP1/DEP2 \(n_y=2\); for IND, Dining and Kitchen have separate scalar losses.
+
+\section*{13. Physics-residual normalization}
+All RC residuals have units of power. For each modeled zone \(i\), define the training-only characteristic heat scale
+\begin{align}
+\boxed{q_i^\star=\sqrt{\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left(Q_{c,i,k}^2+Q_{r,i,k}^2\right)}+\epsilon_q.}
+\tag{P2.50}
+\end{align}
+For DEP2 use
+\begin{align}
+\boxed{q_i^\star=\sqrt{\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left(Q_{AC,i,k}^2+(\bar Q_{c,k}^{nh})^2+(\bar Q_{r,k})^2\right)}+\epsilon_q.}
+\tag{P2.51}
+\end{align}
+The same zone scale is used for both air and mass residuals in 2R2C.
+
+\section*{14. All-to-One 1R1C inverse PINN}
+The network is
+\begin{align}
+\boxed{\widehat T_A(t)=\mathcal N_\phi(t).}
+\tag{P2.52}
+\end{align}
+The derivative is
+\begin{align}
+\boxed{\dot{\widehat T}_A=\frac{d\widehat T_A}{dt}.}
+\tag{P2.53}
+\end{align}
+Define
+\begin{align}
+Q_{c,A}&=Q_{ZIC,A}+Q_{Sol1,A}+Q_{AC,A},\\
+Q_{r,A}&=Q_{ZIR,A}+Q_{Sol2,A}.
+\end{align}
+The residual is
+\begin{align}
+\boxed{\begin{aligned}
+r_A(t)={}&C_A\dot{\widehat T}_A-\frac{T_o-\widehat T_A}{R_{Ao}}-Q_{c,A}-\eta_{r,A}Q_{r,A}.
+\end{aligned}}
+\tag{P2.54}
+\end{align}
+The physics loss is
+\begin{align}
+\boxed{\mathcal L_f=\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left(\frac{r_A(t_k)}{q_A^\star}\right)^2.}
+\tag{P2.55}
+\end{align}
+The inverse problem is
+\begin{align}
+\boxed{\min_{\phi,\rho_{R_{Ao}},\rho_{C_A},\rho_{\eta_A}}\lambda_y\mathcal L_y+\lambda_f\mathcal L_f,}
+\tag{P2.56}
+\end{align}
+where \(\rho_{\eta_A}\) is included only if \texttt{eta\_rad=learnable}. The retained model is
+\begin{align}
+\boxed{\dot T_A=\frac{1}{\widehat C_A}\left[\frac{T_o-T_A}{\widehat R_{Ao}}+Q_{c,A}+\widehat\eta_{r,A}Q_{r,A}\right].}
+\tag{P2.57}
+\end{align}
+The neural trajectory network is discarded.
+
+\section*{15. All-to-One 2R2C inverse PINN}
+The network has two outputs:
+\begin{align}
+\boxed{\widehat x_A(t)=\begin{bmatrix}\widehat T_{a,A}(t)\\\widehat T_{m,A}(t)\end{bmatrix}.}
+\tag{P2.58}
+\end{align}
+Its derivative is
+\begin{align}
+\boxed{\dot{\widehat x}_A=\begin{bmatrix}\dot{\widehat T}_{a,A}\\\dot{\widehat T}_{m,A}\end{bmatrix}.}
+\tag{P2.59}
+\end{align}
+Only the air temperature has a measurement loss:
+\begin{align}
+\boxed{\mathcal L_y=\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left(\frac{\widehat T_{a,A}(t_k)-T_{A,k}}{s_{T_A}}\right)^2.}
+\tag{P2.60}
+\end{align}
+The air residual is
+\begin{align}
+\boxed{\begin{aligned}
+r_{a,A}={}&C_{a,A}\dot{\widehat T}_{a,A}-\frac{T_o-\widehat T_{a,A}}{R_{Ao}}-\frac{\widehat T_{m,A}-\widehat T_{a,A}}{R_{Am}}\\
+&-Q_{c,A}-(1-\eta_{r,A})Q_{r,A}.
+\end{aligned}}
+\tag{P2.61}
+\end{align}
+The mass residual is
+\begin{align}
+\boxed{\begin{aligned}
+r_{m,A}={}&C_{m,A}\dot{\widehat T}_{m,A}-\frac{\widehat T_{a,A}-\widehat T_{m,A}}{R_{Am}}-\eta_{r,A}Q_{r,A}.
+\end{aligned}}
+\tag{P2.62}
+\end{align}
+Define
+\begin{align}
+\boxed{r_A=\begin{bmatrix}r_{a,A}\\r_{m,A}\end{bmatrix}.}
+\tag{P2.63}
+\end{align}
+The physics loss is
+\begin{align}
+\boxed{\mathcal L_f=\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left[\left(\frac{r_{a,A}(t_k)}{q_A^\star}\right)^2+\left(\frac{r_{m,A}(t_k)}{q_A^\star}\right)^2\right].}
+\tag{P2.64}
+\end{align}
+The jointly estimated parameter set is
+\begin{align}
+\boxed{\theta_{A,2C}=\{R_{Ao},R_{Am},C_{a,A},C_{m,A},\eta_{r,A}\}.}
+\tag{P2.65}
+\end{align}
+The hidden trajectory \(\widehat T_{m,A}(t)\) is a nuisance trajectory required for parameter identification, not a measured target.
+
+\section*{16. Identity / IND 1R1C inverse PINNs}
+IND requires two separate inverse PINNs:
+\begin{align}
+\boxed{\widehat T_D(t)=\mathcal N_{\phi_D}(t),}
+\tag{P2.66}
+\end{align}
+and
+\begin{align}
+\boxed{\widehat T_K(t)=\mathcal N_{\phi_K}(t).}
+\tag{P2.67}
+\end{align}
+Dining residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_D={}&C_D\dot{\widehat T}_D-\frac{T_o-\widehat T_D}{R_{Do}}-Q_{c,D}-\eta_{r,D}Q_{r,D}.
+\end{aligned}}
+\tag{P2.68}
+\end{align}
+Kitchen residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_K={}&C_K\dot{\widehat T}_K-\frac{T_o-\widehat T_K}{R_{Ko}}-Q_{c,K}-\eta_{r,K}Q_{r,K}.
+\end{aligned}}
+\tag{P2.69}
+\end{align}
+For Kitchen,
+\begin{align}
+\boxed{Q_{c,K}=Q_{ZIC,K}+Q_{AC,K},}
+\tag{P2.70}
+\end{align}
+and
+\begin{align}
+\boxed{Q_{r,K}=Q_{ZIR,K}.}
+\tag{P2.71}
+\end{align}
+The optimization problems are independent:
+\begin{align}
+\boxed{(\widehat\phi_D,\widehat\theta_D)=\arg\min\left[\lambda_y\mathcal L_{y,D}+\lambda_f\mathcal L_{f,D}\right],}
+\tag{P2.72}
+\end{align}
+and
+\begin{align}
+\boxed{(\widehat\phi_K,\widehat\theta_K)=\arg\min\left[\lambda_y\mathcal L_{y,K}+\lambda_f\mathcal L_{f,K}\right].}
+\tag{P2.73}
+\end{align}
+There is no \(R_{DK}\).
+
+\section*{17. Identity / IND 2R2C inverse PINNs}
+Dining network:
+\begin{align}
+\boxed{\widehat x_D=\begin{bmatrix}\widehat T_{a,D}\\\widehat T_{m,D}\end{bmatrix}.}
+\tag{P2.74}
+\end{align}
+Kitchen network:
+\begin{align}
+\boxed{\widehat x_K=\begin{bmatrix}\widehat T_{a,K}\\\widehat T_{m,K}\end{bmatrix}.}
+\tag{P2.75}
+\end{align}
+Dining air residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_{a,D}={}&C_{a,D}\dot{\widehat T}_{a,D}-\frac{T_o-\widehat T_{a,D}}{R_{Do}}-\frac{\widehat T_{m,D}-\widehat T_{a,D}}{R_{Dm}}\\
+&-Q_{c,D}-(1-\eta_{r,D})Q_{r,D}.
+\end{aligned}}
+\tag{P2.76}
+\end{align}
+Dining mass residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_{m,D}={}&C_{m,D}\dot{\widehat T}_{m,D}-\frac{\widehat T_{a,D}-\widehat T_{m,D}}{R_{Dm}}-\eta_{r,D}Q_{r,D}.
+\end{aligned}}
+\tag{P2.77}
+\end{align}
+Kitchen air residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_{a,K}={}&C_{a,K}\dot{\widehat T}_{a,K}-\frac{T_o-\widehat T_{a,K}}{R_{Ko}}-\frac{\widehat T_{m,K}-\widehat T_{a,K}}{R_{Km}}\\
+&-Q_{c,K}-(1-\eta_{r,K})Q_{r,K}.
+\end{aligned}}
+\tag{P2.78}
+\end{align}
+Kitchen mass residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_{m,K}={}&C_{m,K}\dot{\widehat T}_{m,K}-\frac{\widehat T_{a,K}-\widehat T_{m,K}}{R_{Km}}-\eta_{r,K}Q_{r,K}.
+\end{aligned}}
+\tag{P2.79}
+\end{align}
+Again, the two zone models are fitted independently.
+
+\section*{18. Identity / DEP1 1R1C inverse PINN}
+One joint PINN represents both measured temperatures:
+\begin{align}
+\boxed{\widehat x_\phi(t)=\begin{bmatrix}\widehat T_D(t)\\\widehat T_K(t)\end{bmatrix}.}
+\tag{P2.80}
+\end{align}
+Dining residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_D={}&C_D\dot{\widehat T}_D-\frac{T_o-\widehat T_D}{R_{Do}}-\frac{\widehat T_K-\widehat T_D}{R_{DK}}-Q_{c,D}-\eta_{r,D}Q_{r,D}.
+\end{aligned}}
+\tag{P2.81}
+\end{align}
+Kitchen residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_K={}&C_K\dot{\widehat T}_K-\frac{T_o-\widehat T_K}{R_{Ko}}-\frac{\widehat T_D-\widehat T_K}{R_{DK}}-Q_{c,K}-\eta_{r,K}Q_{r,K}.
+\end{aligned}}
+\tag{P2.82}
+\end{align}
+The shared coupling parameter is
+\begin{align}
+\boxed{R_{DK}=R_{KD}>0.}
+\tag{P2.83}
+\end{align}
+The residual vector is
+\begin{align}
+\boxed{r_{\rm DEP1}^{1C}=\begin{bmatrix}r_D\\r_K\end{bmatrix}.}
+\tag{P2.84}
+\end{align}
+The data loss is
+\begin{align}
+\boxed{\mathcal L_y=\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left[\left(\frac{\widehat T_D-T_D}{s_{T_D}}\right)^2+\left(\frac{\widehat T_K-T_K}{s_{T_K}}\right)^2\right].}
+\tag{P2.85}
+\end{align}
+The physics loss is
+\begin{align}
+\boxed{\mathcal L_f=\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\left[\left(\frac{r_D}{q_D^\star}\right)^2+\left(\frac{r_K}{q_K^\star}\right)^2\right].}
+\tag{P2.86}
+\end{align}
+The parameter vector is
+\begin{align}
+\boxed{\theta_{\rm DEP1}^{1C}=\{R_{Do},R_{Ko},R_{DK},C_D,C_K,\eta_{r,D},\eta_{r,K}\}.}
+\tag{P2.87}
+\end{align}
+
+\section*{19. Identity / DEP1 2R2C inverse PINN}
+The joint PINN output is
+\begin{align}
+\boxed{\widehat x_\phi(t)=\begin{bmatrix}\widehat T_{a,D}\\\widehat T_{m,D}\\\widehat T_{a,K}\\\widehat T_{m,K}\end{bmatrix}.}
+\tag{P2.88}
+\end{align}
+The observed output is
+\begin{align}
+\boxed{\widehat y=\begin{bmatrix}\widehat T_{a,D}\\\widehat T_{a,K}\end{bmatrix}.}
+\tag{P2.89}
+\end{align}
+Dining-air residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_{a,D}={}&C_{a,D}\dot{\widehat T}_{a,D}-\frac{T_o-\widehat T_{a,D}}{R_{Do}}-\frac{\widehat T_{m,D}-\widehat T_{a,D}}{R_{Dm}}\\
+&-\frac{\widehat T_{a,K}-\widehat T_{a,D}}{R_{DK}}-Q_{c,D}-(1-\eta_{r,D})Q_{r,D}.
+\end{aligned}}
+\tag{P2.90}
+\end{align}
+Dining-mass residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_{m,D}={}&C_{m,D}\dot{\widehat T}_{m,D}-\frac{\widehat T_{a,D}-\widehat T_{m,D}}{R_{Dm}}-\eta_{r,D}Q_{r,D}.
+\end{aligned}}
+\tag{P2.91}
+\end{align}
+Kitchen-air residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_{a,K}={}&C_{a,K}\dot{\widehat T}_{a,K}-\frac{T_o-\widehat T_{a,K}}{R_{Ko}}-\frac{\widehat T_{m,K}-\widehat T_{a,K}}{R_{Km}}\\
+&-\frac{\widehat T_{a,D}-\widehat T_{a,K}}{R_{DK}}-Q_{c,K}-(1-\eta_{r,K})Q_{r,K}.
+\end{aligned}}
+\tag{P2.92}
+\end{align}
+Kitchen-mass residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_{m,K}={}&C_{m,K}\dot{\widehat T}_{m,K}-\frac{\widehat T_{a,K}-\widehat T_{m,K}}{R_{Km}}-\eta_{r,K}Q_{r,K}.
+\end{aligned}}
+\tag{P2.93}
+\end{align}
+The residual vector is
+\begin{align}
+\boxed{r_{\rm DEP1}^{2C}=\begin{bmatrix}r_{a,D}\\r_{m,D}\\r_{a,K}\\r_{m,K}\end{bmatrix}.}
+\tag{P2.94}
+\end{align}
+The physics loss is
+\begin{align}
+\boxed{\begin{aligned}
+\mathcal L_f=\frac{1}{N_{\rm tr}}\sum_{k\in\mathcal I_{\rm tr}}\Bigg[&\frac{r_{a,D}^2+r_{m,D}^2}{(q_D^\star)^2}+\frac{r_{a,K}^2+r_{m,K}^2}{(q_K^\star)^2}\Bigg].
+\end{aligned}}
+\tag{P2.95}
+\end{align}
+The parameter vector is
+\begin{align}
+\boxed{\begin{aligned}
+\theta_{\rm DEP1}^{2C}=\{&R_{Do},R_{Ko},R_{DK},R_{Dm},R_{Km},C_{a,D},C_{m,D},C_{a,K},C_{m,K},\\
+&\eta_{r,D},\eta_{r,K}\}.
+\end{aligned}}
+\tag{P2.96}
+\end{align}
+
+\section*{20. Identity / DEP2 1R1C inverse PINN}
+The neural trajectory is
+\begin{align}
+\boxed{\widehat x_\phi=\begin{bmatrix}\widehat T_D\\\widehat T_K\end{bmatrix}.}
+\tag{P2.97}
+\end{align}
+Define
+\begin{align}
+\bar Q_c^{nh}&=Q_{ZIC,A}+Q_{Sol1,A},\\
+\bar Q_r&=Q_{ZIR,A}+Q_{Sol2,A}.
+\end{align}
+Dining residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_D={}&C_D\dot{\widehat T}_D-\frac{T_o-\widehat T_D}{R_{Do}}-\frac{\widehat T_K-\widehat T_D}{R_{DK}}-Q_{AC,D}\\
+&-\lambda_{c,D}\bar Q_c^{nh}-\eta_{r,D}\lambda_{r,D}\bar Q_r.
+\end{aligned}}
+\tag{P2.98}
+\end{align}
+Kitchen residual:
+\begin{align}
+\boxed{\begin{aligned}
+r_K={}&C_K\dot{\widehat T}_K-\frac{T_o-\widehat T_K}{R_{Ko}}-\frac{\widehat T_D-\widehat T_K}{R_{DK}}-Q_{AC,K}\\
+&-\lambda_{c,K}\bar Q_c^{nh}-\eta_{r,K}\lambda_{r,K}\bar Q_r.
+\end{aligned}}
+\tag{P2.99}
+\end{align}
+For the primary identification,
+\begin{align}
+\boxed{\eta_{r,D}=\eta_{r,K}=1,}
+\tag{P2.100}
+\end{align}
+so \(\alpha_c,\alpha_r\) are learned without the \(\eta_r\lambda_r\) confounding. The optimization variables include
+\begin{align}
+\boxed{\Theta_{\rm train}=\{\phi,\rho_R,\rho_C,\alpha_c,\alpha_r\}.}
+\tag{P2.101}
+\end{align}
+
+\section*{21. Identity / DEP2 2R2C inverse PINN}
+State approximation:
+\begin{align}
+\boxed{\widehat x_\phi=\begin{bmatrix}\widehat T_{a,D}\\\widehat T_{m,D}\\\widehat T_{a,K}\\\widehat T_{m,K}\end{bmatrix}.}
+\tag{P2.102}
+\end{align}
+Dining air:
+\begin{align}
+\boxed{\begin{aligned}
+r_{a,D}={}&C_{a,D}\dot{\widehat T}_{a,D}-\frac{T_o-\widehat T_{a,D}}{R_{Do}}-\frac{\widehat T_{m,D}-\widehat T_{a,D}}{R_{Dm}}\\
+&-\frac{\widehat T_{a,K}-\widehat T_{a,D}}{R_{DK}}-Q_{AC,D}-\lambda_{c,D}\bar Q_c^{nh}\\
+&-(1-\eta_{r,D})\lambda_{r,D}\bar Q_r.
+\end{aligned}}
+\tag{P2.103}
+\end{align}
+Dining mass:
+\begin{align}
+\boxed{\begin{aligned}
+r_{m,D}={}&C_{m,D}\dot{\widehat T}_{m,D}-\frac{\widehat T_{a,D}-\widehat T_{m,D}}{R_{Dm}}-\eta_{r,D}\lambda_{r,D}\bar Q_r.
+\end{aligned}}
+\tag{P2.104}
+\end{align}
+Kitchen air:
+\begin{align}
+\boxed{\begin{aligned}
+r_{a,K}={}&C_{a,K}\dot{\widehat T}_{a,K}-\frac{T_o-\widehat T_{a,K}}{R_{Ko}}-\frac{\widehat T_{m,K}-\widehat T_{a,K}}{R_{Km}}\\
+&-\frac{\widehat T_{a,D}-\widehat T_{a,K}}{R_{DK}}-Q_{AC,K}-\lambda_{c,K}\bar Q_c^{nh}\\
+&-(1-\eta_{r,K})\lambda_{r,K}\bar Q_r.
+\end{aligned}}
+\tag{P2.105}
+\end{align}
+Kitchen mass:
+\begin{align}
+\boxed{\begin{aligned}
+r_{m,K}={}&C_{m,K}\dot{\widehat T}_{m,K}-\frac{\widehat T_{a,K}-\widehat T_{m,K}}{R_{Km}}-\eta_{r,K}\lambda_{r,K}\bar Q_r.
+\end{aligned}}
+\tag{P2.106}
+\end{align}
+The residual vector is
+\begin{align}
+\boxed{r_{\rm DEP2}^{2C}=\begin{bmatrix}r_{a,D}\\r_{m,D}\\r_{a,K}\\r_{m,K}\end{bmatrix}.}
+\tag{P2.107}
+\end{align}
+
+\section*{22. The complete inverse-PINN loss}
+For every architecture,
+\begin{align}
+\boxed{\mathcal L_{\rm InvPINN}=\lambda_y\mathcal L_y+\lambda_f\mathcal L_f.}
+\tag{P2.108}
+\end{align}
+Here \(\mathcal L_y\) contains only measured air-temperature mismatch, while \(\mathcal L_f\) contains the complete physical RC residual. There is no artificial loss on unmeasured mass temperature, no separate state decoder, no learned dynamics residual, and no projection.
+
+\section*{23. Why no separate initial-condition loss is required during identification}
+Observed air temperatures are already constrained at all training timestamps through \(\mathcal L_y\). For 2R2C, \(T_m\) is unobserved, so we do not impose
+\begin{align}
+T_m=T_a
+\end{align}
+as a physical identity. The PINN infers \(\widehat T_m(t)\) through the two RC residual equations. Initialization near
+\begin{align}
+T_m\approx T_a
+\end{align}
+may be used numerically, but it is not imposed as a model equation.
+
+\section*{24. Collocation set}
+The primary baseline uses
+\begin{align}
+\boxed{\mathcal C=\{t_k:k\in\mathcal I_{\rm tr}\}.}
+\tag{P2.109}
+\end{align}
+Thus every training observation timestamp is also a physics collocation point. We do not introduce synthetic intermediate-time collocation points in the primary baseline, so no interpolation law must be invented for the measured forcing channels.
+
+\section*{25. What is differentiated and what is not}
+At each collocation point \(t_k\), \(\widehat x_\phi(t_k)\) is differentiated with respect to time. The forcing measurements \(v_k\) are not differentiated. In particular,
+\begin{align}
+Q_{AC}(t_k)
+\end{align}
+is treated as a known input to the balance, and we do not require
+\begin{align}
+\dot Q_{AC},\qquad \dot T_o,\qquad \dot Q_{ZIC},\qquad \dot Q_{ZIR}.
+\end{align}
+
+\section*{26. Training variables by architecture}
+All-to-One 1R1C:
+\begin{align}
+\boxed{\phi,\;R_{Ao},\;C_A,\;[\eta_{r,A}]}
+\tag{P2.110}
+\end{align}
+All-to-One 2R2C:
+\begin{align}
+\boxed{\phi,\;R_{Ao},\;R_{Am},\;C_{a,A},\;C_{m,A},\;[\eta_{r,A}].}
+\tag{P2.111}
+\end{align}
+IND 1R1C Dining:
+\begin{align}
+\boxed{\phi_D,\;R_{Do},\;C_D,\;[\eta_{r,D}].}
+\tag{P2.112}
+\end{align}
+IND 1R1C Kitchen:
+\begin{align}
+\boxed{\phi_K,\;R_{Ko},\;C_K,\;[\eta_{r,K}].}
+\tag{P2.113}
+\end{align}
+IND 2R2C per zone \(i\):
+\begin{align}
+\boxed{\phi_i,\;R_{io},\;R_{im},\;C_{a,i},\;C_{m,i},\;[\eta_{r,i}].}
+\tag{P2.114}
+\end{align}
+DEP1 1R1C:
+\begin{align}
+\boxed{\phi,\;R_{Do},R_{Ko},R_{DK},C_D,C_K,[\eta_{r,D},\eta_{r,K}].}
+\tag{P2.115}
+\end{align}
+DEP1 2R2C:
+\begin{align}
+\boxed{\begin{aligned}
+&\phi,R_{Do},R_{Ko},R_{DK},R_{Dm},R_{Km},\\
+&C_{a,D},C_{m,D},C_{a,K},C_{m,K},[\eta_{r,D},\eta_{r,K}].
+\end{aligned}}
+\tag{P2.116}
+\end{align}
+DEP2 adds
+\begin{align}
+\boxed{\alpha_c,\alpha_r.}
+\tag{P2.117}
+\end{align}
+
+\section*{27. Training procedure}
+\subsection*{Stage A --- trajectory prefit}
+Optimize only \(\phi\):
+\begin{align}
+\boxed{\min_\phi\mathcal L_y.}
+\tag{P2.118}
+\end{align}
+For 2R2C, air outputs are fitted to measured temperatures; hidden mass outputs are initialized numerically near the corresponding air temperatures but receive no artificial labels.
+
+\subsection*{Stage B --- joint inverse-PINN optimization}
+Then jointly optimize neural and physical variables:
+\begin{align}
+\boxed{\min_{\phi,\theta}\lambda_y\mathcal L_y+\lambda_f\mathcal L_f.}
+\tag{P2.119}
+\end{align}
+DEP2 also optimizes \(\alpha_c,\alpha_r\).
+
+\subsection*{Stage C --- parameter-focused refinement}
+Optionally freeze \(\phi\) and refine only physical parameters:
+\begin{align}
+\boxed{\min_\theta\mathcal L_f\left(\widehat x_{\widehat\phi},\dot{\widehat x}_{\widehat\phi};\theta\right).}
+\tag{P2.120}
+\end{align}
+This is a numerical refinement, not a different model.
+
+\section*{28. Validation must use the physical RC model, not the PINN trajectory network}
+Suppose epoch \(e\) gives parameters \(\theta^{(e)}\). Construct
+\begin{align}
+\boxed{\dot x=f_{RC}\left(x,v;\theta^{(e)}\right).}
+\tag{P2.121}
+\end{align}
+Integrate that physical ODE over validation trajectories and score \(Hx_{RC}(t)\) against validation air temperature. Do not select checkpoints based on \(H\widehat x_\phi(t)\) at validation times. The selected parameter set is
+\begin{align}
+\boxed{\widehat\theta=\theta^{(e^\star)},}
+\tag{P2.122}
+\end{align}
+where
+\begin{align}
+\boxed{e^\star=\arg\min_e\mathcal E_{\rm val}^{RC}\left(\theta^{(e)}\right).}
+\tag{P2.123}
+\end{align}
+
+\section*{29. 1R1C validation initialization}
+For 1R1C the entire state is measured, so
+\begin{align}
+\boxed{x(t_0)=y(t_0).}
+\tag{P2.124}
+\end{align}
+
+\section*{30. 2R2C validation/test initialization}
+For 2R2C, \(T_a(t_0)\) is known but \(T_m(t_0)\) is hidden. Use a past warm-up window
+\begin{align}
+\mathcal W_0=\{t_{-L_w},\ldots,t_0\}.
+\end{align}
+For one zone,
+\begin{align}
+x_{-L_w}(\zeta)=\begin{bmatrix}T_a(t_{-L_w})\\\zeta\end{bmatrix}.
+\end{align}
+Let \(\Phi_\theta\) denote numerical integration of the identified RC model. Estimate
+\begin{align}
+\boxed{\widehat\zeta=\arg\min_\zeta\sum_{\ell=-L_w}^{0}\left\|H\Phi_{\widehat\theta}\left(t_\ell;t_{-L_w},x_{-L_w}(\zeta),v\right)-y(t_\ell)\right\|_2^2.}
+\tag{P2.125}
+\end{align}
+Then
+\begin{align}
+\boxed{\widehat T_m(t_0)=\left[\Phi_{\widehat\theta}\left(t_0;t_{-L_w},x_{-L_w}(\widehat\zeta),v\right)\right]_m.}
+\tag{P2.126}
+\end{align}
+For two-zone 2R2C,
+\begin{align}
+\zeta=\begin{bmatrix}T_{m,D}(t_{-L_w})\\T_{m,K}(t_{-L_w})\end{bmatrix}.
+\end{align}
+If no warm-up history exists, the neutral fallback is
+\begin{align}
+\boxed{T_m(t_0)=T_a(t_0).}
+\tag{P2.127}
+\end{align}
+This fallback is an initialization convention, not an RC equation.
+
+\section*{31. Final deployed model after inverse-PINN training}
+After selecting \(\widehat\theta\), the PINN parameters \(\widehat\phi\) are discarded. For 1R1C,
+\begin{align}
+\boxed{\dot x=f_{RC}^{1C}\left(x,v;\widehat\theta\right).}
+\tag{P2.128}
+\end{align}
+For 2R2C,
+\begin{align}
+\boxed{\dot x=f_{RC}^{2C}\left(x,v;\widehat\theta\right).}
+\tag{P2.129}
+\end{align}
+The deployed model contains no neural vector field.
+
+\section*{32. Sim1 meaning for inverse PINN-RC}
+For 1R1C, \(x_k=y_k\). For 2R2C, the observed air state is measured and the hidden mass state comes from the causal initialization/propagation mechanism above. With measured forcing \(v_k\),
+\begin{align}
+\boxed{\widehat x_{k+1}=\Phi_{\widehat\theta}\left(x_k,v_k,\Delta t\right).}
+\tag{P2.130}
+\end{align}
+and
+\begin{align}
+\boxed{\widehat y_{k+1}=H\widehat x_{k+1}.}
+\tag{P2.131}
+\end{align}
+
+\section*{33. Sim2 meaning for inverse PINN-RC}
+Initialize once and recursively compute
+\begin{align}
+\boxed{\widehat x_{k+1}=\Phi_{\widehat\theta}\left(\widehat x_k,v_k,\Delta t\right).}
+\tag{P2.132}
+\end{align}
+The model's own predicted state is fed back; recorded Phase-D QAC and disturbances remain external forcing.
+
+\section*{34. Sim3 meaning for inverse PINN-RC}
+The thermostat produces \(\dot m_k\). Phase C produces
+\begin{align}
+\boxed{Q_{AC,k}=G_{QAC}\left(\dot m_k,\widehat T_{z,k},T_{sa,k},\ldots\right).}
+\tag{P2.133}
+\end{align}
+Then
+\begin{align}
+\boxed{\widehat x_{k+1}=\Phi_{\widehat\theta}\left(\widehat x_k,Q_{AC,k},d_k\right).}
+\tag{P2.134}
+\end{align}
+The inverse PINN itself is not involved in Sim3 after parameter identification.
+
+\section*{35. What we log during inverse-PINN training}
+Record
+\begin{align}
+\boxed{\mathcal L_y},\qquad \boxed{\mathcal L_f},\qquad \boxed{\mathcal L_{\rm InvPINN}}.
+\end{align}
+For every trainable physical parameter, record by epoch
+\begin{align}
+R_j^{(e)},\qquad C_j^{(e)},\qquad \eta_j^{(e)}.
+\end{align}
+For DEP2 also record
+\begin{align}
+\lambda_{c,D}^{(e)},\lambda_{c,K}^{(e)},\lambda_{r,D}^{(e)},\lambda_{r,K}^{(e)}.
+\end{align}
+Log residual RMSE separately for every physical equation, e.g.
+\begin{align}
+\operatorname{RMSE}(r_{a,D}),\quad \operatorname{RMSE}(r_{m,D}),\quad \operatorname{RMSE}(r_{a,K}),\quad \operatorname{RMSE}(r_{m,K}).
+\end{align}
+
+\section*{36. No identifiability claim}
+We do not claim
+\begin{align}
+\boxed{\widehat\theta=\theta_{\rm true}}
+\end{align}
+in any universal sense. Instead,
+\begin{align}
+\boxed{\widehat\theta\text{ is the physically constrained parameter set identified from the fixed training data and architecture.}}
+\tag{P2.135}
+\end{align}
+The paper evaluates whether the resulting identified RC model predicts and controls well.
+
+\section*{37. Multi-start estimation}
+For restart
+\begin{align}
+s=1,\ldots,S,
+\end{align}
+obtain \(\widehat\theta^{(s)}\) and select using physical-model validation error:
+\begin{align}
+\boxed{s^\star=\arg\min_s\mathcal E_{\rm val}^{RC}\left(\widehat\theta^{(s)}\right).}
+\tag{P2.136}
+\end{align}
+Then
+\begin{align}
+\boxed{\widehat\theta=\widehat\theta^{(s^\star)}.}
+\tag{P2.137}
+\end{align}
+The test set remains untouched until selection is complete.
+
+\section*{38. Exact distinction from the other three methods}
+Inverse PINN-RC approximates
+\begin{align}
+\boxed{x(t)}
+\end{align}
+during identification and retains the final vector field
+\begin{align}
+\boxed{f_{RC}(x,v;\widehat\theta).}
+\end{align}
+NODE will approximate
+\begin{align}
+\boxed{f_\omega(x,v)}
+\end{align}
+directly. Base PINODE will also approximate \(f_\omega(x,v)\), but with a soft RC residual penalty. EBP-PINODE will approximate a raw derivative
+\begin{align}
+\widetilde f_\omega(x,v)
+\end{align}
+which is then physically projected.
+
+\section*{39. Complete inverse-PINN algorithm}
+Choose
+\begin{align}
+\text{architecture}\in\{A,\mathrm{IND},\mathrm{DEP1},\mathrm{DEP2}\}
+\end{align}
+and
+\begin{align}
+\text{RC order}\in\{1R1C,2R2C\}.
+\end{align}
+Load only \(\mathcal I_{\rm tr}\), compute training-only normalization statistics, construct \(\widehat x_\phi(t)\), obtain \(\dot{\widehat x}_\phi(t)\) by automatic differentiation, and transform unconstrained variables through
+\begin{align}
+\rho_R&\rightarrow R>0,\\
+\rho_C&\rightarrow C>0,\\
+\rho_\eta&\rightarrow\eta\in(0,1).
+\end{align}
+For DEP2,
+\begin{align}
+\alpha_c,\alpha_r\rightarrow\lambda_c,\lambda_r.
+\end{align}
+Evaluate the exact architecture-specific RC residuals and minimize
+\begin{align}
+\boxed{\mathcal L_{\rm InvPINN}=\lambda_y\mathcal L_y+\lambda_f\mathcal L_f.}
+\tag{P2.138}
+\end{align}
+At candidate checkpoints, validate the physical RC ODE directly, choose the best physical parameter checkpoint, discard \(\mathcal N_\phi\), freeze \(\widehat\theta\), and use only the identified RC ODE for final tests.
+
+\section*{Part 2 conclusion}
+The inverse PINN baseline is not
+\begin{align}
+x_{k+1}=\text{NN}(x_k,u_k,d_k).
+\end{align}
+It is not a Neural ODE and not a hybrid RC+NN deployment model. It is an inverse physical-parameter identification method:
+\begin{align}
+\boxed{\text{PINN trajectory approximation}+\text{exact RC residual}\longrightarrow\widehat R,\widehat C,\widehat\eta_r,[\widehat\lambda]}
+\end{align}
+followed by
+\begin{align}
+\boxed{\text{PINN discarded}}
+\end{align}
+and
+\begin{align}
+\boxed{\dot x=f_{RC}(x,v;\widehat\theta)}
+\end{align}
+used as the final interpretable simulation/control model.
+
+The DEP2 1R1C safeguard is
+\begin{align}
+\boxed{\text{do not simultaneously learn }\eta_r\text{ and }\lambda_r\text{ in the primary DEP2 1R1C fit}.}
+\end{align}
+For the primary DEP2 1R1C experiment,
+\begin{align}
+\boxed{\eta_r=1,\qquad\lambda_r\ \text{learnable}.}
+\end{align}
+Everything else follows directly from the Part-1 architecture.
+
+\end{document}

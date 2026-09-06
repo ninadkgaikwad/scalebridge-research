@@ -1,0 +1,59 @@
+{
+  "profile": "BROAD_HVAC_HISTORY_V1",
+  "levels": [
+    "received physical controller commands",
+    "transformed low-level actuator commands",
+    "per-zone native fallback state",
+    "feasibility decision and reason",
+    "actuator readback",
+    "EnergyPlus system timestep",
+    "300-s control-step summaries",
+    "environment",
+    "zone thermodynamics and comfort",
+    "full known PSZ node air path",
+    "EnergyPlus internal design quantities",
+    "fan",
+    "heating coil",
+    "cooling coil",
+    "unitary system",
+    "derived air-side sensible heat and component delta-T quantities",
+    "full EnergyPlus API exchange registry snapshot"
+  ],
+  "air_path_nodes": [
+    "return",
+    "mixed",
+    "cool_out",
+    "heat_out",
+    "supply_outlet",
+    "zone_supply"
+  ],
+  "node_signals": [
+    "temperature",
+    "mass flow",
+    "humidity ratio",
+    "pressure when available"
+  ],
+  "history_files": [
+    "history/system_timestep_zone_history.csv",
+    "history/control_step_zone_history.csv",
+    "history/received_command_history.csv",
+    "history/control_steps.jsonl",
+    "history/signal_catalog.json",
+    "history/api_exchange_registry.csv",
+    "episode_manifest.json",
+    "energyplus_output/*"
+  ],
+  "internal_design_quantities": [
+    "fan maximum mass flow",
+    "unitary design heating capacity",
+    "unitary design cooling capacity"
+  ],
+  "feasibility_history": [
+    "effective_control_mode",
+    "feasible",
+    "fallback_applied",
+    "feasibility_reason",
+    "flow_fraction_of_design",
+    "delta_t_star_c"
+  ]
+}

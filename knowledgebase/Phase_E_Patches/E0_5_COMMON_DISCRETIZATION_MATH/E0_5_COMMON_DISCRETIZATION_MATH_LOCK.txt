@@ -1,0 +1,25 @@
+ScaleBridge Phase E0 -- E0-5 Common Fixed-Step Discretization Mathematics Lock
+Status: RATIFIED / LOCKED
+Date: 2026-08-27
+
+Authority boundary:
+  E0-3 = continuous RC physics
+  E0-4 = runtime state and canonical forcing realization
+  E0-5 = selectable fixed-step numerical propagation X_k -> X_{k+1}
+
+Locked amendments from final ratification:
+  - Fixed-step solver core only.
+  - Causal left-endpoint zero-order hold for all forcing over each interval.
+  - Integrator is configurable through a compatibility-filtered Neuromancer registry.
+  - RK4 is recommended/default, not hard-coded.
+  - Register all installed Neuromancer solvers that satisfy first-order fixed-step
+    state-in/state-out and ZOH forcing compatibility.
+  - Do not silently treat multistep/second-order/adaptive methods as drop-in RC solvers.
+  - Exact linear ZOH matrix-exponential oracle is independent from Neuromancer RK/Euler.
+  - If the exact oracle does not fit Neuromancer cleanly, implement a custom
+    ScaleBridge linear-oracle integration package with the common step interface.
+  - Per-step scientific validation is controlled by a diagnostic knob.
+  - Default diagnostics OFF: run the configured ODE solver without expensive
+    per-step eigenanalysis/oracle comparison.
+  - Diagnostics ON: run all applicable per-step validation without altering state.
+  - No hidden timestep/substep changes, clipping, projection, smoothing, or reset.

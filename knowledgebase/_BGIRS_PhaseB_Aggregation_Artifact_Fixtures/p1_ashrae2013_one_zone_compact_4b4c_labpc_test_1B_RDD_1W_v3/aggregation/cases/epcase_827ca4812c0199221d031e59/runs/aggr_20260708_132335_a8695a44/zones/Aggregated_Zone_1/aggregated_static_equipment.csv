@@ -1,0 +1,5 @@
+aggregate_zone_id,equipment_type,output_variable_name,value,source_zone_count,source_zones,contribution_count
+Aggregated_Zone_1,People,People_Level,46.9,2,DINING | KITCHEN,2
+Aggregated_Zone_1,Lights,Lights_Level,1162.9275,2,DINING | KITCHEN,2
+Aggregated_Zone_1,ElectricEquipment,ElectricEquipment_Level,11515.8835,2,DINING | KITCHEN,4
+Aggregated_Zone_1,GasEquipment,GasEquipment_Level,91932.601,1,KITCHEN,1

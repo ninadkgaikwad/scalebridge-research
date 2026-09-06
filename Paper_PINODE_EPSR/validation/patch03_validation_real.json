@@ -1,0 +1,374 @@
+{
+  "base_pinode_contract": {
+    "hard_projection": false,
+    "integrated_derivative": "raw_f_tilde_omega",
+    "physics": "soft_full_RC_residual",
+    "physics_evaluation": "every_Neuromancer_RK4_RHS_call"
+  },
+  "framework_contract": {
+    "custom_rk4_in_paper_code": false,
+    "direct_torchdiffeq_calls_in_paper_code": false,
+    "hyperparameter_search": "optuna",
+    "integration": "neuromancer.dynamics.integrators.RK4",
+    "named_data_contract": "neuromancer.dataset.DictDataset + dataset.collate_fn",
+    "recursive_graph": "neuromancer.system.Node+System",
+    "runtime": {
+      "mlp_class": "neuromancer.modules.blocks.MLP",
+      "node_class": "neuromancer.system.Node",
+      "penalty_loss_class": "neuromancer.loss.PenaltyLoss",
+      "problem_class": "neuromancer.problem.Problem",
+      "rk4_class": "neuromancer.dynamics.integrators.RK4",
+      "system_class": "neuromancer.system.System",
+      "version": "1.5.6"
+    },
+    "sciml": "neuromancer",
+    "tensor_autograd_optimizer": "pytorch",
+    "training_loss_key": "train_loss"
+  },
+  "math_contracts": [
+    "PINODE_EPSR_Part1_RC_Representations_v1.tex",
+    "PINODE_EPSR_Part3_NeuralODE_Detailed.tex",
+    "PINODE_EPSR_Part4_Base_PINODE_Detailed.tex"
+  ],
+  "real_data": {
+    "cases": {
+      "all_to_one": {
+        "rc_orders": {
+          "1": {
+            "base_pinode_loss": [
+              0.2444183022357289,
+              0.21976536030285107
+            ],
+            "constraint_type": "soft_penalty",
+            "expected_rk4_stage_count": 8,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 6
+            },
+            "integrated_derivative": "raw_f_tilde_omega",
+            "observed_rk4_stage_count": 8,
+            "physical_parameters": {
+              "C_A": 8665587.998385347,
+              "R_Ao": 0.013374105768184558,
+              "eta_r_A": 0.49951312379198193
+            },
+            "positive_rc": true,
+            "q_star_zone_W": [
+              3626.9656220327365
+            ]
+          },
+          "2": {
+            "base_pinode_loss": [
+              29.22420667620511,
+              25.321870232798883
+            ],
+            "constraint_type": "soft_penalty",
+            "expected_rk4_stage_count": 8,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 6
+            },
+            "integrated_derivative": "raw_f_tilde_omega",
+            "observed_rk4_stage_count": 8,
+            "physical_parameters": {
+              "C_a_A": 8665587.999878159,
+              "C_m_A": 23396402.998450533,
+              "R_Am": 0.0017134169023635942,
+              "R_Ao": 0.013426646434114828,
+              "eta_r_A": 0.4994999572300299
+            },
+            "positive_rc": true,
+            "q_star_zone_W": [
+              3626.9656220327365
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_dep1": {
+        "rc_orders": {
+          "1": {
+            "base_pinode_loss": [
+              20.963243812673724,
+              19.74692364586537
+            ],
+            "constraint_type": "soft_penalty",
+            "expected_rk4_stage_count": 8,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 9
+            },
+            "integrated_derivative": "raw_f_tilde_omega",
+            "observed_rk4_stage_count": 8,
+            "physical_parameters": {
+              "C_D": 8665587.998627951,
+              "C_K": 8665587.998124562,
+              "R_DK": 0.001706615410079204,
+              "R_Do": 0.013426629501079285,
+              "R_Ko": 0.013426647327887946,
+              "eta_r_D": 0.500499722189375,
+              "eta_r_K": 0.500500053309053
+            },
+            "positive_rc": true,
+            "q_star_zone_W": [
+              2660.0167958554457,
+              4898.016848235062
+            ]
+          },
+          "2": {
+            "base_pinode_loss": [
+              597.3022297427259,
+              543.2320132744754
+            ],
+            "constraint_type": "soft_penalty",
+            "expected_rk4_stage_count": 8,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 9
+            },
+            "integrated_derivative": "raw_f_tilde_omega",
+            "observed_rk4_stage_count": 8,
+            "physical_parameters": {
+              "C_a_D": 8665587.999966592,
+              "C_a_K": 8665587.9994781,
+              "C_m_D": 23396402.99997054,
+              "C_m_K": 23396402.998165227,
+              "R_DK": 0.0017134189513223152,
+              "R_Dm": 0.0017131187330706558,
+              "R_Do": 0.013426624219336374,
+              "R_Km": 0.0017134113682784856,
+              "R_Ko": 0.013373473333503876,
+              "eta_r_D": 0.4995366689112515,
+              "eta_r_K": 0.49950033971020263
+            },
+            "positive_rc": true,
+            "q_star_zone_W": [
+              2660.0167958554457,
+              4898.016848235062
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_dep2": {
+        "rc_orders": {
+          "1": {
+            "base_pinode_loss": [
+              6.4590929627805185,
+              5.847251444977462
+            ],
+            "constraint_type": "soft_penalty",
+            "dep2_1c_eta_locked_to_one": true,
+            "dep2_lambda_c_sum": 2.0,
+            "dep2_lambda_r_sum": 2.0,
+            "expected_rk4_stage_count": 8,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 7
+            },
+            "integrated_derivative": "raw_f_tilde_omega",
+            "observed_rk4_stage_count": 8,
+            "physical_parameters": {
+              "C_D": 8665587.998323342,
+              "C_K": 8665587.99813674,
+              "R_DK": 0.0017134161709960215,
+              "R_Do": 0.01337340330179279,
+              "R_Ko": 0.013373404699572943,
+              "eta_r_D": 1.0,
+              "eta_r_K": 1.0,
+              "lambda_c_D": 1.00099961675244,
+              "lambda_c_K": 0.99900038324756,
+              "lambda_r_D": 1.000999617502765,
+              "lambda_r_K": 0.9990003824972351
+            },
+            "positive_rc": true,
+            "q_star_zone_W": [
+              3131.6844666646493,
+              4659.9994436243005
+            ]
+          },
+          "2": {
+            "base_pinode_loss": [
+              94.58031095218523,
+              88.4726457626249
+            ],
+            "constraint_type": "soft_penalty",
+            "dep2_lambda_c_sum": 2.0,
+            "dep2_lambda_r_sum": 2.0,
+            "expected_rk4_stage_count": 8,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 7
+            },
+            "integrated_derivative": "raw_f_tilde_omega",
+            "observed_rk4_stage_count": 8,
+            "physical_parameters": {
+              "C_a_D": 8665587.998500274,
+              "C_a_K": 8665587.998332864,
+              "C_m_D": 23396402.998271868,
+              "C_m_K": 23396402.999045085,
+              "R_DK": 0.0017134198814809912,
+              "R_Dm": 0.001713402660217376,
+              "R_Do": 0.013373395224452326,
+              "R_Km": 0.001713420551961812,
+              "R_Ko": 0.013426657658335601,
+              "eta_r_D": 0.49950011661079124,
+              "eta_r_K": 0.49949981810579824,
+              "lambda_c_D": 0.9989995536749348,
+              "lambda_c_K": 1.0010004463250652,
+              "lambda_r_D": 0.998999819744814,
+              "lambda_r_K": 1.001000180255186
+            },
+            "positive_rc": true,
+            "q_star_zone_W": [
+              3131.6844666646493,
+              4659.9994436243005
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_ind": {
+        "rc_orders": {
+          "1": {
+            "base_pinode_loss": [
+              46.26397004877947,
+              45.22072016165408
+            ],
+            "constraint_type": "soft_penalty",
+            "expected_rk4_stage_count": 8,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "Dining": 6,
+              "Kitchen": 4
+            },
+            "integrated_derivative": "raw_f_tilde_omega",
+            "observed_rk4_stage_count": 8,
+            "physical_parameters": {
+              "C_D": 8665588.000226365,
+              "C_K": 8665587.998045037,
+              "R_Do": 0.013425115601983029,
+              "R_Ko": 0.013426644322086453,
+              "eta_r_D": 0.500470911144759,
+              "eta_r_K": 0.5004999955217886
+            },
+            "positive_rc": true,
+            "q_star_zone_W": [
+              2660.0167958554457,
+              4898.016848235062
+            ]
+          },
+          "2": {
+            "base_pinode_loss": [
+              133.64603540095544,
+              118.5607578228026
+            ],
+            "constraint_type": "soft_penalty",
+            "expected_rk4_stage_count": 8,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "Dining": 6,
+              "Kitchen": 4
+            },
+            "integrated_derivative": "raw_f_tilde_omega",
+            "observed_rk4_stage_count": 8,
+            "physical_parameters": {
+              "C_a_D": 8665587.99995123,
+              "C_a_K": 8665588.000008678,
+              "C_m_D": 23396402.99863235,
+              "C_m_K": 23396402.998309705,
+              "R_Dm": 0.0017134169124690126,
+              "R_Do": 0.013426642366135983,
+              "R_Km": 0.0017133571695342445,
+              "R_Ko": 0.01342179551746792,
+              "eta_r_D": 0.4994999919135597,
+              "eta_r_K": 0.4995000233290802
+            },
+            "positive_rc": true,
+            "q_star_zone_W": [
+              2660.0167958554457,
+              4898.016848235062
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      }
+    },
+    "neuromancer_runtime": {
+      "mlp_class": "neuromancer.modules.blocks.MLP",
+      "node_class": "neuromancer.system.Node",
+      "penalty_loss_class": "neuromancer.loss.PenaltyLoss",
+      "problem_class": "neuromancer.problem.Problem",
+      "rk4_class": "neuromancer.dynamics.integrators.RK4",
+      "system_class": "neuromancer.system.System",
+      "version": "1.5.6"
+    },
+    "phase_c_models": {
+      "Dining": {
+        "phvac_predictions_W": [
+          1885.2522868134483,
+          469.1344057104418,
+          1885.2522868134483
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Dining\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Dining\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -5062.25666016127,
+          0.0,
+          5062.25666016127
+        ]
+      },
+      "Kitchen": {
+        "phvac_predictions_W": [
+          798.6467746757984,
+          -2.015029192885322,
+          798.6467746757984
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Kitchen\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Kitchen\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -5077.350325669809,
+          0.0,
+          5077.350325669809
+        ]
+      },
+      "RestaurantFastFood_All": {
+        "phvac_predictions_W": [
+          1209.0816505654336,
+          -333.1944130869106,
+          1209.0816505654336
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l01_all_to_one\\equal\\RestaurantFastFood_All\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l01_all_to_one\\equal\\RestaurantFastFood_All\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -2377.656109008064,
+          0.0,
+          2377.656109008064
+        ]
+      }
+    },
+    "status": "passed",
+    "validation_intent": "tiny path/contract coverage; not convergence or accuracy"
+  },
+  "real_data_requested": true,
+  "status": "passed",
+  "unit_contracts": "passed"
+}

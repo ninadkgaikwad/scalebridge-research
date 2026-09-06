@@ -1,0 +1,1230 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\title{ScaleBridge Phase E.0 --- E0-3A\\
+Generic RC-Network Mathematical Contract\\
+\large Draft v0.1 for Scientific Lock}
+\author{ScaleBridge / PhD Code Framework}
+\date{2026-08-23}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Vc}{\mathcal{V}_{C}}
+\newcommand{\Vb}{\mathcal{V}_{B}}
+\newcommand{\Er}{\mathcal{E}_{R}}
+\newcommand{\Qset}{\mathcal{Q}}
+\newcommand{\Zset}{\mathcal{Z}}
+\newcommand{\Sc}{\mathcal{S}_{c}}
+\newcommand{\Sr}{\mathcal{S}_{r}}
+\newcommand{\diag}{\operatorname{diag}}
+
+\begin{document}
+\maketitle
+
+\section*{Status and authority}
+
+This document is the proposed generic mathematical contract for ScaleBridge
+Phase E.0 E0-3.  It is intentionally method-neutral.
+
+The controlled PINODE/EPSR RC mathematics is a scientific reference for:
+\begin{itemize}
+    \item convective/radiative heat semantics,
+    \item observed versus latent thermal states,
+    \item reciprocal resistance coupling,
+    \item positive $R/C$ parameterization,
+    \item zone and building total-energy balances,
+    \item the separation of IND/DEP1/DEP2 information architectures.
+\end{itemize}
+
+The controlled paper's RestaurantFastFood/Buffalo/Dining/Kitchen dimensions,
+fixed forcing vectors, fixed two-zone coupling, fixed $\Delta t=300$ s, and
+paper-specific DEP2 allocation are \emph{not} part of this generic contract.
+
+The authoritative data boundary is the Phase-D final product interpreted
+through the E0-2 Phase-E canonical contract.  Phase B and Phase C remain the
+upstream providers of physical measurements, aggregation semantics, and
+heat-input models; E0-3 does not duplicate those upstream models.
+
+\section*{1. Orthogonal axes: RC topology versus information architecture}
+
+A central ScaleBridge rule is that the physical RC topology and the
+Phase-D information architecture are orthogonal.
+
+An RC topology specifies:
+\begin{itemize}
+    \item thermal state/capacitance nodes,
+    \item prescribed boundary-temperature nodes,
+    \item reciprocal resistance edges,
+    \item heat-injection ports and routing,
+    \item observed-state selection.
+\end{itemize}
+
+The information architecture specifies which measured/estimated signals are
+available:
+\begin{itemize}
+    \item All-to-One,
+    \item IND,
+    \item DEP1,
+    \item DEP2.
+\end{itemize}
+
+Therefore a ``2R2C DEP1'' model is not a separate hand-written equation family.
+It is:
+\[
+\boxed{
+\text{generic RC graph}
++
+\text{2R2C graph template}
++
+\text{DEP1 signal map}.
+}
+\]
+
+Likewise, 1R1C, 2R2C, 3R2C, and 4R3C are named graph instantiations of the
+same generic RC-network contract.
+
+\section*{2. Generic thermal graph}
+
+Define the thermal graph
+\[
+\boxed{
+\mathcal{G}_{RC}
+=
+(\Vc,\Vb,\Er,\Zset,\zeta,\Qset,\Gamma,H).
+}
+\]
+
+Here:
+\begin{align*}
+\Vc &= \text{set of capacitive/state nodes},\\
+\Vb &= \text{set of prescribed boundary-temperature nodes},\\
+\Er &= \text{set of reciprocal resistance edges},\\
+\Zset &= \text{set of modeled zones},\\
+\zeta(v) &\in \Zset \text{ is the zone membership of state node }v,\\
+\Qset &= \text{set of named thermal-power ports},\\
+\Gamma &= \text{heat-routing operator},\\
+H &= \text{observation/measurement operator}.
+\end{align*}
+
+Each capacitive node $v\in\Vc$ has temperature $T_v(t)$ and capacitance
+\[
+\boxed{C_v>0.}
+\]
+
+Each resistance edge is undirected:
+\[
+e=\{p,q\}\in\Er,
+\]
+with
+\[
+\boxed{R_e>0,\qquad G_e=\frac{1}{R_e}>0.}
+\]
+
+A resistance edge may connect:
+\begin{enumerate}[label=(\roman*)]
+    \item two state nodes,
+    \item a state node and a boundary node.
+\end{enumerate}
+
+Boundary nodes have prescribed temperatures and are not integrated as states.
+
+\section*{3. Reciprocal conductive heat flow}
+
+For an edge $e=\{p,q\}$, define the heat flow into $p$ from $q$ as
+\[
+\boxed{
+\Phi_{q\rightarrow p}
+=
+\frac{T_q-T_p}{R_e}.
+}
+\]
+
+The reciprocal heat flow is
+\[
+\Phi_{p\rightarrow q}
+=
+-\Phi_{q\rightarrow p}.
+\]
+
+Hence every internal resistance edge is exactly energy-conservative:
+\[
+\boxed{
+\Phi_{q\rightarrow p}
++
+\Phi_{p\rightarrow q}
+=
+0.
+}
+\]
+
+For a cross-zone edge, one and only one resistance parameter belongs to the
+undirected edge:
+\[
+\boxed{R_{ij}=R_{ji}.}
+\]
+
+The physical implementation must never create two independently trainable
+parameters for the two directions of the same thermal connection.
+
+\section*{4. Generic nodewise RC equation}
+
+For every capacitive node $v\in\Vc$,
+\[
+\boxed{
+C_v\dot T_v
+=
+\sum_{e=\{v,j\}\in\Er}
+\frac{T_j-T_v}{R_e}
++
+\sum_{s\in\Qset}
+\Gamma_{vs}q_s.
+}
+\tag{E0.3-1}
+\]
+
+The first term contains conductive/resistive exchange.
+The second term contains externally supplied thermal-power signals.
+
+The heat-routing coefficient $\Gamma_{vs}$ is dimensionless.
+It may be fixed or parameterized, but its scientific meaning must be explicit.
+
+\section*{5. Matrix form}
+
+Let
+\[
+x=
+\begin{bmatrix}
+T_{v_1}&\cdots&T_{v_n}
+\end{bmatrix}^{\!\top},
+\qquad n=|\Vc|,
+\]
+and
+\[
+C=\diag(C_{v_1},\ldots,C_{v_n}).
+\]
+
+Let $T_B$ collect prescribed boundary temperatures and let $q$ collect the
+named thermal-power ports.
+
+Construct the weighted graph Laplacian and partition it with respect to state
+and boundary nodes:
+\[
+L=
+\begin{bmatrix}
+L_{CC}&L_{CB}\\
+L_{BC}&L_{BB}
+\end{bmatrix}.
+\]
+
+Then the complete continuous-time dynamics are
+\[
+\boxed{
+C\dot x
+=
+-L_{CC}x
+-L_{CB}T_B
++\Gamma q.
+}
+\tag{E0.3-2}
+\]
+
+Equivalently,
+\[
+\boxed{
+\dot x
+=
+C^{-1}
+\left(
+-L_{CC}x
+-L_{CB}T_B
++\Gamma q
+\right).
+}
+\tag{E0.3-3}
+\]
+
+No numerical discretization is part of E0-3.  Euler, Heun/RK2, RK4, the
+locked sixth-order method, and physical/normalized time handling belong to
+E0-5.
+
+\section*{6. Units and sign convention}
+
+The locked units are:
+\begin{align*}
+T &:\ ^\circ\mathrm{C}\ \text{or K on a consistent temperature basis},\\
+R &:\ \mathrm{K/W},\\
+C &:\ \mathrm{J/K},\\
+q &:\ \mathrm{W},\\
+\dot T &:\ \mathrm{K/s}.
+\end{align*}
+
+Temperature differences in conductive terms are numerically identical in
+degrees Celsius and kelvin.
+
+A positive heat port injects thermal energy into its routed node.
+For HVAC:
+\[
+\boxed{
+Q_{AC}>0 \text{ means heating},
+\qquad
+Q_{AC}<0 \text{ means cooling}.
+}
+\]
+
+$P_{HVAC}$ is electrical power and is never a term in
+(E0.3-1)--(E0.3-3).
+
+\section*{7. Upstream signal semantics}
+
+Phase D, interpreted through the E0-2 contract, is the authoritative training
+data source.
+
+For zone $i$, the primary grouped Phase-D thermal signals are:
+\begin{align*}
+Q_{AC,i} &:\ \text{signed HVAC thermal delivery},\\
+Q_{ZIC,i} &:\ \text{grouped convective internal gain},\\
+Q_{ZIR,i} &:\ \text{grouped radiative internal gain},\\
+Q_{Sol1,i} &:\ \text{convective solar contribution},\\
+Q_{Sol2,i} &:\ \text{radiative solar contribution}.
+\end{align*}
+
+When those exact bindings exist, define
+\[
+\boxed{
+Q_{c,i}
+=
+Q_{AC,i}+Q_{ZIC,i}+Q_{Sol1,i},
+}
+\tag{E0.3-4}
+\]
+and
+\[
+\boxed{
+Q_{r,i}
+=
+Q_{ZIR,i}+Q_{Sol2,i}.
+}
+\tag{E0.3-5}
+\]
+
+If Phase D exposes component-level heat signals instead of grouped signals,
+the heat-set membership in the Phase-D manifest determines the corresponding
+sum.
+
+Crucially, the generic equations sum only over signals that are present under
+the authoritative E0-2 binding/availability contract.  A missing applicable
+signal is not silently imputed as zero.
+
+A structurally inapplicable/structurally-zero channel may contribute no port
+only when that status is explicit in the upstream contract.
+
+\section*{8. Heat routing is a separate physical contract}
+
+The RC graph and the heat-routing operator $\Gamma$ are separate.
+
+For a named source $s$, define its destination set
+\[
+\mathcal{D}(s)\subseteq\Vc.
+\]
+
+For a conservative thermal source,
+\[
+\boxed{
+\Gamma_{vs}\ge 0,
+\qquad
+\sum_{v\in\mathcal{D}(s)}\Gamma_{vs}=1.
+}
+\tag{E0.3-6}
+\]
+
+This guarantees that the source is redistributed but not created or destroyed.
+
+For learnable conservative routing, one valid parameterization is
+\[
+\boxed{
+\Gamma_{vs}
+=
+\frac{\exp(\rho_{vs})}
+{\sum_{u\in\mathcal{D}(s)}\exp(\rho_{us})}.
+}
+\tag{E0.3-7}
+\]
+
+Routing parameters are physical/model parameters, not generic Optuna
+hyperparameters.
+
+\subsection*{8.1 Convective/radiative default semantics}
+
+The primary ScaleBridge convention is:
+\begin{itemize}
+    \item convective heat enters the zone-air node;
+    \item radiative heat is routed according to the selected topology-specific
+          routing contract.
+\end{itemize}
+
+For a one-capacitance reduced model, the conservative default is that all
+radiative heat enters the single state.
+
+An optional reduced-order effective radiative participation factor
+\[
+0\le \eta_r^{(1C)}\le1
+\]
+may be enabled explicitly, giving
+\[
+Q_{\mathrm{eff}}^{(1C)}
+=
+Q_c+\eta_r^{(1C)}Q_r.
+\]
+This option is an effective reduced-order approximation.  The main
+energy-conservative 1C choice is
+\[
+\boxed{\eta_r^{(1C)}=1.}
+\]
+
+For a two-state air/mass routing profile,
+\[
+\boxed{
+\Gamma_{a,r}=1-\eta_r,
+\qquad
+\Gamma_{m,r}=\eta_r,
+\qquad
+0\le\eta_r\le1.
+}
+\tag{E0.3-8}
+\]
+
+\section*{9. Observation and latent-state contract}
+
+Each modeled zone $i$ has a distinguished zone-air state node $a(i)$.
+
+Phase D supplies the observed zone-air temperature:
+\[
+\boxed{
+y_i=T_{a(i)}.
+}
+\]
+
+Collecting all modeled zones:
+\[
+\boxed{y=Hx.}
+\tag{E0.3-9}
+\]
+
+Every additional capacitive node not selected by $H$ is a physical latent
+thermal state.
+
+Thus:
+\begin{itemize}
+    \item 1C: the full state may be observed;
+    \item $n$C with $n>1$: non-air capacitance states are latent unless an
+          upstream measurement contract explicitly says otherwise.
+\end{itemize}
+
+Phase D does not fabricate latent-state targets.
+Initialization/estimation of latent states belongs to E0-4 and later
+method-specific mathematical contracts.
+
+\section*{10. 1C versus nC organization}
+
+For each modeled zone $i$, let
+\[
+\Vc_i=\{v\in\Vc:\zeta(v)=i\}.
+\]
+
+Define
+\[
+n_{C,i}=|\Vc_i|.
+\]
+
+The organization is:
+\begin{align*}
+\text{1C} &: n_{C,i}=1,\\
+\text{nC} &: n_{C,i}\ge 2.
+\end{align*}
+
+This distinction affects state observability and heat routing, but not the
+generic node equation (E0.3-1).
+
+\section*{11. Information architecture: All-to-One}
+
+All-to-One is an upstream aggregation/information architecture, not a new RC
+physics equation.
+
+There is one modeled aggregate zone $A$:
+\[
+\Zset=\{A\}.
+\]
+
+The aggregate Phase-D product supplies:
+\[
+T_A,\quad T_o,\quad
+\{q_{A,s}\}_{s\in\mathcal{S}_A}.
+\]
+
+Any RC graph template may be instantiated on this aggregate zone.
+
+\section*{12. Information architecture: IND}
+
+In IND, each Phase-D product models one zone independently.
+
+For zone $i$:
+\[
+\Zset=\{i\},
+\]
+and there are no modeled inter-zone RC edges.
+
+The forcing map is a named map, not a hard-coded tensor:
+\[
+\boxed{
+v_i^{IND}(t)
+=
+\left\{
+T_B(t),
+q_{i,s}(t):
+s\in\mathcal{S}_i
+\right\}.
+}
+\tag{E0.3-10}
+\]
+
+Different zones may have different sets $\mathcal{S}_i$.
+
+\section*{13. Information architecture: DEP1}
+
+DEP1 models multiple zones jointly.
+
+Let
+\[
+\Zset=\{1,\ldots,N_z\}.
+\]
+
+Every modeled zone contributes its observed state and all local Phase-D
+controls/disturbances that are actually available.
+
+The joint named forcing map is
+\[
+\boxed{
+v^{DEP1}(t)
+=
+\left\{
+T_B(t),
+q_{i,s}(t):
+i\in\Zset,\ s\in\mathcal{S}_i
+\right\}.
+}
+\tag{E0.3-11}
+\]
+
+Physical inter-zone coupling is supplied by the RC graph, not by Phase D.
+
+For an inter-zone edge connecting nodes $v\in i$ and $w\in j$:
+\[
+\boxed{
+\Phi_{j\rightarrow i}
+=
+\frac{T_w-T_v}{R_{ij}},
+\qquad
+\Phi_{i\rightarrow j}
+=
+-\Phi_{j\rightarrow i}.
+}
+\tag{E0.3-12}
+\]
+
+There is one shared positive resistance for that undirected edge.
+
+\section*{14. Information architecture: DEP2}
+
+DEP2 uses the same physical RC graph class as DEP1.
+
+What changes is the disturbance information map:
+\begin{itemize}
+    \item modeled-zone states remain zone-specific;
+    \item available zone-local controls such as $Q_{AC,i}$ remain zone-specific;
+    \item selected non-HVAC disturbances may come from an upstream aggregate
+          source.
+\end{itemize}
+
+Therefore DEP2 is not a different RC equation.  It is:
+\[
+\boxed{
+\text{DEP1-type physical graph}
++
+\text{aggregate-to-zone disturbance allocation operator}.
+}
+\]
+
+\section*{15. Generic DEP2 aggregate-to-zone allocation}
+
+For disturbance family $g$, let the upstream Phase-B aggregation semantics be
+\[
+\boxed{
+\bar q_g
+=
+\sum_{i=1}^{N_z} w_{g,i} q_{g,i},
+}
+\tag{E0.3-13}
+\]
+where the coefficients $w_{g,i}$ must come from authoritative aggregation
+metadata.  They are not inferred from the number of zones.
+
+Define the effective reconstructed zone disturbance:
+\[
+\boxed{
+q_{g,i}^{DEP2}
+=
+\lambda_{g,i}\bar q_g.
+}
+\tag{E0.3-14}
+\]
+
+To preserve the upstream aggregate exactly,
+\[
+\boxed{
+\sum_{i=1}^{N_z}
+w_{g,i}\lambda_{g,i}
+=
+1.
+}
+\tag{E0.3-15}
+\]
+
+For positive aggregation coefficients, a convenient unconstrained
+parameterization is
+\[
+\boxed{
+\lambda_{g,i}
+=
+\frac{\exp(\alpha_{g,i})}
+{\sum_{j=1}^{N_z} w_{g,j}\exp(\alpha_{g,j})}.
+}
+\tag{E0.3-16}
+\]
+
+This guarantees
+\[
+\lambda_{g,i}>0
+\]
+and (E0.3-15).
+
+If
+\[
+\sum_i w_{g,i}=1
+\]
+and every $\alpha_{g,i}=0$, then
+\[
+\lambda_{g,i}=1.
+\]
+
+For the paper's equal two-zone mean,
+\[
+w_D=w_K=\frac12,
+\]
+and (E0.3-15) becomes
+\[
+\lambda_D+\lambda_K=2,
+\]
+recovering the controlled PINODE/EPSR case as a special instance.
+
+If the Phase-B aggregation semantics for a source are not expressible by a
+known linear coefficient vector, a generic DEP2 allocator must not be silently
+constructed.  The allocation contract must instead be supplied explicitly.
+
+\section*{16. Zone total-energy balance}
+
+For zone $i$, define the stored thermal energy relative to an arbitrary fixed
+reference temperature $T_{\mathrm{ref}}$:
+\[
+\boxed{
+E_i
+=
+\sum_{v\in\Vc_i}
+C_v(T_v-T_{\mathrm{ref}}).
+}
+\tag{E0.3-17}
+\]
+
+Then
+\[
+\dot E_i
+=
+\sum_{v\in\Vc_i}C_v\dot T_v.
+\]
+
+All resistance edges whose two endpoints lie inside the same zone cancel
+exactly.
+
+Therefore
+\[
+\boxed{
+\begin{aligned}
+\dot E_i
+={}&
+\sum_{\substack{e=\{v,b\}\\
+v\in\Vc_i,\ b\in\Vb}}
+\frac{T_b-T_v}{R_e}
+\\
+&+
+\sum_{\substack{e=\{v,w\}\\
+v\in\Vc_i,\ \zeta(w)\ne i}}
+\frac{T_w-T_v}{R_e}
+\\
+&+
+\sum_{s\in\Qset}
+\left(
+\sum_{v\in\Vc_i}\Gamma_{vs}
+\right)q_s.
+\end{aligned}
+}
+\tag{E0.3-18}
+\]
+
+This is the generic zone energy-balance identity later consumed by
+physics-residual methods and EBP-PINODE.
+
+\section*{17. Building/network total-energy balance}
+
+Define
+\[
+E_{\mathrm{tot}}
+=
+\sum_{i\in\Zset}E_i.
+\]
+
+Summing (E0.3-18) over all modeled zones cancels every internal and inter-zone
+resistance edge.
+
+Hence
+\[
+\boxed{
+\begin{aligned}
+\dot E_{\mathrm{tot}}
+={}&
+\sum_{\substack{e=\{v,b\}\\
+v\in\Vc,\ b\in\Vb}}
+\frac{T_b-T_v}{R_e}
+\\
+&+
+\sum_{s\in\Qset}
+\left(
+\sum_{v\in\Vc}\Gamma_{vs}
+\right)q_s.
+\end{aligned}
+}
+\tag{E0.3-19}
+\]
+
+For conservative routing of source $s$,
+\[
+\sum_v\Gamma_{vs}=1.
+\]
+
+Thus each physical heat source appears exactly once in the global
+energy balance.
+
+\section*{18. Parameter contract}
+
+The generic physical parameter set is
+\[
+\boxed{
+\theta_{RC}
+=
+\left\{
+C_v:v\in\Vc
+\right\}
+\cup
+\left\{
+R_e:e\in\Er
+\right\}.
+}
+\]
+
+Optional physical routing/allocation parameters are kept separately:
+\[
+\theta_{\Gamma},
+\qquad
+\theta_{\Lambda}.
+\]
+
+For differentiable estimation:
+\[
+\boxed{
+R_e
+=
+R_{e,\min}
++
+\operatorname{softplus}(\rho_{R_e}),
+}
+\tag{E0.3-20}
+\]
+\[
+\boxed{
+C_v
+=
+C_{v,\min}
++
+\operatorname{softplus}(\rho_{C_v}).
+}
+\tag{E0.3-21}
+\]
+
+When a bounded scalar fraction is used:
+\[
+\boxed{
+\eta=\sigma(\rho_\eta).
+}
+\tag{E0.3-22}
+\]
+
+$R$, $C$, routing fractions, and DEP2 allocation factors are
+\emph{model/physical parameters}.  They are not generic hyperparameters.
+
+Hyperparameters such as network width, optimizer settings, numerical rollout
+length, or method-specific loss weights belong to later family/method
+mathematical contracts.
+
+\section*{19. ScaleBridge canonical graph templates}
+
+The names 1R1C, 2R2C, 3R2C, and 4R3C identify graph signatures.
+Heat routing remains an explicit, separate contract.
+
+\subsection*{19.1 1R1C}
+
+State nodes:
+\[
+\Vc=\{a\}.
+\]
+
+Boundary nodes:
+\[
+\Vb=\{o\}.
+\]
+
+Resistance edges:
+\[
+\Er=\{\{a,o\}\}.
+\]
+
+Parameters:
+\[
+C_a,\qquad R_{ao}.
+\]
+
+With the conservative one-node heat routing,
+\[
+\boxed{
+C_a\dot T_a
+=
+\frac{T_o-T_a}{R_{ao}}
++
+Q_c+Q_r.
+}
+\tag{E0.3-23}
+\]
+
+The paper-compatible optional reduced-order participation form is
+\[
+C_a\dot T_a
+=
+\frac{T_o-T_a}{R_{ao}}
++
+Q_c+\eta_r^{(1C)}Q_r.
+\]
+
+\subsection*{19.2 2R2C}
+
+State nodes:
+\[
+\Vc=\{a,m\}.
+\]
+
+Boundary:
+\[
+\Vb=\{o\}.
+\]
+
+Resistance edges:
+\[
+\Er=
+\left\{
+\{a,o\},
+\{a,m\}
+\right\}.
+\]
+
+Parameters:
+\[
+C_a,\ C_m,\ R_{ao},\ R_{am}.
+\]
+
+Under the paper-compatible air/mass radiative split:
+\[
+\boxed{
+C_a\dot T_a
+=
+\frac{T_o-T_a}{R_{ao}}
++
+\frac{T_m-T_a}{R_{am}}
++
+Q_c
++
+(1-\eta_r)Q_r,
+}
+\tag{E0.3-24}
+\]
+\[
+\boxed{
+C_m\dot T_m
+=
+\frac{T_a-T_m}{R_{am}}
++
+\eta_rQ_r.
+}
+\tag{E0.3-25}
+\]
+
+Adding:
+\[
+\boxed{
+C_a\dot T_a+C_m\dot T_m
+=
+\frac{T_o-T_a}{R_{ao}}+Q_c+Q_r.
+}
+\tag{E0.3-26}
+\]
+
+\subsection*{19.3 3R2C}
+
+ScaleBridge fixes the 3R2C graph signature as two capacitances with three
+resistive paths.
+
+State nodes:
+\[
+\Vc=\{a,m\}.
+\]
+
+Boundary:
+\[
+\Vb=\{o\}.
+\]
+
+Resistance edges:
+\[
+\boxed{
+\Er=
+\left\{
+\{a,o\},
+\{a,m\},
+\{m,o\}
+\right\}.
+}
+\]
+
+Parameters:
+\[
+C_a,\ C_m,\ R_{ao},\ R_{am},\ R_{mo}.
+\]
+
+For arbitrary routed heat powers $Q_a,Q_m$ satisfying the selected routing
+contract:
+\[
+\boxed{
+C_a\dot T_a
+=
+\frac{T_o-T_a}{R_{ao}}
++
+\frac{T_m-T_a}{R_{am}}
++
+Q_a,
+}
+\tag{E0.3-27}
+\]
+\[
+\boxed{
+C_m\dot T_m
+=
+\frac{T_o-T_m}{R_{mo}}
++
+\frac{T_a-T_m}{R_{am}}
++
+Q_m.
+}
+\tag{E0.3-28}
+\]
+
+The zone total is
+\[
+\boxed{
+C_a\dot T_a+C_m\dot T_m
+=
+\frac{T_o-T_a}{R_{ao}}
++
+\frac{T_o-T_m}{R_{mo}}
++
+Q_a+Q_m.
+}
+\tag{E0.3-29}
+\]
+
+No special 3R2C heat split is implied by the topology name; it must be
+specified by $\Gamma$.
+
+\subsection*{19.4 4R3C}
+
+ScaleBridge fixes the 4R3C graph signature as zone air, envelope, and internal
+mass.
+
+State nodes:
+\[
+\Vc=\{a,e,m\}.
+\]
+
+Boundary:
+\[
+\Vb=\{o\}.
+\]
+
+Resistance edges:
+\[
+\boxed{
+\Er=
+\left\{
+\{a,o\},
+\{a,e\},
+\{e,o\},
+\{a,m\}
+\right\}.
+}
+\]
+
+Parameters:
+\[
+C_a,\ C_e,\ C_m,\ R_{ao},\ R_{ae},\ R_{eo},\ R_{am}.
+\]
+
+For routed node heat powers $Q_a,Q_e,Q_m$:
+\[
+\boxed{
+C_a\dot T_a
+=
+\frac{T_o-T_a}{R_{ao}}
++
+\frac{T_e-T_a}{R_{ae}}
++
+\frac{T_m-T_a}{R_{am}}
++
+Q_a,
+}
+\tag{E0.3-30}
+\]
+\[
+\boxed{
+C_e\dot T_e
+=
+\frac{T_o-T_e}{R_{eo}}
++
+\frac{T_a-T_e}{R_{ae}}
++
+Q_e,
+}
+\tag{E0.3-31}
+\]
+\[
+\boxed{
+C_m\dot T_m
+=
+\frac{T_a-T_m}{R_{am}}
++
+Q_m.
+}
+\tag{E0.3-32}
+\]
+
+The total balance is
+\[
+\boxed{
+\begin{aligned}
+C_a\dot T_a+C_e\dot T_e+C_m\dot T_m
+={}&
+\frac{T_o-T_a}{R_{ao}}
++
+\frac{T_o-T_e}{R_{eo}}\\
+&+
+Q_a+Q_e+Q_m.
+\end{aligned}
+}
+\tag{E0.3-33}
+\]
+
+Again, the graph signature does not silently prescribe heat routing.
+
+\section*{20. Multi-zone construction from elemental zone graphs}
+
+For each modeled zone $i$, instantiate a chosen elemental RC graph
+\[
+\mathcal{G}_{RC,i}.
+\]
+
+The uncoupled network is the disjoint union
+\[
+\mathcal{G}_{0}
+=
+\bigsqcup_{i\in\Zset}
+\mathcal{G}_{RC,i}.
+\]
+
+DEP1/DEP2 physical coupling is produced by adding an explicit set of
+inter-zone resistance edges:
+\[
+\mathcal{E}_{Z}.
+\]
+
+Therefore
+\[
+\boxed{
+\mathcal{G}_{multi}
+=
+\left(
+\bigsqcup_{i\in\Zset}
+\mathcal{G}_{RC,i}
+\right)
+\cup
+\mathcal{E}_{Z}.
+}
+\tag{E0.3-34}
+\]
+
+Every edge in $\mathcal{E}_{Z}$ is undirected and has one shared positive
+resistance.
+
+The construction supports arbitrary $N_z$ and arbitrary allowed thermal
+adjacency.  The paper's one Dining--Kitchen air-to-air edge is only the
+$N_z=2$ special case.
+
+Detailed adjacency ownership and latent-state initialization are finalized in
+E0-4.
+
+\section*{21. Phase B / Phase C / Phase D provider boundary}
+
+The mathematical RC model is written in terms of named ports and does not
+depend on filesystem paths or a particular training pipeline.
+
+\subsection*{Training / offline estimation}
+
+The authoritative provider is Phase D through E0-2:
+\begin{itemize}
+    \item observed zone temperature,
+    \item prescribed outdoor temperature,
+    \item QAC,
+    \item grouped or component heat disturbances,
+    \item IND/DEP1/DEP2 information architecture,
+    \item aggregation/Phase-C lineage,
+    \item temporal partitions.
+\end{itemize}
+
+\subsection*{Upstream origin}
+
+Phase B is the authoritative source of measured/aggregated temperature
+semantics and aggregation definitions/weights.
+
+Phase C is the authoritative source of learned heat-input quantities such as
+QAC, QSol1/QSol2, and internal-gain components that Phase D subsequently
+materializes/groups.
+
+\subsection*{Runtime}
+
+Later runtime composition may supply the same thermal ports from live/replayed
+Phase-B measurements and Phase-C model runtimes.
+
+The RC equations remain unchanged.
+
+PHVAC is computed downstream from the corresponding QAC trajectory and does
+not enter the RC balance.
+
+\section*{22. Generic physical invariants required of every backend}
+
+Any NumPy, PyTorch, Neuromancer, CasADi, Pyomo, or Bayesian representation
+must satisfy the same contract.
+
+Required invariants include:
+
+\begin{enumerate}
+    \item $R_e>0$ for every resistance.
+    \item $C_v>0$ for every capacitance.
+    \item Internal edge flow is antisymmetric.
+    \item A shared inter-zone edge has one parameter, not two directional
+          parameters.
+    \item Internal edges cancel from the appropriate zone/building energy sum.
+    \item Conservative heat routing satisfies (E0.3-6).
+    \item DEP2 allocation satisfies (E0.3-15).
+    \item PHVAC never appears in the thermal RHS.
+    \item E0-2 exact signal bindings are respected; no substring inference.
+    \item A missing applicable signal is not silently zero-filled.
+    \item The observed-state operator selects the exact Phase-D zone-air states.
+    \item Latent states remain physical topology states rather than arbitrary
+          learned coordinates.
+    \item Named RC templates reproduce the generic graph equation exactly.
+\end{enumerate}
+
+\section*{23. Separation from later Phase E steps}
+
+This contract intentionally stops at the continuous-time physical model.
+
+E0-4 owns:
+\begin{itemize}
+    \item arbitrary-zone adjacency/coupling realization,
+    \item detailed shared inter-zone resistance registry,
+    \item latent-state initialization,
+    \item aggregation-aware DEP2 allocator binding to actual Phase-B metadata.
+\end{itemize}
+
+E0-5 owns:
+\begin{itemize}
+    \item Euler,
+    \item Heun/RK2,
+    \item RK4,
+    \item the precisely identified sixth-order RK scheme,
+    \item physical/normalized time,
+    \item substep forcing interpolation/ZOH.
+\end{itemize}
+
+E0-6 owns backend parity.
+
+E0-7 owns runtime composition and PHVAC runtime.
+
+E0-8 owns Optuna/MLflow lifecycle.
+
+Specific ML, SciML, Optimization, and Bayesian methods must still receive
+their own detailed versioned mathematical \texttt{.tex} contracts before code
+is written.
+
+\section*{24. Lock summary}
+
+The proposed E0-3 mathematical lock is:
+
+\begin{enumerate}
+    \item One generic graph equation governs every RC topology.
+    \item 1R1C/2R2C/3R2C/4R3C are graph templates, not duplicated solvers.
+    \item Heat routing is explicit and separate from graph topology.
+    \item 1C/nC is a state-structure distinction.
+    \item All-to-One/IND/DEP1/DEP2 is an information-architecture distinction.
+    \item DEP1 and DEP2 may share the same physical graph.
+    \item DEP2 differs by an explicit aggregate-to-zone information allocator.
+    \item The generic DEP2 conservation rule is
+          $\sum_i w_{g,i}\lambda_{g,i}=1$.
+    \item Phase D/E0-2 supplies authoritative training-time signal bindings.
+    \item Phase B/C semantics remain upstream; the RC core consumes named ports.
+    \item QAC is thermal control; PHVAC is downstream electrical output.
+    \item State temperatures are physically named; latent states are topology
+          states.
+    \item All $R/C$ parameters remain positive.
+    \item Total-energy identities are generated from the graph and must hold
+          independently of method/backend.
+\end{enumerate}
+
+\end{document}

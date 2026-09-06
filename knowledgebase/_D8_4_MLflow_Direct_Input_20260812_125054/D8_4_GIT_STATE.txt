@@ -1,0 +1,46 @@
+﻿Repository: C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research
+Generated: 2026-08-12 12:58:56
+
+=== git branch ===
+main
+
+=== git rev-parse HEAD ===
+1ff44aa4981da529899b5fef86f687d376d463e0
+
+=== git status --short ===
+ M README.md
+ D block_e_direct_validation.txt
+ M knowledgebase/Dash_App/Generation_Page/PATCH_README.txt
+ M knowledgebase/README.md
+ M src/scalebridge/dashapp/app.py
+ M src/scalebridge/dashapp/pages/data_pipeline/phase_a_generation/callbacks.py
+ M src/scalebridge/dashapp/pages/data_pipeline/phase_a_generation/results/page.py
+ M src/scalebridge/dashapp/services/generation/results_data.py
+ M src/scalebridge/integration/energyplus/generation/campaign_runner.py
+?? %SCALEBRIDGE_GENERATED_DATA_ROOT%/
+?? _D8_4_MLflow_Direct_Input_20260812_125054/
+?? bgirs_phase_b_testing_b1b2_v1.json
+?? environments/ScaleBridge_OpenMP_Environment_Repair_Handoff.txt
+?? environments/locks/dev_laptop_gpu_full/pillow-torchvision-dll-test.txt
+?? environments/locks/home_pc_gpu_full/
+?? environments/locks/lab_pc_gpu_full/
+?? knowledgebase/BGIRS_PhaseB_Aggregation_Artifact_Fixtures.zip
+?? knowledgebase/BGIRS_PhaseB_Current_DashApp_Tree.txt
+?? knowledgebase/BGIRS_PhaseB_Targeted_ScaleBridge_Tree.txt
+?? knowledgebase/BGIRS_PhaseB_Test_vs_P1_Structure_Comparison.txt
+?? knowledgebase/Dash_App/PATCH_README.txt
+?? knowledgebase/Phase_D_Patches/
+?? knowledgebase/ScaleBridge_D8_4_Repo_Tree_20260812_121552.txt
+?? knowledgebase/_BGIRS_PhaseB_Aggregation_Artifact_Fixtures/
+?? knowledgebase/apply_phase02_step09b_mpc_geometry_vector_compatibility_v12.ps1
+?? knowledgebase/apply_phase02_step09b_mpc_geometry_vector_compatibility_v12.py
+?? scripts/aggregation/run_aggregation_campaign.py
+?? scripts/thermal_modeling/
+?? src/scalebridge/data/aggregation/campaign_definition.py
+?? src/scalebridge/data/aggregation/campaign_runner.py
+?? src/scalebridge/data/thermal_modeling/
+?? tests/dashapp/unit/test_generation_custom_interactive_legend.py
+?? tests/dashapp/unit/test_generation_results_export.py
+?? tests/dashapp/unit/test_generation_variable_key_filter.py
+?? tests/thermal_modeling/
+?? tests/unit/

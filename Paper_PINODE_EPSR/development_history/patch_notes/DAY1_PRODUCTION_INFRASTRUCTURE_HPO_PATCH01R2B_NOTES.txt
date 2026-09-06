@@ -1,0 +1,22 @@
+PATCH01R2B BACKWARD-COMPATIBLE PROVENANCE CORRECTION
+
+Baseline: installed and qualified Patch01R1. Failed R2/R2A transactions rolled back.
+
+Scientific R2 contract retained unchanged:
+- monthly HPO target rows use floor(percent * monthly TRAIN rows)
+- inner holdout rows use floor(percent * selected monthly targets)
+- micro32 max rollout horizon is N_r <= 3; production retains N_r <= 12
+- 300-s data-derived thermostat deadband remains default
+- user deadband override is a half-width around setpoint (e.g. 1.0 = +/-1 C)
+- per-zone heating/cooling Ts and mdot overrides are supported
+- Kitchen unobserved heating remains extrapolative/OOD even when overridden
+
+R2B compatibility correction:
+- preserve historical provenance key deadband_source='override' for explicit deadband overrides
+- add deadband_source_class='user_override' for richer production provenance
+- preserve historical ThermostatModeActuation.parameter_source='observed_train' for observed TRAIN modes
+- add mode_resolution.source_class='data_train_observed' for richer production provenance
+- preserve historical fallback identifier fallback_same_zone_<mode>_deltaT_and_mdot
+- new user-overridden mode parameter_source remains user_override
+
+This fixes provenance-label compatibility only. No model equations, Phase-C chain, Phase-D ownership, HPO arithmetic, training mathematics, checkpoint logic, or Sim3 physics changed relative to R2A.

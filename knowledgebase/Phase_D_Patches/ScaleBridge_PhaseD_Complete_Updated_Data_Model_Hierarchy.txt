@@ -1,0 +1,1335 @@
+PHASE D — COMPLETE UPDATED DATA MODEL AND HIERARCHY
+===================================================
+
+Phase D is the campaign-level thermal-model data preparation layer between Phase B/Phase C and all downstream thermal-modeling methods.
+
+Its purpose is to:
+
+- assemble a canonical, validated, timestamp-aligned thermal dataset;
+- discover and preserve every applicable Phase C heat-input model for each zone or aggregated zone;
+- preserve Qsol1 and Qsol2 as separate solar heat-input signals;
+- combine applicable internal convective heat components into ZIC;
+- combine applicable internal radiant heat components into ZIR;
+- retain QAC as the HVAC thermal input;
+- exclude PHVAC from thermal-model features while preserving its lineage and availability metadata;
+- preserve the Independent, Dependent1, and Dependent2 modeling modes;
+- create ML–SciML and Opt–Bayes downstream data silos;
+- define split and partition metadata;
+- store both silos using one common named, timestamped, tabular data contract;
+- avoid duplicating context already represented by folders and manifests in signal names;
+- register the complete hierarchy, artifacts, quality checks, and lineage in MLflow.
+
+Phase D does not train thermal models. It also does not decide whether a downstream method consumes pandas DataFrames, Polars DataFrames, NumPy arrays, PyTorch tensors, CasADi matrices, state-space trajectories, or Bayesian sequences. Those conversions belong to downstream method loaders.
+
+
+1. POSITION IN THE OVERALL PIPELINE
+===================================
+
+Stage A
+EnergyPlus generation
+        |
+        v
+Phase B
+Aggregation and physical signal preparation
+        |
+        v
+Phase C
+Heat-input regression and inferred heat signals
+        |
+        v
+Phase D
+Canonical thermal-model data preparation
+        |
+        v
+Downstream thermal modeling
+ML / SciML / Optimization / Bayesian inference
+
+
+2. PHASE D INPUTS
+=================
+
+2.1 Inputs from Phase B
+-----------------------
+
+Phase D receives the physical, temporal, and aggregation-level signals and metadata required for thermal modeling:
+
+- timestamp;
+- site outdoor air temperature;
+- aggregated-zone air temperature;
+- Qsol1 source signal or the Phase B signal required to construct/preserve Qsol1;
+- Qsol2 source signal or the Phase B signal required to construct/preserve Qsol2;
+- case identity;
+- building identity;
+- weather identity;
+- aggregation identity;
+- aggregation level;
+- weighting mode;
+- aggregate-zone identity;
+- original-zone-to-aggregate-zone mapping;
+- sampling resolution;
+- continuity and data-quality metadata.
+
+Phase B also provides, when available, the matching complete all-to-one aggregation required for Dependent2.
+
+Qsol1 and Qsol2 are separate solar thermal inputs. They must not be added into ZIC or ZIR. They remain distinct because downstream grey-box, optimization, Bayesian, ML, and SciML methods may route them to different thermal states or learn different coefficients for them.
+
+
+2.2 Inputs from Phase C
+-----------------------
+
+Phase D receives Phase C prediction tables, applicability information, model lineage, and signal manifests.
+
+A zone or aggregated zone can have an arbitrary, zone-specific subset of heat-input models. The set depends on actual physical infrastructure, source-signal availability, and Phase C applicability results. Phase D must not assume that every zone contains every model.
+
+The complete heat-input model categories of interest are:
+
+A. Solar thermal inputs retained separately
+- Qsol1;
+- Qsol2.
+
+B. Internal convective heat components eligible for ZIC
+- people convective heat;
+- lights convective heat;
+- electric equipment convective heat;
+- gas equipment convective heat;
+- hot-water equipment convective heat;
+- steam equipment convective heat;
+- other equipment convective heat;
+- any other Phase C component explicitly classified by its manifest as an applicable internal convective heat contribution.
+
+C. Internal radiant heat components eligible for ZIR
+- people radiant heat;
+- lights radiant heat;
+- electric equipment radiant heat;
+- gas equipment radiant heat;
+- hot-water equipment radiant heat;
+- steam equipment radiant heat;
+- other equipment radiant heat;
+- any other Phase C component explicitly classified by its manifest as an applicable internal radiant heat contribution.
+
+D. HVAC-related heat and power signals
+- QAC: HVAC thermal heat input used by thermal models;
+- PHVAC: HVAC electrical power predicted from QAC-related information, retained only for lineage or auxiliary energy analysis and not used as a Phase D thermal-model feature.
+
+The signal manifest, rather than a hard-coded component list, is authoritative for whether a specific component:
+
+- is a candidate;
+- is physically applicable;
+- is structurally absent;
+- is expected and available;
+- is expected but missing;
+- is included in ZIC;
+- is included in ZIR;
+- is retained separately;
+- is excluded from the thermal-model feature contract.
+
+
+3. COMPLETE HEAT-INPUT CONTRACT
+===============================
+
+The standard grouped thermal-model input contract is:
+
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- qac.
+
+The observed thermal state signal is:
+
+- zone_temperature.
+
+Therefore, the minimal canonical thermal table for a single zone is:
+
+- timestamp;
+- zone_temperature;
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- qac.
+
+The canonical data may additionally retain every individual applicable heat component used to construct ZIC and ZIR. This preserves auditability and permits downstream component-level studies without rerunning Phase C.
+
+
+3.1 Qsol1
+---------
+
+Qsol1 is preserved as a separate solar heat-input signal.
+
+It is not part of ZIC.
+
+A downstream model may interpret Qsol1 as solar heat entering or primarily affecting the zone-air-side state, but Phase D stores the named physical signal without imposing a specific downstream equation.
+
+
+3.2 Qsol2
+---------
+
+Qsol2 is preserved as a separate solar heat-input signal.
+
+It is not part of ZIR.
+
+A downstream model may interpret Qsol2 as solar heat entering or primarily affecting a wall, envelope, or latent thermal state, but Phase D stores the named physical signal without imposing a specific downstream equation.
+
+
+3.3 ZIC
+-------
+
+ZIC is the sum of all applicable and available internal convective heat components for the relevant zone or aggregation scope.
+
+Conceptually:
+
+ZIC =
+    people_convective
+  + lights_convective
+  + electric_equipment_convective
+  + gas_equipment_convective
+  + hot_water_equipment_convective
+  + steam_equipment_convective
+  + other_equipment_convective
+  + every other applicable Phase C component classified as internal convective heat.
+
+Only components marked applicable and available by Phase C are included.
+
+Structurally absent components are not inserted as fabricated zeros merely to force identical component sets across zones. Their structural absence is recorded in metadata.
+
+An applicable-but-missing component makes ZIC incomplete for the affected timestamps or dataset. Phase D must fail, quarantine, or explicitly mark the affected dataset according to validation policy rather than silently producing a partial sum.
+
+
+3.4 ZIR
+-------
+
+ZIR is the sum of all applicable and available internal radiant heat components for the relevant zone or aggregation scope.
+
+Conceptually:
+
+ZIR =
+    people_radiant
+  + lights_radiant
+  + electric_equipment_radiant
+  + gas_equipment_radiant
+  + hot_water_equipment_radiant
+  + steam_equipment_radiant
+  + other_equipment_radiant
+  + every other applicable Phase C component classified as internal radiant heat.
+
+Only components marked applicable and available by Phase C are included.
+
+Structurally absent components are excluded and documented.
+
+An applicable-but-missing component makes ZIR incomplete and must not be silently ignored.
+
+
+3.5 QAC
+-------
+
+QAC is the HVAC thermal heat input and is retained as a core thermal-model feature.
+
+The agreed Phase C relationship is:
+
+- when QAC is present and applicable, PHVAC is also expected to be present upstream.
+
+Phase D uses QAC, not PHVAC, for thermal-model development.
+
+
+3.6 PHVAC
+---------
+
+PHVAC is HVAC electrical power.
+
+It is not included in the core thermal-model input table and must not be added to QAC, ZIC, ZIR, Qsol1, or Qsol2.
+
+Phase D may retain PHVAC availability, source-model identity, source-run identity, and optional auxiliary references in manifests for later energy or control analysis.
+
+
+3.7 Availability-aware heat construction
+----------------------------------------
+
+For every zone, aggregate zone, and derived grouped signal, Phase D records:
+
+- candidate component count;
+- applicable component count;
+- included component count;
+- structurally absent component count;
+- missing expected component count;
+- invalid component count;
+- component names;
+- source Phase C model IDs;
+- source Phase C run IDs;
+- units;
+- grouped-signal completeness;
+- row-level completeness where needed.
+
+The following distinctions are mandatory:
+
+structurally absent
+    is not the same as
+zero-valued
+    is not the same as
+missing
+    is not the same as
+invalid or corrupted.
+
+
+4. CANONICAL PHASE D DATA LAYER
+===============================
+
+Phase D first creates one canonical aligned physical data layer before defining downstream silos.
+
+Conceptually:
+
+Phase B temperatures, solar inputs, aggregation identities, and timestamps
+        +
+Phase C predicted internal heat components and QAC
+        +
+Phase C applicability, model lineage, and quality metadata
+        |
+        v
+Canonical Phase D physical data
+
+The canonical physical layer stores named, timestamped tables and mode-specific structural organization.
+
+The canonical data preserves:
+
+Core signals
+- timestamp;
+- zone_temperature;
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- qac.
+
+Optional retained component columns
+- people_convective;
+- people_radiant;
+- lights_convective;
+- lights_radiant;
+- electric_equipment_convective;
+- electric_equipment_radiant;
+- gas_equipment_convective;
+- gas_equipment_radiant;
+- hot_water_equipment_convective;
+- hot_water_equipment_radiant;
+- steam_equipment_convective;
+- steam_equipment_radiant;
+- other_equipment_convective;
+- other_equipment_radiant;
+- every additional applicable Phase C heat component identified by the manifest.
+
+The exact retained component set may differ by zone. The manifest records the actual schema for every canonical dataset.
+
+
+5. SIGNAL NAMING AND CONTEXT RULES
+==================================
+
+Every stored signal must have a meaningful physical name.
+
+Signal names should identify the physical quantity within the table but should not repeat information already determined by folders or manifests.
+
+For an Independent zone table, appropriate names are:
+
+- timestamp;
+- zone_temperature;
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- qac;
+- people_convective;
+- people_radiant;
+- lights_convective;
+- lights_radiant;
+- and other applicable component names.
+
+The names should not redundantly append:
+
+- campaign ID;
+- case ID;
+- building ID;
+- weather ID;
+- aggregation ID;
+- mode;
+- silo;
+- zone ID when the entire file is already stored under a zone-specific folder.
+
+Anonymous names are prohibited:
+
+- input_1;
+- feature_3;
+- column_7;
+- value;
+- unnamed signal.
+
+For multi-zone long-form tables, zone identity is represented by a zone_id column rather than embedded repeatedly in every signal name.
+
+Array positions are never the authoritative signal identity. Downstream methods may convert tables to positional arrays, but they must derive the ordering from the Phase D signal manifest.
+
+
+6. MODELING MODES
+=================
+
+Both ML–SciML and Opt–Bayes silos support the same three modeling modes:
+
+- Independent;
+- Dependent1;
+- Dependent2, when eligible.
+
+
+6.1 Independent mode
+--------------------
+
+Each aggregated zone is treated as an uncoupled thermal system.
+
+For n aggregate zones:
+
+n aggregate zones
+    ->
+n Independent canonical zone datasets
+    ->
+n downstream thermal models.
+
+Each zone-level canonical table contains:
+
+- timestamp;
+- zone_temperature;
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- qac;
+- optional individual applicable heat components.
+
+The future temperature target belongs to the same aggregate zone.
+
+Example hierarchy:
+
+independent/
+  <zone_id>/
+    data.parquet
+    dataset_manifest.json
+    signal_manifest.json
+    component_coverage.json
+
+
+6.2 Dependent1 mode
+-------------------
+
+Dependent1 is the fully coupled multi-zone organization.
+
+For n aggregate zones:
+
+n aggregate zones
+    ->
+one coupled building-level canonical dataset
+    ->
+one downstream multi-zone model.
+
+Every zone retains its own:
+
+- zone_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- qac;
+- optional individual applicable heat components.
+
+Outdoor temperature is shared.
+
+The preferred canonical representation is long-form:
+
+- timestamp;
+- zone_id;
+- zone_temperature;
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- qac;
+- optional component columns.
+
+Example:
+
+timestamp            zone_id   zone_temperature   outdoor_temperature   qsol1   qsol2   zic   zir   qac
+2013-01-01 00:00     Zone_1    22.4               5.2                   ...     ...     ...   ...   ...
+2013-01-01 00:00     Zone_2    23.1               5.2                   ...     ...     ...   ...   ...
+
+The downstream method decides whether to pivot this data into wide tables, state vectors, arrays, tensors, or solver matrices.
+
+
+6.3 Dependent2 mode
+-------------------
+
+Dependent2 is a reduced-input coupled multi-zone organization.
+
+It retains the following zone-specific signals for every aggregate zone:
+
+- zone_temperature;
+- qac.
+
+Its shared non-HVAC exogenous inputs come from the matching complete all-to-one aggregation:
+
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- optional individual all-to-one heat components.
+
+The recommended canonical representation uses two linked tables.
+
+A. zone_signals.parquet
+
+- timestamp;
+- zone_id;
+- zone_temperature;
+- qac.
+
+B. common_signals.parquet
+
+- timestamp;
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- optional individual applicable all-to-one heat components.
+
+The Dependent2 manifest records the exact matching all-to-one source.
+
+Dependent2 is eligible only when the matching complete all-to-one aggregation exists for the same relevant identity context, including:
+
+- campaign;
+- case;
+- building;
+- weather;
+- weighting configuration;
+- source-generation lineage;
+- compatible timestamp coverage and cadence.
+
+If the all-to-one source is missing or incompatible, Dependent2 is skipped as inapplicable rather than treated as a failed thermal dataset.
+
+
+6.4 Trivial all-to-one case
+---------------------------
+
+When the current aggregation is itself all-to-one:
+
+Independent = Dependent1 = Dependent2.
+
+Phase D stores one canonical physical dataset and avoids three redundant copies.
+
+The other requested modes are recorded as:
+
+status: skipped_equivalent
+reason: all_to_one_modes_are_equivalent
+effective_mode: independent
+
+
+7. TWO DOWNSTREAM DATA SILOS
+============================
+
+From the canonical mode-organized physical data, Phase D creates two logical downstream silos:
+
+Canonical Phase D physical data
+        |
+        +-----------------------------+
+        |                             |
+        v                             v
+ML–SciML silo                    Opt–Bayes silo
+
+The silos reference the same canonical physical tables and use the same named tabular storage standard.
+
+They differ in partition definitions, valid-sample metadata, and intended downstream consumption.
+
+
+8. COMMON STORAGE CONTRACT FOR BOTH SILOS
+=========================================
+
+Both silos use a common package structure.
+
+For Independent and Dependent1:
+
+- data.parquet;
+- signal_manifest.json;
+- dataset_manifest.json;
+- component_coverage.json;
+- quality_report.json.
+
+For Dependent2:
+
+- zone_signals.parquet;
+- common_signals.parquet;
+- signal_manifest.json;
+- dataset_manifest.json;
+- component_coverage.json;
+- all_to_one_reference.json;
+- quality_report.json.
+
+Silo-specific folders store references and partition metadata rather than duplicate physical data:
+
+- partitions.parquet;
+- lag_profile.json where applicable;
+- sample_index.parquet where applicable;
+- trajectory_index.parquet where applicable;
+- silo_manifest.json.
+
+Phase D does not persist method-specific representations such as:
+
+- NumPy arrays;
+- PyTorch tensors;
+- CasADi DM objects;
+- solver-specific matrices;
+- Bayesian filter object sequences;
+- TensorFlow tensors.
+
+Each downstream method selects the Phase D table and partition profile, then performs its own conversion.
+
+
+9. ML–SCIML SILO
+================
+
+The ML–SciML silo supports scalable learning-based thermal-modeling methods, including:
+
+- MLP / ANN;
+- RNN;
+- LSTM;
+- GRU;
+- Neural ODE;
+- PINN;
+- hybrid SciML models;
+- other PyTorch-based data-driven or physics-informed thermal models.
+
+Legacy TensorFlow scripts are behavioral references only. New downstream ML and SciML implementations use PyTorch, with Optuna available for hyperparameter optimization.
+
+
+9.1 ML–SciML modes
+------------------
+
+The silo supports:
+
+- Independent;
+- Dependent1;
+- Dependent2 when eligible.
+
+
+9.2 ML–SciML split policy
+-------------------------
+
+ML–SciML inherits the authoritative Phase C split membership:
+
+strategy:
+    monthly_distributed_holdout
+
+train:
+    70 percent
+
+validation:
+    15 percent
+
+test:
+    15 percent
+
+Phase D freezes and records the exact timestamp membership. Individual downstream methods must not repartition the data.
+
+
+9.3 ML–SciML lag and target metadata
+------------------------------------
+
+Phase D accepts sets of requested lags and target horizons, for example:
+
+lags:
+    [1, 4, 12]
+
+target_horizons:
+    [1]
+
+Phase D does not need to duplicate physical data for every lag or target horizon.
+
+Instead, it records:
+
+- permitted lag values;
+- target horizons;
+- timestamp cadence;
+- continuity boundaries;
+- split membership;
+- valid sample boundaries;
+- optional sample-index records.
+
+An optional sample_index.parquet may contain:
+
+- sample_id;
+- input_start_timestamp;
+- input_end_timestamp;
+- target_timestamp;
+- split;
+- continuity status;
+- canonical dataset reference.
+
+The downstream ML/SciML loader decides how to:
+
+- pivot long-form multi-zone tables;
+- create lagged windows;
+- scale signals using training data only;
+- convert data to PyTorch Dataset objects and tensors;
+- batch and shuffle data;
+- construct model-specific target arrays.
+
+
+9.4 ML–SciML partition table
+----------------------------
+
+The ML–SciML partition table contains at least:
+
+- timestamp;
+- split.
+
+where split is one of:
+
+- train;
+- validation;
+- test.
+
+For Dependent1 and Dependent2, all zone rows associated with one timestamp receive the same split assignment.
+
+
+10. OPT–BAYES SILO
+==================
+
+The Opt–Bayes silo supports deterministic optimization and probabilistic estimation methods, including:
+
+- least squares;
+- nonlinear least squares;
+- maximum likelihood estimation;
+- Bayesian estimation;
+- Metropolis–Hastings;
+- other MCMC methods;
+- EKF / EKS;
+- UKF / UKS;
+- state augmentation;
+- expectation maximization;
+- other deterministic and probabilistic RC-model estimation methods.
+
+
+10.1 Opt–Bayes modes
+--------------------
+
+The silo supports:
+
+- Independent;
+- Dependent1;
+- Dependent2 when eligible.
+
+The physical mode definitions and canonical signal contracts are the same as those used by ML–SciML.
+
+
+10.2 No validation partition
+----------------------------
+
+Opt–Bayes profiles contain:
+
+- training periods;
+- testing periods;
+- no validation periods.
+
+The data remains chronological and ordered. Each continuous interval is a distinct trajectory segment.
+
+
+10.3 Two alternative Opt–Bayes partition strategies
+----------------------------------------------------
+
+For a given Opt–Bayes campaign configuration, Phase D prepares either:
+
+A. custom sets of training and testing datetime ranges;
+
+or
+
+B. a predefined seasonal division.
+
+These are alternative partition profile types.
+
+
+10.4 Custom datetime-range sets
+-------------------------------
+
+A custom profile can contain one or more training ranges and one or more testing ranges.
+
+Example:
+
+partition_type:
+    custom_datetime_ranges
+
+train_ranges:
+    - start: 2013-08-11 00:00:00
+      end:   2013-08-31 23:55:00
+
+test_ranges:
+    - start: 2013-09-01 00:00:00
+      end:   2013-09-30 23:55:00
+
+Multiple disjoint ranges are allowed.
+
+Each continuous range receives its own segment ID and continuity validation.
+
+
+10.5 Predefined seasonal division
+---------------------------------
+
+The predefined seasonal strategy divides the year into:
+
+- winter;
+- spring;
+- summer;
+- fall.
+
+Each season has predefined training and testing range sets:
+
+winter:
+    train range set
+    test range set
+
+spring:
+    train range set
+    test range set
+
+summer:
+    train range set
+    test range set
+
+fall:
+    train range set
+    test range set
+
+The exact boundaries are campaign configuration, not universal assumptions. They are stored in the Phase D campaign plan and manifest.
+
+
+10.6 Opt–Bayes partition table
+------------------------------
+
+The Opt–Bayes partition table contains at least:
+
+- profile_id;
+- partition_type;
+- season;
+- segment_id;
+- role;
+- start_timestamp;
+- end_timestamp;
+- expected_row_count;
+- actual_row_count;
+- continuity_status;
+- canonical dataset reference.
+
+role is one of:
+
+- train;
+- test.
+
+For custom profiles:
+
+season is null.
+
+For seasonal profiles:
+
+season is one of winter, spring, summer, or fall.
+
+
+11. COMPLETE PHASE D HIERARCHY
+==============================
+
+phase_d/
+  campaigns/
+    <campaign_id>/
+      runs/
+        <phase_d_run_id>/
+
+          campaign_manifest.json
+          source_lineage.json
+          validation_summary.json
+          mlflow_run_reference.json
+
+          canonical/
+            <case_id>/
+              <aggregation_id>/
+
+                aggregation_manifest.json
+                signal_manifest.json
+                component_coverage.json
+                quality_report.json
+
+                independent/
+                  <zone_id>/
+                    data.parquet
+                    dataset_manifest.json
+
+                dependent1/
+                  data.parquet
+                  dataset_manifest.json
+                  zone_order.json
+
+                dependent2/
+                  zone_signals.parquet
+                  common_signals.parquet
+                  dataset_manifest.json
+                  all_to_one_reference.json
+                  zone_order.json
+
+          silos/
+
+            ml_sciml/
+              <case_id>/
+                <aggregation_id>/
+
+                  independent/
+                    <zone_id>/
+                      partitions.parquet
+                      lag_profile.json
+                      sample_index.parquet
+                      silo_manifest.json
+
+                  dependent1/
+                    partitions.parquet
+                    lag_profile.json
+                    sample_index.parquet
+                    silo_manifest.json
+
+                  dependent2/
+                    partitions.parquet
+                    lag_profile.json
+                    sample_index.parquet
+                    silo_manifest.json
+
+            opt_bayes/
+              <case_id>/
+                <aggregation_id>/
+
+                  independent/
+                    <zone_id>/
+
+                      custom/
+                        <profile_id>/
+                          partitions.parquet
+                          trajectory_index.parquet
+                          silo_manifest.json
+
+                      seasonal/
+                        winter/
+                          partitions.parquet
+                          trajectory_index.parquet
+                          silo_manifest.json
+                        spring/
+                          partitions.parquet
+                          trajectory_index.parquet
+                          silo_manifest.json
+                        summer/
+                          partitions.parquet
+                          trajectory_index.parquet
+                          silo_manifest.json
+                        fall/
+                          partitions.parquet
+                          trajectory_index.parquet
+                          silo_manifest.json
+
+                  dependent1/
+
+                    custom/
+                      <profile_id>/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+
+                    seasonal/
+                      winter/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+                      spring/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+                      summer/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+                      fall/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+
+                  dependent2/
+
+                    custom/
+                      <profile_id>/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+
+                    seasonal/
+                      winter/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+                      spring/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+                      summer/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+                      fall/
+                        partitions.parquet
+                        trajectory_index.parquet
+                        silo_manifest.json
+
+
+12. CANONICAL DATA VERSUS SILO METADATA
+=======================================
+
+The canonical folder stores physical data once.
+
+The silo folders store:
+
+- partition definitions;
+- allowed lag and horizon metadata;
+- valid sample indexes;
+- trajectory indexes;
+- references to canonical tables.
+
+Therefore:
+
+- the ML–SciML silo does not duplicate annual physical data;
+- the Opt–Bayes silo does not duplicate annual physical data;
+- both silos reference a stable canonical dataset ID or relative path;
+- mode-specific canonical tables are reused across downstream method families.
+
+
+13. DATASET MANIFEST
+====================
+
+Every canonical mode dataset manifest records at least:
+
+- phase_d_run_id;
+- campaign_id;
+- case_id;
+- aggregation_id;
+- modeling_mode;
+- zone count;
+- zone order;
+- data-file locations;
+- signal names;
+- signal units;
+- signal data types;
+- sampling interval;
+- timestamp start;
+- timestamp end;
+- row count;
+- source Phase B run;
+- source Phase C run;
+- Qsol1 availability and source;
+- Qsol2 availability and source;
+- ZIC component list;
+- ZIR component list;
+- QAC availability;
+- PHVAC provenance availability;
+- all-to-one source for Dependent2;
+- validation status;
+- schema version;
+- schema hash.
+
+
+14. SIGNAL MANIFEST
+===================
+
+The signal manifest describes every stored physical column.
+
+For each signal it records:
+
+- signal_name;
+- physical_role;
+- units;
+- source_phase;
+- source_component;
+- source_model_id where applicable;
+- source_run_id;
+- measured, predicted, or derived status;
+- applicability status;
+- aggregation scope;
+- included_in_zic;
+- included_in_zir;
+- retained_separately;
+- thermal_model_feature status.
+
+Example for Qsol1:
+
+signal_name:
+    qsol1
+physical_role:
+    solar_heat_input_1
+retained_separately:
+    true
+included_in_zic:
+    false
+included_in_zir:
+    false
+thermal_model_feature:
+    true
+
+Example for Qsol2:
+
+signal_name:
+    qsol2
+physical_role:
+    solar_heat_input_2
+retained_separately:
+    true
+included_in_zic:
+    false
+included_in_zir:
+    false
+thermal_model_feature:
+    true
+
+Example for ZIC:
+
+signal_name:
+    zic
+physical_role:
+    internal_convective_heat
+derived:
+    true
+components:
+    actual applicable convective component names for this dataset
+thermal_model_feature:
+    true
+
+Example for ZIR:
+
+signal_name:
+    zir
+physical_role:
+    internal_radiant_heat
+derived:
+    true
+components:
+    actual applicable radiant component names for this dataset
+thermal_model_feature:
+    true
+
+Example for QAC:
+
+signal_name:
+    qac
+physical_role:
+    hvac_thermal_heat_input
+thermal_model_feature:
+    true
+
+Example for PHVAC:
+
+signal_name:
+    phvac
+physical_role:
+    hvac_electrical_power
+thermal_model_feature:
+    false
+provenance_only_or_auxiliary:
+    true
+
+
+15. DOWNSTREAM CONVERSION RESPONSIBILITY
+========================================
+
+Downstream methods consume Phase D named tables and convert them as required.
+
+ML / SciML example:
+
+canonical Parquet
+    ->
+select ML–SciML partition profile
+    ->
+filter train, validation, or test timestamps
+    ->
+pivot multi-zone data if required
+    ->
+construct the requested lag and target windows
+    ->
+fit scaling or normalization using training data only
+    ->
+create PyTorch Dataset objects and tensors
+    ->
+train and tune models with PyTorch and Optuna.
+
+Optimization example:
+
+canonical Parquet
+    ->
+select Opt–Bayes custom or seasonal profile
+    ->
+select an ordered train or test trajectory segment
+    ->
+construct named measurement, state, and input arrays
+    ->
+convert to NumPy or CasADi
+    ->
+estimate thermal-model parameters.
+
+Bayesian example:
+
+canonical Parquet
+    ->
+select Opt–Bayes custom or seasonal profile
+    ->
+preserve chronological trajectory order
+    ->
+construct named observations, inputs, and initial conditions
+    ->
+run filtering, smoothing, state augmentation, EM, MLE, Bayesian estimation, or MCMC.
+
+Downstream methods may choose grouped ZIC and ZIR or, when supported, the retained individual component columns. They must not silently reinterpret Qsol1, Qsol2, QAC, ZIC, ZIR, or PHVAC.
+
+
+16. MLFLOW HIERARCHY
+====================
+
+Phase D registers the complete campaign hierarchy in MLflow.
+
+Phase D campaign parent run
+|
++-- canonical assembly child runs
+|   +-- Independent datasets
+|   +-- Dependent1 datasets
+|   +-- Dependent2 datasets
+|
++-- ML–SciML silo child runs
+|   +-- mode x lag-profile metadata
+|
++-- Opt–Bayes silo child runs
+    +-- mode x partition-profile metadata
+
+
+16.1 Phase D parent run records
+-------------------------------
+
+- campaign_id;
+- phase_d_run_id;
+- source Phase B run ID;
+- source Phase C run ID;
+- requested modes;
+- successful modes;
+- skipped equivalent modes;
+- inapplicable Dependent2 cases;
+- missing or incompatible all-to-one cases;
+- canonical dataset count;
+- ML–SciML profile count;
+- Opt–Bayes profile count;
+- total Qsol1-ready dataset count;
+- total Qsol2-ready dataset count;
+- total ZIC-ready dataset count;
+- total ZIR-ready dataset count;
+- total QAC-ready dataset count;
+- validation status.
+
+
+16.2 Canonical dataset child run records
+----------------------------------------
+
+- modeling mode;
+- case_id;
+- aggregation_id;
+- zone count;
+- row count;
+- signal count;
+- Qsol1 availability;
+- Qsol2 availability;
+- ZIC component count;
+- ZIR component count;
+- QAC availability;
+- PHVAC provenance availability;
+- all-to-one source for Dependent2;
+- unnamed signal count;
+- missing-unit count;
+- duplicate signal-name count;
+- schema hash;
+- validation status.
+
+
+16.3 Silo child run records
+---------------------------
+
+- silo;
+- modeling mode;
+- partition type;
+- profile ID;
+- lag set for ML–SciML;
+- target-horizon set for ML–SciML;
+- season for seasonal Opt–Bayes;
+- train count;
+- validation count where applicable;
+- test count;
+- trajectory count;
+- continuity status;
+- canonical dataset reference;
+- canonical schema hash;
+- status;
+- skip reason where applicable.
+
+
+16.4 Important MLflow artifacts
+-------------------------------
+
+- campaign_manifest.json;
+- source_lineage.json;
+- signal_manifest.json;
+- component_coverage.json;
+- dataset_manifest.json;
+- quality_report.json;
+- validation_summary.json;
+- partitions.parquet;
+- lag_profile.json;
+- sample_index.parquet;
+- trajectory_index.parquet;
+- all_to_one_reference.json;
+- zone_order.json.
+
+
+17. FINAL PHASE D DATA-MODEL STATEMENT
+======================================
+
+Phase D creates one canonical, named, timestamped, availability-aware thermal data foundation for every eligible campaign case, aggregation, and modeling mode.
+
+The complete core thermal-input contract is:
+
+- outdoor_temperature;
+- qsol1;
+- qsol2;
+- zic;
+- zir;
+- qac.
+
+Qsol1 and Qsol2 are preserved as separate solar heat-input signals and are never absorbed into ZIC or ZIR.
+
+ZIC is constructed by adding all applicable and available internal convective heat-input predictions for the relevant zone or aggregation scope, including people, lights, electric equipment, gas equipment, hot-water equipment, steam equipment, other equipment, and any additional Phase C signal classified as internal convective heat.
+
+ZIR is constructed by adding all applicable and available internal radiant heat-input predictions for the relevant zone or aggregation scope, including people, lights, electric equipment, gas equipment, hot-water equipment, steam equipment, other equipment, and any additional Phase C signal classified as internal radiant heat.
+
+QAC is retained as the HVAC thermal heat input.
+
+PHVAC is not a thermal-model feature and is retained only through provenance or optional auxiliary references.
+
+The canonical data is stored using common named Parquet-based tables for Independent, Dependent1, and eligible Dependent2 modes. Signal names identify physical quantities without redundantly repeating campaign, case, aggregation, mode, silo, or zone context already represented by folders and manifests.
+
+Two logical downstream silos reference those canonical physical tables:
+
+1. The ML–SciML silo uses the inherited Phase C train/validation/test membership and records lag, target-horizon, continuity, and valid-sample metadata.
+
+2. The Opt–Bayes silo uses ordered train/test trajectories with no validation and supports either custom sets of training/testing datetime ranges or a predefined winter/spring/summer/fall division.
+
+Each downstream method decides how to pivot, window, scale, reshape, and convert the named Phase D tables into arrays, tensors, trajectories, or solver-specific objects. Phase D remains the authoritative layer for physical signal construction, heat grouping, mode organization, partition definitions, provenance, quality validation, and MLflow lineage.

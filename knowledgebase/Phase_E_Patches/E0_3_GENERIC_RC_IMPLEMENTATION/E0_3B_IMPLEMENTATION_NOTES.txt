@@ -1,0 +1,48 @@
+ScaleBridge Phase E0 — E0-3B Generic RC Physics Compiler
+
+Status: implementation patch candidate
+
+Purpose:
+- Translate the fully ratified E0-3 elemental + spatial RC mathematics into a
+  backend-neutral reusable package.
+- Keep the controlled Paper_PINODE_EPSR implementation as a test/reference
+  oracle only.
+- Stop before integration/discretization/training/backends.
+
+Mathematical authorities:
+- docs/mathematics/thermal_modeling/phase_e0/contracts/
+  ScaleBridge_PhaseE0_E0-3_Generic_Elemental_RC_Contract_v2.tex
+- docs/mathematics/thermal_modeling/phase_e0/contracts/
+  ScaleBridge_PhaseE0_E0-3_Current_RC_Flavours_v2.tex
+- docs/mathematics/thermal_modeling/phase_e0/contracts/
+  ScaleBridge_PhaseE0_E0-3_Generic_Spatial_RC_Compiler_Contract_v1.tex
+
+Implementation scope:
+- 1R1C, 2R2C, 3R2C, 4R3C exact ScaleBridge topologies.
+- arbitrary modeled-zone count.
+- IND / DEP1 / DEP2.
+- explicit adjacency; absent adjacency => deterministic chain for DEP1/DEP2.
+- same-type and symmetric cross-type inter-zone connection rules.
+- independent physical parameters by default.
+- explicit compatible parameter sharing.
+- structural zone-specific heat-port applicability.
+- DEP2 all-to-one allocation with authoritative positive normalized weights.
+- equal/unequal weights, N_z-1 logits, neutral initialization, partial-fixed
+  residual feasibility, fixed and neutral-fixed allocation.
+- exact incidence/conductance/Laplacian construction.
+- conservative Gamma heat routing and H observations.
+- continuous-time RHS only.
+- default latent-state initialization equal to each zone's observed air state.
+- compiler invariant diagnostics.
+
+Explicitly out of scope:
+- RK/Euler/discrete integration.
+- Neuromancer/TorchDiffEq/CasADi backends.
+- training/optimization loops.
+- Optuna/MLflow.
+- Phase-D partition/split reconstruction.
+- PHVAC thermal input.
+- paper-specific Dining/Kitchen indexing or fixed two-zone logic.
+
+Local build validation:
+- focused pytest: 34 passed.

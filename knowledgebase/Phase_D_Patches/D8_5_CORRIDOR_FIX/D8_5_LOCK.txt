@@ -1,0 +1,64 @@
+================================================================================
+SCALEBRIDGE PHASE D D8.5 CORRIDOR / STORAGE-NAME PRODUCTION CORRECTION
+================================================================================
+
+Purpose
+-------
+Correct the two deterministic failure modes found in the full P1 Phase D run
+phase_d_p1_full_20260813_111121 without changing the representation of the
+204 already-completed aggregation runs.
+
+Observed production failures
+----------------------------
+1. ApartmentMidRise L03/L04 corridor aggregate zones are valid thermal states
+   but Phase C declares QAC unavailable/not applicable. D6 previously required
+   QAC for every current zone and rejected these runs.
+2. ApartmentMidRise L05 identity logical zone IDs such as "G Corridor" map to
+   Phase B filesystem-safe directories such as "G_Corridor". D2 discovery
+   previously required the logical ID to equal the directory name exactly.
+
+Locked D8.5 behavior
+--------------------
+- D4 canonical assembly remains unchanged. It continues to store structurally
+  unavailable QAC as nullable/all-null according to the existing Phase C
+  applicability contract.
+- D6/D7 omit the QAC model-input column only when the D4 QAC record is nullable
+  because Phase C declares it unavailable/complete-zero.
+- Conditioned/applicable QAC remains strict: missing QAC values are a hard error.
+- No QAC values are fabricated or zero-filled by D8.5.
+- Every modeled zone retains its zone-temperature state/target.
+- Dep1/Dep2 may therefore have fewer QAC control channels than thermal states.
+- Existing conditioned-zone base/final column ordering is unchanged.
+- Phase B zone discovery first uses the exact logical zone directory. If absent,
+  it accepts exactly one filesystem directory with the same normalized storage
+  token (non-alphanumeric separators -> underscore, case-insensitive).
+- Ambiguous normalized directory matches are a hard discovery error.
+- The logical aggregate_zone_id is preserved in lineage and dataset names; only
+  the physical source directory may have a filesystem-safe spelling.
+- No temporal policy, lag/horizon semantics, heat representation, Parquet
+  compression, dataset hierarchy, or existing output naming is changed.
+- The 204 completed aggregation runs must not be rebuilt or overwritten.
+
+Validation performed in directed bundle
+---------------------------------------
+Focused discovery + D6 + D7 tests:
+    55 passed, 1 skipped
+
+All bundled thermal-modeling tests:
+    97 passed, 1 skipped, 2 failed
+
+The two failures are not D8.5 regressions. They are caused by the directed input
+bundle intentionally not containing scripts/thermal_modeling/validate_phase_d_assembly.py,
+which test_d4_storage_policy.py imports by path. The live repository contains
+that script and should run the full thermal-modeling suite after patch install.
+
+New regression coverage
+-----------------------
+- unique logical/storage-safe zone-directory resolution succeeds
+- ambiguous storage-token matches fail
+- structurally uncontrolled zone keeps state and omits QAC
+- dependent contract supports mixed QAC availability
+- physical table omits unavailable QAC without fabrication
+- applicable-but-missing QAC still fails
+
+================================================================================

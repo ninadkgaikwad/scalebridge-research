@@ -1,0 +1,19 @@
+ScaleBridge Phase E0 -- E0-4 Runtime State/Input Implementation Patch
+
+ADDED
+  docs/architecture/phase_e0_runtime_state_input.md
+  scripts/thermal_modeling/validate_phase_e0_runtime_state_input.py
+  src/scalebridge/models/grey_box/rc_networks/initialization.py
+  src/scalebridge/models/grey_box/rc_networks/runtime_binding.py
+  src/scalebridge/models/grey_box/rc_networks/runtime_invariants.py
+  src/scalebridge/models/grey_box/rc_networks/runtime_state.py
+  tests/thermal_modeling/test_phase_e0_runtime_state_input.py
+  knowledgebase/Phase_E_Patches/E0_4_RUNTIME_STATE_INPUT_IMPLEMENTATION/E0_4_IMPLEMENTATION_NOTES.txt
+  knowledgebase/Phase_E_Patches/E0_4_RUNTIME_STATE_INPUT_IMPLEMENTATION/E0_4_PATCH_MANIFEST.txt
+  knowledgebase/Phase_E_Patches/E0_4_RUNTIME_STATE_INPUT_IMPLEMENTATION/E0_4_PATCH_SHA256_MANIFEST.txt
+
+MODIFIED
+  src/scalebridge/models/grey_box/rc_networks/__init__.py
+
+DELETED
+  NONE

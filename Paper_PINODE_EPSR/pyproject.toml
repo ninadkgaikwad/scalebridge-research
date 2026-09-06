@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pinode-epsr"
+version = "0.1.1"
+description = "Reproducible Inverse PINN-RC, Neural ODE, Base PINODE, and EBP-PINODE research implementation"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "numpy",
+  "pandas",
+  "torch",
+  "neuromancer==1.5.6",
+  "optuna",
+  "pyarrow",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["pinode_epsr*"]

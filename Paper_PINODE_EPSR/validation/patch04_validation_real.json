@@ -1,0 +1,599 @@
+{
+  "ebp_pinode_contract": {
+    "correction_loss": "optional_cT_W_c_equals_rhoT_Minv_rho",
+    "hard_constraint": "A_f_P_equals_b",
+    "integrated_derivative": "projected_f_P",
+    "internal_physics": "2C_only_projected_air_mass_RC_residual",
+    "normalized_integrated_derivative": "g_P",
+    "one_c_internal_loss": false,
+    "primary_metric": "W=diag(capacitance_squared)",
+    "projection": "weighted_minimum_change",
+    "projection_evaluation": "every_Neuromancer_RK4_RHS_call",
+    "raw_derivative": "f_tilde_omega"
+  },
+  "framework_contract": {
+    "custom_rk4_in_paper_code": false,
+    "direct_torchdiffeq_calls_in_paper_code": false,
+    "explicit_matrix_inverse": false,
+    "hyperparameter_search": "optuna",
+    "integration": "neuromancer.dynamics.integrators.RK4",
+    "named_data_contract": "neuromancer.dataset.DictDataset + dataset.collate_fn",
+    "projection_linear_solve": "torch.linalg.solve",
+    "recursive_graph": "neuromancer.system.Node+System",
+    "runtime": {
+      "mlp_class": "neuromancer.modules.blocks.MLP",
+      "node_class": "neuromancer.system.Node",
+      "penalty_loss_class": "neuromancer.loss.PenaltyLoss",
+      "problem_class": "neuromancer.problem.Problem",
+      "rk4_class": "neuromancer.dynamics.integrators.RK4",
+      "system_class": "neuromancer.system.System",
+      "version": "1.5.6"
+    },
+    "sciml": "neuromancer",
+    "tensor_autograd_optimizer_linear_solve": "pytorch",
+    "training_loss_key": "train_loss"
+  },
+  "math_contracts": [
+    "PINODE_EPSR_Part1_RC_Representations_v1.tex",
+    "PINODE_EPSR_Part3_NeuralODE_Detailed.tex",
+    "PINODE_EPSR_Part4_Base_PINODE_Detailed.tex",
+    "PINODE_EPSR_Part5_EBP_PINODE_Detailed.tex"
+  ],
+  "real_data": {
+    "cases": {
+      "all_to_one": {
+        "rc_orders": {
+          "1": {
+            "constraint_type": "hard_projection",
+            "ebp_pinode_loss": [
+              0.29838439429819164,
+              0.24562116195681138
+            ],
+            "expected_rk4_projection_stage_count": 8,
+            "explicit_matrix_inverse": false,
+            "final_loss_components": {
+              "correction": 2784108.4901746656,
+              "data": 0.1955936106486338,
+              "internal_physics": 0.0,
+              "regularization": 3.4633756708709504
+            },
+            "final_tiny_loss": 0.22343469555038045,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 6
+            },
+            "integrated_derivative": "projected_f_P",
+            "observed_rk4_projection_stage_count": 8,
+            "physical_parameters": {
+              "C_A": 8665587.998277655,
+              "R_Ao": 0.013373607520191491,
+              "eta_r_A": 0.49950375394456376
+            },
+            "positive_rc": true,
+            "projection_diagnostics": {
+              "correction_energy_identity_max_abs": 9.313225746154785e-10,
+              "correction_energy_identity_relative_max": 2.3453695745101895e-16,
+              "correction_energy_mean": 2784108.4901746656,
+              "correction_identity_relative_tolerance": 1e-09,
+              "correction_rms_K_per_s": 0.0001925506728273812,
+              "internal_pair_sum_max_abs_W": 0.0,
+              "internal_physics_term_present": false,
+              "kkt_stationarity_max_abs": 1.9073486328125e-06,
+              "kkt_stationarity_relative_max": 9.746293877660125e-17,
+              "projected_balance_max_abs_W": 1.8189894035458565e-12,
+              "projected_balance_rms_W": 8.507543922801099e-13,
+              "projector_hard_balance_tolerance_W": 1e-05,
+              "projector_kkt_relative_tolerance": 1e-12,
+              "raw_balance_max_abs_W": 2099.9709725480807,
+              "raw_balance_rms_W": 1668.564799513242,
+              "rho_solve_energy_mean": 2784108.4901746656
+            },
+            "projection_solve": "torch.linalg.solve(M,rho)",
+            "q_star_zone_W": [
+              3626.9656220327365
+            ]
+          },
+          "2": {
+            "constraint_type": "hard_projection",
+            "ebp_pinode_loss": [
+              32.63228359165071,
+              28.33277869223816
+            ],
+            "expected_rk4_projection_stage_count": 8,
+            "explicit_matrix_inverse": false,
+            "final_loss_components": {
+              "correction": 975741773.3624952,
+              "data": 0.1788418734117281,
+              "internal_physics": 143.948691975879,
+              "regularization": 7.240520365203194
+            },
+            "final_tiny_loss": 24.331128804624583,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 6
+            },
+            "integrated_derivative": "projected_f_P",
+            "observed_rk4_projection_stage_count": 8,
+            "physical_parameters": {
+              "C_a_A": 8665588.00042117,
+              "C_m_A": 23396402.99843434,
+              "R_Am": 0.0017134165416944922,
+              "R_Ao": 0.013426606957346739,
+              "eta_r_A": 0.4994999803578487
+            },
+            "positive_rc": true,
+            "projection_diagnostics": {
+              "correction_energy_identity_max_abs": 2.384185791015625e-07,
+              "correction_energy_identity_relative_max": 1.9546576795458198e-16,
+              "correction_energy_mean": 975741773.3624952,
+              "correction_identity_relative_tolerance": 1e-09,
+              "correction_rms_K_per_s": 0.0019220047233610544,
+              "internal_pair_sum_max_abs_W": 7.275957614183426e-12,
+              "internal_physics_term_present": true,
+              "kkt_stationarity_max_abs": 3.0517578125e-05,
+              "kkt_stationarity_relative_max": 7.130210273810314e-17,
+              "projected_balance_max_abs_W": 6.366462912410498e-12,
+              "projected_balance_rms_W": 4.30211183093536e-12,
+              "projector_hard_balance_tolerance_W": 1e-05,
+              "projector_kkt_relative_tolerance": 1e-12,
+              "raw_balance_max_abs_W": 50470.22208532459,
+              "raw_balance_rms_W": 44175.5989967877,
+              "rho_solve_energy_mean": 975741773.3624953
+            },
+            "projection_solve": "torch.linalg.solve(M,rho)",
+            "q_star_zone_W": [
+              3626.9656220327365
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_dep1": {
+        "rc_orders": {
+          "1": {
+            "constraint_type": "hard_projection",
+            "ebp_pinode_loss": [
+              37.956040097521594,
+              35.757028311523044
+            ],
+            "expected_rk4_projection_stage_count": 8,
+            "explicit_matrix_inverse": false,
+            "final_loss_components": {
+              "correction": 3239901372.2334337,
+              "data": 1.2304861370721727,
+              "internal_physics": 0.0,
+              "regularization": 3.7757103538750476
+            },
+            "final_tiny_loss": 33.62949985940651,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 9
+            },
+            "integrated_derivative": "projected_f_P",
+            "observed_rk4_projection_stage_count": 8,
+            "physical_parameters": {
+              "C_D": 8665587.999128032,
+              "C_K": 8665587.998098174,
+              "R_DK": 0.001706587910397258,
+              "R_Do": 0.013426640731274475,
+              "R_Ko": 0.013426645925622985,
+              "eta_r_D": 0.5004999113812458,
+              "eta_r_K": 0.5005000130063595
+            },
+            "positive_rc": true,
+            "projection_diagnostics": {
+              "correction_energy_identity_max_abs": 1.430511474609375e-06,
+              "correction_energy_identity_relative_max": 3.7355297362389307e-16,
+              "correction_energy_mean": 3239901372.2334337,
+              "correction_identity_relative_tolerance": 1e-09,
+              "correction_rms_K_per_s": 0.004644648579201839,
+              "internal_pair_sum_max_abs_W": 0.0,
+              "internal_physics_term_present": false,
+              "kkt_stationarity_max_abs": 6.103515625e-05,
+              "kkt_stationarity_relative_max": 5.893056606710329e-17,
+              "projected_balance_max_abs_W": 2.1827872842550278e-11,
+              "projected_balance_rms_W": 7.00074648118091e-12,
+              "projector_hard_balance_tolerance_W": 1e-05,
+              "projector_kkt_relative_tolerance": 1e-12,
+              "raw_balance_max_abs_W": 59924.40536817569,
+              "raw_balance_rms_W": 40248.61098369379,
+              "rho_solve_energy_mean": 3239901372.2334332
+            },
+            "projection_solve": "torch.linalg.solve(M,rho)",
+            "q_star_zone_W": [
+              2660.0167958554457,
+              4898.016848235062
+            ]
+          },
+          "2": {
+            "constraint_type": "hard_projection",
+            "ebp_pinode_loss": [
+              839.9376100443294,
+              751.8029635170949
+            ],
+            "expected_rk4_projection_stage_count": 8,
+            "explicit_matrix_inverse": false,
+            "final_loss_components": {
+              "correction": 49070229110.644226,
+              "data": 3.4162736604366573,
+              "internal_physics": 1721.8940978394069,
+              "regularization": 8.313913798916548
+            },
+            "final_tiny_loss": 666.3079745508196,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 9
+            },
+            "integrated_derivative": "projected_f_P",
+            "observed_rk4_projection_stage_count": 8,
+            "physical_parameters": {
+              "C_a_D": 8665588.000581443,
+              "C_a_K": 8665587.99837978,
+              "C_m_D": 23396402.99976777,
+              "C_m_K": 23396402.998198215,
+              "R_DK": 0.0017065929209068359,
+              "R_Dm": 0.0017088966682193966,
+              "R_Do": 0.013426652405237344,
+              "R_Km": 0.001713412963882118,
+              "R_Ko": 0.013373433423157735,
+              "eta_r_D": 0.5001942932743259,
+              "eta_r_K": 0.49950017237780336
+            },
+            "positive_rc": true,
+            "projection_diagnostics": {
+              "correction_energy_identity_max_abs": 1.52587890625e-05,
+              "correction_energy_identity_relative_max": 3.178416592860207e-16,
+              "correction_energy_mean": 49070229110.644226,
+              "correction_identity_relative_tolerance": 1e-09,
+              "correction_rms_K_per_s": 0.009637869612018327,
+              "internal_pair_sum_max_abs_W": 5.820766091346741e-11,
+              "internal_physics_term_present": true,
+              "kkt_stationarity_max_abs": 0.00048828125,
+              "kkt_stationarity_relative_max": 9.298987367985083e-17,
+              "projected_balance_max_abs_W": 6.184563972055912e-11,
+              "projected_balance_rms_W": 2.7400768514972707e-11,
+              "projector_hard_balance_tolerance_W": 1e-05,
+              "projector_kkt_relative_tolerance": 1e-12,
+              "raw_balance_max_abs_W": 318147.48064621125,
+              "raw_balance_rms_W": 221518.01080418774,
+              "rho_solve_energy_mean": 49070229110.64423
+            },
+            "projection_solve": "torch.linalg.solve(M,rho)",
+            "q_star_zone_W": [
+              2660.0167958554457,
+              4898.016848235062
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_dep2": {
+        "rc_orders": {
+          "1": {
+            "constraint_type": "hard_projection",
+            "dep2_1c_eta_locked_to_one": true,
+            "dep2_lambda_c_sum": 2.0,
+            "dep2_lambda_r_sum": 2.0,
+            "ebp_pinode_loss": [
+              12.771258969477513,
+              11.51175091549179
+            ],
+            "expected_rk4_projection_stage_count": 8,
+            "explicit_matrix_inverse": false,
+            "final_loss_components": {
+              "correction": 894184703.9453253,
+              "data": 1.3855794416472753,
+              "internal_physics": 0.0,
+              "regularization": 3.8266292826569774
+            },
+            "final_tiny_loss": 10.327426481100527,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 7
+            },
+            "integrated_derivative": "projected_f_P",
+            "observed_rk4_projection_stage_count": 8,
+            "physical_parameters": {
+              "C_D": 8665587.998423604,
+              "C_K": 8665587.998126648,
+              "R_DK": 0.0017134169873971813,
+              "R_Do": 0.013373402162511714,
+              "R_Ko": 0.01337340631082848,
+              "eta_r_D": 1.0,
+              "eta_r_K": 1.0,
+              "lambda_c_D": 1.000999572921005,
+              "lambda_c_K": 0.999000427078995,
+              "lambda_r_D": 1.0009995734058827,
+              "lambda_r_K": 0.9990004265941173
+            },
+            "positive_rc": true,
+            "projection_diagnostics": {
+              "correction_energy_identity_max_abs": 2.384185791015625e-07,
+              "correction_energy_identity_relative_max": 2.2088643840959878e-16,
+              "correction_energy_mean": 894184703.9453253,
+              "correction_identity_relative_tolerance": 1e-09,
+              "correction_rms_K_per_s": 0.0024400604382237095,
+              "internal_pair_sum_max_abs_W": 0.0,
+              "internal_physics_term_present": false,
+              "kkt_stationarity_max_abs": 3.0517578125e-05,
+              "kkt_stationarity_relative_max": 8.443258018834307e-17,
+              "projected_balance_max_abs_W": 5.4569682106375694e-12,
+              "projected_balance_rms_W": 2.511424331075264e-12,
+              "projector_hard_balance_tolerance_W": 1e-05,
+              "projector_kkt_relative_tolerance": 1e-12,
+              "raw_balance_max_abs_W": 30462.977537180945,
+              "raw_balance_rms_W": 21144.558448278425,
+              "rho_solve_energy_mean": 894184703.9453251
+            },
+            "projection_solve": "torch.linalg.solve(M,rho)",
+            "q_star_zone_W": [
+              3131.6844666646493,
+              4659.9994436243005
+            ]
+          },
+          "2": {
+            "constraint_type": "hard_projection",
+            "dep2_lambda_c_sum": 2.0,
+            "dep2_lambda_r_sum": 2.0,
+            "ebp_pinode_loss": [
+              117.25399263523173,
+              106.6235992579277
+            ],
+            "expected_rk4_projection_stage_count": 8,
+            "explicit_matrix_inverse": false,
+            "final_loss_components": {
+              "correction": 8077225063.283357,
+              "data": 0.34488702423408113,
+              "internal_physics": 159.32981012295267,
+              "regularization": 8.318472807226957
+            },
+            "final_tiny_loss": 97.05011866936292,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "joint": 7
+            },
+            "integrated_derivative": "projected_f_P",
+            "observed_rk4_projection_stage_count": 8,
+            "physical_parameters": {
+              "C_a_D": 8665587.998419503,
+              "C_a_K": 8665587.998400863,
+              "C_m_D": 23396402.998428546,
+              "C_m_K": 23396402.998763204,
+              "R_DK": 0.001706596053957923,
+              "R_Dm": 0.0017134207254662184,
+              "R_Do": 0.013373441202696007,
+              "R_Km": 0.0017134064204934103,
+              "R_Ko": 0.013426653771356049,
+              "eta_r_D": 0.49949967980057836,
+              "eta_r_K": 0.4995026774960025,
+              "lambda_c_D": 0.9989994844001626,
+              "lambda_c_K": 1.0010005155998374,
+              "lambda_r_D": 0.9989995371686223,
+              "lambda_r_K": 1.0010004628313776
+            },
+            "positive_rc": true,
+            "projection_diagnostics": {
+              "correction_energy_identity_max_abs": 1.9073486328125e-06,
+              "correction_energy_identity_relative_max": 2.4172106894312396e-16,
+              "correction_energy_mean": 8077225063.283357,
+              "correction_identity_relative_tolerance": 1e-09,
+              "correction_rms_K_per_s": 0.003910237134659508,
+              "internal_pair_sum_max_abs_W": 1.4551915228366852e-11,
+              "internal_physics_term_present": true,
+              "kkt_stationarity_max_abs": 0.000244140625,
+              "kkt_stationarity_relative_max": 1.1007160270946387e-16,
+              "projected_balance_max_abs_W": 1.3642420526593924e-11,
+              "projected_balance_rms_W": 8.348825744059085e-12,
+              "projector_hard_balance_tolerance_W": 1e-05,
+              "projector_kkt_relative_tolerance": 1e-12,
+              "raw_balance_max_abs_W": 103598.42461238844,
+              "raw_balance_rms_W": 89873.383508597,
+              "rho_solve_energy_mean": 8077225063.283357
+            },
+            "projection_solve": "torch.linalg.solve(M,rho)",
+            "q_star_zone_W": [
+              3131.6844666646493,
+              4659.9994436243005
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      },
+      "identity_ind": {
+        "rc_orders": {
+          "1": {
+            "constraint_type": "hard_projection",
+            "ebp_pinode_loss": [
+              116.29784213292719,
+              113.56303555282823
+            ],
+            "expected_rk4_projection_stage_count": 8,
+            "explicit_matrix_inverse": false,
+            "final_loss_components": {
+              "correction": 10957157798.208399,
+              "data": 1.2986400282851696,
+              "internal_physics": 0.0,
+              "regularization": 7.432275951948411
+            },
+            "final_tiny_loss": 110.87021801036916,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "Dining": 6,
+              "Kitchen": 4
+            },
+            "integrated_derivative": "projected_f_P",
+            "observed_rk4_projection_stage_count": 8,
+            "physical_parameters": {
+              "C_D": 8665587.999857651,
+              "C_K": 8665587.998045495,
+              "R_Do": 0.013373533757480204,
+              "R_Ko": 0.01342664479972659,
+              "eta_r_D": 0.4995024609441018,
+              "eta_r_K": 0.5004999923042728
+            },
+            "positive_rc": true,
+            "projection_diagnostics": {
+              "correction_energy_identity_max_abs": 1.9073486328125e-06,
+              "correction_energy_identity_relative_max": 1.8879687016896368e-16,
+              "correction_energy_mean": 10957157798.208399,
+              "correction_identity_relative_tolerance": 1e-09,
+              "correction_rms_K_per_s": 0.008541534972533443,
+              "internal_pair_sum_max_abs_W": 0.0,
+              "internal_physics_term_present": false,
+              "kkt_stationarity_max_abs": 0.0001220703125,
+              "kkt_stationarity_relative_max": 8.419979959697939e-17,
+              "projected_balance_max_abs_W": 2.000888343900442e-11,
+              "projected_balance_rms_W": 7.1106550290605305e-12,
+              "projector_hard_balance_tolerance_W": 1e-05,
+              "projector_kkt_relative_tolerance": 1e-12,
+              "raw_balance_max_abs_W": 108640.79319891847,
+              "raw_balance_rms_W": 74017.42294287338,
+              "rho_solve_energy_mean": 10957157798.208399
+            },
+            "projection_solve": "torch.linalg.solve(M,rho)",
+            "q_star_zone_W": [
+              2660.0167958554457,
+              4898.016848235062
+            ]
+          },
+          "2": {
+            "constraint_type": "hard_projection",
+            "ebp_pinode_loss": [
+              184.6281666514488,
+              164.85059320062044
+            ],
+            "expected_rk4_projection_stage_count": 8,
+            "explicit_matrix_inverse": false,
+            "final_loss_components": {
+              "correction": 8692076847.150818,
+              "data": 0.9487857882156053,
+              "internal_physics": 582.7682762887322,
+              "regularization": 14.278491629261865
+            },
+            "final_tiny_loss": 146.146381888597,
+            "finite_physical_parameters": true,
+            "forcing_dimensions": {
+              "Dining": 6,
+              "Kitchen": 4
+            },
+            "integrated_derivative": "projected_f_P",
+            "observed_rk4_projection_stage_count": 8,
+            "physical_parameters": {
+              "C_a_D": 8665588.00017812,
+              "C_a_K": 8665588.00024461,
+              "C_m_D": 23396402.998808872,
+              "C_m_K": 23396402.998259675,
+              "R_Dm": 0.0017134163198314946,
+              "R_Do": 0.013426638056695205,
+              "R_Km": 0.0017134049452208183,
+              "R_Ko": 0.013373405739316406,
+              "eta_r_D": 0.4995000497036137,
+              "eta_r_K": 0.4994999975962052
+            },
+            "positive_rc": true,
+            "projection_diagnostics": {
+              "correction_energy_identity_max_abs": 3.814697265625e-06,
+              "correction_energy_identity_relative_max": 3.805358392244337e-16,
+              "correction_energy_mean": 8692076847.150818,
+              "correction_identity_relative_tolerance": 1e-09,
+              "correction_rms_K_per_s": 0.004056334695820503,
+              "internal_pair_sum_max_abs_W": 2.9103830456733704e-11,
+              "internal_physics_term_present": true,
+              "kkt_stationarity_max_abs": 0.000244140625,
+              "kkt_stationarity_relative_max": 1.0833585659267899e-16,
+              "projected_balance_max_abs_W": 3.456079866737127e-11,
+              "projected_balance_rms_W": 1.3089300377600243e-11,
+              "projector_hard_balance_tolerance_W": 1e-05,
+              "projector_kkt_relative_tolerance": 1e-12,
+              "raw_balance_max_abs_W": 138920.18626237015,
+              "raw_balance_rms_W": 93231.30829904093,
+              "rho_solve_energy_mean": 8692076847.150818
+            },
+            "projection_solve": "torch.linalg.solve(M,rho)",
+            "q_star_zone_W": [
+              2660.0167958554457,
+              4898.016848235062
+            ]
+          }
+        },
+        "selected_train_rows": 48
+      }
+    },
+    "neuromancer_runtime": {
+      "mlp_class": "neuromancer.modules.blocks.MLP",
+      "node_class": "neuromancer.system.Node",
+      "penalty_loss_class": "neuromancer.loss.PenaltyLoss",
+      "problem_class": "neuromancer.problem.Problem",
+      "rk4_class": "neuromancer.dynamics.integrators.RK4",
+      "system_class": "neuromancer.system.System",
+      "version": "1.5.6"
+    },
+    "phase_c_models": {
+      "Dining": {
+        "phvac_predictions_W": [
+          1885.2522868134483,
+          469.1344057104418,
+          1885.2522868134483
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Dining\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Dining\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -5062.25666016127,
+          0.0,
+          5062.25666016127
+        ]
+      },
+      "Kitchen": {
+        "phvac_predictions_W": [
+          798.6467746757984,
+          -2.015029192885322,
+          798.6467746757984
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Kitchen\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\equal\\Kitchen\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -5077.350325669809,
+          0.0,
+          5077.350325669809
+        ]
+      },
+      "RestaurantFastFood_All": {
+        "phvac_predictions_W": [
+          1209.0816505654336,
+          -333.1944130869106,
+          1209.0816505654336
+        ],
+        "provenance": {
+          "artifacts": {
+            "PHVAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l01_all_to_one\\equal\\RestaurantFastFood_All\\PHVAC\\pytorch_linear_cuda\\model_artifact",
+            "QAC": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\training_runs\\c6_pytorch_20260802_172455\\cases\\epcase_827ca4812c0199221d031e59\\smoke_l01_all_to_one\\equal\\RestaurantFastFood_All\\QAC\\pytorch_linear_cuda\\model_artifact"
+          },
+          "mode": "actual_phase_c_artifacts",
+          "phase_c_run_id": "phase_c_full_updated_test_laptop_20260802_172455"
+        },
+        "qac_predictions_W": [
+          -2377.656109008064,
+          0.0,
+          2377.656109008064
+        ]
+      }
+    },
+    "status": "passed",
+    "validation_intent": "tiny path/projector-contract coverage; not convergence or accuracy"
+  },
+  "real_data_requested": true,
+  "status": "passed",
+  "unit_contracts": "passed"
+}

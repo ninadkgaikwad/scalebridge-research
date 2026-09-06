@@ -1,0 +1,87 @@
+ScaleBridge Phase E.0 — E0-2 Canonical Data + Scientific Contracts LOCK
+============================================================================
+
+Status
+------
+E0-2 canonical contract behavior is locked by this file and the corresponding
+unit-contract tests.
+
+Scope
+-----
+E0-2 defines only the method-neutral Phase D -> Phase E boundary.
+
+It does not implement family-specific model mathematics.  Detailed mathematical
+TeX contracts remain mandatory before implementation of any specific ML, SciML,
+Optimization, or Bayesian method family/method.
+
+Locked decisions
+----------------
+
+1. Phase D final manifest is authoritative.
+   - No folder-name parsing to reconstruct scientific identity.
+   - No Phase E redefinition of Phase D lag/horizon or outer partitions.
+
+2. Exact signal binding.
+   - Resolve by base_signal + aggregate_zone_id + exact lag/horizon.
+   - No substring/heuristic column resolution in generic Phase E.
+
+3. Zone-specific availability.
+   - Different zones may expose different disturbances/controls.
+   - A structurally uncontrolled zone may have no QAC.
+   - Absence is not silently converted to zero.
+
+4. QAC / PHVAC separation.
+   - qac = signed thermal HVAC heat [W], control input.
+   - phvac = HVAC electrical power [W], auxiliary/downstream output.
+   - PHVAC is forbidden as a thermal-model input.
+
+5. Observed / latent state separation.
+   - Phase D zone_temperature is observed state.
+   - E0-2 creates no artificial latent-state target.
+   - Hidden RC states are declared later by topology/method math contracts.
+
+6. Spatial products.
+   - IND product models exactly its independent zone.
+   - DEP1 models all current zones jointly.
+   - DEP2 keeps current-zone states/controls and the Phase-D-selected compatible
+     all-to-one disturbance source.
+   - E0-2 does not create physical RC coupling edges.
+
+7. Temporal ownership and tuning leakage.
+   - Phase D owns outer partitions.
+   - Representative HPO source rows are Phase D TRAIN only.
+   - Inner fit/validation may be created inside that train-only HPO subset.
+   - Phase D TEST may never be used for hyperparameter tuning.
+
+8. Provenance.
+   - Carry manifest provenance directly.
+   - Preserve unknown provenance keys.
+   - Do not infer missing identity from paths.
+   - Hash canonical manifest content for exact source identity.
+
+9. Controlled PINODE/EPSR paper implementation.
+   - Scientific reference/oracle only.
+   - Do not copy RestaurantFastFood/Buffalo/Dining/Kitchen constants, fixed
+     forcing dimensions, string-substring resolution, or duplicated manual RC
+     equations into generic Phase E.
+
+10. E0-2 remains backend and method neutral.
+    - RC physics begins E0-3.
+    - arbitrary-zone coupling/latent initialization begins E0-4.
+    - discretization begins E0-5.
+    - backend parity begins E0-6.
+    - runtime/PHVAC bundle composition begins E0-7.
+    - common Optuna/MLflow lifecycle begins E0-8.
+
+Implementation files
+--------------------
+src/scalebridge/data/thermal_modeling/phase_e_contracts.py
+src/scalebridge/data/thermal_modeling/phase_e_adapter.py
+
+Contract tests
+--------------
+tests/thermal_modeling/test_phase_e0_contracts.py
+
+Architecture documentation
+--------------------------
+docs/architecture/phase_e0_canonical_contracts.md

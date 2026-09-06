@@ -1,0 +1,52 @@
+SCALEBRIDGE PHASE E0 / E0-3 GENERIC RC MATH LOCK
+SPATIAL COMPILER + CITATION-GROUNDED RC CONTRACTS
+============================================================
+
+Ratified through: Step 4A--4I
+Ratification date: 2026-08-26
+
+AUTHORITATIVE FILES FROM THIS PATCH
+-----------------------------------
+1. docs\mathematics\thermal_modeling\phase_e0\contracts\ScaleBridge_PhaseE0_E0-3_Generic_Elemental_RC_Contract_v2.tex
+2. docs\mathematics\thermal_modeling\phase_e0\contracts\ScaleBridge_PhaseE0_E0-3_Current_RC_Flavours_v2.tex
+3. docs\mathematics\thermal_modeling\phase_e0\contracts\ScaleBridge_PhaseE0_E0-3_Generic_Spatial_RC_Compiler_Contract_v1.tex
+4. docs\mathematics\thermal_modeling\references\ScaleBridge_Thermal_Modeling_References.bib
+
+HISTORICAL FILE POLICY
+----------------------
+The previously installed v1 elemental/flavour contracts are intentionally preserved.
+Their exact bytes were not available in the uploaded development context when this
+freeze bundle was assembled, so this patch does NOT overwrite them blindly. The new
+v2 files are the citation-grounded mathematical authorities and supersede v1 for
+future implementation. This is additive and preserves provenance.
+
+LOCKED CORE CONTRACTS
+---------------------
+- Canonical atomic thermal ports; QAC is thermal, PHVAC is electrical and excluded.
+- Elemental finite RC graph with positive R/C and conservative heat routing.
+- Built-in 1R1C, 2R2C, 3R2C, 4R3C topologies exactly as ratified.
+- Modeled-zone replication; explicit undirected adjacency; deterministic chain fallback only when adjacency entirely absent.
+- Generic same-state and symmetric cross-state inter-zone connection expansion.
+- Independent physical parameters by default; explicit compatible parameter sharing.
+- IND = uncoupled/local forcing. DEP1 = coupled/local forcing.
+- DEP2 = DEP1 physical graph + local states/QAC + all-to-one non-HVAC information.
+- Signal-aware A_g from authoritative Phase-B lineage.
+- DEP2 B_g allocation with p_i=w_i lambda_i and simplex/softmax representation.
+- Equal-weight case sum(lambda)=Nz; unequal case sum(w_i lambda_i)=1.
+- Neutral alpha initialization: p=w, lambda=1; reference-logit alpha_i=log(w_i/w_ref).
+- Fixed, partially fixed, estimated, and neutral_fixed allocation feasibility rules.
+- Feasibility != identifiability; learned lambda is an effective model allocation, not recovered ground truth.
+- Global compiled graph uses incidence D, conductance G, and L=DGD^T.
+- Continuous ODE: C Xdot = -L_CC X - L_CB T_B + Gamma Q.
+- Default simulation initialization: every latent thermal state equals its zone's observed air temperature at t0.
+- Compiler invariants: reciprocal internal-flow cancellation; whole-model RC energy balance; DEP1/DEP2 physical-graph equivalence; DEP2 aggregate-coordinate consistency; deterministic compilation.
+- Numerical integration is not part of E0-3 physics.
+
+PROVENANCE POLICY
+-----------------
+External-source concepts are cited to literature. Adapted concepts are described as adaptations.
+ScaleBridge-specific design decisions are explicitly labeled and are not falsely attributed to papers.
+
+NEXT DEVELOPMENT ACTION
+-----------------------
+Implement the generic RC graph/spec classes and spatial compiler against these mathematics, while preserving the controlled PINODE/EPSR implementation as the reference oracle until parity is validated.

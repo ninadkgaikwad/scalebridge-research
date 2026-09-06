@@ -1,0 +1,695 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools,amsthm}
+\usepackage{booktabs,array,longtable,multirow}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\SB}{\textsc{ScaleBridge}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Bun}{\mathcal{B}}
+\newcommand{\Run}{\mathcal{R}}
+\newcommand{\Lineage}{\mathcal{L}}
+\newcommand{\Exec}{\mathcal{E}}
+\newcommand{\Norm}{\mathcal{N}}
+\newcommand{\InputSpec}{\mathcal{U}}
+\newcommand{\StateSpec}{\mathcal{S}}
+\newcommand{\Disc}{\mathcal{D}}
+\newcommand{\PH}{\mathcal{P}}
+\newcommand{\Version}{\mathcal{V}}
+\newcommand{\Diag}{\Pi}
+\newtheorem{invariant}{Invariant}
+\newtheorem{proposition}{Proposition}
+
+\title{\SB{} Phase E0 --- E0-7\\
+Runtime, PHVAC Reconstruction, and Portable Model Bundles\\
+Mathematical and Scientific Contract v1.1}
+\author{ScaleBridge Research Framework}
+\date{Ratified August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document freezes the E0-7 mathematical and scientific contract for turning
+an already trained or estimated thermal model into an immutable, portable,
+forward-executable model artifact. E0-7 is deliberately post-training and
+post-estimation: it does not own gradient descent, inverse-PINN training,
+CasADi/IPOPT parameter estimation, Bayesian inference, hyperparameter tuning,
+MPC, reinforcement learning, or the future SmartBuildingsSim environment.
+Instead it defines the common deployment envelope that all later estimation
+families must export into and the common forward-runtime contract that Sim1,
+Sim2, Sim3, future simulators, MPC, and RL can consume.
+
+The E0-7 bundle contains all static information required for a scientifically
+correct forward execution: model identity, Phase-B/Phase-C/Phase-D lineage and
+portable data locators, the method-specific executable fitted payload, control
+and disturbance input schemas, fitted normalization and inverse-normalization
+metadata where required, state/initialization semantics, discretization/runtime
+metadata, PHVAC artifacts and reconstruction metadata, and minimal
+schema/integrity information. Time-varying forcing trajectories and mutable
+runtime state are not part of the immutable model artifact.
+
+For the current ScaleBridge Phase-C contract, each applicable aggregate-zone
+PHVAC model is trained as
+\[
+  \hat p_i=g_{\phi_i}(|Q_{AC,i}|),
+\]
+against the equal allocated target
+\[
+  y_i=\frac{P_{\mathrm{HVAC,facility}}}{N},
+\]
+where $N$ is the total aggregate-zone count. Let $M$ denote the number of
+aggregate zones without an applicable PHVAC model; therefore $N-M$ PHVAC models
+are available. E0-7 reconstructs the facility-level prediction by
+\[
+\boxed{
+\hat P_{\mathrm{HVAC,facility}}=
+\begin{cases}
+\displaystyle\sum_{i=1}^{N}\hat p_i, & M=0,\\[6pt]
+\displaystyle\frac{N}{N-M}\sum_{i\in\mathcal H}\hat p_i, & 0<M<N,\\[8pt]
+\text{unavailable}, & M=N,
+\end{cases}}
+\]
+where $\mathcal H$ is the set of zones with applicable PHVAC models and
+$|\mathcal H|=N-M$. The completion term is an allocation correction induced by
+the Phase-C training target; it must not be interpreted as HVAC electricity
+consumed by a structurally non-HVAC zone. For $M=0$, all $N$ PHVAC models are
+available and ordinary summation is used with no completion. For $M=N$, no
+model-based PHVAC reconstruction is available.
+\end{abstract}
+
+% =============================================================================
+\section{Scope and responsibility boundary}
+
+Thermal RC state-space modelling and numerical propagation are already owned by
+E0-3 through E0-6. Thermal-network construction is grounded in standard RC
+building models \cite{BacherMadsen2011HeatDynamics,GhiausAhmad2020ThermalCircuits},
+but the packaging, lineage, runtime, replay, and PHVAC-completion rules in this
+document are \SB{}-specific design contracts.
+
+E0-7 begins only after a method has produced a final fitted model. The four later
+estimation-method phases may obtain that model through classical machine
+learning, scientific machine learning, deterministic nonlinear optimization, or
+Bayesian/probabilistic estimation. E0-7 receives the final deployable result and
+turns it into a portable artifact with one common forward interface.
+
+\begin{invariant}[Post-estimation boundary]
+E0-7 does not own parameter estimation, backward differentiation, optimizer
+steps, posterior sampling, EM iterations, hyperparameter optimization, model
+selection, MPC, RL, or simulator dynamics. E0-7 owns packaging and forward
+execution of an already fitted model.
+\end{invariant}
+
+\paragraph{Downstream use.}
+The same E0-7 bundle may later be used by historical Sim1/Sim2/Sim3 evaluators,
+a future SmartBuildingsSim Gymnasium environment, or other forward consumers.
+Those consumers own the source of time-varying controls and disturbances.
+
+% =============================================================================
+\section{Immutable portable model artifact}
+
+The canonical immutable artifact is
+\[
+\boxed{
+\Bun=
+(\mathcal I,\Lineage,\Exec,\InputSpec,\Norm,\StateSpec,\Disc,\PH,\Version).
+}
+\]
+The components are:
+\begin{align*}
+\mathcal I &: \text{scientific and model identity},\\
+\Lineage &: \text{portable Phase-B/C/D lineage and data locators},\\
+\Exec &: \text{method-specific fitted executable payload},\\
+\InputSpec &: \text{control/disturbance input schema},\\
+\Norm &: \text{fitted normalization and inverse-normalization contract},\\
+\StateSpec &: \text{state and initialization semantics},\\
+\Disc &: \text{forward solver/discretization contract},\\
+\PH &: \text{PHVAC models, transforms, applicability, and reconstruction metadata},\\
+\Version &: \text{minimal schema/version/integrity metadata}.
+\end{align*}
+
+\begin{invariant}[Forward sufficiency]
+The immutable artifact contains every static quantity required to reconstruct and
+execute the fitted model correctly in forward mode. It does not contain a
+particular simulation's mutable state or its time-varying forcing trajectory.
+\end{invariant}
+
+% =============================================================================
+\section{Immutable model versus mutable runtime instance}
+
+A loaded model bundle is not itself a running simulation. Let
+\[
+\boxed{\Run_k=(\Bun,S_k)}
+\]
+denote a runtime instance, where $S_k$ is mutable state at step $k$.
+Examples include
+\[
+S_k=X_k \quad \text{for an RC model},
+\]
+\[
+S_k=z_k \quad \text{for a Neural ODE latent state},
+\]
+and
+\[
+S_k=(h_k,c_k,\text{required history})
+\quad \text{for recurrent neural models}.
+\]
+For a probabilistic runtime, $S_k$ may additionally contain a belief state if
+the deployed method explicitly requires one.
+
+\begin{invariant}[No mutable-state serialization as model authority]
+The portable scientific model is immutable. A particular running state is
+created by initialization and subsequent controls/disturbances and is therefore
+owned by the runtime instance, not by the bundle authority.
+\end{invariant}
+
+% =============================================================================
+\section{Portable Phase-B/C/D lineage and data resolution}
+
+The bundle stores logical locators rather than machine-specific absolute paths.
+A generic locator is
+\[
+\ell=(s,c,r,i,a,w,z,k,p,h),
+\]
+where $s$ identifies source stage B, C, or D; $c$ a campaign; $r$ an
+authoritative run; $i$ a case; $a$ aggregation identity; $w$ weighting policy;
+$z$ aggregate-zone identity; $k$ artifact kind; $p$ a path relative to a
+registered data root; and $h$ an optional content/schema hash.
+
+The lineage set is
+\[
+\boxed{\Lineage=(\ell_B,\ell_C,\ell_D)}
+\]
+with entries present as scientifically applicable. A machine-specific resolver
+\[
+\mathfrak R_m:\ell\mapsto \text{local filesystem/resource path}
+\]
+combines the registered local root on machine $m$ with the stored relative
+locator.
+
+\begin{invariant}[Portable lineage]
+Absolute laptop/home-PC/lab-PC/Kamiak paths are not scientific authority.
+Campaign/run/case/aggregation identities plus relative locators and hashes are
+the portable authority.
+\end{invariant}
+
+\paragraph{Why retain B, C, and D.}
+Phase B preserves aggregation provenance; Phase C preserves QAC/PHVAC model
+provenance; Phase D identifies the canonical thermal-model dataset used for the
+particular training/estimation run. The bundle references these artifacts but
+does not duplicate entire historical datasets.
+
+% =============================================================================
+\section{Control and disturbance input contract}
+
+Every fitted model exposes a generic forward interface in terms of model state,
+controllable inputs, and exogenous disturbances:
+\[
+\boxed{
+(S_{k+1},Y_{k+1})=F_{\Bun}(S_k,C_k,D_k).
+}
+\]
+The exact members of $C_k$ and $D_k$ are declared by $\InputSpec$. For a current
+thermal RC model, $C_k$ may include $Q_{AC,k}$, while $D_k$ can contain a model-
+applicable subset of
+\[
+T_{o,k},\;Q_{ZIC,k},\;Q_{ZIR,k},\;Q_{Sol1,k},\;Q_{Sol2,k},\ldots
+\]
+with E0-2/E0-4 semantics retained.
+
+The model does not own the generation of $C_k$ and $D_k$. A source resolver may
+produce
+\[
+(C_k,D_k)=
+\begin{cases}
+(C_k^{\mathrm{hist}},D_k^{\mathrm{hist}}), & \text{historical replay},\\
+(C_k^{\mathrm{sim}},D_k^{\mathrm{sim}}), & \text{future simulator},\\
+(C_k^{\mathrm{caller}},D_k^{\mathrm{caller}}), & \text{other explicit caller}.
+\end{cases}
+\]
+
+\subsection{Historical Sim1/Sim2/Sim3 source semantics}
+For historical evaluation, a replay provider resolves the authoritative
+Phase-D/C lineage and supplies observations, disturbances, setpoints/context,
+and recorded QAC where the selected evaluation protocol requires it. Sim1 and
+Sim2 may replay recorded QAC. Sim3 may replay historical exogenous disturbances
+while generating its control/QAC through its evaluator/controller contract.
+
+\subsection{Future SmartBuildingsSim source semantics}
+The future SmartBuildingsSim layer will generate or expose simulator
+controls/disturbances and pass them into the same E0-7 runtime interface. MPC and
+RL will operate through that simulator layer, not by reading Phase-D files
+directly.
+
+% =============================================================================
+\section{Normalization and inverse-normalization}
+
+If a method is trained in normalized coordinates, the fitted normalization is a
+part of the immutable model itself. Let
+\[
+\tilde u=\mathcal N_u(u),\qquad
+\tilde y=F_{\Exec}(\tilde u),\qquad
+y=\mathcal N_y^{-1}(\tilde y).
+\]
+The bundle therefore stores every fitted statistic/transform needed to evaluate
+$\mathcal N_u$ and $\mathcal N_y^{-1}$ exactly as used during training.
+
+\begin{invariant}[Physical-unit runtime API]
+External E0-7 callers use canonical physical units. Any normalization required
+by the fitted method is performed internally by the loaded immutable artifact,
+and outputs are returned in canonical physical units unless an explicitly
+requested diagnostic representation says otherwise.
+\end{invariant}
+
+The training/estimation side is responsible for exporting the correct fitted
+normalization object/metadata. E0-7 is responsible for ingesting, validating,
+and applying it.
+
+% =============================================================================
+\section{Generic method-family payload contract}
+
+E0-7 freezes one common outer bundle but intentionally leaves exact payload
+schemas extensible until the four later method classes are implemented. Every
+$\Exec$ must declare at minimum: method family and method identity, required
+forward-state representation, required input schema, required normalization,
+required fitted deployment parameters/weights, output schema, and reconstruction
+instructions.
+
+\begin{longtable}{p{0.19\textwidth}p{0.31\textwidth}p{0.41\textwidth}}
+\toprule
+Family / method & Fitted deployment authority & E0-7 forward implication\\
+\midrule
+\endfirsthead
+\toprule
+Family / method & Fitted deployment authority & E0-7 forward implication\\
+\midrule
+\endhead
+Classical ML & network architecture, fitted weights, lag/history contract, fitted normalization & Static or recurrent forward prediction in the method-declared state representation.\\
+ODE/RC estimation & final physical $\Theta^\star$ plus RC specification & Reconstruct RC forward equations and E0-5 solver; training machinery is not needed.\\
+Inverse PINN-RC & final physical $\Theta^\star$ plus RC specification & Deploy the identified RC physics. Training PINN network weights are not part of the forward authority unless a future explicitly different method declares otherwise.\\
+Neural ODE (NODE) & learned vector-field architecture and weights $\psi^\star$ & Integrate the learned vector field from its declared state.\\
+Base PINODE & physical $\Theta^\star$ and required learned weights $\psi^\star$ & Reconstruct the hybrid physical/neural RHS and numerical propagation.\\
+EBP-PINODE & physical $\Theta^\star$, learned weights $\psi^\star$, and required EBP/projector structure & Reconstruct the complete executable projected/hybrid dynamics.\\
+Optimization / CasADi-IPOPT & final physical $\Theta^\star$ plus RC/runtime specification & Treat $\Theta^\star$ as the fitted physical model; the IPOPT NLP is estimator provenance, not the deployed model.\\
+Bayesian / probabilistic & $\Theta^\star$, or posterior summary such as $(\mu_\Theta,\Sigma_\Theta)$, or a later-defined posterior payload & Use the same RC forward physics under an explicitly declared deterministic or probabilistic deployment policy.\\
+\bottomrule
+\end{longtable}
+
+\paragraph{Bayesian deployment policy.}
+E0-7 does not force all Bayesian methods into one posterior representation. A
+method may export a point parameter set $\Theta^\star$, a mean/covariance pair,
+or another future posterior object. The method payload must declare how that
+object is turned into a forward prediction, for example posterior mean, MAP,
+sampled parameter propagation, or posterior predictive propagation.
+
+% =============================================================================
+\section{PHVAC auxiliary-model contract}
+
+PHVAC is electrical HVAC power and remains separate from the thermal model's
+signed HVAC heat input. Thermal propagation uses $Q_{AC}$; PHVAC evaluation
+uses the fitted Phase-C electrical-power model. PHVAC never enters the thermal
+RHS.
+
+\subsection{Current Phase-C equal-allocation training contract}
+For all current ScaleBridge campaigns, the PHVAC feature transform is
+\[
+\boxed{x_i=|Q_{AC,i}|}
+\]
+and each aggregate-zone PHVAC regression is trained against
+\[
+\boxed{y_i=\frac{P_{\mathrm{HVAC,facility}}}{N}},
+\]
+where $N$ is the total number of aggregate thermal zones for the case. E0-7
+stores/executes the Phase-C feature-transform metadata rather than treating
+absolute value as an eternal hard-coded rule, but the current implementation
+must reproduce this equal-allocation contract exactly.
+
+Let
+\[
+\mathcal Z=\{1,\ldots,N\}
+\]
+be the aggregate thermal-zone set and let
+\[
+\mathcal H\subseteq\mathcal Z
+\]
+be the subset with applicable PHVAC models. Define
+\[
+M=N-|\mathcal H|,
+\qquad |\mathcal H|=N-M,
+\]
+so that $M$ is the number of aggregate zones without an applicable PHVAC model.
+For $i\in\mathcal H$,
+\[
+\hat p_i=g_{\phi_i}(|Q_{AC,i}|).
+\]
+A structurally non-HVAC zone is not assigned a fabricated PHVAC model.
+
+\subsection{Equal-allocation completion}
+If $M=0$, all $N$ PHVAC models are available and the normal reconstruction is
+\[
+\boxed{
+\hat P_{\mathrm{HVAC,facility}}
+=\sum_{i=1}^{N}\hat p_i.
+}
+\]
+If $0<M<N$, the raw available sum
+\[
+S_{N-M}=\sum_{i\in\mathcal H}\hat p_i
+\]
+represents only an $(N-M)/N$ share of the Phase-C equal-allocation target. Hence
+\[
+\boxed{
+\hat P_{\mathrm{HVAC,facility}}
+=\frac{N}{N-M}S_{N-M},
+\qquad 0<M<N.
+}
+\]
+Equivalently, with
+\[
+\bar p_{\mathcal H}=\frac{1}{N-M}S_{N-M},
+\]
+the allocation-completion term is
+\[
+\boxed{
+P_{\mathrm{completion}}
+=M\bar p_{\mathcal H}
+}
+\]
+and
+\[
+\hat P_{\mathrm{HVAC,facility}}
+=S_{N-M}+P_{\mathrm{completion}}.
+\]
+
+\begin{invariant}[Interpretation of completion]
+$P_{\mathrm{completion}}$ is an arithmetic reconstruction of the unrepresented
+Phase-C equal-allocation target. It is not attributed to a structurally
+non-HVAC zone and must not be labelled as that zone's electrical consumption.
+\end{invariant}
+
+\subsection{The boundary contracts $M=0$ and $M=N$}
+For $M=0$, all $N$ PHVAC models are available; E0-7 uses ordinary summation and
+performs no numerical completion. For $M=N$, no PHVAC model is available and
+\[
+\boxed{M=N\Longrightarrow
+\hat P_{\mathrm{HVAC,facility}}^{\mathrm{model}}=\text{unavailable}.}
+\]
+E0-7 never evaluates $N/(N-M)$ at $M=N$ and never fabricates model-based
+facility PHVAC. Historical measured facility HVAC electricity may still be
+recorded separately as ground truth when available.
+
+\subsection{Future generalized allocation identity}
+For mathematical completeness only, suppose a future Phase-C contract trained
+zone $i$ against
+\[
+p_i=a_iP_{\mathrm{facility}},
+\qquad a_i\ge0,
+\qquad \sum_{i=1}^{N}a_i=1.
+\]
+Then for available set $\mathcal H$ with
+\[
+A_{\mathcal H}=\sum_{i\in\mathcal H}a_i>0,
+\]
+a natural allocation reconstruction is
+\[
+\boxed{
+\hat P_{\mathrm{facility}}
+=\frac{\sum_{i\in\mathcal H}\hat p_i}{A_{\mathcal H}}.
+}
+\]
+The current production implementation does not require arbitrary $a_i$ because
+all current ScaleBridge PHVAC campaigns use equal allocation $a_i=1/N$.
+
+% =============================================================================
+\section{Forward output and optional diagnostics}
+
+The minimal high-speed step result is
+\[
+\boxed{
+O_k^{\mathrm{basic}}=(S_{k+1},Y_{k+1},P_{\mathrm{HVAC},k}).
+}
+\]
+When validation/evaluation diagnostics are requested, E0-7 may additionally
+return
+\[
+\boxed{
+O_k^{\mathrm{diag}}=
+(S_{k+1},Y_{k+1},C_k^{\mathrm{used}},D_k^{\mathrm{used}},
+\{\hat p_{i,k}\}_{i\in\mathcal H},P_{\mathrm{completion},k},
+P_{\mathrm{HVAC},k},\Diag_k).
+}
+\]
+The diagnostic provenance $\Diag_k$ can record the resolved historical/simulator
+source, artifact IDs, PHVAC applicability, and reconstruction policy.
+
+\begin{invariant}[Optional validation cost]
+Validation capability is mandatory, but expensive integrity/replay checks and
+expanded disturbance/provenance echo are optional during ordinary forward
+runtime.
+\end{invariant}
+
+% =============================================================================
+\section{Sim1, Sim2, and Sim3 use of E0-7}
+
+E0-7 provides primitives; the evaluator defines the evaluation protocol.
+
+\paragraph{Sim1.}
+Observed/test state is used to initialize/reset the model at each one-step
+prediction window and recorded historical disturbances and QAC are resolved from
+the authoritative replay source. The model performs only the forward step.
+
+\paragraph{Sim2.}
+The model is initialized once, then recursively evolves using its own predicted
+state with recorded historical QAC and disturbances.
+
+\paragraph{Sim3.}
+The model is initialized once, recursively evolves, replays historical exogenous
+disturbances, and receives QAC generated by the Sim3 controller contract.
+
+For every Sim1/Sim2/Sim3 run, the evaluation/recorder must store model-derived
+PHVAC results wherever model-based PHVAC is available. For $0<M<N$, the stored
+facility result includes the allocation completion; for $M=0$, all $N$ model
+predictions are summed directly; for $M=N$, model-based PHVAC is marked
+unavailable rather than fabricated. Historical measured PHVAC may be
+stored separately as ground truth.
+
+% =============================================================================
+\section{Serialization and save/load scientific equivalence}
+
+Let
+\[
+\operatorname{Save}:\Bun\rightarrow b
+\]
+serialize a bundle and
+\[
+\operatorname{Load}:b\rightarrow\Bun'
+\]
+load it. E0-7 requires scientific equivalence
+\[
+\boxed{\Bun'\equiv_{\mathrm{sci}}\Bun.}
+\]
+For physics-based models,
+\[
+\Theta_{\mathrm{loaded}}^\star
+=\Theta_{\mathrm{saved}}^\star
+\]
+to serialization precision. For required neural deployment weights,
+\[
+\psi_{\mathrm{loaded}}^\star
+=\psi_{\mathrm{saved}}^\star
+\]
+to serialization precision. Fitted normalization parameters must likewise be
+preserved.
+
+Given identical initialization and input sequence,
+\[
+(S_0,C_{0:K},D_{0:K}),
+\]
+pre-save and post-load trajectories must satisfy
+\[
+Y_{0:K}^{\mathrm{pre}}
+\approx
+Y_{0:K}^{\mathrm{post}},
+\]
+and, whenever available,
+\[
+P_{\mathrm{HVAC},0:K}^{\mathrm{pre}}
+\approx
+P_{\mathrm{HVAC},0:K}^{\mathrm{post}}
+\]
+within declared dtype/backend tolerances.
+
+\paragraph{Portable specification versus backend cache.}
+The authoritative portable representation is a versioned scientific
+specification plus standard numerical/model payloads. A backend-specific compiled
+object may be cached for performance but is reconstructable convenience, not the
+scientific authority. E0-7 must not make a machine-specific Python pickle the
+only representation of a scientific model.
+
+% =============================================================================
+\section{Deterministic replay}
+
+For a deterministic bundle, fixed initialization, fixed input sequence, and
+fixed deterministic runtime configuration, repeated execution must reproduce the
+same trajectory within declared numerical tolerances:
+\[
+F_{\Bun}(S_0,C_{0:K},D_{0:K})^{(1)}
+\approx
+F_{\Bun}(S_0,C_{0:K},D_{0:K})^{(2)}.
+\]
+This includes save/load replay equivalence. Comprehensive execution of these
+invariants across representative methods, flavours, data organizations,
+backends, and machines belongs to the E0-10 testing campaign.
+
+% =============================================================================
+\section{Minimal schema/version/integrity contract}
+
+To avoid unnecessary infrastructure, E0-7 requires only:
+\[
+v_{\mathrm{bundle}},
+\qquad
+v_{\mathrm{payload}},
+\qquad
+H_{\mathrm{manifest}}.
+\]
+A loader accepts supported versions and fails explicitly on an incompatible
+unknown version. E0-7 does not require a general migration framework at this
+stage.
+
+% =============================================================================
+\section{Worked numerical example}
+
+Consider $N=5$ aggregate thermal zones
+\[
+\mathcal Z=\{A,B,C,D,E\}
+\]
+and suppose zone $E$ is structurally non-HVAC. Hence
+\[
+\mathcal H=\{A,B,C,D\},
+\qquad M=1,
+\qquad |\mathcal H|=N-M=4.
+\]
+Assume a fitted physics-based model bundle has already stored final physical
+parameters $\Theta^\star$, its state ordering, E0-5 runtime solver metadata,
+Phase-D historical data locator, fitted normalization if applicable, and four
+Phase-C PHVAC models.
+
+At step $k$, historical replay resolves
+\[
+D_k=(T_{o,k},Q_{ZIC,k},Q_{ZIR,k},Q_{Sol1,k},Q_{Sol2,k},\ldots)
+\]
+and the evaluation protocol supplies or generates $Q_{AC,k}$ as appropriate.
+The thermal model computes
+\[
+(S_{k+1},Y_{k+1})=F_{\Bun}(S_k,C_k,D_k).
+\]
+
+Suppose the four available Phase-C PHVAC predictions are
+\[
+\hat p_A=950\ \mathrm{W},\quad
+\hat p_B=1020\ \mathrm{W},\quad
+\hat p_C=980\ \mathrm{W},\quad
+\hat p_D=1050\ \mathrm{W}.
+\]
+Then
+\[
+S_{N-M}=950+1020+980+1050=4000\ \mathrm{W}
+\]
+and
+\[
+\bar p_{\mathcal H}=\frac{4000}{N-M}=\frac{4000}{4}=1000\ \mathrm{W}.
+\]
+Because current Phase-C training allocates facility PHVAC equally across all
+$N=5$ aggregate zones, the unrepresented allocated share is
+\[
+P_{\mathrm{completion}}
+=M\bar p_{\mathcal H}=(1)(1000)=1000\ \mathrm{W}.
+\]
+Therefore
+\[
+\boxed{
+\hat P_{\mathrm{HVAC,facility}}
+=4000+1000
+=5000\ \mathrm{W}.
+}
+\]
+Equivalently,
+\[
+\frac{N}{N-M}S_{N-M}=\frac{5}{4}(4000)=5000\ \mathrm{W}.
+\]
+The added $1000$ W is not assigned to zone $E$; it is explicitly labelled
+allocation completion.
+
+If instead $M=0$, then all five PHVAC models are available and E0-7 simply
+sums the five predictions with no allocation completion. At the opposite
+boundary, if $M=N=5$, no PHVAC model is available and E0-7 returns
+\[
+P_{\mathrm{HVAC,facility}}^{\mathrm{model}}=\text{unavailable}
+\]
+without evaluating $N/(N-M)$. Historical measured facility PHVAC, if present,
+remains a separate ground-truth series.
+
+For optional diagnostic output, the step can also return the resolved
+$D_k^{\mathrm{used}}$, QAC/control values actually consumed, the four local
+PHVAC predictions, the $1000$ W completion term, and the Phase-B/C/D artifact
+IDs used for historical replay.
+
+Finally, after serializing and reloading the model bundle, the same
+initialization and replay sequence must reproduce the same fitted parameters,
+normalization, forward thermal trajectory, and PHVAC reconstruction within the
+frozen numerical tolerances.
+
+% =============================================================================
+\section{Ratified E0-7 decisions}
+
+The following are frozen by this contract.
+\begin{enumerate}[leftmargin=1.8em]
+\item The immutable artifact contains all static information needed for correct forward execution.
+\item Fitted normalization/inverse-normalization required by a method is part of the immutable artifact.
+\item Runtime state is separate from the immutable model.
+\item The model exposes generic control and disturbance inputs; historical replay and future simulators own the source of those values.
+\item Phase-B/C/D lineage is stored through portable logical locators, not machine-specific absolute paths.
+\item Time-varying forcing trajectories are referenced/resolved and are not embedded into every model artifact.
+\item Disturbances actually used can be echoed through optional diagnostic/evaluation output.
+\item E0-7 keeps exact method payload schemas generic until the later four estimation classes are implemented.
+\item One common outer bundle/runtime envelope spans Classical ML, SciML, deterministic optimization, and Bayesian/probabilistic models.
+\item ODE/RC and Inverse-PINN deployment use final physical $\Theta^\star$ rather than training-network weights; NODE uses its learned vector field; Base-PINODE and EBP-PINODE retain the fitted physical/neural executable components they require.
+\item CasADi/IPOPT output is the fitted physical $\Theta^\star$ plus RC/runtime specification; the estimation NLP is not the deployed scientific model.
+\item Bayesian payloads may contain point $\Theta^\star$, mean/covariance, or a later-defined posterior object under an explicit deployment policy.
+\item Runtime APIs remain in physical units; normalization is internal to the artifact.
+\item Current Phase-C PHVAC uses $|Q_{AC}|$ as its predictor transform and facility-HVAC-electricity divided equally by total aggregate-zone count $N$ as its target allocation.
+\item For current equal allocation and $0<M<N$, facility PHVAC is reconstructed by $[N/(N-M)]\sum_{i\in\mathcal H}\hat p_i$; the added quantity is labelled allocation completion.
+\item For $M=0$, ordinary summation across all $N$ PHVAC models is used; for $M=N$, model-based PHVAC is unavailable and $N/(N-M)$ is never evaluated.
+\item Structural PHVAC absence, valid zero prediction, missing-required artifact, and allocation completion are distinct states.
+\item Save/load equivalence, hashes, expanded disturbance echo, normalization round-trip, and detailed replay checks are mandatory validation capabilities but optional during ordinary runtime.
+\item E0-7 supplies reusable forward runtime primitives for Sim1/Sim2/Sim3 and later SmartBuildingsSim but does not implement evaluator, simulator, MPC, or RL logic.
+\item Every Sim1/Sim2/Sim3 evaluation records model-derived PHVAC wherever available, including building-level reconstruction metadata; historical measured PHVAC may be retained separately as truth.
+\item E0-10 is the authoritative comprehensive real E0 testing campaign that exercises these contracts after the four estimation-method families are implemented.
+\end{enumerate}
+
+% =============================================================================
+\section{Qualification boundary before implementation}
+
+The E0-7 implementation may begin only after this mathematical authority is
+installed and validated. Implementation qualification must at minimum test:
+\begin{enumerate}[leftmargin=1.8em]
+\item bundle schema construction and strict required-field validation;
+\item portable B/C/D locator round-trip independent of one machine's absolute path;
+\item immutable bundle versus mutable runtime-state separation;
+\item physical-unit input/output with normalization round-trip where present;
+\item method-payload envelope extensibility without prematurely encoding all E.1--E.4 internals;
+\item historical replay input resolution and explicit caller/simulator input compatibility;
+\item PHVAC $M=0$, $0<M<N$, and $M=N$ branches;
+\item explicit allocation-completion provenance and non-attribution to a non-HVAC zone;
+\item save/load parameter/weight/normalization preservation;
+\item pre-save versus post-load forward replay equivalence;
+\item optional versus normal-runtime diagnostics behavior;
+\item no regression of frozen E0-2 through E0-6 contracts.
+\end{enumerate}
+
+\bibliographystyle{plain}
+\bibliography{ScaleBridge_Thermal_Modeling_References}
+
+\end{document}

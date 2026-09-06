@@ -1,0 +1,79 @@
+/* Phase D Thermal-Model Data workspace */
+.phase-d-workspace,
+.phase-d-page { width: 100%; }
+.phase-d-workspace-heading,
+.phase-d-subpage-heading { margin-bottom: 1rem; }
+.phase-d-card {
+    margin-bottom: 1rem;
+    border: 1px solid rgba(120, 120, 120, 0.22);
+}
+.phase-d-label-with-help {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+}
+.phase-d-readonly-box {
+    min-height: 2.35rem;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid rgba(120, 120, 120, 0.25);
+    border-radius: 0.375rem;
+    background: rgba(120, 120, 120, 0.06);
+    overflow-wrap: anywhere;
+}
+.phase-d-command-preview {
+    max-height: 24rem;
+    overflow: auto;
+    padding: 0.8rem;
+    border-radius: 0.4rem;
+    background: rgba(120, 120, 120, 0.08);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+.phase-d-wrap-alert { overflow-wrap: anywhere; }
+
+
+/* Phase D managed execution */
+.phase-d-live-console {
+    min-height: 14rem;
+    max-height: 32rem;
+    overflow: auto;
+    padding: 0.8rem;
+    border-radius: 0.4rem;
+    background: rgba(120, 120, 120, 0.08);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    font-size: 0.84rem;
+    line-height: 1.35;
+}
+.phase-d-execution-progress {
+    min-height: 1.35rem;
+}
+
+
+/* Phase D Results */
+.phase-d-results-scroll-legend {
+    max-height: 34rem;
+    overflow-y: auto;
+    padding-right: 0.25rem;
+}
+.phase-d-results-legend-panel {
+    height: 600px;
+    overflow: hidden;
+    padding: 0.75rem;
+    border-left: 1px solid rgba(120, 120, 120, 0.22);
+}
+.phase-d-results-table-wrap {
+    width: 100%;
+    max-height: 34rem;
+    overflow: auto;
+}
+.phase-d-results-table-wrap table {
+    white-space: nowrap;
+}
+.phase-d-results-table-wrap thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--bs-body-bg, white);
+}

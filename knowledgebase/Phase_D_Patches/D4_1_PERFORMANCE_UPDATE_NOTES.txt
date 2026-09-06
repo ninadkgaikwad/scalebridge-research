@@ -1,0 +1,42 @@
+ScaleBridge Phase D D4.1 Performance Update
+============================================
+
+Purpose
+-------
+Harden D4 for larger campaigns while preserving the validated scientific
+contracts.
+
+Locked changes
+--------------
+1. Time-series tables are stored only as Parquet.
+2. Default Parquet compression is Zstandard.
+3. Phase B reads only timestamp, zone temperature, and outdoor temperature.
+4. Phase C reads only applicable prediction columns plus optional PHVAC and
+   PHVAC-oracle columns physically present in the Parquet schema.
+5. Unavailable and complete-zero signals are represented from Phase C audit
+   metadata without reading all-null annual columns.
+6. Split assignments use projected reads.
+7. Applicable signal classification is vectorized; annual Python lists are
+   not created.
+8. Standard validation writes a compact manifest; full validation retains
+   complete signal records.
+9. Console output is one compact summary line per zone.
+10. Preview output is optional and Parquet-only.
+11. Each controlled zone runs in a separate Python process, ensuring memory
+    is returned to the operating system before the next zone.
+12. No runtime/peak-memory telemetry subsystem was added.
+
+Permanent PowerShell runner
+---------------------------
+scripts/thermal_modeling/D4_RUN_CONTROLLED_ASSEMBLY.ps1
+
+Controlled outputs
+------------------
+_phase_d_d4_validation/
+  <zone>_assembly.json
+  <zone>_assembly.parquet
+  <zone>_assembly_preview.parquet   (optional)
+
+Validation
+----------
+Complete synthetic Phase D test suite: 32 passed.

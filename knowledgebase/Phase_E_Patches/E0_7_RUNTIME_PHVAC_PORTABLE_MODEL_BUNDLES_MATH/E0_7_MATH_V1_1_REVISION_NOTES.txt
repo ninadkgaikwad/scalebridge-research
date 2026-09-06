@@ -1,0 +1,17 @@
+E0-7 Mathematics v1.1 ratification notes
+
+This revision supersedes the uninstalled v1 package only to correct PHVAC missing-model notation.
+
+Final user-ratified definitions:
+1. N = total aggregate-zone count.
+2. M = number of aggregate zones without an applicable PHVAC model.
+3. Therefore N-M = number of available PHVAC models.
+4. M=0 means all N PHVAC models are available; facility PHVAC is the direct sum of all N predictions.
+5. 0<M<N means allocation completion is required under the current equal-allocation Phase-C target.
+6. Current production reconstruction is [N/(N-M)] times the sum of the N-M available PHVAC predictions.
+7. Equivalent completion is M times the mean of the available predictions.
+8. M=N means no PHVAC model is available; model-based facility PHVAC is unavailable and N/(N-M) is never evaluated.
+9. The completion term is allocation reconstruction, never electrical consumption assigned to a structurally non-HVAC zone.
+10. General unequal-allocation mathematics remains future-compatible only; all current campaigns use equal PHVAC target allocation.
+
+All other v1 ratified E0-7 decisions remain unchanged: immutable forward-executable artifact, method-required normalization inside the artifact, separate runtime state, portable B/C/D lineage, generic method payload envelope, ODE/Inverse-PINN deployment through physical Theta, NODE/Base-PINODE/EBP-PINODE deployment distinctions, CasADi/IPOPT physical Theta, generic Bayesian payloads, optional validation diagnostics, Sim1/2/3 PHVAC recording, and E0-10 as the authoritative real testing campaign.

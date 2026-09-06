@@ -40,6 +40,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     p.add_argument("--aggregation-id", default=None)
     p.add_argument("--weight-mode", default=None)
     p.add_argument("--aggregate-zone-id", default=None)
+    p.add_argument("--max-zones", type=int, default=None, help="Optional development truncation applied after discovery/filtering.")
     p.add_argument("--output-root", default=None)
     p.add_argument("--audit-run-id", default=None)
     p.add_argument("--minimum-sample-count", type=int, default=1000)
@@ -57,6 +58,10 @@ def main(argv: list[str] | None = None) -> int:
     else:
         refs, issues = discover_from_aggregation_run(campaign_root=campaign_root, aggregation_run_root=Path(args.aggregation_run_root), aggregate_zone_id=args.aggregate_zone_id)
     if not refs: raise SystemExit("No valid aggregate-zone outputs were discovered.")
+    if args.max_zones is not None:
+        if args.max_zones <= 0:
+            raise ValueError("--max-zones must be positive when supplied")
+        refs = refs[: args.max_zones]
     audit_run_id = args.audit_run_id or f"heat_input_audit_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
     output_root = Path(args.output_root).expanduser().resolve() if args.output_root else campaign_root / "heat_input_regression" / "audit_runs" / audit_run_id
     output_root.mkdir(parents=True, exist_ok=True)

@@ -3,8 +3,8 @@
 **Repository:** `scalebridge-research`  
 **Python package:** `scalebridge`  
 **Project context:** PhD_Code_Framework / ScaleBridge research software stack  
-**Primary current focus:** Stage A generation and the complete 240-object Stage B aggregation matrix are validated. Phase C C1–C9 is now fully availability-aware and end-to-end validated on the controlled laptop campaign, including CUDA `pytorch_linear` training, full-year inference, hierarchical MLflow registration, and runtime-derived C9 task-count validation. The immediate execution target is the unrestricted main Phase C lab-PC campaign with MLflow enabled and separate validators disabled. Phase D canonical thermal-model dataset assembly follows and must consume per-zone component-availability metadata rather than assuming that every zone has every People, Lights, equipment, QAC, or PHVAC model.  
-**Current date context:** August 2, 2026  
+**Primary current focus:** Stage A generation, the complete 240-object Stage B aggregation matrix, Phase C availability-aware heat-input regression, and Phase D canonical thermal-model data assembly are implemented. Phase D D8.2 is fully validated on the controlled testing campaign with all seven temporal policies (92/92 tests and 49/49 real-data policy realizations, zero failures). The next production target is the full P1 Phase D lab-PC campaign over `p1_compact_4b4c_labpc_1w_v1`, using MDH for ML/SciML with lags 1/3/6 and one-step target, and seasonal-distributed Opt/Bayes windows with 30-day seasonal offset, 21 training days, and 7 test days. A D8.3 repeatable-ML-lag CLI extension is required/applied before this P1 launch.
+**Current date context:** August 11, 2026  
 
 ScaleBridge is a professional research-software framework for scalable building thermal modeling, EnergyPlus data generation, one-zone commercial building datasets, grey-box and Bayesian estimation, scientific machine learning, PyTorch baselines, MLflow experiment tracking, automated hyperparameter tuning, and later building-grid co-simulation and control experiments.
 
@@ -4162,3 +4162,486 @@ PHVAC:
 
 No Phase D or Phase E model may interpret an absent QAC/PHVAC model as a
 physical zero without an explicit, scientifically justified transformation.
+
+---
+
+## 63. August 11, 2026 — Authoritative Phase D Implementation and Validation
+
+This section supersedes the earlier **proposed** Phase D package/output design in Sections 55–58. Phase D is now implemented through D8.2 and validated end-to-end on the controlled testing campaign. D8.3 adds repeatable ML/SciML lag selection for the first full P1 production configuration.
+
+### 63.1 Phase D purpose
+
+Phase D is the canonical thermal-model data assembly layer between Stage B/Phase C and final thermal-model development. It does **not** train the final thermal models.
+
+Canonical roles:
+
+```text
+state:
+    zone_temperature
+
+control:
+    qac
+
+common disturbance:
+    outdoor_temperature
+
+solar disturbances:
+    qsol1
+    qsol2
+
+internal-heat disturbances:
+    applicable qzic_*
+    applicable qzir_*
+    qzivr_l
+
+auxiliary HVAC electrical quantity:
+    phvac
+```
+
+Component availability is zone-specific. Phase D consumes Phase C availability metadata and must not assume a fixed People/Lights/equipment/QAC/PHVAC model vector for every zone.
+
+### 63.2 Implemented package structure
+
+```text
+src/scalebridge/data/thermal_modeling/
+    __init__.py
+    alignment.py
+    assembly.py
+    builders.py
+    campaign_runner.py
+    constants.py
+    discovery.py
+    identities.py
+    lineage.py
+    manifests.py
+    models.py
+    policies.py
+    signals.py
+    silo_contracts.py
+    source_refs.py
+```
+
+Primary production scripts:
+
+```text
+scripts/thermal_modeling/
+    audit_phase_d_source_schema.py
+    build_phase_d_assembly.py
+    build_phase_d_final_datasets.py
+    inspect_phase_d_sources.py
+    inspect_phase_d_source_schema.py
+    probe_phase_d_alignment.py
+    run_phase_d_campaign.py
+    validate_phase_d_campaign.py
+    validate_phase_d_all_policies.py
+```
+
+### 63.3 Canonical D3/D4 alignment and assembly
+
+Canonical year is configurable and defaults to `2001`.
+
+Current annual source contract:
+
+```text
+5-minute timestep
+non-leap year
+105,120 canonical rows
+```
+
+EnergyPlus `12/31 24:00:00` is normalized to next-year midnight before canonical-year mapping.
+
+Duplicate groups are merged column-by-column:
+
+```text
+complete + null remnant -> keep complete
+identical duplicate rows -> collapse
+complementary duplicate rows -> coalesce
+conflicting non-null required values -> fail
+```
+
+D4 canonical assembly preserves the 30-column contract:
+
+```text
+timestamp, zone_temperature, outdoor_temperature,
+qsol1, qsol2, qac, phvac,
+qzic_p, qzic_l, qzic_ee, qzic_ge, qzic_oe, qzic_hwe, qzic_se,
+qzir_p, qzir_l, qzir_ee, qzir_ge, qzir_oe, qzir_hwe, qzir_se,
+qzivr_l, phvac_oracle, zic, zir,
+split, split_index, included, exclusion_reason, source_row_index
+```
+
+Signal rules:
+
+```text
+varying -> retain
+constant nonzero -> retain
+complete zero -> nullable, complete_zero_signal
+structurally not applicable -> nullable with source reason
+applicable but missing prediction/timestamps -> fail
+```
+
+Grouped heat:
+
+```text
+zic = active qzic_* only
+zir = active qzir_* + qzivr_l by default
+```
+
+`qzivr_l` can be kept separate through `--qzivr-separate`.
+
+### 63.4 D5 lineage and name-agnostic Dependent-2
+
+`aggregation_run_id` is opaque and is never parsed for authoritative semantics.
+
+Phase D preserves campaign/case/generation/matrix/aggregation/weight/zone lineage from Stage B and Phase C manifests.
+
+Dependent-2 counterpart discovery is **structural**, not based on P1 aggregation names. A candidate is eligible when the realized aggregation has exactly one aggregate zone covering the complete source-zone set. `aggregation_id`, level/family names, aggregate-zone names, and grouping strategy labels are not Dep2 eligibility requirements.
+
+Dep2 statuses:
+
+```text
+matched_self
+matched_exact
+unavailable_no_counterpart
+ambiguous_multiple_counterparts
+invalid_configuration_mismatch
+```
+
+If no usable counterpart exists, `ind` and `dep1` still build and `dep2` is omitted without failing the aggregation run.
+
+### 63.5 D6/D7 silo, spatial, heat, and storage contracts
+
+Silos:
+
+```text
+ml = ML/SciML
+ob = Optimization/Bayesian
+```
+
+Spatial modes:
+
+```text
+ind  = one realization per current aggregate zone
+dep1 = wide current-zone coupled realization
+dep2 = current states/QAC + compatible one-zone disturbances
+```
+
+Heat representations:
+
+```text
+grp_vrin  = grouped zic/zir with qzivr_l included in zir
+grp_vrsep = grouped with qzivr_l separate
+cmp       = active components retained separately
+```
+
+Temporal folder:
+
+```text
+l<L>_h<H>/<policy>[_rNN]/
+```
+
+Exactly one `data.parquet` and one adjacent `manifest.json` are written per realization. Train/test/validation split files are forbidden. Partition assignment remains inside `data.parquet`.
+
+Production hierarchy:
+
+```text
+<campaign_root>/phase_d/
+    campaign_runs/<phase_d_run_id>/
+        phase_d_campaign_plan.json
+        phase_d_campaign_run_manifest.json
+        aggregation_run_registry.csv
+        dataset_registry.csv
+        failures.csv
+        logs/
+
+    cases/<case_id>/aggregation_runs/<aggregation_run_id>/
+        aggregation_manifest.json
+        silos/
+            ml/
+                ind|dep1|dep2/...
+            ob/
+                ind|dep1|dep2/...
+```
+
+D3/D4 intermediate time-series are not persisted by default.
+
+### 63.6 Complete temporal policy catalog
+
+ML/SciML:
+
+```text
+mdh = monthly_distributed_holdout
+ch  = chronological_holdout
+sh  = seasonal_holdout
+```
+
+Opt/Bayes:
+
+```text
+sd  = seasonal_distributed
+sbh = seasonal_block_holdout
+ci  = contiguous_identification
+cdr = custom_datetime_ranges
+```
+
+Predefined meteorological seasons:
+
+```text
+winter = Dec/Jan/Feb
+spring = Mar/Apr/May
+summer = Jun/Jul/Aug
+fall   = Sep/Oct/Nov
+```
+
+Policy knobs:
+
+```text
+MDH / CH:
+    --ml-train-fraction
+    --ml-test-fraction
+    --ml-validation-fraction
+
+SH:
+    --ml-sh-train-seasons
+    --ml-sh-test-seasons
+    --ml-sh-validation-seasons
+
+SD:
+    --sd-season-offset-days
+    --sd-train-days
+    --sd-test-days
+
+SBH:
+    --sbh-train-seasons
+    --sbh-test-seasons
+
+CI:
+    --ci-start-datetime
+    --ci-train-days
+    --ci-test-days
+
+CDR:
+    --cdr-train-range START/END   # repeatable
+    --cdr-test-range START/END    # repeatable
+```
+
+`--ml-policy` and `--ob-policy` are repeatable. Defaults remain `mdh` and `sd`.
+
+ML/SciML supports configurable lag and target horizon. Only state targets are generated. Opt/Bayes remains fixed at lag/horizon `1/1`.
+
+### 63.7 D8 runner behavior
+
+Main runner:
+
+```text
+scripts/thermal_modeling/run_phase_d_campaign.py
+```
+
+It can auto-resolve the latest fully successful aggregation matrix and the latest completed Phase C campaign matching that exact matrix, or exact IDs can be supplied.
+
+Matrix selection/filter knobs:
+
+```text
+--aggregation-id        # repeatable
+--weight-mode           # repeatable
+--case-id               # repeatable
+--max-aggregation-runs
+```
+
+Execution knobs:
+
+```text
+--resume
+--overwrite-existing
+--continue-on-error
+--dry-run
+```
+
+Resume is configuration-aware. Completed outputs are skipped only when the persisted runner configuration matches the requested configuration.
+
+### 63.8 Authoritative validation evidence
+
+Name-agnostic D8 code validation:
+
+```text
+82/82 thermal-modeling tests passed
+```
+
+D8 controlled production run:
+
+```text
+aggregation runs: 2
+datasets: 14
+phase_d_parquets: 14
+unexpected_parquets: 0
+failed aggregation runs: 0
+intermediate_time_series_persisted: False
+resume skipped: 2/2
+```
+
+D8.2 all-policy code validation:
+
+```text
+92/92 thermal-modeling tests passed
+PerformanceWarning treated as error
+```
+
+All-seven-policy real-data validation:
+
+```text
+phase_d_run_id:
+    phase_d_all_policies_test_20260811_115228
+
+aggregation runs:
+    2/2 completed
+
+failed:
+    0
+
+datasets:
+    49
+
+phase_d_parquets:
+    49
+
+unexpected_parquets:
+    0
+
+intermediate_time_series_persisted:
+    False
+```
+
+Validated policies:
+
+```text
+ML:
+    monthly_distributed_holdout
+    chronological_holdout
+    seasonal_holdout
+
+Opt/Bayes:
+    seasonal_distributed
+    seasonal_block_holdout
+    contiguous_identification
+    custom_datetime_ranges
+```
+
+Resume validation:
+
+```text
+completed = 0
+skipped_completed = 2
+failed = 0
+datasets = 49
+```
+
+Validation sentinels:
+
+```text
+ALL_PHASE_D_POLICIES_VALIDATED
+ALL PHASE D POLICIES VALIDATED ON TESTING CAMPAIGN
+```
+
+### 63.9 D8.3 repeatable ML/SciML lag extension
+
+The first P1 production realization requires three lag values in one canonical Phase D run:
+
+```text
+lag 1 = 5 minutes
+lag 3 = 15 minutes
+lag 6 = 30 minutes
+```
+
+D8.3 makes `--ml-input-lag` repeatable while retaining `12` as the compatibility default if no value is supplied.
+
+Example:
+
+```text
+--ml-input-lag 1
+--ml-input-lag 3
+--ml-input-lag 6
+```
+
+The ML realization set becomes:
+
+```text
+selected ML policies x selected lags
+```
+
+and remains collision-free through existing folders:
+
+```text
+l1_h1/
+l3_h1/
+l6_h1/
+```
+
+The complete lag list is part of the configuration-aware resume identity.
+
+Focused reconstructed test result before delivery:
+
+```text
+28 passed
+1 skipped
+```
+
+The full thermal-modeling suite must be rerun after D8.3 is applied to the working repository.
+
+### 63.10 First full P1 Phase D production configuration
+
+Target:
+
+```text
+machine:
+    lab-pc
+
+environment:
+    scalebridge-dev-gpu-labpc
+
+campaign:
+    p1_compact_4b4c_labpc_1w_v1
+
+matrix:
+    aggregation_matrix_20260712_215839
+```
+
+ML/SciML:
+
+```text
+policy:
+    mdh
+
+train/test/validation:
+    0.70 / 0.15 / 0.15
+
+lags:
+    1, 3, 6
+
+target horizon:
+    1
+```
+
+Opt/Bayes:
+
+```text
+policy:
+    sd
+
+predefined seasons:
+    winter, spring, summer, fall
+
+global season offset:
+    30 days
+
+training:
+    21 contiguous days/season
+
+testing:
+    next 7 contiguous days/season
+
+lag/horizon:
+    1/1
+```
+
+Full command is included in the Phase D complete handoff file and should only be launched after D8.3 full-suite validation.
+

@@ -1,0 +1,402 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array,longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\newcommand{\SB}{\textsc{ScaleBridge}}
+\newcommand{\Zset}{\mathcal{Z}_M}
+\newcommand{\Vobs}{\mathcal{V}_O}
+\newcommand{\Vlat}{\mathcal{V}_L}
+\newcommand{\Vcap}{\mathcal{V}_C}
+
+\title{\SB{} Phase E0 --- E0-4\\Runtime State, Initialization, and Canonical Input Realization\\Mathematical Contract v1}
+\author{ScaleBridge Research Framework}
+\date{Ratified August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document freezes the E0-4 mathematical contract between the already-compiled
+continuous-time RC physics of E0-3 and the future E0-5 numerical integration layer.
+E0-4 does not reconstruct RC physics. It owns deterministic compiled-state realization,
+runtime initialization, canonical boundary and thermal-power binding, IND/DEP1/DEP2
+forcing semantics, runtime validity, and recursive-state ownership. The E0-3 authority remains
+\[
+\mathbf C\dot X=-L_{CC}X-L_{CB}T_B+\Gamma Q.
+\]
+E0-4 constructs only \(X_0\), \(T_B(t_k)\), and \(Q^{(m)}(t_k)\); interpolation and numerical
+time advancement belong to E0-5.
+\end{abstract}
+
+\section{Authority and provenance}
+Thermal-circuit assembly and state-space extraction support the representation of building
+heat transfer as dynamical state-space systems \cite{GhiausAhmad2020ThermalCircuits}.
+Grey-box building models distinguish dynamical thermal states from measured quantities
+\cite{BacherMadsen2011HeatDynamics}. Multi-zone grey-box models retain inter-zone
+thermal interactions \cite{ArroyoSpiessensHelsen2020MultiZone}, and practical multi-zone
+RC models may be constructed from thermostat measurements
+\cite{VallianosAthienitisDelcroix2022MultiZoneRC}. Aggregate thermal-model identification
+also motivates an explicit distinction between aggregate disturbance information and local
+forcing realization \cite{GuoEtAl2021AggregateDisturbance}.
+
+The exact initialization hierarchy, lifting operator, source-availability/applicability split,
+IND/DEP1/DEP2 runtime rules, extra-signal policy, recursive-state ownership, and PHVAC
+exclusion below are ScaleBridge-derived and ratified design choices.
+
+\section{E0-4A: compiled-state ownership and deterministic ordering}
+E0-3 defines
+\[
+\Vcap=\{(z,p):z\in\Zset,\ p\in\mathcal S\}.
+\]
+E0-4 shall not create, delete, merge, or reorder those physical states. Define
+\[
+\boxed{\kappa_X:\Vcap\rightarrow\{1,\ldots,N_x\}}.
+\]
+Then
+\[
+\boxed{X=\operatorname{col}_{(z,p)\text{ in compiler order}}T_p^{(z)}}.
+\]
+For the built-ins,
+\[
+\mathcal S_{1R1C}=(a),\qquad
+\mathcal S_{2R2C}=\mathcal S_{3R2C}=(a,m),\qquad
+\mathcal S_{4R3C}=(a,e,m).
+\]
+Partition
+\[
+\boxed{\Vcap=\Vobs\;\dot\cup\;\Vlat},\qquad
+\Vobs=\{(z,a):z\in\Zset\},
+\]
+with observation equation
+\[
+\boxed{Y=HX}.
+\]
+
+\subsection*{Worked example: two-zone 4R3C}
+For \(\Zset=\{A,B\}\) and \(\mathcal S=(a,e,m)\),
+\[
+X=[T_a^A,T_e^A,T_m^A,T_a^B,T_e^B,T_m^B]^\top,
+\]
+\[
+Y=[T_a^A,T_a^B]^\top,\qquad
+H=\begin{bmatrix}1&0&0&0&0&0\\0&0&0&1&0&0\end{bmatrix}.
+\]
+A runtime adapter may not independently reorder these quantities.
+
+\section{E0-4B: runtime initialization and lifting}
+For each modeled zone resolve one finite initialization temperature
+\[
+\boxed{T_{0,z}^{\star}}.
+\]
+Supported policies are
+\[
+\boxed{m_{\mathrm{init}}\in\{\texttt{auto},\texttt{user\_fixed},\texttt{observed},\texttt{setpoint},\texttt{default}\}}.
+\]
+The default is \texttt{auto}, with precedence
+\[
+\boxed{T_{0,z}^{\mathrm{user}}>T_{a,z}^{\mathrm{obs}}(t_0)>T_{\mathrm{set},z}^{\mathrm{resolved}}(t_0)>T_{\mathrm{default}}}.
+\]
+The configurable ScaleBridge default is
+\[
+\boxed{T_{\mathrm{default}}=22^\circ\mathrm C}.
+\]
+Explicit modes require their named source to resolve to a finite value and do not silently
+fall back. If both heating and cooling setpoints exist but no active mode is known,
+\[
+\boxed{T_{\mathrm{set},z}^{\mathrm{resolved}}=\frac{T_{\mathrm{heat},z}+T_{\mathrm{cool},z}}{2}}.
+\]
+Collect
+\[
+T_0^\star=[T_{0,z_1}^{\star},\ldots,T_{0,z_{N_z}}^{\star}]^\top.
+\]
+The compiled-state lifting is
+\[
+\boxed{X_0=S_0T_0^\star},
+\]
+and every thermal state in zone \(z\) satisfies
+\[
+\boxed{T_p^{(z)}(t_0)=T_{0,z}^{\star}\quad\forall p\in\mathcal S}.
+\]
+Because \(H\) selects zone-air states,
+\[
+\boxed{HS_0=I_{N_z}},\qquad
+\boxed{HX_0=T_0^\star}.
+\]
+
+\subsection*{Worked example: heterogeneous initialization}
+For three 4R3C zones, let zone A have user-fixed \(21^\circ\mathrm C\), zone B have observed
+\(23.5^\circ\mathrm C\), and zone C have heating/cooling setpoints \(20/24^\circ\mathrm C\)
+with unknown active mode. Under \texttt{auto},
+\[
+T_0^\star=[21,23.5,22]^\top,
+\]
+so
+\[
+\boxed{X_0=[21,21,21,23.5,23.5,23.5,22,22,22]^\top}.
+\]
+If no user value, observation, or setpoint exists, \(22^\circ\mathrm C\) is used.
+
+\section{E0-4C: canonical runtime frame and time semantics}
+At timestamp \(t_k\), define
+\[
+\boxed{\mathcal R_k=(Y_k^{\mathrm{obs}},T_{B,k}^{\mathrm{src}},Q_k^{\mathrm{src}},\mathcal M_k)}.
+\]
+E0-4 constructs
+\[
+\boxed{T_{B,k}=\Pi_B(\mathcal R_k)},
+\]
+\[
+\boxed{Q_k^{(m)}=\Pi_Q^{(m)}(\mathcal R_k;\Theta_{\mathrm{alloc}})},\qquad
+m\in\{IND,DEP1,DEP2\}.
+\]
+One frame represents one canonical timestamp; silent timestamp mixing is invalid.
+E0-4 does not define values between samples. Zero-order hold, interpolation, Euler, RK4,
+adaptive solvers, and substeps belong to E0-5.
+
+\subsection*{Worked example: rich frame}
+A frame may contain \(T_o\), local QAC, local non-HVAC gains, all-to-one non-HVAC gains,
+and PHVAC. DEP2 consumes the local QAC, all-to-one non-HVAC sources, and required
+boundaries. Presence in \(\mathcal R_k\) does not authorize a signal to enter \(Q_k\).
+
+\section{E0-4D: source availability versus model-forcing applicability}
+Define
+\[
+\boxed{a_{z,s}^{\mathrm{src}}\in\{0,1\}}
+\]
+for existence of an authoritative local source, and
+\[
+\boxed{a_{z,s}^{\mathrm{model}}\in\{0,1\}}
+\]
+for permission of signal family \(s\) to act on modeled zone \(z\). In general
+\[
+\boxed{a_{z,s}^{\mathrm{src}}\neq a_{z,s}^{\mathrm{model}}\text{ is allowed}}.
+\]
+Structural absence is not numerical zero:
+\[
+\boxed{a_{z,s}^{\mathrm{model}}=0\not\equiv(a_{z,s}^{\mathrm{model}}=1,\ Q_{z,s}=0)}.
+\]
+
+\subsection*{Worked example: Dining/Kitchen}
+Suppose Dining has a local ZIC source and Kitchen does not, while both RC zones permit ZIC
+forcing. IND/DEP1 cannot invent a Kitchen-local ZIC source. DEP2 may allocate an authoritative
+all-to-one \(\bar Q_{ZIC}\) to both model-applicable zones:
+\[
+\widetilde Q_{ZIC,D}=\lambda_D\bar Q_{ZIC},\qquad
+\widetilde Q_{ZIC,K}=\lambda_K\bar Q_{ZIC}.
+\]
+Thus DEP2 does not secretly depend on local-source availability.
+
+\section{E0-4E: IND, DEP1, and DEP2 runtime forcing}
+IND uses local forcing:
+\[
+\boxed{Q_z^{IND}(t_k)=Q_{z,\mathrm{local}}(t_k)}.
+\]
+DEP1 also uses local forcing,
+\[
+\boxed{Q_z^{DEP1}(t_k)=Q_{z,\mathrm{local}}(t_k)},
+\]
+but E0-3 supplies the coupled physical graph. Hence IND to DEP1 changes physics graph, not
+forcing-source class.
+
+DEP2 keeps QAC local:
+\[
+\boxed{Q_{AC,z}^{DEP2}(t_k)=Q_{AC,z}^{\mathrm{local}}(t_k)}.
+\]
+For allocatable non-HVAC family \(g\),
+\[
+\boxed{\widetilde q_g(t_k)=B_g\bar q_g(t_k)},
+\]
+\[
+\boxed{\widetilde q_{g,z}(t_k)=\lambda_{g,z}\bar q_g(t_k)}.
+\]
+The mandatory order is
+\[
+\boxed{\bar q_g\rightarrow B_g\rightarrow\widetilde q_{g,z}\rightarrow\Gamma_z\rightarrow\text{RC states}}.
+\]
+Boundary temperatures are copied/broadcast rather than allocated through \(B_g\).
+
+\subsection*{Worked example: DEP2}
+For equal authoritative weights \(A=[0.5,0.5]\), let
+\[
+\bar Q_c=1000\,W,\qquad B_c=[1.4,0.6]^\top,
+\]
+\[
+\bar Q_r=400\,W,\qquad B_r=[0.8,1.2]^\top.
+\]
+Then
+\[
+\widetilde Q_c=[1400,600]^\top W,\qquad
+\widetilde Q_r=[320,480]^\top W,
+\]
+and
+\[
+0.5(1400)+0.5(600)=1000,\qquad
+0.5(320)+0.5(480)=400.
+\]
+E0-4 hands \(X_k,T_{B,k},Q_k^{DEP2}\) to
+\[
+\boxed{\dot X_k=\mathbf C^{-1}(-L_{CC}X_k-L_{CB}T_{B,k}+\Gamma Q_k^{DEP2})}.
+\]
+
+\section{E0-4F: recursive runtime state ownership}
+After initialization,
+\[
+X(t_0)=X_0,
+\]
+and recursive runtime obeys
+\[
+\boxed{\dot X(t)=f_{E0-3}(X(t),T_B(t),Q^{(m)}(t);\Theta)}.
+\]
+For recursive simulation,
+\[
+\boxed{X(t>t_0)\text{ is model-owned}}.
+\]
+Future observed temperatures shall not silently overwrite the internal state. An observer,
+state estimator, or one-step evaluation mode may explicitly define a reset, but that behavior
+must be separately named.
+
+\subsection*{Worked example}
+If a two-zone 2R2C model evolves from \(X_0=[22,22,24,24]^\top\) to model state \(X_1\),
+and the next measured air temperatures are \([22.4,23.6]^\top\), recursive runtime does not
+replace the air entries of \(X_1\). The observation may be used for metrics or an explicit
+observer, not hidden teacher forcing.
+
+\section{E0-4G: runtime validity and fail-fast rules}
+A valid runtime realization requires:
+\begin{enumerate}[leftmargin=*]
+\item every modeled zone resolves one finite \(T_{0,z}^{\star}\);
+\item exact runtime-to-compiled zone identity;
+\item state ordering only from \(\kappa_X\);
+\item one canonical timestamp per runtime frame;
+\item every required boundary quantity present and finite;
+\item every locally required IND/DEP1 forcing has an authoritative local source;
+\item every required DEP2 non-HVAC family has authoritative all-to-one lineage and valid \(A_g/B_g\) ordering;
+\item QAC remains local;
+\item PHVAC remains outside \(Q\);
+\item missing required thermal inputs are never silently zero-filled;
+\item richer runtime frames are allowed, but only explicitly bound signals may affect the RHS.
+\end{enumerate}
+
+\section{E0-4H: runtime invariants}
+\paragraph{Invariant 1: initialization consistency.}
+\[
+\boxed{HS_0=I_{N_z}},\qquad\boxed{HX_0=T_0^\star}.
+\]
+
+\paragraph{Invariant 2: deterministic state realization.}
+For fixed compiled model, initialization policy, and initialization evidence,
+\[
+\boxed{(\mathcal C,\mathcal I)\rightarrow X_0}
+\]
+is deterministic.
+
+\paragraph{Invariant 3: structural absence is not numerical zero.}
+\[
+\boxed{a_{z,s}^{\mathrm{model}}=0\not\equiv(a_{z,s}^{\mathrm{model}}=1,Q_{z,s}=0)}.
+\]
+
+\paragraph{Invariant 4: runtime binding cannot alter RC physics.}
+E0-4 constructs \(X_0,T_B,Q\) but cannot alter
+\[
+\boxed{\mathbf C,\ L,\ \Gamma,\ H}.
+\]
+
+\paragraph{Invariant 5: DEP1/DEP2 physical equivalence.}
+For identical E0-3 physical specifications,
+\[
+\boxed{\mathbf C^{DEP1}=\mathbf C^{DEP2},\quad L^{DEP1}=L^{DEP2},\quad H^{DEP1}=H^{DEP2}}.
+\]
+
+\paragraph{Invariant 6: sample-wise DEP2 aggregate-coordinate consistency.}
+For \(\widetilde q_g=B_g\bar q_g\) and \(A_gB_g=1\),
+\[
+\boxed{A_g\widetilde q_g(t_k)=\bar q_g(t_k)}.
+\]
+
+\paragraph{Invariant 7: no hidden recursive state reset.}
+\[
+\boxed{X_{k+1}\text{ originates from model evolution of }X_k}
+\]
+unless a separately named higher-level policy explicitly requests a reset.
+
+\paragraph{Invariant 8: PHVAC exclusion.}
+Because PHVAC is not a thermal RHS argument,
+\[
+\boxed{\frac{\partial f}{\partial P_{HVAC}}=0}.
+\]
+
+\section{Complete end-to-end example}
+For Dining/Kitchen 2R2C,
+\[
+X=[T_a^D,T_m^D,T_a^K,T_m^K]^\top.
+\]
+Let Dining use a user-fixed \(21.5^\circ C\) initialization while Kitchen has observed
+\(24^\circ C\). Under \texttt{auto},
+\[
+T_0^\star=[21.5,24]^\top,\qquad
+\boxed{X_0=[21.5,21.5,24,24]^\top}.
+\]
+At runtime let \(T_o=5^\circ C\), local QAC be \(-1500\,W\) and \(-900\,W\), and let
+an all-to-one ZIC source be \(\bar Q_{ZIC}=1000\,W\). With equal aggregation weights and
+\(B_{ZIC}=[1.4,0.6]^\top\),
+\[
+\widetilde Q_{ZIC}=[1400,600]^\top W,
+\]
+with aggregate-coordinate consistency preserved. QAC remains local, outdoor temperature is
+broadcast to boundary connections, and PHVAC remains outside \(Q\). E0-4 supplies the
+ordered runtime objects to the frozen E0-3 continuous RHS, and E0-5 later performs the time
+advance.
+
+\section{Locked contract summary}
+The ratified E0-4 contract freezes the following:
+\begin{enumerate}[leftmargin=*]
+\item E0-4 inherits E0-3 states and physics; it does not reconstruct the RC graph.
+\item State ordering is deterministic and compiler-owned.
+\item Observed air and latent states remain distinct.
+\item Every zone resolves one finite \(T_{0,z}^{\star}\).
+\item Initialization modes are \texttt{auto}, \texttt{user\_fixed}, \texttt{observed}, \texttt{setpoint}, and \texttt{default}.
+\item \texttt{auto} precedence is user $>$ observed $>$ setpoint $>$ default.
+\item The configurable default is \(22^\circ C\).
+\item Heating/cooling setpoints without known active mode resolve to their midpoint.
+\item Every thermal state in one zone initializes to \(T_{0,z}^{\star}\).
+\item \(X_0=S_0T_0^\star\) and \(HS_0=I\).
+\item Malformed explicitly selected initialization sources fail rather than silently falling back.
+\item Runtime information is represented as canonical timestamped frames.
+\item E0-4 binds named data to ordered \(T_B\) and \(Q\).
+\item E0-5 owns interpolation and numerical integration.
+\item Source availability and model-forcing applicability are distinct.
+\item Structural absence is distinct from a zero-valued active signal.
+\item IND and DEP1 use local forcing; DEP1 has coupled E0-3 physics.
+\item DEP2 uses local QAC and all-to-one non-HVAC forcing through \(B_g\).
+\item DEP2 may allocate to a model-applicable zone lacking a corresponding local source model.
+\item Boundary/global temperatures use broadcast/copy rather than \(B_g\).
+\item \(B_g\) allocation precedes \(\Gamma\) routing.
+\item Recursive states are model-owned after initialization.
+\item Future observations do not silently reset recursive state.
+\item Missing required inputs fail; no silent zero-fill is allowed.
+\item Runtime frames may contain unused extra signals, but unused signals cannot silently affect the RHS.
+\item QAC remains local.
+\item PHVAC remains excluded from the thermal RHS.
+\item The eight runtime invariants are mandatory implementation tests.
+\item E0-4 ends at the continuous-time RHS interface.
+\end{enumerate}
+
+\section{Boundary to E0-5}
+\[
+\boxed{\text{E0-3: RC topology and continuous-time physics}}
+\]
+\[
+\boxed{\text{E0-4: runtime initialization and canonical state/input realization}}
+\]
+\[
+\boxed{\text{E0-5: interpolation, discretization, and numerical time advancement}}
+\]
+No E0-4 implementation shall embed Euler, RK4, TorchDiffEq, Neuromancer, CasADi, or
+another numerical integration rule.
+
+\bibliographystyle{plain}
+\bibliography{../../references/ScaleBridge_Thermal_Modeling_References}
+\end{document}

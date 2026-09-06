@@ -1,0 +1,41 @@
+ScaleBridge Phase D — D2 Discovery and Lineage Resolution
+=========================================================
+
+Scope
+-----
+D2 adds deterministic artifact discovery only. It does not load or join the
+full Phase B/Phase C time-series Parquets and does not write Phase D datasets.
+
+Added
+-----
+- src/scalebridge/data/thermal_modeling/source_refs.py
+- src/scalebridge/data/thermal_modeling/discovery.py
+- scripts/thermal_modeling/discover_phase_d_sources.py
+- tests/thermal_modeling/test_discovery.py
+- updated thermal_modeling/__init__.py
+
+Resolved lineage
+----------------
+1. Phase B aggregation matrix row
+2. Selected aggregation run
+3. Selected aggregate-zone wide Parquet
+4. Authoritative Phase C campaign child run IDs
+5. Zone applicability and unavailable-model catalogs
+6. Phase C signal catalog
+7. Phase C full-year prediction Parquet and previews
+8. Phase C split assignment references
+
+Important behavior
+------------------
+- Exact IDs are required; latest-run guessing is not used.
+- Duplicate/ambiguous matching is rejected.
+- Required physical artifacts produce explicit discovery errors.
+- Optional previews and summaries may be absent.
+- No time-series data is loaded during D2.
+
+Validation
+----------
+Run:
+    pytest tests\thermal_modeling -v
+
+Controlled campaign smoke command is included in D2_RUN_CONTROLLED_DISCOVERY.ps1.

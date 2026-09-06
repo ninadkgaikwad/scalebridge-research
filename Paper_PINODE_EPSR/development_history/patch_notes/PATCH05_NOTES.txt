@@ -1,0 +1,111 @@
+PINODE / EPSR — PATCH 05 / DAY 6 NOTES
+=====================================
+
+SCOPE
+-----
+Paper-local common experiment/evaluation infrastructure only. No method-family
+mathematics from Parts 1–5 is changed.
+
+NEW MODULES
+-----------
+thermostat.py
+    Phase-B effective-mode classification, TRAIN-only calibration contract,
+    exact MATLAB-style heating/cooling thermostat state machine, selectable fixed
+    nominal/max mode flow, constant data-derived mode supply temperature, and
+    medium->low->high->medium setpoint schedule.
+
+thermostat_data.py
+    Controlled Phase-B source paths plus calendar-key alignment that filters
+    thermostat calibration data using authoritative Phase-D included TRAIN timestamps.
+
+paper_paths.py
+    Machine-portable external paper-data-root resolution. No username-specific
+    absolute result path is embedded in paper code.
+
+evaluation.py
+    Thin paper-only common runtime over Inverse PINN-RC / NODE / Base PINODE /
+    EBP-PINODE and common Sim1/Sim2/Sim3 semantics.
+
+experiment.py
+    Four-method HPO dispatch, tiny/common model construction helpers, frozen-HPO
+    and run-manifest/output helpers.
+
+validate_patch5.py
+    Cumulative tests plus optional real Phase-B/Phase-C/Phase-D tiny matrix.
+
+LOCKED INITIALIZATION
+---------------------
+Inverse PINN-RC 2C: T_m(0) = T_a(0).
+NODE/Base/EBP 2C: learned causal encoder.
+
+SIM3 HVAC DATA CONTRACT
+-----------------------
+Phase-B sequences: Tz, direct-air-inlet Ts, m_dot, sensible heating, sensible cooling.
+Signed QAC target: Q_heating - Q_cooling.
+Phase-C predictor: 1000*1.005*m_dot*(Ts-Tz).
+
+For all-to-one, simultaneous source-zone heating/cooling is permitted. Effective mode
+uses signed NET QAC together with sign(Ts-Tz), not a one-component-only assumption.
+
+MODE VALUES
+-----------
+Ts_cool / Ts_heat:
+    mass-flow-weighted median of training rows classified in that effective mode.
+
+m_dot_nominal:
+    median active flow for that mode.
+
+m_dot_max:
+    maximum finite active training flow for that mode.
+
+Sim3 user choice:
+    cooling: nominal|max
+    heating: nominal|max
+
+The calibration also stores P01/P05/P10/P25/P50/P75/P90/P95/P99 flow/Tz summaries so
+nominal/max choices remain auditable.
+
+DEADBANDS
+---------
+Data-derived values are always computed and saved. Overrides are allowed and both
+`*_data_C` and `*_used_C` plus source=data|override are retained in provenance.
+
+SETPOINTS
+---------
+Default calibration uses data quantiles 10/50/90 percent as low/medium/high. They are
+stored in the calibration artifact; final paper runs can freeze a deliberate policy
+after inspecting the real calibration report.
+
+RESULT ROOT
+-----------
+Preferred existing environment root:
+    SCALEBRIDGE_GENERATED_DATA_ROOT / Paper_PINODE_EPSR
+
+Explicit override:
+    SCALEBRIDGE_PINODE_EPSR_DATA_ROOT
+
+Repository-relative fallback:
+    repository_root.parent.parent / Data / ScaleBridge / Paper_PINODE_EPSR
+
+No Patch05-generated validation/training/evaluation results belong inside the repo.
+
+VALIDATION INTENT
+-----------------
+Tiny path/contract smoke only; not convergence or final paper accuracy.
+Local development interface check: previous 95 + 24 Patch05 tests = 119/119.
+The authoritative run must use qualified Neuromancer 1.5.6 and actual Phase-B/Phase-C/
+Phase-D artifacts on the ScaleBridge laptop environment.
+
+IMPORTANT DATA-READINESS RULE
+-----------------------------
+Calibration records unavailable modes as such. The real validator deliberately refuses
+to invent a missing heating/cooling Ts or m_dot. If a zone has no effective samples for
+one mode in TRAIN, inspect the calibration output and define an explicit scientifically
+justified policy before final Sim3 paper runs.
+
+SIM3 METRICS FAIRNESS
+---------------------
+Because Sim3 deliberately replaces historical QAC with thermostat-generated QAC,
+historical test Tz is saved only as a reference trace. It is not used as a prediction
+accuracy target. Primary Sim3 metrics are setpoint RMSE/MAE, within-deadband fraction,
+degree-hours outside deadband, PHVAC energy/peak, m_dot use, and HVAC/mode switching.

@@ -1,0 +1,85 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm,booktabs,array,longtable}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{natbib}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\ones}{\mathbf{1}}
+\newcommand{\diag}{\operatorname{diag}}
+\newcommand{\col}{\operatorname{col}}
+\newcommand{\ScaleBridge}{\textsc{ScaleBridge}}
+
+\title{ScaleBridge Phase E0 E0-3: Current RC Flavours v2}
+\author{ScaleBridge / PhD\_Code\_Framework}
+\date{Math freeze: 26 August 2026}
+\begin{document}
+\maketitle
+
+\section{Status and literature relationship}
+Low-order grey-box RC families are widely used for building thermal modeling \citep{BacherMadsen2011HeatDynamics,WangChenLi2019RCSimplification}.  Recent comparative work explicitly evaluates the labels 1R1C, 2R2C, 3R2C, and 4R3C \citep{PanagiEtAl2026GreyBoxTuning}; broader recent studies emphasize that topology choice materially affects accuracy, computation, and identifiability \citep{ChenKorolijaRovas2026SingleZoneRC}.  However, RC labels are not universally topology-unique across the literature.  Therefore the exact graphs below are the \ScaleBridge{} ratified built-in topologies; literature citations support the RC-family concept, not an assertion that every cited paper uses these exact graphs.
+
+\section{1R1C canonical}
+State: observed zone air $T_a$.  Parameters: $C_a>0$, $R_{ao}>0$.  All applicable atomic thermal-power ports route fully to air:
+\[
+C_a\dot T_a=\frac{T_o-T_a}{R_{ao}}+Q_{AC}+Q_{ZIC}+Q_{ZIR}+Q_{Sol1}+Q_{Sol2}.
+\]
+No canonical $\eta$ is introduced because all declared thermal power must remain represented.  Any paper-specific reduced-radiative-participation 1R1C is a separate model variant.
+
+\section{2R2C canonical}
+States: observed air $T_a$ and latent internal mass $T_m$. Parameters: $C_a,C_m,R_{ao},R_{am}>0$. Define
+\[
+Q_c=Q_{AC}+Q_{ZIC}+Q_{Sol1},\qquad Q_r=Q_{ZIR}+Q_{Sol2}.
+\]
+With $0\le\eta_r\le1$,
+\begin{align}
+C_a\dot T_a &= \frac{T_o-T_a}{R_{ao}}+\frac{T_m-T_a}{R_{am}}+Q_c+(1-\eta_r)Q_r,\\
+C_m\dot T_m &= \frac{T_a-T_m}{R_{am}}+\eta_rQ_r.
+\end{align}
+Summing gives
+\[
+C_a\dot T_a+C_m\dot T_m=\frac{T_o-T_a}{R_{ao}}+Q_c+Q_r.
+\]
+
+\section{3R2C canonical}
+States remain observed air $T_a$ and latent \emph{internal mass} $T_m$.  Add an outdoor--mass resistance $R_{om}>0$:
+\begin{align}
+C_a\dot T_a &= \frac{T_o-T_a}{R_{ao}}+\frac{T_m-T_a}{R_{am}}+Q_c+(1-\eta_r)Q_r,\\
+C_m\dot T_m &= \frac{T_o-T_m}{R_{om}}+\frac{T_a-T_m}{R_{am}}+\eta_rQ_r.
+\end{align}
+Hence
+\[
+C_a\dot T_a+C_m\dot T_m=\frac{T_o-T_a}{R_{ao}}+\frac{T_o-T_m}{R_{om}}+Q_c+Q_r.
+\]
+The exact topology above is a \ScaleBridge{} design choice within the broader low-order RC modeling family.
+
+\section{4R3C canonical}
+States: observed air $T_a$, latent envelope $T_e$, latent internal mass $T_m$.  Parameters $C_a,C_e,C_m,R_{ao},R_{ae},R_{eo},R_{am}>0$.  The four resistance edges are outdoor--air, air--envelope, envelope--outdoor, and air--internal-mass.  Convective/direct heat routes to air.  Radiative heat uses
+\[
+\gamma_r=\begin{bmatrix}\gamma_{a,r}\\\gamma_{e,r}\\\gamma_{m,r}\end{bmatrix},\qquad
+\gamma_{a,r},\gamma_{e,r},\gamma_{m,r}\ge0,\qquad
+\gamma_{a,r}+\gamma_{e,r}+\gamma_{m,r}=1.
+\]
+Let $Q_a=Q_c+\gamma_{a,r}Q_r$, $Q_e=\gamma_{e,r}Q_r$, $Q_m=\gamma_{m,r}Q_r$. Then
+\begin{align}
+C_a\dot T_a &= \frac{T_o-T_a}{R_{ao}}+\frac{T_e-T_a}{R_{ae}}+\frac{T_m-T_a}{R_{am}}+Q_a,\\
+C_e\dot T_e &= \frac{T_o-T_e}{R_{eo}}+\frac{T_a-T_e}{R_{ae}}+Q_e,\\
+C_m\dot T_m &= \frac{T_a-T_m}{R_{am}}+Q_m.
+\end{align}
+Summing gives
+\[
+C_a\dot T_a+C_e\dot T_e+C_m\dot T_m
+=\frac{T_o-T_a}{R_{ao}}+\frac{T_o-T_e}{R_{eo}}+Q_c+Q_r.
+\]
+The exact topology and three-way routing are \ScaleBridge{} ratified choices.  Detailed multi-zone RC literature demonstrates the broader use of room/wall thermal nodes and flexible RC structures \citep{BelicSliskovicHocenski2021MultiZoneRC,VallianosAthienitisDelcroix2022AutomaticMultiZoneRC}.
+
+\section{Default simulation initialization}
+For the default Phase-E simulation policy, observed air temperature initializes the observed state and every latent thermal state in the same zone:
+\[
+T_\ell^{(z)}(t_0)=T_a^{(z)}(t_0)\quad\text{for every latent state }\ell.
+\]
+Thus 2R2C/3R2C use $T_m(t_0)=T_a(t_0)$ and 4R3C uses $T_e(t_0)=T_m(t_0)=T_a(t_0)$. This is an initialization assumption, not a claim of equality after integration begins.
+
+\bibliographystyle{plainnat}
+\bibliography{../../references/ScaleBridge_Thermal_Modeling_References}
+\end{document}

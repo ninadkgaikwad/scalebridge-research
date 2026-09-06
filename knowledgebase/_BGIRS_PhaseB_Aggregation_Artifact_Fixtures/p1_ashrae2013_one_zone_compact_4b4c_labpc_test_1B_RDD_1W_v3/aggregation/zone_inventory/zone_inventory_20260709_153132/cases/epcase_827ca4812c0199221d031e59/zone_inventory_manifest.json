@@ -1,0 +1,24 @@
+{
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "eio_tables_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\generation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\epvwr_a8695a44ed3f\\canonical\\eio_tables.json",
+  "zone_count": 3,
+  "approved_zone_count": 2,
+  "excluded_zone_count": 1,
+  "default_max_aggregate_zones": 2,
+  "approved_zones": [
+    "DINING",
+    "KITCHEN"
+  ],
+  "excluded_zones": [
+    "ATTIC"
+  ],
+  "eligibility_rule": "Part of Total Building Area == Yes",
+  "geometry_source": "EnergyPlus EIO Zone Information table",
+  "uses_raw_idf": false,
+  "uses_opyplus": false,
+  "outputs": {
+    "zone_inventory_csv": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\zone_inventory\\zone_inventory_20260709_153132\\cases\\epcase_827ca4812c0199221d031e59\\zone_inventory.csv",
+    "approved_zones_csv": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\zone_inventory\\zone_inventory_20260709_153132\\cases\\epcase_827ca4812c0199221d031e59\\approved_zones.csv",
+    "excluded_zones_csv": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\zone_inventory\\zone_inventory_20260709_153132\\cases\\epcase_827ca4812c0199221d031e59\\excluded_zones.csv"
+  }
+}

@@ -1,0 +1,5 @@
+Patch 01A: pytest import-path hotfix
+
+Adds Paper_PINODE_EPSR/tests/conftest.py so pytest.exe launched from the ScaleBridge repository root can import the paper-local Paper_PINODE_EPSR package without installing it into the conda environment.
+
+No scientific, data, RC, eta_rad, simulation, or Phase D contracts are changed.

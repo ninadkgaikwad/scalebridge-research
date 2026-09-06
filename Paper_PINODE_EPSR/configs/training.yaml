@@ -1,0 +1,6 @@
+protocol:
+  tune_on: representative_training_subset
+  freeze_hyperparameters_before_full_training: true
+  use_test_for_tuning: false
+physical_parameters:
+  R_C_are_model_parameters_not_optuna_hyperparameters: true

@@ -1,22 +1,27 @@
-BGIRS GENERATION PATCH 02 — FULL BUILDER, EXECUTION, RESULTS
-==========================================================
+BGIRS Generation Patch 08 — Custom Interactive Legend + Variable Column/Key Filter
+=================================================================================
 
-Adds:
-- Three lazy Generation tabs: Campaign Builder, Execution, Results.
-- ASHRAE 2013/2016/2019 source discovery using ../../Data.
-- Any selected IDF × any selected EPW case matrices.
-- Secure ZIP import using idf/*.idf and epw/*.epw.
-- Fixed P1 Generation signal profile (35 variables).
-- Shared downstream campaign lifecycle matching run_p1_compact_campaign.py.
-- Definition-driven scripts/energyplus/run_generation_campaign.py.
-- Managed subprocess Start/Stop and live console output.
-- Selected-campaign metadata and multi-signal parquet plotting with Full/Custom range.
+This patch supersedes Patch 07. If Patch 07 has NOT been applied, apply Patch 08 directly.
 
-Apply from repository root:
-  powershell -ExecutionPolicy Bypass -File .\APPLY_BGIRS_GENERATION_PATCH_02.ps1
+REPLACE:
+  src/scalebridge/dashapp/pages/data_pipeline/phase_a_generation/results/page.py
+  src/scalebridge/dashapp/pages/data_pipeline/phase_a_generation/callbacks.py
+  src/scalebridge/dashapp/services/generation/results_data.py
+  tests/dashapp/unit/test_generation_results_export.py
 
-Then run:
-  pytest tests\integration\energyplus\test_general_case_builder.py tests\dashapp\unit tests\dashapp\smoke -v
-  python scripts\dashapp\validation\validate_shell.py
+ADD:
+  tests/dashapp/unit/test_generation_custom_interactive_legend.py
+  tests/dashapp/unit/test_generation_variable_key_filter.py
 
-The installer backs up overwritten files under .patch_backups.
+Behavior:
+- Results layout is a true 75/25 plot/custom-legend split.
+- Custom legend is independently vertically scrollable.
+- Clicking legend entries hides/shows individual traces.
+- Adds a multi-select "Variable column / key" filter after Variable name.
+- The filter is populated from canonical parquet key_value values.
+- Available keys are auto-selected when the variable context changes; users can deselect/narrow them.
+- Plot traces are split by variable + key_value. Different key columns are never mixed into one trace.
+- Only selected key_values are plotted.
+- Only selected key_values are exported to CSV/Parquet ZIPs.
+- Exported per-signal filenames, combined data, and selection_manifest.json preserve key_value nomenclature.
+- Existing Building/Weather/Case/Run/Variable filters and Full/Custom datetime range are preserved.

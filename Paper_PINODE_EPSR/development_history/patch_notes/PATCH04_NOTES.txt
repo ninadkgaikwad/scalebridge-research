@@ -1,0 +1,290 @@
+================================================================================
+PINODE / EPSR DAY-5 PATCH 04 -- EBP-PINODE
+================================================================================
+
+AUTHORITATIVE MATHEMATICS
+-------------------------
+Primary contract:
+  PINODE_EPSR_Part5_EBP_PINODE_Detailed.tex
+
+Inherited contracts:
+  PINODE_EPSR_Part1_RC_Representations_v1.tex
+  PINODE_EPSR_Part3_NeuralODE_Detailed.tex
+  PINODE_EPSR_Part4_Base_PINODE_Detailed.tex
+
+Patch 04 implements the proposed EBP-PINODE only. It does not alter the already
+validated Inverse PINN-RC, Neural ODE, or Base PINODE method mathematics.
+
+CORE DERIVATIVE NOMENCLATURE
+----------------------------
+Raw normalized neural derivative:
+  g_omega = dz/dtau
+
+Raw physical neural derivative:
+  f_tilde_omega = (S_x / Delta t) g_omega
+
+Projection dummy variable in the TeX:
+  f
+
+Projected physical derivative:
+  f_P
+
+Theoretical feasible reference used by theory only:
+  f_star
+
+The implementation keeps these concepts distinct.
+
+HARD ENERGY-BALANCE PROJECTION
+------------------------------
+At every actual Neuromancer RK4 RHS evaluation:
+
+  rho = A f_tilde_omega - b
+  M   = A W^-1 A^T
+  solve M nu = rho
+  f_P = f_tilde_omega - W^-1 A^T nu
+  rho_P = A f_P - b
+  g_P = Delta t S_x^-1 f_P
+
+Neuromancer RK4 integrates g_P, never g_omega.
+
+The solve is implemented with:
+  torch.linalg.solve(M, rho)
+
+No explicit M^-1 is formed. W is diagonal, so W^-1 is represented only by the
+reciprocal diagonal rather than by a dense inverse.
+
+RK4 STAGE CONTRACT
+------------------
+A and b depend on the current RK4 stage state through terms such as
+  (T_o - T_a)/R_o
+and, for DEP1/DEP2,
+  (T_K - T_D)/R_DK.
+
+Therefore projection is recomputed at every RK4 stage. With N_r rollout
+intervals and N_s substeps per interval, the expected projection count is:
+  4 * N_s * N_r
+
+The existing Neuromancer RK4 wrapper remains the only RK4 implementation used by
+paper code.
+
+PROJECTION METRIC
+-----------------
+The primary Part-5 2C metric is:
+  W_i = diag(C_a,i^2, C_m,i^2)
+
+For multi-zone 2C the corresponding zone blocks are placed on the diagonal.
+
+Implementation detail for 1C:
+  W = diag(C_i^2)
+
+Part 5 does not need to specify a unique 1C metric because dim ker(A)=0 and the
+feasible derivative is unique. The C_i^2 extension is consistent with the 2C
+energy-rate metric and cannot change the 1C projected derivative.
+
+1C DEGENERATE / PHYSICAL LIMIT
+------------------------------
+One-zone 1C:
+  A = [C]
+  dim ker(A) = 0
+
+Therefore:
+  f_P = b/C
+
+independent of the raw neural proposal. For two-zone 1C, A is diagonal and each
+zone derivative is likewise fixed by its hard balance. This intentionally makes
+EBP-1C a learned physical RC field and a useful degenerate control case.
+
+2C NEURAL FREEDOM
+-----------------
+One-zone 2C:
+  A = [C_a, C_m]
+  dim ker(A) = 1
+
+Two-zone 2C:
+  A = [[C_a,D, C_m,D, 0, 0],
+       [0, 0, C_a,K, C_m,K]]
+  dim ker(A) = 2
+
+Thus one independent internal air/mass redistribution direction remains per
+zone after exact total-energy conservation.
+
+HARD BALANCE VERSUS INTERNAL PARAMETERS
+----------------------------------------
+For 2C total energy, internal R_m and eta_r cancel. The hard balance directly
+contains external/boundary and total heat terms, while R_m and eta_r are learned
+through the remaining projected internal RC residual.
+
+For each 2C zone:
+  r_a^P + r_m^P = 0
+
+up to floating-point precision because their sum is the already-enforced hard
+balance. Patch 04 keeps the separate r_a^P and r_m^P terms exactly as Part 5
+requires.
+
+LOSS CONTRACT
+-------------
+Data loss:
+  L_data = mean over windows/rollout steps of
+           ||S_y^-1(y_hat - y)||_2^2
+
+2C internal physics:
+  L_int = mean[((r_a^P)^2 + (r_m^P)^2)/(q_star)^2]
+
+For 1C:
+  L_int is absent (implemented as zero, with no internal residual term).
+
+Projection correction:
+  c = f_P - f_tilde_omega
+  L_corr = mean[c^T W c]
+         = mean[rho^T M^-1 rho]
+
+Neural regularization:
+  L_reg = ||omega||_2^2 + ||psi||_2^2
+
+Complete objective:
+  J_EBP = lambda_y L_data
+        + lambda_int L_int
+        + lambda_corr L_corr
+        + lambda_wd L_reg
+
+There is NO hard-balance penalty because A f_P = b is enforced in the forward
+model itself.
+
+PHYSICAL PARAMETERIZATION
+-------------------------
+Patch 04 reuses the independently initialized Part-4 parameterization:
+  R = R_min + softplus(rho_R)
+  C = C_min + softplus(rho_C)
+  eta_r = sigmoid(rho_eta) where learnable
+
+DEP2 allocations remain:
+  lambda_c,D = 2 sigmoid(alpha_c)
+  lambda_c,K = 2 (1 - sigmoid(alpha_c))
+  lambda_r,D = 2 sigmoid(alpha_r)
+  lambda_r,K = 2 (1 - sigmoid(alpha_r))
+
+Therefore each pair sums exactly to 2.
+
+Primary DEP2-1C keeps:
+  eta_r,D = eta_r,K = 1
+while alpha_r/lambda_r remain learnable.
+
+DEP2-2C hard balance uses total lambda_r Qbar_r and contains no eta_r; eta_r
+controls only the internal air/mass radiative split.
+
+CAUSAL 2C INITIALIZATION
+------------------------
+The validated causal encoder is retained:
+  T_m,k^(0) = T_a,k + Delta T_m^max tanh[e_psi(C_k)]
+
+Only past/current history enters C_k. The encoder runs once at rollout start;
+projected dynamics propagate T_m afterward.
+
+NEUROMANCER / PYTORCH / OPTUNA DIVISION
+----------------------------------------
+Neuromancer:
+  - MLP neural vector field / encoder blocks
+  - Node/System recursive rollout
+  - RK4 numerical integration
+  - Problem/PenaltyLoss objective graph via shared trainer
+  - DictDataset + collate_fn named-data contract
+
+PyTorch:
+  - tensors/autograd
+  - softplus/sigmoid transforms
+  - differentiable torch.linalg.solve
+  - optimizer
+
+Optuna:
+  - representative-training-only tuning and freeze
+
+No custom RK4 and no direct torchdiffeq call exist in Patch 04 paper code.
+
+HYPERPARAMETER SEARCH
+---------------------
+Tunable EBP quantities include:
+  hidden layers
+  hidden width
+  activation
+  N_r
+  N_s
+  L_e (2C)
+  Delta T_m^max (2C)
+  learning rate
+  batch size
+  optimizer
+  lambda_wd
+  lambda_corr
+  lambda_int (2C only)
+
+The primary capacitance-squared projection metric W is fixed, not tuned.
+Hyperparameter search remains restricted to a smaller representative training-
+only dataset, with selected values frozen before full training.
+
+PROJECTION DIAGNOSTICS / TESTS
+------------------------------
+Patch 04 validates:
+  - A f_P - b approximately zero
+  - KKT stationarity in relative numerical scale
+  - correction-energy identity
+      c^T W c = rho^T M^-1 rho
+  - weighted Pythagorean identity against a feasible reference
+  - differentiability through torch.linalg.solve
+  - rank/nullity for 1C and 2C
+  - 1C projected derivative independent of raw neural proposal
+  - 2C null-space direction retained
+  - 2C projected air/mass residual pair sums to zero
+  - all 4 architectures x both RC orders
+  - expected 4*N_s*N_r true RK4 projection evaluations
+  - positive finite R/C and DEP2 constraints
+  - checkpoint round trip
+  - causal bounded 2C initialization
+  - actual Phase-C QAC + PHVAC artifact loading in real-data smoke
+
+NUMERICAL DIAGNOSTIC NOTE
+-------------------------
+KKT stationarity is mathematically
+  W c + A^T nu = 0.
+
+With C^2 weighting, the two terms can individually be very large and cancel to
+floating-point precision. Patch 04 therefore records both absolute stationarity
+and a scale-normalized relative stationarity diagnostic. Acceptance uses the
+relative diagnostic, avoiding a misleading absolute tolerance on a large-scale
+cancellation.
+
+TINY VALIDATION INTENT
+----------------------
+Real-data smoke remains deliberately tiny:
+  max_rows = 48
+  train_steps = 2
+  N_r = 2
+  N_s = 1
+  4 architectures x 2 RC orders = 8 EBP configurations
+
+The smoke validates mathematical and software paths only. It is NOT a
+convergence, final-training, or paper-accuracy experiment.
+
+For the tiny smoke only, lambda_corr is set to a very small nonzero value
+(1e-8) so the correction-loss gradient path is exercised without allowing the
+physical-unit W^2 correction magnitude to dominate a two-step path test. The
+actual lambda_corr is an Optuna-selected hyperparameter in the later tuning
+stage.
+
+EXCLUDED FROM PATCH 04
+----------------------
+  - Sim1/Sim2/Sim3 campaign execution
+  - thermostat controller
+  - mass-flow -> QAC closed-loop runtime
+  - MPC/Sinergym
+  - full Optuna studies
+  - full-data final training
+  - final figures/tables/statistical comparison
+
+MATHEMATICAL DEVIATION STATUS
+-----------------------------
+No Part-5 mathematical deviation is introduced by Patch 04.
+
+The 1C W=C^2 choice is an implementation completion of an otherwise irrelevant
+metric degree of freedom in the unique-feasible-derivative case and does not
+change the 1C projected field.
+================================================================================

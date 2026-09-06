@@ -1,0 +1,35 @@
+ScaleBridge Phase E0 E0-3B Generic RC Physics Compiler Patch Manifest
+Generated: 2026-08-26
+
+Added:
+  docs/architecture/phase_e0_rc_compiler.md
+  knowledgebase/Phase_E_Patches/E0_3_GENERIC_RC_IMPLEMENTATION/E0_3B_IMPLEMENTATION_NOTES.txt
+  scripts/thermal_modeling/validate_phase_e0_rc_compiler.py
+  src/scalebridge/models/grey_box/rc_networks/allocation.py
+  src/scalebridge/models/grey_box/rc_networks/compiler.py
+  src/scalebridge/models/grey_box/rc_networks/flavours.py
+  src/scalebridge/models/grey_box/rc_networks/invariants.py
+  src/scalebridge/models/grey_box/rc_networks/parameters.py
+  src/scalebridge/models/grey_box/rc_networks/runtime.py
+  src/scalebridge/models/grey_box/rc_networks/specification.py
+  tests/thermal_modeling/test_phase_e0_rc_compiler.py
+
+Modified:
+  src/scalebridge/models/grey_box/rc_networks/__init__.py
+
+Deleted:
+  NONE
+
+SHA256 by file:
+  bce5778489c5e2b4dfaaed4870e47ed6a189a1ecd7dfad9ff8d6187d605dea8f  docs/architecture/phase_e0_rc_compiler.md
+  911a95242778d76229ce10a443bb2b4428e8fdac7b6c91f3cdaccebf0e5de8f1  knowledgebase/Phase_E_Patches/E0_3_GENERIC_RC_IMPLEMENTATION/E0_3B_IMPLEMENTATION_NOTES.txt
+  6d0de722e62cdd3dfe1a973e709cea32ffaede8d26fc6b4cb6ee607fe04f6152  scripts/thermal_modeling/validate_phase_e0_rc_compiler.py
+  04fbf5af445b20eed7cb45316876e721893e2011c9df1b823549b937cd68187f  src/scalebridge/models/grey_box/rc_networks/__init__.py
+  fea39ea68b5875a738be5993a9a5d394b825be95a5f583de69f9013a15613667  src/scalebridge/models/grey_box/rc_networks/allocation.py
+  87bc9b649f4dc75a47d0f0cfe9cb31e6c27f4ebdee1ffac4c04b4064faea9f96  src/scalebridge/models/grey_box/rc_networks/compiler.py
+  1ed06229d6bd328eaf18ff752f0df68fd5870101ffc9f7d1a190770babf8d258  src/scalebridge/models/grey_box/rc_networks/flavours.py
+  6a3769ad0edf0405aa5da1322fe8bfac829f84a9adbe5dec5febb5c96d7fae65  src/scalebridge/models/grey_box/rc_networks/invariants.py
+  01e85fda9c980b9f9e034148dc8a49aa77ba3287bb89d0d70e356432ca4e9187  src/scalebridge/models/grey_box/rc_networks/parameters.py
+  e7729a46dae8baafed5497138062cef544a96c7d12d0e5a479c8c7cd7abd6e27  src/scalebridge/models/grey_box/rc_networks/runtime.py
+  1a9930f7be60a05733f13df32482504a109ef7b07d65d58147608be79866f805  src/scalebridge/models/grey_box/rc_networks/specification.py
+  eeeefe2cc24403d88679bf125e78a71e620a6ea27c878aba461e2218fcd83bde  tests/thermal_modeling/test_phase_e0_rc_compiler.py

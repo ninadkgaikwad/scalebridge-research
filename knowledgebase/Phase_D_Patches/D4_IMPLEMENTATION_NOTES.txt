@@ -1,0 +1,18 @@
+ScaleBridge Phase D D4 — Canonical Signal Assembly
+
+Adds canonical zone-table assembly from D3-aligned data.
+
+Locked behavior:
+- Stable superset schema.
+- Applicable varying and constant-nonzero predictions retained.
+- Complete-zero outputs represented as nullable.
+- Phase C non-applicable outputs represented as nullable.
+- Active predictions must be complete at every aligned timestamp.
+- ZIC is summed only from active qzic_* components.
+- ZIR is summed only from active qzir_* components and includes qzivr_l by default.
+- PHVAC remains auxiliary; PHVAC oracle is preserved when present.
+- Split metadata is passed through.
+- No production Phase D Parquet is written in D4.
+
+Permanent PowerShell run script:
+scripts/thermal_modeling/D4_RUN_CONTROLLED_ASSEMBLY.ps1

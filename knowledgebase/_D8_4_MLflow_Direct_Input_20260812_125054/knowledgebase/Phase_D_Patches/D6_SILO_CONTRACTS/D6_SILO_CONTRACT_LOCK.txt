@@ -1,0 +1,185 @@
+ScaleBridge Phase D - D6 Silo Contract Lock
+===========================================
+
+D6 purpose
+----------
+Define the final physical, temporal, partition, naming, and storage contracts
+for the six Phase D product families before D7 constructs annual Parquets.
+
+Physical semantics
+------------------
+For every aggregate zone:
+- zone_temperature is the only thermal state.
+- qac is the control_input.
+- outdoor_temperature is a common disturbance and is stored once in Dep1/Dep2.
+- qsol1/qsol2, when available, are disturbances.
+- internal heat inputs are disturbances.
+
+Heat-input representation
+-------------------------
+Two supported representations:
+1. grouped_qzic_qzir
+   - retain qsol1/qsol2 when applicable
+   - build qzic from applicable active QZic components
+   - build qzir from applicable active QZir components
+   - qzivr_l may be included in qzir or retained separately
+2. component_heat_inputs
+   - retain available QZic/QZir component columns separately
+   - retain qzivr_l separately when available
+   - retain qsol1/qsol2 when applicable
+
+Spatial products
+----------------
+Independent:
+- one final Parquet per current aggregate zone
+- state/control/disturbance columns are zone-qualified
+- outdoor_temperature is common/unqualified
+
+Dependent 1:
+- one wide final Parquet for all current aggregate zones
+- current-zone states, controls, and disturbances are concatenated
+- outdoor_temperature appears once
+
+Dependent 2:
+- one wide final Parquet for all current aggregate zones
+- states and QAC controls come from current aggregate zones
+- disturbances come from the D5-selected compatible all-to-one zone
+- outdoor_temperature appears once
+- Dep2 is not viable when D5 does not provide a usable counterpart
+
+Column naming
+-------------
+Zone-specific physical base columns:
+    <aggregate_zone_id>__<signal>
+
+Lag-expanded model inputs:
+    <base_column>__lag_0
+    ...
+    <base_column>__lag_<L-1>
+
+State prediction targets:
+    <zone>__zone_temperature__target_1
+    ...
+    <zone>__zone_temperature__target_<H>
+
+Common policy columns:
+    timestamp
+    included
+    partition
+    window_id
+    season
+
+ML/SciML temporal contract
+--------------------------
+- input_lag is configurable and >= 1
+- target_horizon is configurable and >= 1
+- default policy: monthly_distributed_holdout
+- primary partitions: train / validation / test
+- essentially the full temporally valid year participates
+- excluded is allowed only for leakage-safe boundaries or invalid samples
+
+ML/SciML policy catalog:
+- monthly_distributed_holdout
+- chronological_holdout
+- seasonal_holdout
+
+Opt/Bayes temporal contract
+---------------------------
+- input_lag = 1
+- target_horizon = 1
+- default policy: seasonal_distributed
+- primary partitions: train / test
+- full annual temporally valid data is retained in the one Parquet
+- only selected identification/evaluation windows have included=true
+- all non-selected annual samples have:
+      included=false
+      partition=excluded
+- seasonal_distributed requires window_id and season for included rows
+
+Opt/Bayes policy catalog:
+- seasonal_distributed
+- seasonal_block_holdout
+- contiguous_identification
+- custom_datetime_ranges
+
+Policy realization
+------------------
+The policy name identifies the policy family.
+policy_realization_id is optional and distinguishes multiple parameterizations
+of the same policy without path collision.
+
+One-Parquet rule
+----------------
+For every unique dataset realization:
+- one data.parquet
+- one manifest.json
+
+Do NOT create:
+- train.parquet
+- validation.parquet
+- test.parquet
+
+Partition membership remains inside data.parquet.
+
+Folder identity
+---------------
+Each final realization is nested by:
+- spatial product
+- independent zone when applicable
+- heat-input representation
+- lag/horizon
+- partition/selection policy
+
+Grouped heat representation also encodes whether qzivr_l is included in qzir
+or retained separately so two distinct realizations cannot overwrite each other.
+
+D6 output
+---------
+D6 itself writes metadata contracts only.
+No annual time-series Parquet is created until D7.
+
+
+Compact folder naming
+---------------------
+The filesystem uses compact tokens while manifests retain full semantic names.
+
+Silo tokens:
+- ml_sciml -> ml
+- opt_bayes -> ob
+
+Spatial product tokens:
+- independent -> ind
+- dependent_1 -> dep1
+- dependent_2 -> dep2
+
+Heat representation tokens:
+- grouped qzic/qzir with qzivr_l included in qzir -> grp_vrin
+- grouped qzic/qzir with qzivr_l separate -> grp_vrsep
+- component heat inputs -> cmp
+
+Temporal tokens:
+- lag/horizon -> l<L>_h<H>
+
+Policy tokens:
+- monthly_distributed_holdout -> mdh
+- chronological_holdout -> ch
+- seasonal_holdout -> sh
+- seasonal_distributed -> sd
+- seasonal_block_holdout -> sbh
+- contiguous_identification -> ci
+- custom_datetime_ranges -> cdr
+
+Optional policy realization suffix:
+- <policy_token>_rNN
+- Example: sd_r01
+
+Examples:
+- ml/ind/Dining/grp_vrin/l12_h6/mdh/
+- ml/dep1/grp_vrin/l12_h6/mdh/
+- ml/dep2/grp_vrin/l12_h6/mdh/
+- ob/ind/Dining/grp_vrin/l1_h1/sd/
+- ob/dep1/grp_vrin/l1_h1/sd/
+- ob/dep2/grp_vrin/l1_h1/sd/
+
+The short folder tokens are storage/navigation identifiers only. The manifest
+remains authoritative for the full scientific meaning.

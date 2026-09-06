@@ -1,0 +1,89 @@
+{
+  "e07_handoff": {
+    "data_selection_fingerprint": "4f504310fcef6bdbe3a83604b624a4f8bc0ffd71647f0b6a99152ad711c2e675",
+    "frozen_hyperparameters_sha256": "2d2756e5d74c4376dc3296ed0d85e049469ffc05b09af595ff7f9a5a4fab9919",
+    "method_family": "generic",
+    "method_id": "e08_framework_synthetic_provider",
+    "mlflow_parent_run_id": "f0f21b4564e245209e5bf780a861a29c",
+    "objective_fingerprint": "b4c17abdc39055a98e7f5a50242f56d7a3493c2dff1034aa9e4e9aa3724069f5",
+    "pareto_trial_numbers": [
+      1
+    ],
+    "provider_version": "synthetic_v1",
+    "schema": "phase_e0_e08_to_e07_provenance_v1",
+    "search_space_fingerprint": "8a48f4d2041f576893e7809f9dc1062d0d3804c7ac9a9ee5d963bdde4d64dc6d",
+    "selected_trial_number": 1,
+    "study_fingerprint": "2b33175cfb5705b824f9ea66cb6e74ed7071d787e9d14e3f6e74fbfce4bec1d1",
+    "study_id": "e08_2b33175cfb5705b8"
+  },
+  "generic_safety_guards": {
+    "ephemeral_resume_rejected": true,
+    "unauthorized_pruner_rejected": true
+  },
+  "leakage_rejected": true,
+  "mlflow": {
+    "nested_trial_run_count": 3,
+    "parent_run_id": "f0f21b4564e245209e5bf780a861a29c",
+    "tracking_uri": "sqlite:///C:/Users/ninad/AppData/Local/Temp/scalebridge_e08_validate_8phtxe53/mlflow.sqlite3"
+  },
+  "multi_objective": {
+    "pareto_count": 2,
+    "pareto_only_count": 2,
+    "selected_trial": 0
+  },
+  "phase": "E0-8",
+  "phase_d_contract_id": "phasee0_4a177a0e1f783357",
+  "phase_d_partition_counts": {
+    "excluded": 36,
+    "test": 15754,
+    "train": 73567,
+    "validation": 15763
+  },
+  "qualified": true,
+  "real_phase_d_data": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\phase_d\\cases\\epcase_827ca4812c0199221d031e59\\aggregation_runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\silos\\ml\\ind\\Dining\\grp_vrin\\l1_h1\\mdh\\data.parquet",
+  "real_phase_d_manifest": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\phase_d\\cases\\epcase_827ca4812c0199221d031e59\\aggregation_runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\silos\\ml\\ind\\Dining\\grp_vrin\\l1_h1\\mdh\\manifest.json",
+  "real_train_fixture_count": 40,
+  "resume": {
+    "fingerprint": "1ec751d8e9db3e5d989a2d752b92b66ae27cffa5fc1c1e35248b7a2d00ec045b",
+    "incompatible_rejected": true,
+    "initial_segment_replayed": false,
+    "recovered_trial_count": 4,
+    "sampler_segments": [
+      {
+        "sampler_name": "random",
+        "seed": 808,
+        "start_trial": 0
+      },
+      {
+        "sampler_name": "random",
+        "seed": 1843690456,
+        "start_trial": 2
+      }
+    ]
+  },
+  "single_objective": {
+    "maximize": {
+      "frozen_sha256": "c5d4de272e15e1123de801d58981a3ca7d0c7d245e004a212903dd2edec8b326",
+      "selected_trial": 5,
+      "study_id": "e08_c22cab09e1957f85",
+      "trial_count": 6
+    },
+    "minimize": {
+      "frozen_sha256": "4b71c86f78a6f980a7b240154d3f19cfa75b500750fa7f29779a6f4d891d5bae",
+      "selected_trial": 5,
+      "study_id": "e08_c158f5e9c5ee74dc",
+      "trial_count": 6
+    }
+  },
+  "trial_states": {
+    "completed": 3,
+    "failed": 1,
+    "pruned": 1
+  },
+  "versions": {
+    "mlflow": "3.13.0",
+    "optuna": "4.9.0",
+    "pandas": "2.3.3",
+    "pyarrow": "23.0.1"
+  }
+}

@@ -1,0 +1,20 @@
+PATCH 01 FINAL HEAT CONTRACT
+
+Authoritative channel classification:
+  Convective = QZIC + QSol1 + QAC
+  Radiative  = QZIR + QSol2
+
+1R1C:
+  Qeff = Qconv + eta_rad * Qrad
+  eta_rad modes: full (default=1), zero (ablation=0), fixed, learnable.
+  eta_rad is an effective radiative participation factor because 1R1C has no
+  explicit mass/surface state. Convective channels keep unit gain.
+
+2R2C:
+  Qconv always enters air.
+  Qrad_mass = eta_rad * Qrad
+  Qrad_air  = (1-eta_rad) * Qrad
+  eta_rad modes: mass_only (default=1), air_only (0), fixed, learnable.
+  Radiative heat is conserved across air+mass.
+
+There is no separate QAC gain and no independent per-channel gain in the main model.

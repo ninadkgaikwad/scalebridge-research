@@ -1,0 +1,789 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,longtable,array}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\mdot}{\dot m}
+\newcommand{\Tsa}{T_{\mathrm{sa}}}
+\newcommand{\Tz}{T_z}
+\newcommand{\QX}{Q_{\mathrm{HVAC},X}}
+\newcommand{\QAC}{Q_{\mathrm{AC}}}
+\newcommand{\PHVAC}{P_{\mathrm{HVAC}}}
+
+\title{PINODE/EPSR MPC--EnergyPlus Actuator Realization\\
+Simplified Frozen Paper Contract}
+\author{ScaleBridge / PINODE--EPSR}
+\date{29 August 2026 --- Frozen Actuator Contract v1}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document freezes the deliberately simple actuator-realization interface
+used to connect the PINODE/EPSR model-predictive controller (MPC) to the real
+EnergyPlus 24.1 RestaurantFastFood HVAC plant.  The paper objective is not
+perfect low-level actuator inversion.  It is to show, reproducibly and with
+quantified evidence, that MPC commands expressed in the physically meaningful
+coordinates supply-air mass flow $\mdot^\star$ and supply-air temperature
+$\Tsa^\star$ can drive the actual EnergyPlus packaged single-zone (PSZ)
+systems closely enough for closed-loop building control.  Directed experiments
+C1--C2.7 establish an exact plant-specific fan-flow inverse, a simple
+physics-based unitary sensible-load command, an empirically validated moderate
+operating envelope, and one explicitly excluded extreme-cold Kitchen-heating
+regime.  The final changing-command experiment passed all 36 controlled
+300-s intervals.
+\end{abstract}
+
+\section{Scope and paper claim}
+
+The final actuator layer is intentionally not a research contribution by
+itself.  The actuator claim is limited to the following:
+
+\begin{quote}
+For the accepted EnergyPlus 24.1 RestaurantFastFood/Buffalo plant and the
+experimentally validated operating region, physical MPC requests
+$(\mdot^\star,\Tsa^\star)$ can be translated into native EnergyPlus fan-flow
+and unitary sensible-load commands using a simple deterministic adapter.  The
+realized 300-s HVAC response tracks the requested physical quantities with
+sufficient accuracy for the paper's learned-model closed-loop MPC experiments.
+\end{quote}
+
+The paper does \emph{not} claim:
+\begin{itemize}[leftmargin=2em]
+\item a universal EnergyPlus actuator inverse;
+\item perfect instantaneous $\Tsa$ tracking at every internal HVAC iteration;
+\item exact realizability of arbitrary $(\mdot,\Tsa)$ pairs;
+\item resolution of all native PSZ cycling modes;
+\item a learned neural actuator model;
+\item a hybrid low-level MPC for equipment cycling.
+\end{itemize}
+
+\section{Authoritative EnergyPlus plant}
+
+The accepted EnergyPlus 24.1 candidate is
+\begin{verbatim}
+RestaurantFastFood_Buffalo_EPlus24.1_FINAL_CANDIDATE.idf
+\end{verbatim}
+with
+\begin{verbatim}
+SHA256 =
+da86d8c3c782424d2d4f30e29a97220c9b9042f721e83591f43762f34df77101
+\end{verbatim}
+
+The paper plant contains two independently served physical zones:
+\begin{equation}
+\mathcal Z=\{D,K\},
+\end{equation}
+where $D$ is Dining and $K$ is Kitchen.
+
+The relevant equipment is:
+\begin{verbatim}
+Dining:
+  AirLoopHVAC:UnitarySystem  PSZ-AC_1:1
+  Fan:SystemModel            PSZ-AC_1:1_addAQ Fan
+  Heating coil               PSZ-AC_1:1_HeatC
+  DX cooling coil            PSZ-AC_1:1_CoolC DXCoil
+  Direct-air / zone inlet    PSZ-AC_1:1 Zone Equipment Inlet Node
+
+Kitchen:
+  AirLoopHVAC:UnitarySystem  PSZ-AC_2:2
+  Fan:SystemModel            PSZ-AC_2:2_addAQ Fan
+  Heating coil               PSZ-AC_2:2_HeatC
+  DX cooling coil            PSZ-AC_2:2_CoolC DXCoil
+  Direct-air / zone inlet    PSZ-AC_2:2 Zone Equipment Inlet Node
+\end{verbatim}
+
+The unitary systems are native \texttt{Load}-controlled systems.  Outdoor-air,
+coil, fan, and unitary-controller physics remain native EnergyPlus physics.
+
+\section{Closed-loop control timescale}
+
+The MPC control interval is
+\begin{equation}
+\boxed{\Delta t_{\mathrm{MPC}}=300~\mathrm{s}.}
+\end{equation}
+
+EnergyPlus may execute multiple HVAC system timesteps or internal controller
+iterations inside one 300-s control interval.  Therefore the paper distinguishes
+instantaneous system-timestep quantities from the 300-s equivalent delivered
+thermal response.
+
+\section{Physical MPC control variables}
+
+For each physical zone $i\in\mathcal Z$, the upper-level MPC produces
+\begin{equation}
+\boxed{
+u_{i,k}^{\star}
+=
+\begin{bmatrix}
+\mdot_{i,k}^{\star}\\
+T_{\mathrm{sa},i,k}^{\star}
+\end{bmatrix}.
+}
+\label{eq:physical-control}
+\end{equation}
+
+The MPC therefore remains in physically interpretable coordinates.  It does
+not optimize EnergyPlus API handles or native low-level actuator coordinates.
+
+The desired raw air-side sensible heat is
+\begin{equation}
+\boxed{
+Q_{X,i,k}^{\star}
+=
+\mdot_{i,k}^{\star} c_p
+\left(
+T_{\mathrm{sa},i,k}^{\star}
+-
+T_{z,i,k}
+\right).
+}
+\label{eq:qstar}
+\end{equation}
+
+The final implementation shall use one frozen numerical $c_p$ value
+consistently in the actuator adapter, MPC, thermal-input conversion, and
+reported metrics.  The screening experiments used
+$c_p=1006~\mathrm{J/(kg\,K)}$.
+
+\section{Frozen simple EnergyPlus adapter}
+
+\subsection{Fan-flow command}
+
+For the present two-mode PSZ/Fan:SystemModel configuration, experiment C2.2
+established
+\begin{equation}
+\boxed{
+\mdot_i^{\mathrm{EP}} = 2 a_{m,i}
+}
+\end{equation}
+through the tested design-flow range and across Dining/Kitchen heating and
+cooling.
+
+Hence the frozen fan inverse is
+\begin{equation}
+\boxed{
+a_{m,i,k}
+=
+\frac{1}{2}\mdot_{i,k}^{\star}.
+}
+\label{eq:fan-inverse}
+\end{equation}
+
+This mapping remained exact under simultaneous thermal actuation and under the
+final changing-command trajectory test.
+
+\subsection{Thermal command}
+
+For the validated regimes, no learned or calibrated actuator map is retained.
+The unitary sensible-load command is simply
+\begin{equation}
+\boxed{
+a_{q,i,k}
+=
+Q_{X,i,k}^{\star}
+=
+\mdot_{i,k}^{\star}c_p
+\left(
+T_{\mathrm{sa},i,k}^{\star}
+-
+T_{z,i,k}
+\right).
+}
+\label{eq:simple-thermal-command}
+\end{equation}
+
+Thus the final paper actuator adapter is only
+\begin{equation}
+\boxed{
+\begin{aligned}
+a_{m,i,k}
+&=
+\tfrac12\mdot_{i,k}^{\star},\\
+a_{q,i,k}
+&=
+\mdot_{i,k}^{\star}c_p
+\left(
+T_{\mathrm{sa},i,k}^{\star}
+-
+T_{z,i,k}
+\right).
+\end{aligned}}
+\label{eq:frozen-adapter}
+\end{equation}
+
+\subsection{EnergyPlus callback chronology}
+
+The final callback contract is
+\begin{verbatim}
+Fan Air Mass Flow Rate
+    -> InsideHVACSystemIterationLoop
+
+Unitary HVAC / Sensible Load Request
+    -> AfterPredictorAfterHVACManagers
+\end{verbatim}
+
+C2.5 found numerically identical physical responses when the sensible-load
+request was instead issued from the HVAC-system iteration callback.  Therefore
+the simpler \texttt{AfterPredictorAfterHVACManagers} chronology is retained.
+
+\section{Text schematic of the frozen architecture}
+
+\begin{verbatim}
+weather / disturbances / price / grid reference
+                    |
+                    v
+        +-----------------------+
+        | learned thermal model |
+        | RC / PINN-RC / NODE   |
+        | Base PINODE / EBP     |
+        +-----------+-----------+
+                    |
+                    v
+                 MPC
+                    |
+                    | physical request
+                    | [m_dot*, T_sa*]
+                    v
+        +-----------------------+
+        | SIMPLE FROZEN ADAPTER |
+        |                       |
+        | a_fan = 0.5 m_dot*    |
+        |                       |
+        | Q_X* = m_dot* cp      |
+        |       (T_sa* - T_z)   |
+        |                       |
+        | a_q = Q_X*            |
+        +-----------+-----------+
+                    |
+                    v
+        +-----------------------+
+        | EnergyPlus 24.1 PSZ   |
+        | native OA / coils /   |
+        | fan / unitary physics |
+        +-----------+-----------+
+                    |
+                    v
+          m_dot_EP , T_sa_EP
+                    |
+          +---------+---------+
+          |                   |
+          v                   v
+   delivered Q_X          next T_zone
+          |                   |
+          v                   |
+       Phase-C G_Q            |
+          |                   |
+          v                   |
+        Q_AC -----------------+
+          |
+          v
+       thermal ODE
+
+Separate electrical path:
+    |Q_AC| -> Phase-C G_P -> P_HVAC -> MPC energy/price/grid objective
+\end{verbatim}
+
+\section{300-s equivalent supply temperature}
+
+The final actuator acceptance is evaluated at the same 300-s timescale used by
+the MPC and thermal models.
+
+For one control interval $k$, define the time-weighted delivered raw sensible
+heat
+\begin{equation}
+\overline{Q}_{X,i,k}^{\mathrm{EP}}
+=
+\frac{
+\sum_r Q_{X,i,r}^{\mathrm{EP}}\Delta t_r
+}{
+\sum_r \Delta t_r
+},
+\end{equation}
+with corresponding time-weighted zone temperature and mass flow
+$\overline{T}_{z,i,k}$ and $\overline{\mdot}_{i,k}^{\mathrm{EP}}$.
+
+The equivalent supply temperature is
+\begin{equation}
+\boxed{
+T_{\mathrm{sa,eq},i,k}^{\mathrm{EP}}
+=
+\overline{T}_{z,i,k}
++
+\frac{
+\overline{Q}_{X,i,k}^{\mathrm{EP}}
+}{
+\overline{\mdot}_{i,k}^{\mathrm{EP}} c_p
+}.
+}
+\label{eq:tsa-eq}
+\end{equation}
+
+This does not hide the native system-timestep response.  The closed-loop
+experiment should log both the detailed EnergyPlus system-timestep quantities
+and the 300-s equivalent quantities.
+
+\section{Empirically supported operating envelope}
+
+The final trajectory smoke directly exercised moderate commands with
+\begin{equation}
+\boxed{
+0.50
+\le
+\frac{\mdot_i^\star}{\mdot_{i,\max}}
+\le
+0.80
+}
+\label{eq:flow-envelope}
+\end{equation}
+and
+\begin{equation}
+\boxed{
+4^\circ\mathrm C
+\le
+\left|
+T_{\mathrm{sa},i}^\star - T_{z,i}
+\right|
+\le
+8^\circ\mathrm C
+}
+\label{eq:thermal-envelope}
+\end{equation}
+for the validated heating/cooling trajectories.
+
+This is an empirically validated paper operating envelope, not an exhaustive
+proof that every point in the Cartesian rectangle is realizable under every
+weather and native-controller state.
+
+Define the paper actuator-feasible set
+\begin{equation}
+\mathcal U_i^{\mathrm{act}}
+(\xi_i)
+\end{equation}
+as the subset of physical commands supported by this evidence under local HVAC
+context $\xi_i$.  The final MPC command set must satisfy
+\begin{equation}
+\boxed{
+u_{i,k}^{\star}
+\in
+\mathcal U_i^{\mathrm{MPC}}
+=
+\mathcal U_i^{\mathrm{train}}
+\cap
+\mathcal U_i^{\mathrm{act}}.
+}
+\label{eq:final-feasible-set}
+\end{equation}
+
+The intersection with the thermal-model TRAIN support is important: the paper
+should not ask the learned model to predict far outside the control/input
+region represented in its training data.
+
+\section{Generic symmetric feasibility supervisor and Kitchen-heating evidence}
+
+All four physical zone/mode combinations are commandable:
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+Zone & Heating & Cooling\\
+\midrule
+Dining & MPC-commandable & MPC-commandable\\
+Kitchen & MPC-commandable & MPC-commandable\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+There is no categorical Kitchen-heating exclusion in the final simulator.
+Instead, Dining and Kitchen use the same numerical per-zone supervisor and the
+same actuator transformation.
+
+At each 300-s control boundary, define
+\begin{align}
+\gamma_{\dot m,i}
+&=
+\frac{\mdot_i^\star}{\mdot_{i,\max}},
+\\
+\Delta T_i^\star
+&=
+T_{\mathrm{sa},i}^\star-T_{z,i}.
+\end{align}
+The current configured supervisor accepts an external override when
+\begin{equation}
+\boxed{
+0.50\le\gamma_{\dot m,i}\le0.80,
+\qquad
+4^\circ\mathrm C
+\le
+|\Delta T_i^\star|
+\le
+8^\circ\mathrm C.
+}
+\label{eq:supervisor-envelope}
+\end{equation}
+The sign of \(\Delta T_i^\star\) is unrestricted.
+
+If zone \(i\) is outside the configured envelope, the simulator releases both
+the fan-flow and unitary sensible-load overrides for that zone for the current
+300-s interval:
+\begin{equation}
+\boxed{
+u_{i,k}^{\star}\notin\mathcal U_i^{\mathrm{sup}}
+\Longrightarrow
+\text{native EnergyPlus HVAC for zone }i.
+}
+\label{eq:per-zone-fallback}
+\end{equation}
+The other zone remains under external control when its own command is accepted.
+
+The extreme-cold Kitchen-heating behavior observed in C2.3--C2.6 remains
+scientifically important.  Independent forced airflow combined with native
+fuel-coil ON/OFF behavior produced alternating hot and very cold supply-air
+substeps and poor 300-s \(T_{\mathrm{sa}}\) tracking in those particular
+conditions.  C2.6 also showed that an exploratory affine correction did not
+repair this behavior.  Those results justify retaining detailed
+commanded-versus-realized history and a native-fallback mechanism; they do
+\textbf{not} justify a blanket prohibition on Kitchen heating.
+
+The final controller therefore does not add a learned actuator model or hybrid
+duty-cycle inverse.  All learned-model families use the same simple adapter,
+the same supervisor, and the same per-zone fallback mechanism.
+
+\section{Evidence ladder C1--C2.7}
+
+\begin{longtable}{p{0.10\textwidth}p{0.25\textwidth}p{0.55\textwidth}}
+\toprule
+Stage & Purpose & Frozen conclusion \\
+\midrule
+\endfirsthead
+\toprule
+Stage & Purpose & Frozen conclusion \\
+\midrule
+\endhead
+
+C1 &
+Actuator/API inventory &
+Established the EnergyPlus actuator/variable registry needed for directed
+experiments.  Broad actuator discovery was then closed. \\
+
+C2.1 &
+Directed causal screening &
+Terminal mass-flow and generic supply-node temperature-setpoint paths were
+rejected for this topology.  Fan mass-flow, unitary sensible-load request, and
+DX-speed paths showed causal effects. \\
+
+C2.2 &
+Fan calibration &
+For Dining/Kitchen and heating/cooling,
+$\mdot^{EP}=2a_m$ with ratio error zero up to numerical roundoff across tested
+flow levels.  Freeze $a_m=\tfrac12\mdot^\star$. \\
+
+C2.3 &
+Fixed-flow thermal screen &
+With airflow fixed, direct physics
+$a_q=\mdot^\star c_p(\Tsa^\star-\Tz)$ was already promising for Dining heating,
+Dining cooling, and Kitchen cooling.  Kitchen extreme-cold heating exposed
+native cycling/makeup-air complications. \\
+
+C2.4 &
+Counterfactual characterization &
+Independent counterfactual restarts showed strong local active-regime
+relationships while also revealing that interval averages can be dominated by
+native ON/OFF unitary cycling.  No complex map was frozen. \\
+
+C2.5 &
+Callback chronology closure &
+\texttt{AfterPredictorAfterHVACManagers} and
+\texttt{InsideHVACSystemIterationLoop} produced numerically identical physical
+responses for the tested sensible-load cases.  Freeze the simpler
+AfterPredictor chronology. \\
+
+C2.6 &
+Held-out static validation &
+Direct physics passed six of eight held-out cases.  Kitchen heating at 50\%
+and 80\% design flow exposed difficult native cycling and poor realized
+supply-temperature tracking.  The exploratory affine correction failed and
+was rejected; the evidence is retained as a robustness warning rather than a
+categorical mode ban. \\
+
+C2.7 &
+Final changing-trajectory smoke &
+With only the final simple adapter, simultaneous Dining+Kitchen cooling and
+Dining heating passed all 36 controlled 300-s intervals.  Static actuator
+development is frozen. \\
+
+Simulator closure &
+Direct Runtime-API integration &
+The project-owned EnergyPlus simulator exercises full 300-s Dining/Kitchen
+cooling and heating command transport, symmetric per-zone feasibility
+decisions, native fallback, and broad history capture.  This runtime closure
+does not replace the C2.6/C2.7 physical-tracking evidence. \\
+\bottomrule
+\end{longtable}
+
+\section{Key numerical evidence}
+
+\subsection{C2.2 fan-flow inverse}
+
+For all four zone/mode combinations, the median realized-to-command flow ratio
+was
+\begin{equation}
+\boxed{2.0}
+\end{equation}
+with maximum absolute deviation from the factor-two relationship equal to zero
+or floating-point roundoff ($4.44\times10^{-16}$).
+
+\subsection{C2.5 moderate physical tracking}
+
+At $\mdot^\star=0.66\mdot_{\max}$ and
+$|T_{\mathrm{sa}}^\star-T_z|=8^\circ$C:
+\begin{center}
+\begin{tabular}{llrr}
+\toprule
+Zone & Mode & Realized $\Delta T$ [$^\circ$C] & $T_{\mathrm{sa}}$ MAE [$^\circ$C] \\
+\midrule
+Dining & heating & +7.789 & 0.211 \\
+Dining & cooling & -7.859 & 0.141 \\
+Kitchen & cooling & -8.132 & 0.141 \\
+Kitchen & heating & -5.334 & 13.373 \\
+\bottomrule
+\end{tabular}
+\end{center}
+Flow MAE and sensible-load actuator-readback MAE were zero in all four cases.
+
+\subsection{C2.6 held-out static validation}
+
+C2.6 moved away from the thermal-identification point by testing 50\% and 80\%
+design flow with a held-out $6^\circ$C target:
+\begin{center}
+\begin{tabular}{llrrl}
+\toprule
+Zone & Mode & Flow & $T_{\mathrm{sa}}$ MAE [$^\circ$C] & Gate \\
+\midrule
+Dining & heating & 0.50 & 0.291 & PASS \\
+Dining & heating & 0.80 & 0.138 & PASS \\
+Dining & cooling & 0.50 & 0.243 & PASS \\
+Dining & cooling & 0.80 & 0.022 & PASS \\
+Kitchen & cooling & 0.50 & 0.319 & PASS \\
+Kitchen & cooling & 0.80 & 0.268 & PASS \\
+Kitchen & heating & 0.50 & 25.957 & FAIL \\
+Kitchen & heating & 0.80 & 23.709 & FAIL \\
+\bottomrule
+\end{tabular}
+\end{center}
+All eight held-out cases retained exact airflow tracking.
+
+\subsection{C2.7 final actuator acceptance}
+
+The final changing-command experiment used only
+Eqs.~\eqref{eq:fan-inverse}--\eqref{eq:simple-thermal-command}.  It contained
+simultaneous two-zone cooling and a separate Dining-heating trajectory.
+
+The scientific acceptance result was:
+\begin{align}
+N_{\mathrm{controlled}}
+&=36,\\
+N_{\mathrm{pass}}
+&=36,\\
+\text{pass fraction}
+&=1.000,\\
+\operatorname{mean}
+\left|
+T_{\mathrm{sa,eq}}^{EP}
+-
+T_{\mathrm{sa}}^\star
+\right|
+&=
+0.378955^\circ\mathrm C,\\
+\max
+\left|
+T_{\mathrm{sa,eq}}^{EP}
+-
+T_{\mathrm{sa}}^\star
+\right|
+&=
+1.626835^\circ\mathrm C,\\
+\max
+\left|
+\frac{
+\mdot^{EP}-\mdot^\star
+}{
+\mdot^\star
+}
+\right|
+&=
+0,\\
+\text{all requested thermal signs correct}
+&=
+\mathrm{true}.
+\end{align}
+
+The predeclared gates were:
+\begin{align}
+\text{minimum interval pass fraction} & = 0.90,\\
+\text{maximum mean }|T_{\mathrm{sa,eq}}\text{ error}| & = 1.5^\circ\mathrm C,\\
+\text{per-interval }|T_{\mathrm{sa,eq}}\text{ error}| & \le 2^\circ\mathrm C,\\
+\text{flow gate} & = 0.5\%\text{ of design flow}.
+\end{align}
+
+Therefore
+\begin{equation}
+\boxed{\text{FINAL ACTUATOR ACCEPT}=\mathrm{TRUE}.}
+\end{equation}
+
+\section{Known EnergyPlus baseline diagnostics}
+
+The actuator experiments repeatedly observed two
+\texttt{CheckAirLoopFlowBalance} severe markers associated with
+PSZ-AC\_1:1 and PSZ-AC\_2:2.  These were previously investigated during the
+EnergyPlus 9.0$\rightarrow$24.1 transition and accepted as documented
+version-dependent/transient airflow-controller diagnostics for the unchanged
+candidate.  C2.5/C2.7 introduced no new Fatal actuator-related failures.
+
+The original EnergyPlus 9.0 model and accepted EnergyPlus 24.1 candidate must
+remain unchanged by the actuator adapter.  All experiments are scratch-only.
+
+\section{Final direct EnergyPlus closed-loop interface}
+
+The final software stack uses a project-owned synchronous wrapper around the
+EnergyPlus~24.1 Python Runtime/Data Exchange API.  Sinergym and Gymnasium are
+not required by the paper closed-loop path.  The wrapper owns callback
+synchronization, feasibility supervision, actuator realization, and broad
+history capture.
+
+\subsection*{Interface to the learned thermal models}
+
+When model training is complete, the closed-loop experiment shall use the same
+frozen actuator adapter for every thermal-model family.
+
+At MPC time $k$:
+\begin{enumerate}[leftmargin=2em]
+\item estimate/initialize the model state $\hat x_k$ using the frozen
+method-specific observer/encoder;
+\item solve the upper-level MPC for physical
+$u_{i,k}^\star=[\mdot_{i,k}^\star,T_{\mathrm{sa},i,k}^\star]^\top$;
+\item enforce the final model-support bounds in the MPC and evaluate the
+generic per-zone simulator supervisor of Eq.~\eqref{eq:supervisor-envelope};
+\item for an accepted zone command, compute $a_{m,i,k}$ and $a_{q,i,k}$ from
+Eq.~\eqref{eq:frozen-adapter}; if rejected, release both overrides for that
+zone and use native EnergyPlus HVAC for the interval;
+\item issue the two commands at their frozen EnergyPlus callbacks;
+\item advance EnergyPlus for 300 s;
+\item record both detailed system-timestep and 300-s equivalent actuator
+response;
+\item update measurements/state estimate and repeat.
+\end{enumerate}
+
+The paper comparison must hold constant across model families:
+\begin{itemize}[leftmargin=2em]
+\item EnergyPlus candidate and EPW;
+\item initial date/time and plant state;
+\item forecasts and disturbances;
+\item price/grid signal;
+\item comfort constraints;
+\item MPC horizon and solver settings except method-specific necessities;
+\item physical input bounds and actuator-feasible region;
+\item actuator adapter and fallback;
+\item Phase-C $G_Q$ and $G_P$ mappings;
+\item evaluation metrics.
+\end{itemize}
+
+\section{Return point after learned-model development}
+
+Actuator development is now frozen.  The immediate paper-development sequence
+is:
+\begin{verbatim}
+1. Train / validate all learned thermal-model methods.
+2. Freeze comparable model checkpoints and observers.
+3. Return to closed-loop MPC.
+4. Use THIS actuator contract unchanged.
+5. Run common EnergyPlus closed-loop comparison.
+6. Report comfort, energy/cost/grid, model, optimization,
+   and commanded-vs-realized actuator metrics.
+\end{verbatim}
+
+No additional actuator identification should be performed unless the actual
+closed-loop experiment exposes a concrete failure inside the already validated
+operating envelope.
+
+\section{Reproducibility evidence archive}
+
+The authoritative LaTeX contracts are repository-owned and live under
+\texttt{Paper\_PINODE\_EPSR/docs/mathematics/contracts}.  Scientific
+EnergyPlus evidence remains under the separate EPSR data root.
+
+The frozen scientific evidence archive should retain:
+\begin{enumerate}[leftmargin=2em]
+\item a manifest identifying the repository-owned mathematical contract version;
+\item all C1--C2.7 reproduction scripts;
+\item all portable PASS evidence ZIPs available from the experiments;
+\item snapshots of the persistent
+\texttt{03\_mpc\_actuator\_audit/Day7C*} directories, including failed or
+superseded attempts where present;
+\item SHA256 manifests for scripts, portable bundles, and local evidence
+snapshots;
+\item the historical detailed Part-7 exploratory mathematical contract.
+\end{enumerate}
+
+The exploratory affine and hybrid interpretations are retained as scientific
+history but are not part of the frozen controller.
+
+\section{Final frozen statement}
+
+For the RestaurantFastFood identity two-zone plant, the physical MPC command is
+\begin{equation}
+\boxed{
+u_k^\star
+=
+\begin{bmatrix}
+\mdot_{D,k}^{\star}\\
+T_{\mathrm{sa},D,k}^{\star}\\
+\mdot_{K,k}^{\star}\\
+T_{\mathrm{sa},K,k}^{\star}
+\end{bmatrix}.
+}
+\end{equation}
+
+For either zone \(i\in\{D,K\}\), an accepted command is realized through
+\begin{equation}
+\boxed{
+\begin{aligned}
+a_{m,i,k}
+&=
+\tfrac12\mdot_{i,k}^{\star},\\
+a_{q,i,k}
+&=
+\mdot_{i,k}^{\star}c_p
+\left(
+T_{\mathrm{sa},i,k}^{\star}
+-
+T_{z,i,k}
+\right),
+\qquad c_p=1006~\mathrm{J/(kg\,K)}.
+\end{aligned}}
+\end{equation}
+
+Dining heating, Dining cooling, Kitchen heating, and Kitchen cooling are all
+MPC-commandable.  The simulator applies the same numerical feasibility
+supervisor to every zone/mode.  If one zone is outside the configured
+supervisor envelope, both external overrides for that zone are released and
+native EnergyPlus HVAC controls that zone for the current 300-s interval; the
+other zone is unaffected.
+
+The C2.7 physical-trajectory test remains the actuator-tracking acceptance
+evidence: 36/36 changing 300-s controlled intervals passed, with zero measured
+flow error, mean equivalent supply-temperature error
+$0.379^\circ$C, maximum error $1.627^\circ$C, and correct requested thermal
+sign in every controlled interval.  C2.6 Kitchen-heating failures remain
+reported as regime-specific physical evidence and motivate explicit
+commanded-versus-realized logging and fallback, not a categorical mode ban.
+
+The final software plant boundary is the direct EnergyPlus~24.1 Runtime/Data
+Exchange API through the project-owned generic simulator.  Sinergym is not a
+required dependency.
+
+\end{document}

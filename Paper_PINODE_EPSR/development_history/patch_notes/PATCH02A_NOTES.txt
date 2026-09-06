@@ -1,0 +1,59 @@
+PINODE / EPSR DAY 3 - PATCH 02A NOTES
+========================================
+
+Scope
+-----
+Patch 02A is a narrow NeuroMANCER API-contract and validation-hardening repair
+on top of the Neuromancer Patch 02. It makes NO changes to the Part 1-3
+mathematics, RC equations, Inverse PINN residuals, NODE vector fields, causal
+encoder, Phase-C QAC/PHVAC model equations, Optuna search spaces, or
+Neuromancer RK4 integration policy.
+
+Why this patch exists
+---------------------
+The real-data smoke reached Neuromancer Problem.forward() and failed with
+KeyError: 'name'. Official Neuromancer examples use:
+
+  train_data = DictDataset(datadict, name='train')
+  train_loader = DataLoader(train_data, collate_fn=train_data.collate_fn, ...)
+
+DictDataset.collate_fn injects batch['name']='train'. Problem.forward prefixes
+all output keys with that name, so the training loss is train_loss, not loss.
+
+Patch 02A changes
+-----------------
+1. neuromancer_backend.py
+   - imports Neuromancer DictDataset
+   - adds named_dataloader(...) using DictDataset + dataset.collate_fn
+   - scalar_objective_problem(...) returns a correctly named one-batch loader
+
+2. training.py
+   - optimize_steps(..., dataset_name='train')
+   - consumes the named loader batch
+   - validates batch['name']
+   - reads '<dataset_name>_loss' (normally train_loss)
+
+3. validate_patch2.py
+   - runs pytest in a subprocess rather than pytest.main() in-process
+   - prints explicit real-data stage progress
+   - always writes validation JSON on success or failure
+   - adds --skip-unit-contracts for a deliberate rerun after already-passed tests
+
+4. test_patch2_contract.py
+   - regression test for DictDataset/collate_fn name injection
+   - regression test for train_loss prefix and actual parameter update
+   - validator orchestration regression test
+
+Authoritative Neuromancer behavior reviewed
+--------------------------------------------
+Neuromancer v1.5.6 source/tutorial pattern:
+- neuromancer.dataset.DictDataset(name='train')
+- DataLoader(..., collate_fn=dataset.collate_fn)
+- collate_fn adds data['name']
+- Problem.forward prefixes output keys with data['name']
+- Trainer default train metric is train_loss
+
+TeX alignment
+-------------
+No TEX <-> CODE mathematical deviation. This patch changes framework plumbing
+only.

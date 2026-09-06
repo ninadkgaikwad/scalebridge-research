@@ -1,0 +1,143 @@
+SCALEBRIDGE PHASE D D8.4 MLFLOW TRACKING LOCK
+===============================================
+Date: 2026-08-12
+
+Scope
+-----
+D8.4 adds campaign-level MLflow tracking to Phase D without changing the
+scientific meaning of Phase D datasets. Because the supplied direct input bundle
+was still D8.2, this patch also includes the already-required D8.3 repeatable
+ML/SciML lag support so the P1 lags 1/3/6 can coexist in one canonical run.
+
+MLflow architecture
+-------------------
+One MLflow run per Phase D campaign execution.
+No per-aggregation child runs by default.
+No final data.parquet files uploaded to MLflow.
+No 240 per-aggregation log files uploaded to MLflow.
+
+Authoritative detailed provenance remains:
+    phase_d_campaign_plan.json
+    phase_d_campaign_run_manifest.json
+    aggregation_run_registry.csv
+    dataset_registry.csv
+    failures.csv
+
+CLI
+---
+    --mlflow
+    --mlflow-experiment-name <name>
+    --mlflow-run-name <name>
+    --mlflow-strict
+
+Tracking is opt-in. --mlflow-strict converts MLflow setup/logging failures into
+Phase D failures. Without strict mode, tracking errors produce warnings and the
+scientific Phase D workflow may continue.
+
+Default experiment if none supplied:
+    ScaleBridge_PhaseD_<campaign_id>
+
+Semantic artifact root:
+    <SCALEBRIDGE_GENERATED_DATA_ROOT>/mlflow_artifacts/phase_d/<campaign_id>/
+
+Standard tags
+-------------
+Uses ScaleBridge semantic.set_standard_tags, including:
+    machine_id
+    hostname
+    git_commit
+    tracking_uri
+    campaign_id
+    model_family = phase_d_thermal_model_data
+
+Additional tags:
+    pipeline_stage = phase_d
+    matrix_run_id
+    phase_c_campaign_run_id
+    phase_d_run_id
+    phase_d_status
+
+Campaign params
+---------------
+Identity/provenance:
+    campaign_id
+    matrix_run_id
+    phase_c_campaign_run_id
+    phase_d_run_id
+    selected_aggregation_run_count
+
+Execution:
+    resume
+    overwrite_existing
+    continue_on_error
+    dry_run
+
+Scientific configuration:
+    complete runner configuration, including policy selections, ML lag list,
+    target horizon, split fractions, seasonal settings, heat representation,
+    calendar year, qzivr behavior, and parquet compression.
+
+Metrics
+-------
+    selected_aggregation_run_count
+    completed_aggregation_run_count
+    skipped_completed_aggregation_run_count
+    failed_aggregation_run_count
+    dataset_count
+    ml_dataset_count
+    opt_bayes_dataset_count
+    ind_dataset_count
+    dep1_dataset_count
+    dep2_dataset_count
+    runtime_seconds
+
+Artifacts logged
+----------------
+Only compact campaign-level files:
+    phase_d_campaign_plan.json
+    phase_d_campaign_run_manifest.json
+    aggregation_run_registry.csv
+    dataset_registry.csv
+    failures.csv
+
+Manifest backlink
+-----------------
+phase_d_campaign_run_manifest.json records:
+    mlflow_enabled
+    mlflow_experiment_name
+    mlflow_run_name
+    mlflow_run_id
+    mlflow_strict
+
+Failure cleanup
+---------------
+If the process exits after an MLflow run starts but before normal finalization,
+the tracker attempts to close the active run as FAILED through an atexit hook.
+Normal completion closes FINISHED/FAILED according to Phase D campaign status.
+
+D8.3 included
+-------------
+--ml-input-lag is repeatable.
+Default remains [12] if omitted.
+Every lag must be >= 1.
+Duplicates are rejected.
+ML configurations are policy x lag Cartesian product.
+Opt/Bayes remains lag/horizon 1/1.
+runner_configuration stores ml_input_lags.
+
+Focused reconstruction validation
+---------------------------------
+Python compile: PASS for all changed/new Python files.
+D8 campaign-runner tests: 7/7 PASS.
+Direct mocked tracker behavior: PASS.
+
+The supplied direct bundle intentionally omitted upstream Phase D modules such
+as alignment.py, so the full suite cannot be reconstructed from the bundle.
+Run the authoritative full test suite in the real repository after application:
+
+    pytest tests\\thermal_modeling -v -W error::pandas.errors.PerformanceWarning
+
+Then run:
+    scripts\\thermal_modeling\\D8_4_RUN_MLFLOW_TESTING_CAMPAIGN.ps1
+
+Do not launch the 240-run P1 Phase D production campaign until both pass.

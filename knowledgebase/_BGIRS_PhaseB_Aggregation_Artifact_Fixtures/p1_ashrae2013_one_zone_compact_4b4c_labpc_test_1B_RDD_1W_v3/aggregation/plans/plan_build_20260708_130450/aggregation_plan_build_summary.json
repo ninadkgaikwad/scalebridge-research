@@ -1,0 +1,15 @@
+{
+  "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "campaign_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "created_at_local": "2026-07-08T13:04:50.978617",
+  "excluded_zone_row_count": 1,
+  "included_thermal_zone_row_count": 2,
+  "missing_plan_input_row_count": 0,
+  "output_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\plans\\plan_build_20260708_130450",
+  "plan_count": 1,
+  "rule_set": "legacy_v1",
+  "schema_version": "0.1.0",
+  "strategy": "all_thermal_zones_to_one",
+  "weight_mode": "floor_area",
+  "zone_mapping_row_count": 2
+}

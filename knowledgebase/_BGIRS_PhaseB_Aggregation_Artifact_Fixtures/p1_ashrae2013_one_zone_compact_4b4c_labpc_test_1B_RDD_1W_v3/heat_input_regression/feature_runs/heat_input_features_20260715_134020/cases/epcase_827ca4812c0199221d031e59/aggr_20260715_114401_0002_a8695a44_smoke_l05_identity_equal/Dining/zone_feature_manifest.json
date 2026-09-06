@@ -1,0 +1,63 @@
+{
+  "aggregate_zone_id": "Dining",
+  "aggregation_family": "custom",
+  "aggregation_id": "smoke_l05_identity",
+  "aggregation_level": "smoke_l05_identity",
+  "aggregation_run_id": "aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal",
+  "aggregation_run_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal",
+  "applicable_model_ids": [
+    "QSol1",
+    "QSol2",
+    "QZic_P",
+    "QZir_P",
+    "QZic_L",
+    "QZir_L",
+    "QZic_EE",
+    "QZir_EE",
+    "QZivr_L",
+    "QAC"
+  ],
+  "building_type": "RestaurantFastFood",
+  "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "climate_zone": "5A",
+  "column_count": 8,
+  "created_at_utc": "2026-07-15T20:40:57.651627+00:00",
+  "derived_feature_columns": [
+    "derived_GHI_W_per_m2",
+    "derived_Corrected_Schedule_ElectricEquipment",
+    "derived_Corrected_Schedule_Lights",
+    "derived_Corrected_Schedule_People",
+    "derived_QHVAC_X_W",
+    "derived_QHVAC_Y_W"
+  ],
+  "hvac_target_method": "signed_zone_sensible",
+  "internal_gain_predictor_method": "aggregate_average",
+  "output_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_20260715_134020\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining",
+  "outputs": {
+    "derived_feature_catalog": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_20260715_134020\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining\\derived_feature_catalog.csv",
+    "derived_feature_validation": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_20260715_134020\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining\\derived_feature_validation.csv",
+    "derived_features_parquet": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_20260715_134020\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining\\derived_heat_input_features.parquet",
+    "derived_features_preview": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\heat_input_regression\\feature_runs\\heat_input_features_20260715_134020\\cases\\epcase_827ca4812c0199221d031e59\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\Dining\\derived_heat_input_features_preview.csv"
+  },
+  "row_count": 105133,
+  "rule_set": "legacy_v1",
+  "schema_version": "0.1.0",
+  "source_audit_run_id": "heat_input_audit_20260715_125430",
+  "source_generation_run_id": "epvwr_a8695a44ed3f",
+  "source_matrix_run_id": "aggregation_matrix_20260715_114242",
+  "status": "completed",
+  "strategy": "custom_groups",
+  "timestamp_metadata": {
+    "duplicate_timestamp_raw_count": 0,
+    "parsed_timestamp_column": "timestamp",
+    "parsed_timestamp_count": 105133,
+    "row_count": 105133,
+    "timestamp_column": "timestamp_raw",
+    "timestamp_raw_monotonic": true,
+    "unparsed_timestamp_count": 0
+  },
+  "weather_location": "Buffalo",
+  "weight_mode": "equal",
+  "zone_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\zones\\Dining"
+}

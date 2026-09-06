@@ -1,0 +1,23 @@
+ScaleBridge Phase E0-8 Generic HPO Tracking Implementation v1.1 Revision Notes
+
+Scope: narrow corrective patch after authoritative Windows laptop qualification.
+
+1. Persistent resume no longer reconstructs a seeded sampler with the original
+   study seed. A deterministic sampler-segment seed is derived from study seed,
+   study ID, and current persisted trial count. This prevents deterministic
+   replay of the first suggestion segment after resume.
+2. resume=True now requires the named persistent Optuna study to already exist;
+   it may not silently create a fresh study. Existing fingerprint compatibility
+   remains mandatory.
+3. Sampler-segment start trial, seed, and sampler name are persisted in Optuna
+   study user attributes for provenance.
+4. The authoritative E0-8 validator now verifies non-replay of the resumed
+   segment and its provenance.
+5. The validator uses Windows-safe best-effort cleanup for temporary MLflow
+   SQLite qualification storage because MLflow/SQLAlchemy may retain a SQLite
+   engine file handle after runs finish. Cleanup failure cannot invalidate
+   already-completed scientific qualification assertions.
+
+No E.1/E.2/E.3/E.4 method-specific hyperparameters or objective science were
+added. No Phase-D, MLflow production tracking, or E0-7 production files were
+modified.

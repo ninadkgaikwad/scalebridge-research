@@ -1,0 +1,46 @@
+ScaleBridge Phase E0-7 Runtime + PHVAC + Portable Model Bundles
+Implementation Notes
+
+Authority
+---------
+ScaleBridge_PhaseE0_E0-7_Runtime_PHVAC_Portable_Model_Bundle_Contract_v1_1.tex
+
+Implemented scope
+-----------------
+1. Generic immutable portable-model manifest/envelope.
+2. Machine-portable Phase B/C/D logical locators and root resolution.
+3. Optional upstream/bundle SHA256 qualification; not required on every step.
+4. Immutable fitted normalization/renormalization data.
+5. Generic method-family payload descriptor for Classical ML, SciML,
+   Optimization and Bayesian families; exact E.1-E.4 payloads remain extensible.
+6. Portable physical-RC payload containing compiler spec, final physical Theta,
+   E0-5 discretization, and final DEP2 allocation results where applicable.
+7. Forward-only stateful RC runtime using frozen E0-4/E0-5 machinery.
+8. Explicit Sim1-style reset API; no implicit hidden-state teacher forcing.
+9. Phase-C PHVAC artifact ingestion and embedding.
+10. Current equal-allocation PHVAC reconstruction:
+      M=0       -> direct sum all N models
+      0<M<N     -> N/(N-M) * available-model sum
+      M=N       -> model-based PHVAC unavailable
+    where M is the number of missing/non-applicable PHVAC models.
+11. Allocation completion is diagnostic accounting, not physical assignment to
+    a non-HVAC zone.
+12. Historical Phase-D replay dataset resolver/validator; Sim1/2/3 policy stays
+    outside E0-7.
+13. Optional per-step disturbance/control/provenance echo.
+
+Deliberately not implemented in E0-7
+------------------------------------
+- model training/estimation
+- method-specific E.1/E.2/E.3/E.4 checkpoint internals not yet built
+- HPO / Optuna / MLflow orchestration (E0-8)
+- SmartBuildingsSim / Gymnasium
+- MPC / RL
+- Sim1/Sim2/Sim3 evaluator policy
+- comprehensive real testing campaign (E0-10)
+
+Source-preservation boundary
+----------------------------
+No E0-3, E0-4, E0-5, E0-6, Phase-C or Phase-D production source is modified.
+E0-7 is additive under src/scalebridge/models/portable/ plus its own docs,
+tests, validator and knowledgebase records.

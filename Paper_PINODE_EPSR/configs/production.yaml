@@ -1,0 +1,83 @@
+# PINODE/EPSR production campaign defaults
+# All generated artifacts are written under Data/ScaleBridge/Paper_PINODE_EPSR.
+
+hpo:
+  train_percentage: 2.0
+  holdout_percentage: 20.0
+  objective: recursive_temperature_normalized
+  n_trials: 12
+  max_epochs_per_trial: 25
+  patience: 5
+  max_batch_windows: 32
+  # Production HPO preserves the full paper search geometry.
+  max_rollout_steps: 12
+  max_encoder_history_steps: 12
+
+training:
+  seeds: [0]
+  max_epochs: 500
+  patience: 50
+  max_batch_windows: 64
+  validation_max_windows: 256
+
+evaluation:
+  sim1: all_test_points
+  sim2: all_monthly_test_episodes
+  sim3: all_monthly_test_episodes
+  sim3_setpoint_schedule: medium_low_high_medium
+  timestep_seconds: 300
+  phvac_chain: QHVAC_physics_to_PhaseC_QHVAC_to_abs_to_PhaseC_PHVAC
+
+# -----------------------------------------------------------------------------
+# Sim3 controller overrides
+# -----------------------------------------------------------------------------
+# Defaults are null: the qualified 300-s data-derived thermostat calibration and
+# observed TRAIN actuation parameters remain authoritative.
+#
+# deadband_half_width_C is a HALF-WIDTH about the active setpoint.
+# Example: 1.0 means ordinary HVAC on/off thresholds at setpoint-1 C and
+# setpoint+1 C (2 C total band).
+#
+# Resolution precedence for Ts/mdot:
+#   user override > observed TRAIN-derived value > documented same-zone fallback
+#
+# Kitchen heating is unobserved in TRAIN. With null overrides it remains
+# commandable using the documented same-zone cooling deltaT/mdot reflection and
+# is tagged extrapolative/OOD. Any listed heating values replace that fallback.
+controller:
+  deadband_half_width_C: null
+  heating_mode_deadband_half_width_C: null
+  zones:
+    RestaurantFastFood_All:
+      deadband_half_width_C: null
+      heating_mode_deadband_half_width_C: null
+      cooling:
+        T_supply_C: null
+        mdot_nominal_kg_s: null
+        mdot_max_kg_s: null
+      heating:
+        T_supply_C: null
+        mdot_nominal_kg_s: null
+        mdot_max_kg_s: null
+    Dining:
+      deadband_half_width_C: null
+      heating_mode_deadband_half_width_C: null
+      cooling:
+        T_supply_C: null
+        mdot_nominal_kg_s: null
+        mdot_max_kg_s: null
+      heating:
+        T_supply_C: null
+        mdot_nominal_kg_s: null
+        mdot_max_kg_s: null
+    Kitchen:
+      deadband_half_width_C: null
+      heating_mode_deadband_half_width_C: null
+      cooling:
+        T_supply_C: null
+        mdot_nominal_kg_s: null
+        mdot_max_kg_s: null
+      heating:
+        T_supply_C: null
+        mdot_nominal_kg_s: null
+        mdot_max_kg_s: null

@@ -1,0 +1,187 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm,mathtools}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\title{ScaleBridge Phase E.0 --- E0-3\\Current Elemental RC Model Flavours\\\large 1R1C, 2R2C, 3R2C, and 4R3C --- Version 1.0 --- LOCKED}
+\author{ScaleBridge / PhD Code Framework}
+\date{2026-08-25}
+\begin{document}
+\maketitle
+\section*{Status and scope}
+This document freezes the four current ScaleBridge elemental RC model flavours as specific instantiations of the generic elemental RC-network contract:
+\[
+\boxed{\text{1R1C},\quad\text{2R2C},\quad\text{3R2C},\quad\text{4R3C}.}
+\]
+These are current supported ScaleBridge RC models and are not the only models that the generic RC engine may eventually support. Multi-zone replication, inter-zone coupling, IND/DEP1/DEP2, and DEP2 allocation are reserved for the spatial compiler.
+
+Atomic canonical thermal-power ports include $Q_{AC},Q_{ZIC},Q_{ZIR},Q_{Sol1},Q_{Sol2}$. For convenience,
+\[
+Q_c=Q_{AC}+Q_{ZIC}+Q_{Sol1},\qquad Q_r=Q_{ZIR}+Q_{Sol2}.
+\]
+The grouped terms are notation only; the canonical interface remains atomic.
+
+\section{Canonical 1R1C}
+The canonical 1R1C flavour contains one observed zone-air state $T_a$, one capacitance $C_a$, one prescribed outdoor boundary $T_o$, and one resistance $R_{ao}$:
+\[
+\boxed{T_o\xleftrightarrow{\ R_{ao}\ }T_a,\qquad C_a.}
+\]
+There are no latent states and $y=T_a$, $H=[1]$.
+
+Because there is only one thermal-storage node, every applicable thermal-power port is routed entirely to air. The canonical energy-conservative equation is
+\[
+\boxed{C_a\dot T_a=\frac{T_o-T_a}{R_{ao}}+Q_{AC}+Q_{ZIC}+Q_{ZIR}+Q_{Sol1}+Q_{Sol2}.}
+\tag{1R1C}
+\]
+Equivalently, $C_a\dot T_a=(T_o-T_a)/R_{ao}+Q_c+Q_r$.
+
+The parameter set is
+\[
+\boxed{\Theta_{1R1C}=\{R_{ao},C_a\},\qquad R_{ao}>0,\ C_a>0.}
+\]
+
+\subsection{Paper-compatible reduced-radiative-participation variant}
+The controlled EPSR/PINODE paper may use a separate compatibility variant
+\[
+C_a\dot T_a=\frac{T_o-T_a}{R_{ao}}+Q_c+\eta_r^{(1C)}Q_r.
+\]
+This remains an explicitly separate reduced-order compatibility flavour and is not the canonical energy-conservative ScaleBridge 1R1C definition.
+
+\section{Canonical 2R2C}
+The states are
+\[
+\boxed{x=\begin{bmatrix}T_a\\T_m\end{bmatrix}},
+\]
+where $T_a$ is observed zone air and $T_m$ is latent internal mass. Capacitances are $C_a,C_m$. The resistance edges are
+\[
+\boxed{o\leftrightarrow a,\qquad a\leftrightarrow m,}
+\]
+with $R_{ao},R_{am}>0$. The observation map is $H=[1\ 0]$.
+
+Direct/convective ports $Q_{AC},Q_{ZIC},Q_{Sol1}$ route fully to air. Radiative ports share
+\[
+\boxed{\gamma_r=\begin{bmatrix}1-\eta_r\\\eta_r\end{bmatrix},\qquad0\le\eta_r\le1.}
+\]
+Hence
+\[
+\boxed{\begin{aligned}
+C_a\dot T_a={}&\frac{T_o-T_a}{R_{ao}}+\frac{T_m-T_a}{R_{am}}+Q_{AC}+Q_{ZIC}+Q_{Sol1}\\
+&+(1-\eta_r)(Q_{ZIR}+Q_{Sol2}),
+\end{aligned}}
+\tag{2R2C-a}
+\]
+and
+\[
+\boxed{C_m\dot T_m=\frac{T_a-T_m}{R_{am}}+\eta_r(Q_{ZIR}+Q_{Sol2}).}
+\tag{2R2C-m}
+\]
+The total energy balance is
+\[
+\boxed{C_a\dot T_a+C_m\dot T_m=\frac{T_o-T_a}{R_{ao}}+Q_c+Q_r.}
+\]
+The parameter set is
+\[
+\boxed{\Theta_{2R2C}=\{R_{ao},R_{am},C_a,C_m,\eta_r\}.}
+\]
+
+\section{Canonical 3R2C}
+The states are
+\[
+\boxed{x=\begin{bmatrix}T_a\\T_m\end{bmatrix}},
+\]
+where $T_a$ is observed zone air and $T_m$ is latent internal mass. Capacitances are $C_a,C_m$. The three resistance edges are
+\[
+\boxed{o\leftrightarrow a,\qquad a\leftrightarrow m,\qquad o\leftrightarrow m,}
+\]
+with $R_{ao},R_{am},R_{om}>0$. The state $T_m$ retains the physical name internal mass even though this flavour gives it a direct resistance path to outdoor temperature. The observation map is $H=[1\ 0]$.
+
+Direct/convective ports route fully to air. Radiative ports use the same two-state routing vector $[1-\eta_r,\eta_r]^\top$.
+\[
+\boxed{\begin{aligned}
+C_a\dot T_a={}&\frac{T_o-T_a}{R_{ao}}+\frac{T_m-T_a}{R_{am}}+Q_{AC}+Q_{ZIC}+Q_{Sol1}\\
+&+(1-\eta_r)(Q_{ZIR}+Q_{Sol2}),
+\end{aligned}}
+\tag{3R2C-a}
+\]
+\[
+\boxed{C_m\dot T_m=\frac{T_o-T_m}{R_{om}}+\frac{T_a-T_m}{R_{am}}+\eta_r(Q_{ZIR}+Q_{Sol2}).}
+\tag{3R2C-m}
+\]
+The total balance is
+\[
+\boxed{C_a\dot T_a+C_m\dot T_m=\frac{T_o-T_a}{R_{ao}}+\frac{T_o-T_m}{R_{om}}+Q_c+Q_r.}
+\]
+The parameter set is
+\[
+\boxed{\Theta_{3R2C}=\{R_{ao},R_{am},R_{om},C_a,C_m,\eta_r\}.}
+\]
+
+\section{Canonical 4R3C}
+The states are
+\[
+\boxed{x=\begin{bmatrix}T_a\\T_e\\T_m\end{bmatrix}},
+\]
+where $T_a$ is observed zone air, $T_e$ is latent envelope temperature, and $T_m$ is latent internal-mass temperature. Capacitances are $C_a,C_e,C_m$. The four elemental resistance edges are
+\[
+\boxed{o\leftrightarrow a,\qquad a\leftrightarrow e,\qquad e\leftrightarrow o,\qquad a\leftrightarrow m.}
+\]
+Thus $R_{ao},R_{ae},R_{eo},R_{am}>0$. The observation map is $H=[1\ 0\ 0]$.
+
+Direct/convective ports route fully to air. Radiative ports use
+\[
+\boxed{\gamma_r=\begin{bmatrix}\gamma_{a,r}\\\gamma_{e,r}\\\gamma_{m,r}\end{bmatrix},}
+\]
+with
+\[
+\boxed{\gamma_{a,r},\gamma_{e,r},\gamma_{m,r}\ge0,\qquad\gamma_{a,r}+\gamma_{e,r}+\gamma_{m,r}=1.}
+\]
+Define $Q_r=Q_{ZIR}+Q_{Sol2}$ and
+\[
+Q_a=Q_{AC}+Q_{ZIC}+Q_{Sol1}+\gamma_{a,r}Q_r,\qquad
+Q_e=\gamma_{e,r}Q_r,\qquad
+Q_m=\gamma_{m,r}Q_r.
+\]
+Then
+\[
+\boxed{C_a\dot T_a=\frac{T_o-T_a}{R_{ao}}+\frac{T_e-T_a}{R_{ae}}+\frac{T_m-T_a}{R_{am}}+Q_a,}
+\tag{4R3C-a}
+\]
+\[
+\boxed{C_e\dot T_e=\frac{T_o-T_e}{R_{eo}}+\frac{T_a-T_e}{R_{ae}}+Q_e,}
+\tag{4R3C-e}
+\]
+\[
+\boxed{C_m\dot T_m=\frac{T_a-T_m}{R_{am}}+Q_m.}
+\tag{4R3C-m}
+\]
+The total energy balance is
+\[
+\boxed{\begin{aligned}
+C_a\dot T_a+C_e\dot T_e+C_m\dot T_m={}&\frac{T_o-T_a}{R_{ao}}+\frac{T_o-T_e}{R_{eo}}\\
+&+Q_{AC}+Q_{ZIC}+Q_{ZIR}+Q_{Sol1}+Q_{Sol2}.
+\end{aligned}}
+\]
+The parameter set is
+\[
+\boxed{\Theta_{4R3C}=\{R_{ao},R_{ae},R_{eo},R_{am},C_a,C_e,C_m,\gamma_r\}.}
+\]
+The routing vector lies on the probability simplex and has two independent degrees of freedom.
+
+\section{Shared elemental-flavour rules}
+\begin{enumerate}
+\item Outdoor temperature is a prescribed disturbance/boundary input.
+\item Zone air is the observed state.
+\item Additional physical RC states are latent unless separately declared.
+\item $Q_{AC}$ defaults to zone air.
+\item $Q_{ZIC}$ and $Q_{Sol1}$ default to zone air.
+\item Radiative gains are routed by an energy-conservative routing vector.
+\item Every resistance is a single undirected physical connection.
+\item Every resistance and capacitance is positive.
+\item Applicable canonical heat ports remain atomic at the data interface.
+\item Multi-zone construction, inter-zone resistance edges, IND/DEP1/DEP2, aggregation operators, and DEP2 allocation do not belong to the elemental flavour definition.
+\end{enumerate}
+
+\section*{Lock statement}
+The 1R1C, 2R2C, 3R2C, and 4R3C elemental topologies, state interpretations, default heat-routing semantics, parameter sets, and total-energy identities defined in this document are locked as the current ScaleBridge RC model flavours for subsequent Phase-E implementation.
+\end{document}

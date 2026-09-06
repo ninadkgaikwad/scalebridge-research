@@ -1,0 +1,209 @@
+{
+  "phase": "E0-5",
+  "fixed_step_only": true,
+  "input_hold": "zoh_left",
+  "default_solver": "rk4",
+  "diagnostics_default": false,
+  "qualified": true,
+  "solver_registry": [
+    {
+      "key": "euler",
+      "backend": "neuromancer",
+      "class_name": "Euler",
+      "available": true,
+      "fixed_step": true,
+      "first_order_state": true,
+      "history_required": false,
+      "default": false,
+      "exact_linear": false,
+      "local_error_available": false
+    },
+    {
+      "key": "euler_trap",
+      "backend": "neuromancer",
+      "class_name": "Euler_Trap",
+      "available": true,
+      "fixed_step": true,
+      "first_order_state": true,
+      "history_required": false,
+      "default": false,
+      "exact_linear": false,
+      "local_error_available": false
+    },
+    {
+      "key": "rk2",
+      "backend": "neuromancer",
+      "class_name": "RK2",
+      "available": true,
+      "fixed_step": true,
+      "first_order_state": true,
+      "history_required": false,
+      "default": false,
+      "exact_linear": false,
+      "local_error_available": false
+    },
+    {
+      "key": "rk4",
+      "backend": "neuromancer",
+      "class_name": "RK4",
+      "available": true,
+      "fixed_step": true,
+      "first_order_state": true,
+      "history_required": false,
+      "default": true,
+      "exact_linear": false,
+      "local_error_available": false
+    },
+    {
+      "key": "rk4_trap",
+      "backend": "neuromancer",
+      "class_name": "RK4_Trap",
+      "available": true,
+      "fixed_step": true,
+      "first_order_state": true,
+      "history_required": false,
+      "default": false,
+      "exact_linear": false,
+      "local_error_available": false
+    },
+    {
+      "key": "luther",
+      "backend": "neuromancer",
+      "class_name": "Luther",
+      "available": true,
+      "fixed_step": true,
+      "first_order_state": true,
+      "history_required": false,
+      "default": false,
+      "exact_linear": false,
+      "local_error_available": false
+    },
+    {
+      "key": "runge_kutta_fehlberg",
+      "backend": "neuromancer",
+      "class_name": "Runge_Kutta_Fehlberg",
+      "available": true,
+      "fixed_step": true,
+      "first_order_state": true,
+      "history_required": false,
+      "default": false,
+      "exact_linear": false,
+      "local_error_available": true
+    },
+    {
+      "key": "exact_zoh_linear",
+      "backend": "scalebridge",
+      "class_name": "ExactZOHLinearIntegrator",
+      "available": true,
+      "fixed_step": true,
+      "first_order_state": true,
+      "history_required": false,
+      "default": false,
+      "exact_linear": true,
+      "local_error_available": false
+    }
+  ],
+  "solver_registry_summary": {
+    "available": [
+      "euler",
+      "euler_trap",
+      "exact_zoh_linear",
+      "luther",
+      "rk2",
+      "rk4",
+      "rk4_trap",
+      "runge_kutta_fehlberg"
+    ],
+    "missing_expected_neuromancer_1_5_6": [],
+    "exact_zoh_linear_available": true
+  },
+  "scalar_1r1c_oracle": {
+    "exact_zoh_C": 21.883529067168503,
+    "analytical_C": 21.883529067168496,
+    "abs_error_C": 7.105427357601002e-15,
+    "passed": true
+  },
+  "graph_general_exact_oracle": {
+    "1r1c": {
+      "state_dimension": 2,
+      "boundary_dimension": 1,
+      "thermal_dimension": 4,
+      "finite": true,
+      "integration_h_s": 150.0
+    },
+    "2r2c": {
+      "state_dimension": 4,
+      "boundary_dimension": 1,
+      "thermal_dimension": 4,
+      "finite": true,
+      "integration_h_s": 150.0
+    },
+    "3r2c": {
+      "state_dimension": 4,
+      "boundary_dimension": 1,
+      "thermal_dimension": 4,
+      "finite": true,
+      "integration_h_s": 150.0
+    },
+    "4r3c": {
+      "state_dimension": 6,
+      "boundary_dimension": 1,
+      "thermal_dimension": 4,
+      "finite": true,
+      "integration_h_s": 150.0
+    }
+  },
+  "neuromancer_native_solvers": {
+    "euler": {
+      "finite": true,
+      "linf_vs_exact": 6.234152064976684e-05,
+      "integration_h_s": 15.0
+    },
+    "euler_trap": {
+      "finite": true,
+      "linf_vs_exact": 6.547391606659403e-08,
+      "integration_h_s": 15.0
+    },
+    "luther": {
+      "finite": true,
+      "linf_vs_exact": 8.171241461241152e-13,
+      "integration_h_s": 15.0
+    },
+    "rk2": {
+      "finite": true,
+      "linf_vs_exact": 6.547391606659403e-08,
+      "integration_h_s": 15.0
+    },
+    "rk4": {
+      "finite": true,
+      "linf_vs_exact": 7.851497230149107e-13,
+      "integration_h_s": 15.0
+    },
+    "rk4_trap": {
+      "finite": true,
+      "linf_vs_exact": 3.271235726742816e-08,
+      "integration_h_s": 15.0
+    },
+    "runge_kutta_fehlberg": {
+      "finite": true,
+      "linf_vs_exact": 8.171241461241152e-13,
+      "integration_h_s": 15.0
+    }
+  },
+  "diagnostics": {
+    "normal_enabled": false,
+    "diagnostic_enabled": true,
+    "state_identical": true,
+    "recommended_minimum_substeps": 4,
+    "stability_passed": false,
+    "exact_oracle_linf_abs": 10.004963874816895
+  },
+  "spatial_mode_neutrality": {
+    "dep2_finite": true,
+    "e0_5_consumed_boundary_dimension": 1,
+    "e0_5_consumed_effective_thermal_dimension": 4
+  },
+  "differentiability": {
+    "state_and_forcing_gradients_finite": true
+  }
+}

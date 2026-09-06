@@ -1,0 +1,67 @@
+{
+  "continuous_time_only": true,
+  "dep2": {
+    "convective_lambda": {
+      "A": 1.0,
+      "B": 1.0
+    },
+    "dep1_dep2_physics_equivalent": true,
+    "radiative_lambda": {
+      "A": 1.0,
+      "B": 1.0
+    },
+    "rhs_finite": true
+  },
+  "flavours": {
+    "1r1c": {
+      "edge_count": 3,
+      "initial_state": [
+        22.0,
+        24.0
+      ],
+      "invariants_passed": true,
+      "master_parameter_count": 5,
+      "state_dimension": 2
+    },
+    "2r2c": {
+      "edge_count": 5,
+      "initial_state": [
+        22.0,
+        22.0,
+        24.0,
+        24.0
+      ],
+      "invariants_passed": true,
+      "master_parameter_count": 11,
+      "state_dimension": 4
+    },
+    "3r2c": {
+      "edge_count": 7,
+      "initial_state": [
+        22.0,
+        22.0,
+        24.0,
+        24.0
+      ],
+      "invariants_passed": true,
+      "master_parameter_count": 13,
+      "state_dimension": 4
+    },
+    "4r3c": {
+      "edge_count": 9,
+      "initial_state": [
+        22.0,
+        22.0,
+        22.0,
+        24.0,
+        24.0,
+        24.0
+      ],
+      "invariants_passed": true,
+      "master_parameter_count": 21,
+      "state_dimension": 6
+    }
+  },
+  "phase": "E0-3B",
+  "qualified": true
+}

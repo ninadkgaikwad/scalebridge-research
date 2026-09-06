@@ -1,0 +1,62 @@
+ScaleBridge Phase E0-5 Common Discretization Implementation Notes
+=================================================================
+
+Mathematical authority
+----------------------
+docs/mathematics/thermal_modeling/phase_e0/contracts/
+ScaleBridge_PhaseE0_E0-5_Common_Discretization_Contract_v1.tex
+
+Responsibility boundary
+-----------------------
+E0-3: continuous RC physics and compiled matrices.
+E0-4: runtime state/input realization and ordered effective forcing.
+E0-5: fixed-step ZOH numerical evolution only.
+
+Implemented production paths
+----------------------------
+1. Compatibility-filtered Neuromancer 1.5.6 native fixed-step first-order
+   integrator registry:
+   Euler, Euler_Trap, RK2, RK4, RK4_Trap, Luther,
+   Runge_Kutta_Fehlberg.
+2. Default solver: RK4.
+3. ScaleBridge exact_zoh_linear solver/oracle using a graph-general augmented
+   matrix exponential.
+4. Explicit equal substeps with h = sample_dt_s / substeps.
+5. Left-endpoint ZOH forcing through every native solver stage and substep.
+6. Optional per-step diagnostics; disabled by default.
+7. Runtime-state handoff through E0-4 accept_model_evolved_state.
+
+Exact oracle design
+-------------------
+The oracle contains no 1R1C/2R2C/3R2C/4R3C or zone-count branches. It consumes
+CompiledRCModel.matrices and builds A/B dynamically. C inverse is not formed;
+row-wise division by positive C is used. The augmented matrix exponential is
+computed with torch.linalg.matrix_exp, so no A^-1 assumption is introduced.
+
+Neuromancer environment evidence
+--------------------------------
+Implementation was designed against the user-supplied installed API audit:
+Neuromancer 1.5.6, PyTorch 2.5.1+cu118. The audited native methods all hold
+*args constant through internal stages, matching the frozen ZOH forcing
+contract.
+
+Excluded from the drop-in first-order registry
+----------------------------------------------
+DiffEqIntegrator (generic torchdiffeq wrapper, includes adaptive methods),
+MultiStep_PredictorCorrector (history required), LeapFrog/Yoshida4
+(second-order doubled state), BasicSDEIntegrator/LatentSDEIntegrator (SDE).
+
+Diagnostics behavior
+--------------------
+Normal path performs the chosen solver only. Full diagnostics are opt-in and
+cannot change the returned numerical state. RKF local-error lists are captured
+when requested and cleared after each wrapped step to avoid unbounded memory
+accumulation in long normal rollouts.
+
+Local construction qualification
+--------------------------------
+The delivered E0-5 test suite was exercised against a local audit-compatible
+Neuromancer 1.5.6 harness because Neuromancer itself is not installed in the
+artifact-construction runtime. Real Neuromancer qualification must therefore be
+reproduced in the user's scalebridge-dev-gpu-laptop environment using the
+standalone E0-5 validator and pytest suite supplied with the patch.

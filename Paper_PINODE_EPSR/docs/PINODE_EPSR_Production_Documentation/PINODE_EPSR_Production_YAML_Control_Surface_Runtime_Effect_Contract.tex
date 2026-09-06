@@ -1,0 +1,664 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.62in]{geometry}
+\usepackage{booktabs,tabularx,array,longtable,multirow}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\usepackage{enumitem}
+\usepackage{amsmath,amssymb}
+\usepackage{fancyvrb}
+\usepackage[T1]{fontenc}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\renewcommand{\arraystretch}{1.16}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\current}{\textbf{Current R2B}}
+\newcommand{\target}{\textbf{R3 target}}
+\title{PINODE/EPSR Production YAML Control Surface\\Runtime Effect and Configuration Authority Contract}
+\author{ScaleBridge / PINODE--EPSR Production Infrastructure}
+\date{September 2, 2026 -- DOC02 -- Pre-Patch01R3 Design Contract}
+
+\begin{document}
+\maketitle
+
+\begin{center}
+\fbox{\parbox{0.95\textwidth}{
+\textbf{Status.} This document is a \emph{pre-implementation design contract} for Patch01R3. It records the accepted target semantics before code development. Patch01R2B remains the currently qualified runtime baseline until Patch01R3 is implemented and validated. The purpose of R3 is configuration-authority wiring and provenance; it must not change model equations, Phase-B/C/D scientific data ownership, method-specific HPO search spaces, checkpoint science, or Sim1/Sim2/Sim3 mathematics except where an explicitly configured evaluation/controller knob is intentionally changed by the user.
+}}
+\end{center}
+
+\tableofcontents
+\newpage
+
+\section{Purpose and governing separation}
+The production configuration system is intentionally divided into two layers:
+
+\begin{verbatim}
+production.yaml
+    = experiment policy, budgets, evaluation policy, controller policy
+
+training/trainer.py
+    = method-owned scientific HPO search spaces
+\end{verbatim}
+
+The campaign YAML answers \emph{what to run, how much compute/data to allocate, how to evaluate it, and what controller policy to use}. It does not redefine which hyperparameters are scientifically meaningful for each method. Those search spaces remain method-owned in \path{Paper_PINODE_EPSR/src/pinode_epsr/training/trainer.py}.
+
+\section{Control-surface hierarchy}
+After Patch01R3, the authoritative control hierarchy is:
+
+\begin{verbatim}
+production.yaml
+|
++-- campaign     -> WHAT scientific configurations/restarts run
++-- hpo          -> HOW hyperparameters are selected
++-- training     -> HOW the final frozen model is trained
++-- evaluation   -> HOW Sim1/Sim2/Sim3 are executed
++-- controller   -> HOW thermostat/HVAC actuation behaves in Sim3
+
+NOT IN YAML
++-- method search spaces -> WHAT each method is allowed to tune
+                           (training/trainer.py)
+\end{verbatim}
+
+\subsection{Scientific knob classes}
+Every YAML field shall be classified in resolved campaign provenance as one of the categories in Table~\ref{tab:classes}.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\textwidth}{L{0.25\textwidth}Y Y}
+\toprule
+Class & Meaning & Typical examples \\
+\midrule
+\code{SCIENTIFIC_SELECTION} & Selects which scientific configurations/restarts exist. & scope, seeds \\
+\code{HPO_PROTOCOL} & Changes HPO data/protocol identity or allowed HPO temporal geometry. & TRAIN percentage, holdout, objective, rollout/history caps, monthly sampling blocks \\
+\code{COMPUTE_BUDGET} & Changes search/runtime effort without changing the method search-space definition. & n\_trials, timeout, HPO epochs/patience \\
+\code{FINAL_TRAINING} & Controls training of frozen-best hyperparameters. & final epochs, final patience, gradient clipping \\
+\code{EVALUATION_BUDGET} & Controls how much TEST evaluation is executed. & Sim1 points, Sim2/3 horizon caps, all TEST episodes \\
+\code{CONTROLLER_POLICY} & Changes Sim3 thermostat/controller policy. & nominal/max mdot selection, unobserved-mode policy, deadband \\
+\code{PHYSICAL_OVERRIDE} & Explicitly replaces data-derived physical actuation values. & $T_{sa}$, nominal/max $\dot m$ \\
+\bottomrule
+\end{tabularx}
+\caption{Required classification of production YAML knobs.}
+\label{tab:classes}
+\end{table}
+
+\section{Canonical Patch01R3 YAML shape}
+The accepted target structure is shown below. Null controller values mean ``preserve qualified data-derived behavior,'' not zero.
+
+\begin{Verbatim}[fontsize=\small]
+campaign:
+  scope: priority-a
+  seeds: [0]
+  fail_fast: false
+
+hpo:
+  train_percentage: 2.0
+  holdout_percentage: 20.0
+  objective: recursive_temperature_normalized
+  n_trials: 12
+  timeout_seconds: null
+  max_epochs_per_trial: 25
+  patience: 5
+  sampler_seed: 42
+  max_batch_windows: 32
+  sampling_blocks_per_month: 4
+  max_rollout_steps: 12
+  max_encoder_history_steps: 12
+
+training:
+  max_epochs: 500
+  patience: 50
+  max_batch_windows: 64
+  validation_max_windows: 256
+  gradient_clip_norm: 10.0
+
+evaluation:
+  sim1_max_points: null
+  sim2_horizon_per_episode: null
+  sim3_horizon_per_episode: null
+  all_test_episodes: true
+  cooling_mdot_choice: nominal
+  heating_mdot_choice: nominal
+  unobserved_mode_policy: fallback
+
+controller:
+  deadband_half_width_C: null
+  heating_mode_deadband_half_width_C: null
+  zones:
+    RestaurantFastFood_All:
+      deadband_half_width_C: null
+      heating_mode_deadband_half_width_C: null
+      cooling:
+        T_supply_C: null
+        mdot_nominal_kg_s: null
+        mdot_max_kg_s: null
+      heating:
+        T_supply_C: null
+        mdot_nominal_kg_s: null
+        mdot_max_kg_s: null
+    Dining:
+      ... same schema ...
+    Kitchen:
+      ... same schema ...
+\end{Verbatim}
+
+\section{Current authority versus Patch01R3 authority}
+\begin{table}[h]
+\centering
+\small
+\begin{tabularx}{\textwidth}{L{0.18\textwidth}L{0.31\textwidth}Y}
+\toprule
+Section & Current Patch01R2B behavior & Patch01R3 target \\
+\midrule
+\code{campaign} & Not an authoritative YAML section; scope/seeds/fail-fast come from CLI/defaults. & Authoritative YAML base configuration; CLI only explicitly overrides supplied fields. \\
+\code{hpo} & Values exist in YAML, but campaign CLI constructs \code{HPOConfig} from argparse defaults/arguments. & Authoritative YAML base for HPO data policy, objective, search budget, fidelity, and geometry caps. \\
+\code{training} & Values exist in YAML, but campaign CLI constructs production-training config independently. & Authoritative YAML base for final training budget and stability/resource controls. \\
+\code{evaluation} & Human-readable descriptive fields exist; typed \code{ProductionEvaluationConfig} exists but is not fully wired as campaign authority. & Explicit typed YAML knobs; every declared field must have a validated runtime consumer. \\
+\code{controller} & Already actively loaded from \code{production.yaml}. & Preserved and integrated into the same resolved/provenanced production configuration. \\
+\bottomrule
+\end{tabularx}
+\caption{Authority transition to Patch01R3.}
+\end{table}
+
+\section{Campaign-selection knobs}
+These knobs answer: \emph{Which scientific configurations exist in this campaign and how many independent final-training restarts are executed?}
+
+\begin{longtable}{L{0.18\textwidth}L{0.18\textwidth}L{0.17\textwidth}L{0.14\textwidth}L{0.25\textwidth}}
+\toprule
+Knob & Default / allowed & Class & Consumer & Runtime effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default / allowed & Class & Consumer & Runtime effect \\
+\midrule
+\endhead
+\code{campaign.scope} & \code{priority-a}; allowed \code{priority-a}, \code{priority-ab}, \code{full} & SCIENTIFIC\_SELECTION & campaign matrix selector & Selects 8, 16, or 32 scientific configurations respectively. \\
+\code{campaign.seeds} & \code{[0]}; non-empty integer list & SCIENTIFIC\_SELECTION & final training orchestration & Number/identity of independent final-training restarts after HPO freezes best hyperparameters. \\
+\code{campaign.fail_fast} & \code{false}; boolean & COMPUTE\_BUDGET / orchestration & campaign runner & If true, aborts the campaign at first genuine configuration failure; if false, records failure and continues. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Scope matrix}
+The full scientific matrix is
+\[
+4\;\text{methods}\times2\;\text{RC orders}\times4\;\text{cases}=32.
+\]
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lll}
+\toprule
+Scope & Cases & Scientific configurations \\
+\midrule
+\code{priority-a} & all\_to\_one & 8 \\
+\code{priority-ab} & all\_to\_one + identity\_ind & 16 \\
+\code{full} & all\_to\_one + identity\_ind + identity\_dep1 + identity\_dep2 & 32 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Seeds are \emph{not} Optuna trials. Optuna trials select hyperparameters; campaign seeds create fresh final-training realizations using the already-frozen best hyperparameters.
+
+\section{HPO knobs}
+HPO knobs divide into data policy, objective, search budget, per-trial fidelity, and temporal geometry caps.
+
+\subsection{HPO data-policy knobs}
+\begin{longtable}{L{0.21\textwidth}L{0.18\textwidth}L{0.17\textwidth}L{0.16\textwidth}L{0.22\textwidth}}
+\toprule
+Knob & Default / domain & Class & Consumer & Effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default / domain & Class & Consumer & Effect \\
+\midrule
+\endhead
+\code{hpo.train_percentage} & 2.0; $(0,100]$ & HPO\_PROTOCOL & monthly HPO sampler & Applies the same percentage independently to each authoritative Phase-D monthly TRAIN block. TEST and outer VALIDATION never enter HPO. \\
+\code{hpo.holdout_percentage} & 20.0; $(0,100)$ & HPO\_PROTOCOL & monthly HPO sampler & Partitions only selected HPO target rows into fit versus internal HPO holdout. \\
+\code{hpo.sampling_blocks_per_month} & 4; integer $\ge2$ & HPO\_PROTOCOL & contiguous-window sampler & Controls how selected monthly targets are distributed among contiguous blocks while preserving temporal context. \\
+\bottomrule
+\end{longtable}
+
+For each month $m$,
+\[
+N_{\mathrm{selected},m}=\left\lfloor\frac{p}{100}N_{\mathrm{TRAIN},m}\right\rfloor,
+\qquad
+N_{\mathrm{holdout},m}=\left\lfloor\frac{h}{100}N_{\mathrm{selected},m}\right\rfloor.
+\]
+The contract is strict: no rounding up, no silent row inflation, and no crossing authoritative monthly TRAIN gaps.
+
+\subsection{HPO objective}
+\begin{longtable}{L{0.22\textwidth}L{0.23\textwidth}L{0.17\textwidth}L{0.30\textwidth}}
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\code{hpo.objective} & \code{recursive_temperature_normalized} & HPO\_PROTOCOL & Defines the scalar objective minimized by Optuna and therefore which trial is frozen as best. The default favors recursive temperature behavior rather than only one-step fit. \\
+\bottomrule
+\end{longtable}
+
+Conceptually,
+\[
+\theta^*=\arg\min_{\theta}J_{\mathrm{HPO}}(\theta).
+\]
+
+\subsection{HPO search-budget knobs}
+\begin{longtable}{L{0.22\textwidth}L{0.22\textwidth}L{0.18\textwidth}L{0.30\textwidth}}
+\toprule
+Knob & Default / domain & Class & Effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default / domain & Class & Effect \\
+\midrule
+\endhead
+\code{hpo.n_trials} & 12; integer $\ge1$ & COMPUTE\_BUDGET & Target total Optuna trials for each compatible scientific configuration/study. Increasing this can continue an existing compatible persistent study. \\
+\code{hpo.timeout_seconds} & null; positive seconds or null & COMPUTE\_BUDGET & Optional study wall-clock stop criterion. Null means no timeout-based stop. \\
+\code{hpo.sampler_seed} & 42; integer & HPO\_PROTOCOL / reproducibility & Controls deterministic initialization/proposal behavior of the Optuna TPE sampler. \\
+\bottomrule
+\end{longtable}
+
+The persistent study identity intentionally does not need to change merely because a user increases \code{n_trials} or extends the timeout; compatible studies may continue accumulating trials.
+
+\subsection{Per-trial HPO fidelity}
+\begin{longtable}{L{0.24\textwidth}L{0.18\textwidth}L{0.18\textwidth}L{0.32\textwidth}}
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\endhead
+\code{hpo.max_epochs_per_trial} & 25 & HPO\_PROTOCOL / COMPUTE\_BUDGET & Maximum training epochs used to judge a candidate hyperparameter configuration during HPO; not the final model training budget. \\
+\code{hpo.patience} & 5 & HPO\_PROTOCOL / COMPUTE\_BUDGET & Early-stopping patience for candidate evaluation. \\
+\code{hpo.max_batch_windows} & 32 & HPO\_PROTOCOL / resource cap & Caps effective HPO batch/window processing. This cap is distinct from the method-owned \code{batch_size} search variable. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Known batch-size caveat.} The method search space currently permits \code{batch_size=64} while the default HPO execution cap is 32. Therefore a trial may record sampled batch size 64 while being evaluated with effective 32; final training can later use 64 under its own cap. Patch01R3 shall make the cap authoritative in YAML but shall not silently redefine the method search space or claim this caveat is resolved.
+
+\subsection{HPO temporal-geometry caps}
+\begin{longtable}{L{0.26\textwidth}L{0.18\textwidth}L{0.19\textwidth}L{0.29\textwidth}}
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\endhead
+\code{hpo.max_rollout_steps} & 12 & HPO\_PROTOCOL & Upper cap on method-owned $N_r$ categorical choices. Production permits $N_r\in\{1,3,6,12\}$; Micro32 explicitly restricts to $N_r\le3$ without mutating production YAML. \\
+\code{hpo.max_encoder_history_steps} & 12 & HPO\_PROTOCOL & Upper cap on method-owned 2C encoder history $L_e\in\{3,6,12\}$. \\
+\bottomrule
+\end{longtable}
+
+At 300-s sampling, $N_r=\{1,3,6,12\}$ corresponds to 5, 15, 30, and 60 minutes of recursive rollout, and $L_e=\{3,6,12\}$ corresponds to 15, 30, and 60 minutes of causal encoder history.
+
+\section{Final-training knobs}
+These knobs act \emph{after} HPO freezes the best hyperparameter configuration.
+
+\begin{longtable}{L{0.25\textwidth}L{0.18\textwidth}L{0.18\textwidth}L{0.31\textwidth}}
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\endhead
+\code{training.max_epochs} & 500 & FINAL\_TRAINING & Maximum epochs for a final seed/restart using frozen-best hyperparameters. \\
+\code{training.patience} & 50 & FINAL\_TRAINING & Early-stopping patience for final training, independent of HPO patience. \\
+\code{training.max_batch_windows} & 64 & FINAL\_TRAINING & Resource cap on effective final-training batch/window processing. \\
+\code{training.validation_max_windows} & 256 & FINAL\_TRAINING & Caps the validation-window budget used for final-training monitoring/selection without redefining Phase-D split ownership. \\
+\code{training.gradient_clip_norm} & 10.0 or null & FINAL\_TRAINING & Controls gradient-norm clipping. A finite value limits $\|\nabla_\theta L\|$ to stabilize NODE/PINODE optimization; null disables this cap if supported. \\
+\bottomrule
+\end{longtable}
+
+The intended lifecycle is
+\begin{verbatim}
+HPO -> freeze best hyperparameters
+    -> seed/restart final training
+    -> checkpoint gates
+    -> outer VALIDATION acceptance/selection
+    -> final TEST Sim1/Sim2/Sim3
+\end{verbatim}
+
+\section{Evaluation knobs}
+All declared Patch01R3 evaluation knobs must be strictly validated and have actual runtime consumers. No declared field may exist as documentation-only configuration.
+
+\subsection{Evaluation-budget knobs}
+\begin{longtable}{L{0.27\textwidth}L{0.17\textwidth}L{0.18\textwidth}L{0.30\textwidth}}
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default & Class & Effect \\
+\midrule
+\endhead
+\code{evaluation.sim1_max_points} & null & EVALUATION\_BUDGET & Null evaluates all applicable TEST points in Sim1; an integer caps point count. \\
+\code{evaluation.sim2_horizon_per_episode} & null & EVALUATION\_BUDGET & Null recursively evaluates each monthly TEST episode to its full authoritative length; integer caps steps per episode. \\
+\code{evaluation.sim3_horizon_per_episode} & null & EVALUATION\_BUDGET & Same horizon semantics for thermostat-controlled Sim3. \\
+\code{evaluation.all_test_episodes} & true & EVALUATION\_BUDGET & True executes all monthly TEST episodes separately with episode/state resets. Final-paper production default remains true. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Sim3 airflow-selection knobs}
+\begin{longtable}{L{0.27\textwidth}L{0.20\textwidth}L{0.18\textwidth}L{0.27\textwidth}}
+\toprule
+Knob & Allowed/default & Class & Actual runtime effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Allowed/default & Class & Actual runtime effect \\
+\midrule
+\endhead
+\code{evaluation.cooling_mdot_choice} & \code{nominal} or \code{max}; default nominal & CONTROLLER\_POLICY & When cooling is requested, Sim3 uses the resolved cooling mode profile's nominal or maximum mass flow. \\
+\code{evaluation.heating_mdot_choice} & \code{nominal} or \code{max}; default nominal & CONTROLLER\_POLICY & Independently selects the resolved heating mode profile's nominal or maximum mass flow. \\
+\code{evaluation.unobserved_mode_policy} & \code{fallback} or \code{error}; default fallback & CONTROLLER\_POLICY & Governs behavior only when a thermostat actually requests a mode absent from TRAIN. Fallback executes the resolved fallback/user-override profile while preserving extrapolation provenance; error raises on use. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Required R3 consumption path.}
+\begin{verbatim}
+production.yaml evaluation block
+    -> strict typed ProductionEvaluationConfig
+    -> resolved CLI/YAML configuration
+    -> campaign.py
+    -> run_offline_evaluations(evaluation_config=...)
+    -> sim1 / sim2 / sim3
+       -> sim3 receives cooling_mdot_choice,
+                        heating_mdot_choice,
+                        unobserved_mode_policy
+\end{verbatim}
+
+Invalid strings such as \code{cooling_mdot_choice: average} or \code{unobserved_mode_policy: maybe} must fail configuration validation rather than silently defaulting.
+
+\subsection{Unobserved-mode semantics}
+With \code{fallback}, an unobserved requested mode remains executable through the resolved profile:
+\begin{verbatim}
+unobserved requested mode
+    -> explicit user override if supplied
+       otherwise documented same-zone opposite-mode fallback
+    -> apply nominal/max selector
+    -> execute Sim3
+    -> preserve observed_in_train=false and extrapolation/OOD provenance
+\end{verbatim}
+
+With \code{error}, the simulation fails only if that unobserved mode is actually requested; merely having an unobserved mode in calibration does not cause preemptive failure.
+
+\section{Controller and physical-actuation knobs}
+Controller values affect Sim3, not HPO, final training, Sim1, or Sim2.
+
+\subsection{Global and zone-local deadbands}
+\begin{longtable}{L{0.30\textwidth}L{0.19\textwidth}L{0.18\textwidth}L{0.25\textwidth}}
+\toprule
+Knob & Default/domain & Class & Effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default/domain & Class & Effect \\
+\midrule
+\endhead
+\code{controller.deadband_half_width_C} & null or nonnegative C & CONTROLLER\_POLICY & Global ordinary thermostat half-width. Value 1.0 means thresholds at setpoint$-1$ C and setpoint$+1$ C, i.e., 2 C total hysteresis band. Null preserves data-derived calibration. \\
+\code{controller.heating_mode_deadband_half_width_C} & null or nonnegative C & CONTROLLER\_POLICY & Global heating/cooling regime-switch half-width, distinct from ordinary on/off deadband. \\
+\code{controller.zones.<zone>.deadband_half_width_C} & null or nonnegative C & CONTROLLER\_POLICY & Zone-local override of the global ordinary deadband. \\
+\code{controller.zones.<zone>.heating_mode_deadband_half_width_C} & null or nonnegative C & CONTROLLER\_POLICY & Zone-local override of the global mode-switch deadband. \\
+\bottomrule
+\end{longtable}
+
+Zone-specific values take precedence over global values. Null means no user replacement: the qualified data-derived value remains authoritative.
+
+\subsection{Mode-specific physical overrides}
+For each controlled zone (RestaurantFastFood\_All, Dining, Kitchen) and each mode (cooling, heating):
+
+\begin{longtable}{L{0.32\textwidth}L{0.17\textwidth}L{0.18\textwidth}L{0.25\textwidth}}
+\toprule
+Knob & Default/domain & Class & Effect \\
+\midrule
+\endfirsthead
+\toprule
+Knob & Default/domain & Class & Effect \\
+\midrule
+\endhead
+\code{T_supply_C} & null or finite C & PHYSICAL\_OVERRIDE & Overrides resolved supply-air temperature $T_{sa}$ for that zone/mode. \\
+\code{mdot_nominal_kg_s} & null or nonnegative & PHYSICAL\_OVERRIDE & Overrides resolved nominal mass flow; used when the corresponding evaluation mdot selector is \code{nominal}. \\
+\code{mdot_max_kg_s} & null or nonnegative, and $\ge$ nominal if both supplied & PHYSICAL\_OVERRIDE & Overrides resolved maximum mass flow; used when the corresponding evaluation mdot selector is \code{max}. \\
+\bottomrule
+\end{longtable}
+
+The thermal request follows the established chain based on
+\[
+Q_{\mathrm{HVAC,physics}}=1000\,(1.005)\,\dot m\,(T_{sa}-T_z),
+\]
+followed by the qualified Phase-C correction and PHVAC inference chain.
+
+\subsection{Resolution precedence and null semantics}
+For controller actuation values:
+\begin{verbatim}
+explicit user override
+    > observed TRAIN-derived mode value
+    > documented same-zone opposite-mode fallback
+\end{verbatim}
+
+Null never means zero. It means ``do not replace the qualified resolved value.'' For Kitchen heating, which is unobserved in TRAIN, a user override can replace fallback physical values but must never remove the facts that the mode was unobserved and its use is extrapolative/OOD.
+
+\subsection{Kitchen heating example}
+If YAML specifies
+\begin{Verbatim}[fontsize=\small]
+evaluation:
+  heating_mdot_choice: max
+  unobserved_mode_policy: fallback
+
+controller:
+  zones:
+    Kitchen:
+      heating:
+        T_supply_C: 34.0
+        mdot_nominal_kg_s: 0.8
+        mdot_max_kg_s: 1.1
+\end{Verbatim}
+then an actual Kitchen heating request uses $T_{sa}=34$ C and $\dot m=1.1$ kg/s, while provenance continues to record that Kitchen heating was not observed in TRAIN and is extrapolative.
+
+\section{Knobs deliberately excluded from production YAML}
+The following are method-scientific HPO variables and remain in \path{training/trainer.py}. Patch01R3 must not relocate them into campaign YAML.
+
+\begin{longtable}{L{0.24\textwidth}L{0.68\textwidth}}
+\toprule
+Method & Method-owned search space \\
+\midrule
+\endfirsthead
+\toprule
+Method & Method-owned search space \\
+\midrule
+\endhead
+Inverse PINN & hidden\_layers 1--4; hidden\_width $\{16,32,64,128\}$; activation $\{tanh,silu,gelu\}$; learning\_rate $10^{-4}$--$3\times10^{-2}$ log; lambda\_f $10^{-2}$--10 log; optimizer $\{adam,rmsprop\}$; lambda\_y fixed 1. \\
+Neural ODE 1C & common architecture; $N_r\in\{1,3,6,12\}$; $N_s\in\{1,2,5,10\}$; lambda\_wd $10^{-8}$--$10^{-3}$ log; batch\_size $\{8,16,32,64\}$. \\
+Neural ODE 2C & NODE 1C + $L_e\in\{3,6,12\}$ + delta\_T\_m\_max continuous 2--15 C. \\
+Base PINODE 1C & NODE 1C + lambda\_f $10^{-4}$--10 log; lambda\_y fixed 1. \\
+Base PINODE 2C & Base 1C + $L_e\in\{3,6,12\}$ + delta\_T\_m\_max 2--15 C. \\
+EBP-PINODE 1C & NODE 1C + lambda\_corr $10^{-6}$--1 log; lambda\_f fixed 0. \\
+EBP-PINODE 2C & EBP 1C + lambda\_int $10^{-4}$--10 log + $L_e\in\{3,6,12\}$ + delta\_T\_m\_max 2--15 C. \\
+\bottomrule
+\end{longtable}
+
+Thus the governing rule is:
+\begin{verbatim}
+production.yaml = experiment policy and budget
+trainer.py      = scientific method search space
+\end{verbatim}
+
+\section{CLI override contract}
+After R3, argparse defaults for YAML-owned fields must be \code{None} (or equivalent tri-state semantics) so omission means inheritance rather than a hidden CLI default.
+
+\begin{verbatim}
+python ... run_day1_production.py campaign
+    -> use production.yaml exactly
+
+python ... campaign --hpo-trials 50
+    -> use production.yaml except hpo.n_trials = 50 for this run
+\end{verbatim}
+
+Boolean fail-fast semantics require three states: inherit YAML, explicitly fail-fast, or explicitly continue-on-error. The CLI should preserve \code{--fail-fast} and provide a symmetric explicit false control such as \code{--continue-on-error}.
+
+Evaluation overrides shall likewise be explicit, for example:
+\begin{verbatim}
+--cooling-mdot-choice nominal|max
+--heating-mdot-choice nominal|max
+--unobserved-mode-policy fallback|error
+\end{verbatim}
+and omitted values inherit YAML.
+
+\section{Resolved configuration and provenance}
+Every production campaign must persist both the source configuration and the fully resolved runtime configuration. At minimum:
+
+\begin{Verbatim}[fontsize=\small]
+production_config:
+  source_path: .../configs/production.yaml
+  source_sha256: <sha256>
+
+resolved_configuration:
+  campaign: ...
+  hpo: ...
+  training: ...
+  evaluation: ...
+  controller: ...
+
+field_provenance:
+  hpo.n_trials:
+    value: 24
+    source: cli_override
+    yaml_value: 12
+    cli_value: 24
+    category: COMPUTE_BUDGET
+
+  evaluation.heating_mdot_choice:
+    value: nominal
+    source: production_yaml
+    category: CONTROLLER_POLICY
+\end{Verbatim}
+
+The accepted provenance sources include at least \code{production_yaml}, \code{cli_override}, and \code{micro32_qualification_override} where applicable.
+
+\section{Machine-independent scientific identity}
+Absolute filesystem paths are audit provenance, not scientific identity. If two machines resolve byte-equivalent scientific configuration values from equivalent YAML content, their production scientific identity must not differ merely because one source path is on \code{C:\textbackslash} and another on \code{D:\textbackslash} or a Linux path. Source path and SHA-256 remain in manifests, but canonical scientific IDs are based on resolved scientific values rather than absolute config paths.
+
+\section{Micro32 separation}
+Micro32 is an explicitly separate qualification profile. It already qualified 32/32 configurations under the R2B science contract. Patch01R3 must not make edits to production YAML silently change the micro qualification geometry.
+
+The intended distinction is:
+\begin{verbatim}
+production campaign
+  -> base values from production.yaml
+
+micro32 qualification
+  -> explicit micro qualification overrides
+     HPO percentage ~0.5%
+     1 trial
+     1 HPO epoch
+     N_r <= 3
+     bounded evaluation
+  -> controller values may still resolve from common controller config
+  -> manifest source = micro32_qualification_override for micro-specific fields
+\end{verbatim}
+
+\section{Causal examples}
+\subsection{Changing only HPO trial count}
+If only
+\begin{Verbatim}[fontsize=\small]
+hpo:
+  n_trials: 30
+\end{Verbatim}
+changes, then the causal path is
+\begin{verbatim}
+YAML -> resolved HPOConfig -> more Optuna candidate evaluations
+     -> best candidate may change -> final training may change
+     -> resulting Sim1/2/3 outputs may change
+\end{verbatim}
+while model equations and search-space definitions remain unchanged.
+
+\subsection{Changing only heating mdot policy}
+If only
+\begin{Verbatim}[fontsize=\small]
+evaluation:
+  heating_mdot_choice: max
+\end{Verbatim}
+changes, then HPO, final training, checkpoint, Sim1, and Sim2 are unchanged. Sim3 uses maximum resolved heating airflow instead of nominal airflow whenever heating is requested.
+
+\subsection{Changing only ordinary deadband}
+If only
+\begin{Verbatim}[fontsize=\small]
+controller:
+  deadband_half_width_C: 1.0
+\end{Verbatim}
+changes, then HPO/training/Sim1/Sim2 remain unchanged, while Sim3 ordinary HVAC switching thresholds become setpoint$\pm1$ C (2 C total band), potentially changing HVAC timing, $Q_{HVAC}$, PHVAC, and recursive temperature trajectory.
+
+\section{Strict validation requirements}
+Patch01R3 configuration resolution must reject:
+\begin{itemize}[nosep]
+\item unknown top-level sections;
+\item unknown keys within known sections;
+\item invalid enum values;
+\item out-of-range percentages, negative budgets, or invalid nonpositive integer budgets;
+\item negative mdot values;
+\item mode profiles where explicit max mdot is less than explicit nominal mdot;
+\item invalid controller zone names;
+\item invalid booleans/types that would otherwise be silently coerced in a scientifically ambiguous manner.
+\end{itemize}
+
+A typo such as \code{hpo.n_trial} must fail rather than being silently ignored.
+
+\section{Required R3 validation coverage}
+Before Patch01R3 is accepted, tests must establish at least:
+\begin{enumerate}[nosep]
+\item strict YAML schema and typed construction;
+\item omitted CLI fields inherit YAML;
+\item explicit CLI values override exactly one intended field and record provenance;
+\item machine path does not contaminate scientific configuration identity;
+\item HPO protocol-ID behavior remains compatible with R2B policy;
+\item evaluation budget fields are consumed by Sim1/Sim2/Sim3;
+\item nominal versus max cooling/heating mdot choices change the actual Sim3 command source appropriately;
+\item cooling and heating selectors are independent;
+\item \code{unobserved_mode_policy=fallback} executes resolved fallback/override and preserves OOD tags;
+\item \code{unobserved_mode_policy=error} fails only upon actual use of an unobserved mode;
+\item invalid evaluation values fail before simulation;
+\item controller null semantics preserve qualified data-derived behavior;
+\item Patch2/3/4/5/R2B regressions and bounded real Phase-B/C/D validation remain green.
+\end{enumerate}
+
+\section{Source-of-truth map after R3}
+\begin{longtable}{L{0.31\textwidth}L{0.61\textwidth}}
+\toprule
+Concern & Authoritative source \\
+\midrule
+\endfirsthead
+\toprule
+Concern & Authoritative source \\
+\midrule
+\endhead
+Campaign/HPO/training/evaluation/controller base configuration & \path{Paper_PINODE_EPSR/configs/production.yaml} \\
+Typed validation and resolution & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/configuration.py} plus production contracts \\
+CLI explicit override layer & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/cli.py} \\
+Campaign execution & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/campaign.py} \\
+HPO persistent study/protocol mechanics & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/hpo.py} \\
+Final training orchestration & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/training.py} \\
+Offline production evaluation wiring & \path{Paper_PINODE_EPSR/src/pinode_epsr/production/evaluation.py} and evaluation runtime \\
+Method-owned HPO search spaces & \path{Paper_PINODE_EPSR/src/pinode_epsr/training/trainer.py} \\
+Method implementation/equations & \path{Paper_PINODE_EPSR/src/pinode_epsr/methods/} plus frozen mathematical contracts \\
+Resolved run provenance & generated campaign manifests under the canonical EPSR data root \\
+\bottomrule
+\end{longtable}
+
+\section{Final design rule}
+The complete design is summarized by three sentences:
+
+\begin{enumerate}
+\item \textbf{The YAML says what experiment to execute and with what budgets/policies.}
+\item \textbf{The method code says which hyperparameters are scientifically searchable and what the model means.}
+\item \textbf{The resolved manifest says exactly what was actually executed, where every value came from, and how it affected runtime.}
+\end{enumerate}
+
+This separation is the accepted Patch01R3 design contract and shall be treated as frozen input to subsequent implementation.
+
+\end{document}

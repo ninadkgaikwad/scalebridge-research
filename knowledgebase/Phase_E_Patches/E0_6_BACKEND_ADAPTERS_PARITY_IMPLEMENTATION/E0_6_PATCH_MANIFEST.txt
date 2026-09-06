@@ -1,0 +1,34 @@
+ScaleBridge Phase E0-6 Backend Adapters + Numerical Parity
+Implementation patch manifest
+
+ADDED
+-----
+docs\architecture\phase_e0_backend_adapters_parity.md
+knowledgebase\Phase_E_Patches\E0_6_BACKEND_ADAPTERS_PARITY_IMPLEMENTATION\E0_6_IMPLEMENTATION_NOTES.txt
+knowledgebase\Phase_E_Patches\E0_6_BACKEND_ADAPTERS_PARITY_IMPLEMENTATION\E0_6_PATCH_MANIFEST.txt
+knowledgebase\Phase_E_Patches\E0_6_BACKEND_ADAPTERS_PARITY_IMPLEMENTATION\E0_6_PATCH_SHA256_MANIFEST.txt
+scripts\thermal_modeling\validate_phase_e0_backend_adapters_parity.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\__init__.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\contracts.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\schema.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\numpy_backend.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\torch_backend.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\neuromancer_backend.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\casadi_backend.py
+src\scalebridge\models\grey_box\rc_networks\backend_adapters\parity.py
+tests\thermal_modeling\test_phase_e0_backend_adapters_parity.py
+
+MODIFIED
+--------
+src\scalebridge\models\grey_box\rc_networks\__init__.py
+
+DELETED
+-------
+NONE
+
+Scientific boundary
+-------------------
+E0-3 flavour/topology semantics are consumed, not redefined.
+E0-4 runtime/DEP2 equations are consumed, not redefined.
+E0-5 solver semantics are consumed, not redefined.
+The controlled Paper_PINODE_EPSR tree is not modified.

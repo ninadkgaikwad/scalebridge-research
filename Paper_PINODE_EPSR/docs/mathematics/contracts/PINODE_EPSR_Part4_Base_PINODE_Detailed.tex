@@ -1,0 +1,2534 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,bm}
+\usepackage{array,booktabs}
+\usepackage[hidelinks]{hyperref}
+\title{Part 4: Detailed Base PINODE Formulation}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+
+\section*{Part 4 --- Detailed Base PINODE Formulation}
+
+We now define the \textbf{base physics-informed Neural ODE (PINODE)}. This method sits exactly between the data-only NODE of Part 3 and the hard-projected EBP-PINODE of Part 5.
+
+The defining distinction is
+\begin{align}
+\boxed{\text{NODE learns an unrestricted neural derivative}}
+\end{align}
+while
+\begin{align}
+\boxed{\text{base PINODE learns a neural derivative but penalizes violations of the full RC equations softly.}}
+\end{align}
+
+No projection is applied. Therefore the RC balance is encouraged, not guaranteed.
+
+\section*{1. Relationship to Parts 1 and 3}
+
+Everything below preserves the previously fixed contracts:
+\begin{align}
+\boxed{\text{All-to-One,\ Identity/IND,\ Identity/DEP1,\ Identity/DEP2}},
+\end{align}
+\begin{align}
+\boxed{1C\qquad\text{and}\qquad 2C},
+\end{align}
+the raw forcing vectors \(v\), training-only normalization \(\mu_x,S_x,\mu_v,S_v,S_y\), dimensionless time
+\begin{align}
+\boxed{\tau=\frac{t-t_{\rm ref}}{\Delta t}},
+\end{align}
+training rollout length
+\begin{align}
+\boxed{N_r},
+\end{align}
+2C encoder-history length
+\begin{align}
+\boxed{L_e},
+\end{align}
+and RK4 substeps per 5-minute sampled interval
+\begin{align}
+\boxed{N_s}.
+\end{align}
+
+The new ingredient is
+\begin{align}
+\boxed{\mathcal L_{\rm phys}}.
+\end{align}
+
+\section*{2. General base-PINODE model}
+
+Define normalized state and forcing as
+\begin{align}
+z&=S_x^{-1}(x-\mu_x),\\
+\widetilde v&=S_v^{-1}(v-\mu_v).
+\end{align}
+
+The neural vector field is
+\begin{align}
+\boxed{\frac{dz}{d\tau}=g_\omega(z,\widetilde v).}
+\tag{P4.1}
+\end{align}
+
+Converting to physical-time derivative,
+\begin{align}
+\boxed{
+\dot x
+=
+\frac{dx}{dt}
+=
+\frac{S_x}{\Delta t}
+g_\omega(z,\widetilde v).
+}
+\tag{P4.2}
+\end{align}
+
+Define the raw physical neural derivative
+\begin{align}
+\boxed{
+\widetilde f_\omega(x,v)
+=
+\frac{S_x}{\Delta t}
+g_\omega
+\left(
+S_x^{-1}(x-\mu_x),
+S_v^{-1}(v-\mu_v)
+\right).
+}
+\tag{P4.3}
+\end{align}
+
+Thus
+\begin{align}
+\boxed{\dot x=\widetilde f_\omega(x,v).}
+\tag{P4.4}
+\end{align}
+
+The tilde emphasizes that this is the \textbf{unconstrained neural derivative}. In base PINODE it is integrated without hard projection.
+
+\section*{3. Neural-network architecture and architecture hyperparameters}
+
+Define
+\begin{align}
+\xi=
+\begin{bmatrix}
+z\\
+\widetilde v
+\end{bmatrix}.
+\end{align}
+
+Let the number of hidden layers be
+\begin{align}
+\boxed{L_{\rm hid}\in\mathbb N,}
+\tag{P4.5}
+\end{align}
+and let hidden layer \(\ell\) contain
+\begin{align}
+\boxed{n_{\rm hid}^{(\ell)}}
+\tag{P4.6}
+\end{align}
+neurons.
+
+The hidden-width vector is
+\begin{align}
+\boxed{
+\bm n_{\rm hid}
+=
+\left[
+n_{\rm hid}^{(1)},\ldots,n_{\rm hid}^{(L_{\rm hid})}
+\right].
+}
+\tag{P4.7}
+\end{align}
+
+Set
+\begin{align}
+\boxed{h^{(0)}=\xi.}
+\tag{P4.8}
+\end{align}
+
+For
+\begin{align}
+\ell=1,\ldots,L_{\rm hid},
+\end{align}
+define
+\begin{align}
+\boxed{
+h^{(\ell)}
+=
+\varphi
+\left(
+W^{(\ell)}h^{(\ell-1)}+b^{(\ell)}
+\right).
+}
+\tag{P4.9}
+\end{align}
+
+The output layer is
+\begin{align}
+\boxed{
+g_\omega(z,\widetilde v)
+=
+W^{(L_{\rm hid}+1)}h^{(L_{\rm hid})}
++
+b^{(L_{\rm hid}+1)}.
+}
+\tag{P4.10}
+\end{align}
+
+Its output dimension equals the state dimension:
+\begin{align}
+\boxed{\dim g_\omega=n_x.}
+\tag{P4.11}
+\end{align}
+
+The following are explicitly hyperparameters:
+\begin{align}
+\boxed{L_{\rm hid}=\text{number of hidden layers},}
+\tag{P4.12}
+\end{align}
+and
+\begin{align}
+\boxed{\bm n_{\rm hid}=\text{number of neurons in the hidden layers}.}
+\tag{P4.13}
+\end{align}
+
+They are selected during the smaller representative-dataset tuning stage and frozen before full-data training. They are not retuned using final test performance.
+
+\section*{4. Physical RC parameters are jointly trainable}
+
+Base PINODE also contains a physical parameter vector
+\begin{align}
+\boxed{\theta_{RC}.}
+\end{align}
+
+For All-to-One 1C,
+\begin{align}
+\boxed{
+\theta_A^{1C}
+=
+\{R_{Ao},C_A,\eta_{r,A}\}.
+}
+\tag{P4.14}
+\end{align}
+
+For DEP1 2C,
+\begin{align}
+\boxed{
+\begin{aligned}
+\theta_{\rm DEP1}^{2C}
+=
+\{&
+R_{Do},R_{Ko},R_{DK},
+R_{Dm},R_{Km},\\
+&
+C_{a,D},C_{m,D},
+C_{a,K},C_{m,K},
+\eta_{r,D},\eta_{r,K}
+\}.
+\end{aligned}
+}
+\tag{P4.15}
+\end{align}
+
+For DEP2 the model additionally uses \(\alpha_c,\alpha_r\), which generate constrained disturbance-allocation factors.
+
+The fairness rule is
+\begin{align}
+\boxed{\text{base PINODE learns its own RC parameters jointly with the neural vector field.}}
+\tag{P4.16}
+\end{align}
+
+The inverse-PINN estimates are not handed to base PINODE as truth.
+
+\section*{5. Physical parameter transformations}
+
+Every resistance and capacitance remains positive:
+\begin{align}
+\boxed{
+R_j=R_{j,\min}+\operatorname{softplus}(\rho_{R_j}),
+}
+\tag{P4.17}
+\end{align}
+\begin{align}
+\boxed{
+C_j=C_{j,\min}+\operatorname{softplus}(\rho_{C_j}).
+}
+\tag{P4.18}
+\end{align}
+
+For learnable radiative participation,
+\begin{align}
+\boxed{\eta_{r,j}=\sigma(\rho_{\eta_j}).}
+\tag{P4.19}
+\end{align}
+
+For DEP2,
+\begin{align}
+\boxed{\lambda_{c,D}=2\sigma(\alpha_c),}
+\tag{P4.20}
+\end{align}
+\begin{align}
+\boxed{\lambda_{c,K}=2[1-\sigma(\alpha_c)],}
+\tag{P4.21}
+\end{align}
+\begin{align}
+\boxed{\lambda_{r,D}=2\sigma(\alpha_r),}
+\tag{P4.22}
+\end{align}
+and
+\begin{align}
+\boxed{\lambda_{r,K}=2[1-\sigma(\alpha_r)].}
+\tag{P4.23}
+\end{align}
+
+Therefore
+\begin{align}
+\boxed{\lambda_{c,D}+\lambda_{c,K}=2,}
+\tag{P4.24}
+\end{align}
+and
+\begin{align}
+\boxed{\lambda_{r,D}+\lambda_{r,K}=2.}
+\tag{P4.25}
+\end{align}
+
+\section*{6. Meaning of \(\alpha_r\), \(\lambda_r\), and \(\eta_r\)}
+
+The variable
+\begin{align}
+\boxed{\alpha_r\in\mathbb R}
+\tag{P4.26}
+\end{align}
+is an unconstrained trainable scalar used to generate the two constrained DEP2 radiative allocation factors.
+
+If
+\begin{align}
+\alpha_r=0,
+\end{align}
+then
+\begin{align}
+\sigma(0)=\frac12,
+\end{align}
+and therefore
+\begin{align}
+\boxed{\lambda_{r,D}=\lambda_{r,K}=1.}
+\tag{P4.27}
+\end{align}
+
+If, for example,
+\begin{align}
+\sigma(\alpha_r)=0.7,
+\end{align}
+then
+\begin{align}
+\boxed{
+\lambda_{r,D}=1.4,
+\qquad
+\lambda_{r,K}=0.6.
+}
+\tag{P4.28}
+\end{align}
+
+Thus \(\alpha_r\) is an optimization variable, while \(\lambda_r\) is the corresponding constrained between-zone radiative allocation.
+
+For DEP2 2C Dining,
+\begin{align}
+Q_{r,D}^{DEP2}
+=
+\lambda_{r,D}\bar Q_r.
+\end{align}
+
+Mass receives
+\begin{align}
+\boxed{
+Q_{r,D\rightarrow m}
+=
+\eta_{r,D}\lambda_{r,D}\bar Q_r,
+}
+\tag{P4.29}
+\end{align}
+and air receives
+\begin{align}
+\boxed{
+Q_{r,D\rightarrow a}
+=
+(1-\eta_{r,D})\lambda_{r,D}\bar Q_r.
+}
+\tag{P4.30}
+\end{align}
+
+Therefore
+\begin{align}
+\boxed{\lambda_r=\text{between-zone allocation},}
+\tag{P4.31}
+\end{align}
+whereas
+\begin{align}
+\boxed{\eta_r=\text{within-zone air/mass allocation}.}
+\tag{P4.32}
+\end{align}
+
+\section*{7. When \(\lambda_r\) and \(\eta_r\) cannot be learned together}
+
+For DEP2 1C the radiative term contains
+\begin{align}
+\eta_r\lambda_r\bar Q_r.
+\end{align}
+
+Suppose the required effective multiplier is \(0.6\). Then
+\begin{align}
+0.6\times1.0&=0.6,\\
+0.75\times0.8&=0.6,\\
+0.5\times1.2&=0.6.
+\end{align}
+
+Thus the 1C equation primarily sees
+\begin{align}
+\boxed{\eta_r\lambda_r}
+\tag{P4.33}
+\end{align}
+rather than the two parameters separately.
+
+Therefore the primary DEP2 1C model uses
+\begin{align}
+\boxed{\eta_{r,D}=\eta_{r,K}=1,}
+\tag{P4.34}
+\end{align}
+and learns \(\alpha_r\), hence \(\lambda_r\).
+
+We lock
+\begin{align}
+\boxed{
+\text{do not jointly learn }\eta_r\text{ and }\lambda_r
+\text{ in the primary DEP2 1C fit.}
+}
+\tag{P4.35}
+\end{align}
+
+\section*{8. When \(\lambda_r\) and \(\eta_r\) can be learned together}
+
+For DEP2 2C, air receives
+\begin{align}
+(1-\eta_r)\lambda_r\bar Q_r,
+\end{align}
+while mass receives
+\begin{align}
+\eta_r\lambda_r\bar Q_r.
+\end{align}
+
+Their sum is
+\begin{align}
+\boxed{
+(1-\eta_r)\lambda_r\bar Q_r
++
+\eta_r\lambda_r\bar Q_r
+=
+\lambda_r\bar Q_r.
+}
+\tag{P4.36}
+\end{align}
+
+For example, if
+\begin{align}
+\lambda_r=1.2,
+\qquad
+\eta_r=0.75,
+\end{align}
+then
+\begin{align}
+Q_{mass}&=0.9\bar Q_r,\\
+Q_{air}&=0.3\bar Q_r.
+\end{align}
+
+Hence
+\begin{align}
+\boxed{Q_{air}+Q_{mass}=1.2\bar Q_r,}
+\tag{P4.37}
+\end{align}
+while
+\begin{align}
+\boxed{
+\frac{Q_{mass}}{Q_{air}+Q_{mass}}
+=
+0.75
+=
+\eta_r.
+}
+\tag{P4.38}
+\end{align}
+
+Therefore the exact 1C multiplicative degeneracy is removed. This does not prove perfect statistical identifiability, but it supports jointly estimating
+\begin{align}
+\boxed{
+\eta_{r,D},\eta_{r,K},\alpha_r
+}
+\tag{P4.39}
+\end{align}
+for primary DEP2 2C.
+
+\section*{9. What ``physics-informed'' means}
+
+Write the Part-1 RC equations abstractly as
+\begin{align}
+\boxed{
+M_\theta\dot x=b_\theta(x,v).
+}
+\tag{P4.40}
+\end{align}
+
+For the neural derivative,
+\begin{align}
+\dot x=\widetilde f_\omega(x,v),
+\end{align}
+define
+\begin{align}
+\boxed{
+r_{\rm RC}(x,v)
+=
+M_\theta\widetilde f_\omega(x,v)
+-
+b_\theta(x,v).
+}
+\tag{P4.41}
+\end{align}
+
+The physics loss penalizes
+\begin{align}
+\boxed{\mathcal L_{\rm phys}\propto\|r_{\rm RC}\|^2.}
+\tag{P4.42}
+\end{align}
+
+But
+\begin{align}
+\boxed{r_{\rm RC}\neq0\text{ is allowed during and after training.}}
+\tag{P4.43}
+\end{align}
+
+Thus base PINODE is a \textbf{soft-physics} method.
+
+\section*{10. Why the full RC residual is used}
+
+For 2C one zone,
+\begin{align}
+\boxed{
+r_{\rm RC}
+=
+\begin{bmatrix}
+r_a\\
+r_m
+\end{bmatrix}.
+}
+\tag{P4.44}
+\end{align}
+
+For coupled DEP1/DEP2 2C,
+\begin{align}
+\boxed{
+r_{\rm RC}
+=
+\begin{bmatrix}
+r_{a,D}\\
+r_{m,D}\\
+r_{a,K}\\
+r_{m,K}
+\end{bmatrix}.
+}
+\tag{P4.45}
+\end{align}
+
+The base PINODE therefore softly penalizes the complete chosen RC model, not merely the total-energy balance.
+
+\section*{11. Where the physics residual is evaluated}
+
+The physics residual is evaluated on model-generated states.
+
+At an internal solver state \(x^{(q)}\) with held forcing \(v_k\),
+\begin{align}
+\boxed{
+r_{\rm RC}^{(q)}
+=
+M_\theta
+\widetilde f_\omega(x^{(q)},v_k)
+-
+b_\theta(x^{(q)},v_k).
+}
+\tag{P4.46}
+\end{align}
+
+\section*{12. Physics-loss indexing and the four summations}
+
+The generic physics loss is
+\begin{align}
+\boxed{
+\mathcal L_{\rm phys}
+=
+\frac{1}
+{
+|\mathcal W_{\rm tr}|N_rN_s4
+}
+\sum_w
+\sum_{\ell=0}^{N_r-1}
+\sum_{n=1}^{N_s}
+\sum_{q=1}^{4}
+\left\|
+D^{-1}
+r_{\rm RC}^{w,\ell,n,q}
+\right\|_2^2.
+}
+\tag{P4.47}
+\end{align}
+
+The four indices are
+\begin{align}
+\boxed{w=\text{training-rollout index},}
+\tag{P4.48}
+\end{align}
+\begin{align}
+\boxed{\ell=\text{5-minute sampled interval within the rollout},}
+\tag{P4.49}
+\end{align}
+\begin{align}
+\boxed{n=\text{RK4 numerical substep within that interval},}
+\tag{P4.50}
+\end{align}
+and
+\begin{align}
+\boxed{q=\text{RK4 stage within that substep}.}
+\tag{P4.51}
+\end{align}
+
+If \(N_r=6\), then
+\begin{align}
+\ell=0,\ldots,5
+\end{align}
+indexes six recursive 5-minute transitions.
+
+If \(N_s=5\), then each 5-minute interval is divided into five solver substeps with
+\begin{align}
+\boxed{
+\Delta t_{\rm sub}
+=
+\frac{300}{N_s}\ {\rm s}
+=
+60\ {\rm s}.
+}
+\tag{P4.52}
+\end{align}
+
+Each RK4 substep evaluates the vector field four times, giving \(q=1,\ldots,4\).
+
+For example, if
+\begin{align}
+|\mathcal W_{\rm tr}|=100,\qquad N_r=6,\qquad N_s=5,
+\end{align}
+then the residual is evaluated
+\begin{align}
+\boxed{
+100\times6\times5\times4=12{,}000
+}
+\tag{P4.53}
+\end{align}
+times.
+
+Hence
+\begin{align}
+\boxed{
+\mathcal L_{\rm phys}
+=
+\text{mean squared RC violation over all neural derivative evaluations during training}.
+}
+\tag{P4.54}
+\end{align}
+
+\section*{13. Why evaluate physics at RK4 stage points}
+
+The ODE solver visits intermediate states between measured samples. Physics is therefore checked wherever the neural vector field is evaluated.
+
+For normalized state \(z_n\) and held forcing \(\widetilde v_k\),
+\begin{align}
+k_1&=g_\omega(z_n,\widetilde v_k),\\
+k_2&=g_\omega\left(z_n+\frac{h}{2}k_1,\widetilde v_k\right),\\
+k_3&=g_\omega\left(z_n+\frac{h}{2}k_2,\widetilde v_k\right),\\
+k_4&=g_\omega\left(z_n+hk_3,\widetilde v_k\right).
+\end{align}
+
+The normalized stage states are
+\begin{align}
+\boxed{z_n^{(1)}=z_n,}
+\tag{P4.55}
+\end{align}
+\begin{align}
+\boxed{z_n^{(2)}=z_n+\frac{h}{2}k_1,}
+\tag{P4.56}
+\end{align}
+\begin{align}
+\boxed{z_n^{(3)}=z_n+\frac{h}{2}k_2,}
+\tag{P4.57}
+\end{align}
+and
+\begin{align}
+\boxed{z_n^{(4)}=z_n+hk_3.}
+\tag{P4.58}
+\end{align}
+
+Physical stage states are
+\begin{align}
+\boxed{
+x_n^{(q)}
+=
+\mu_x+S_xz_n^{(q)}.
+}
+\tag{P4.59}
+\end{align}
+
+The physical derivative at each stage is
+\begin{align}
+\boxed{
+\widetilde f_\omega^{(q)}
+=
+\frac{S_x}{\Delta t}
+g_\omega(z_n^{(q)},\widetilde v_k).
+}
+\tag{P4.60}
+\end{align}
+
+\section*{14. Simple normalization picture}
+
+There are three computational spaces:
+\begin{align}
+\boxed{
+\text{physical data}
+\rightarrow
+\text{normalized neural coordinates}
+\rightarrow
+\text{physical outputs and physics quantities}.
+}
+\tag{P4.61}
+\end{align}
+
+For example, if
+\begin{align}
+\mu_T=22^\circ{\rm C},
+\qquad
+s_T=2^\circ{\rm C},
+\end{align}
+then
+\begin{align}
+\boxed{
+T=24^\circ{\rm C}
+\Longrightarrow
+z_T=\frac{24-22}{2}=1,
+}
+\tag{P4.62}
+\end{align}
+while
+\begin{align}
+\boxed{
+T=20^\circ{\rm C}
+\Longrightarrow
+z_T=-1.
+}
+\tag{P4.63}
+\end{align}
+
+\section*{15. Where normalization is used}
+
+Before the neural network,
+\begin{align}
+\boxed{z=S_x^{-1}(x-\mu_x),}
+\tag{P4.64}
+\end{align}
+and
+\begin{align}
+\boxed{\widetilde v=S_v^{-1}(v-\mu_v).}
+\tag{P4.65}
+\end{align}
+
+The neural network computes
+\begin{align}
+\boxed{\frac{dz}{d\tau}=g_\omega(z,\widetilde v).}
+\tag{P4.66}
+\end{align}
+
+The corresponding physical derivative is
+\begin{align}
+\boxed{
+\widetilde f_\omega
+=
+\frac{S_x}{\Delta t}g_\omega(z,\widetilde v).
+}
+\tag{P4.67}
+\end{align}
+
+The neural network and RK4 solver therefore operate in normalized coordinates, while the physical RC residual is evaluated in physical units.
+
+\section*{16. Construction and use of \(x\), \(z\), and \(y\)}
+
+For one-zone 1C,
+\begin{align}
+\boxed{x=T_z.}
+\tag{P4.68}
+\end{align}
+
+For coupled identity 1C,
+\begin{align}
+\boxed{
+x=
+\begin{bmatrix}
+T_D\\T_K
+\end{bmatrix}.
+}
+\tag{P4.69}
+\end{align}
+
+For one-zone 2C,
+\begin{align}
+\boxed{
+x=
+\begin{bmatrix}
+T_a\\T_m
+\end{bmatrix}.
+}
+\tag{P4.70}
+\end{align}
+
+For coupled 2C,
+\begin{align}
+\boxed{
+x=
+\begin{bmatrix}
+T_{a,D}\\T_{m,D}\\T_{a,K}\\T_{m,K}
+\end{bmatrix}.
+}
+\tag{P4.71}
+\end{align}
+
+The normalized state
+\begin{align}
+\boxed{z=S_x^{-1}(x-\mu_x)}
+\tag{P4.72}
+\end{align}
+is the internal neural/ODE-solver state.
+
+Whenever physical quantities are required,
+\begin{align}
+\boxed{x=\mu_x+S_xz.}
+\tag{P4.73}
+\end{align}
+
+The output is
+\begin{align}
+\boxed{y=Hx.}
+\tag{P4.74}
+\end{align}
+
+For one-zone 2C,
+\begin{align}
+\boxed{
+H=
+\begin{bmatrix}
+1&0
+\end{bmatrix},
+\qquad
+y=T_a.
+}
+\tag{P4.75}
+\end{align}
+
+For coupled 2C,
+\begin{align}
+\boxed{
+H=
+\begin{bmatrix}
+1&0&0&0\\
+0&0&1&0
+\end{bmatrix},
+}
+\tag{P4.76}
+\end{align}
+so
+\begin{align}
+\boxed{
+y=
+\begin{bmatrix}
+T_{a,D}\\T_{a,K}
+\end{bmatrix}.
+}
+\tag{P4.77}
+\end{align}
+
+Thus
+\begin{align}
+\boxed{x=\text{full physical state},}
+\tag{P4.78}
+\end{align}
+\begin{align}
+\boxed{z=\text{normalized internal neural/solver state},}
+\tag{P4.79}
+\end{align}
+and
+\begin{align}
+\boxed{y=\text{measured/output portion of }x.}
+\tag{P4.80}
+\end{align}
+
+\section*{17. Where \(S_y\) is used}
+
+The physical output error is
+\begin{align}
+e_y=\widehat y-y.
+\end{align}
+
+The loss uses
+\begin{align}
+\boxed{
+\widetilde e_y
+=
+S_y^{-1}(\widehat y-y).
+}
+\tag{P4.81}
+\end{align}
+
+Thus data-loss terms use
+\begin{align}
+\boxed{
+\left\|
+S_y^{-1}(\widehat y-y)
+\right\|_2^2.
+}
+\tag{P4.82}
+\end{align}
+
+Importantly,
+\begin{align}
+\boxed{
+S_y\text{ does not alter saved physical outputs.}
+}
+\tag{P4.83}
+\end{align}
+
+Predicted temperatures remain in physical units; \(S_y\) only balances their contributions to optimization.
+
+\section*{18. Complete normalization flow}
+
+The forward path is
+\begin{align}
+\boxed{
+x_{\rm physical}
+\rightarrow
+z
+\rightarrow
+g_\omega
+\rightarrow
+z_{\rm next}
+\rightarrow
+x_{\rm next}
+\rightarrow
+y_{\rm next}.
+}
+\tag{P4.84}
+\end{align}
+
+Explicitly,
+\begin{align}
+z_k&=S_x^{-1}(x_k-\mu_x),\\
+\widetilde v_k&=S_v^{-1}(v_k-\mu_v),\\
+\dot z&=g_\omega(z,\widetilde v),\\
+x_{k+1}&=\mu_x+S_xz_{k+1},\\
+\widehat y_{k+1}&=Hx_{k+1}.
+\end{align}
+
+The data-loss error is
+\begin{align}
+\boxed{
+S_y^{-1}(\widehat y_{k+1}-y_{k+1}).
+}
+\tag{P4.85}
+\end{align}
+
+For physics,
+\begin{align}
+z&\rightarrow x=\mu_x+S_xz,\\
+g_\omega&\rightarrow
+\widetilde f_\omega=\frac{S_x}{\Delta t}g_\omega.
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+r_{\rm RC}
+=
+M_\theta\widetilde f_\omega-b_\theta(x,v).
+}
+\tag{P4.86}
+\end{align}
+
+\section*{19. Why RC physics is evaluated in physical units}
+
+The RC residual has consistent power units.
+
+For example,
+\begin{align}
+\boxed{
+C\dot T
+:
+\frac{J}{K}\frac{K}{s}=W,
+}
+\tag{P4.87}
+\end{align}
+and
+\begin{align}
+\boxed{
+\frac{T_o-T}{R}
+:
+\frac{K}{K/W}=W.
+}
+\tag{P4.88}
+\end{align}
+
+Heat inputs \(Q\) are also in watts. Therefore physics is evaluated after converting the neural derivative and state back to physical units.
+
+\section*{20. Why 2C requires a causal encoder}
+
+For 1C the full state is measured:
+\begin{align}
+\boxed{x_k=T_{z,k}=y_k.}
+\tag{P4.89}
+\end{align}
+
+For 2C,
+\begin{align}
+\boxed{
+x_k=
+\begin{bmatrix}
+T_{a,k}\\T_{m,k}
+\end{bmatrix},
+}
+\tag{P4.90}
+\end{align}
+but only
+\begin{align}
+\boxed{y_k=T_{a,k}}
+\tag{P4.91}
+\end{align}
+is measured.
+
+Hence \(T_{m,k}\) must be causally inferred:
+\begin{align}
+\boxed{
+T_{m,k}^{(0)}
+=
+T_{a,k}
++
+\Delta T_m^{\max}
+\tanh[e_\psi(\mathcal C_k)].
+}
+\tag{P4.92}
+\end{align}
+
+The context is
+\begin{align}
+\boxed{
+\mathcal C_k
+=
+\{(y_j,v_j):j=k-L_e+1,\ldots,k\}.
+}
+\tag{P4.93}
+\end{align}
+
+No future observations are allowed.
+
+\section*{21. Simple causal-encoder example}
+
+Suppose
+\begin{align}
+T_a(09{:}00)=21.6^\circ{\rm C}.
+\end{align}
+
+A warming history might be
+\begin{align}
+21.0,\quad21.2,\quad21.4,\quad21.6^\circ{\rm C},
+\end{align}
+for which a plausible lagging mass state might be
+\begin{align}
+T_m(09{:}00)\approx21.1^\circ{\rm C}.
+\end{align}
+
+A cooling history could have the same current air temperature while the mass remains warmer, for example
+\begin{align}
+T_m(09{:}00)\approx22.2^\circ{\rm C}.
+\end{align}
+
+Thus the same instantaneous air temperature does not uniquely determine the hidden thermal mass state.
+
+The encoder therefore uses
+\begin{align}
+\boxed{
+T_m(t_k)
+=
+E_\psi
+\left(
+T_a(t_{k-L_e+1:k}),
+v(t_{k-L_e+1:k})
+\right).
+}
+\tag{P4.94}
+\end{align}
+
+\section*{22. Where the \(T_m\) used in mass residuals comes from}
+
+At rollout initialization,
+\begin{align}
+\boxed{T_{m,k}=E_\psi(\mathcal C_k).}
+\tag{P4.95}
+\end{align}
+
+After initialization, the encoder is not repeatedly called within the same rollout.
+
+The PINODE predicts \(\widetilde{\dot T}_m\), and RK4 propagates the hidden state:
+\begin{align}
+\boxed{
+\text{causal encoder}
+\rightarrow
+T_{m,k}
+\rightarrow
+\text{PINODE integration}
+\rightarrow
+T_{m,k+\delta}
+\rightarrow
+T_{m,k+1}
+\rightarrow\cdots.
+}
+\tag{P4.96}
+\end{align}
+
+Therefore the \(T_m\) in each mass residual is the current dynamically propagated hidden model state.
+
+\section*{23. Physics loss also trains the encoder}
+
+For 2C,
+\begin{align}
+\boxed{
+\mathcal J_{\rm PINODE}
+=
+\mathcal J_{\rm PINODE}(\omega,\psi,\theta_{RC}).
+}
+\tag{P4.97}
+\end{align}
+
+The encoder gradient is
+\begin{align}
+\boxed{
+\frac{\partial\mathcal J}{\partial\psi}
+=
+\lambda_y
+\frac{\partial\mathcal L_{\rm data}}{\partial\psi}
++
+\lambda_f
+\frac{\partial\mathcal L_{\rm phys}}{\partial\psi}
++
+\lambda_{\rm wd}
+\frac{\partial\mathcal L_{\rm reg}}{\partial\psi}.
+}
+\tag{P4.98}
+\end{align}
+
+\section*{24. All-to-One 1C PINODE}
+
+Define
+\begin{align}
+\boxed{
+Q_{c,A}
+=
+Q_{ZIC,A}+Q_{Sol1,A}+Q_{AC,A},
+}
+\tag{P4.99}
+\end{align}
+and
+\begin{align}
+\boxed{
+Q_{r,A}
+=
+Q_{ZIR,A}+Q_{Sol2,A}.
+}
+\tag{P4.100}
+\end{align}
+
+The raw derivative is
+\begin{align}
+\boxed{
+\widetilde{\dot T}_A
+=
+\widetilde f_{\omega,A}^{1C}(T_A,v_A).
+}
+\tag{P4.101}
+\end{align}
+
+The residual is
+\begin{align}
+\boxed{
+\begin{aligned}
+r_A^{1C}
+={}&
+C_A\widetilde{\dot T}_A
+-
+\frac{T_o-T_A}{R_{Ao}}
+-
+Q_{c,A}
+-
+\eta_{r,A}Q_{r,A}.
+\end{aligned}
+}
+\tag{P4.102}
+\end{align}
+
+The normalized contribution is
+\begin{align}
+\boxed{
+\ell_{\rm phys,A}^{1C}
+=
+\left(\frac{r_A^{1C}}{q_A^\star}\right)^2.
+}
+\tag{P4.103}
+\end{align}
+
+\section*{25. All-to-One 2C PINODE}
+
+State and raw derivative are
+\begin{align}
+\boxed{
+x_A=
+\begin{bmatrix}
+T_{a,A}\\T_{m,A}
+\end{bmatrix},
+\qquad
+\widetilde f_{\omega,A}^{2C}
+=
+\begin{bmatrix}
+\widetilde{\dot T}_{a,A}\\
+\widetilde{\dot T}_{m,A}
+\end{bmatrix}.
+}
+\tag{P4.104}
+\end{align}
+
+Air residual:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{a,A}
+={}&
+C_{a,A}\widetilde{\dot T}_{a,A}
+-
+\frac{T_o-T_{a,A}}{R_{Ao}}
+-
+\frac{T_{m,A}-T_{a,A}}{R_{Am}}
+\\
+&-
+Q_{c,A}
+-
+(1-\eta_{r,A})Q_{r,A}.
+\end{aligned}
+}
+\tag{P4.105}
+\end{align}
+
+Mass residual:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{m,A}
+={}&
+C_{m,A}\widetilde{\dot T}_{m,A}
+-
+\frac{T_{a,A}-T_{m,A}}{R_{Am}}
+-
+\eta_{r,A}Q_{r,A}.
+\end{aligned}
+}
+\tag{P4.106}
+\end{align}
+
+Residual vector:
+\begin{align}
+\boxed{
+r_A^{2C}
+=
+\begin{bmatrix}
+r_{a,A}\\r_{m,A}
+\end{bmatrix}.
+}
+\tag{P4.107}
+\end{align}
+
+The total-energy diagnostic is
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{\Sigma,A}
+=
+{}&
+C_{a,A}\widetilde{\dot T}_{a,A}
++
+C_{m,A}\widetilde{\dot T}_{m,A}
+-
+\frac{T_o-T_{a,A}}{R_{Ao}}
+-
+Q_{c,A}
+-
+Q_{r,A}.
+\end{aligned}
+}
+\tag{P4.108}
+\end{align}
+
+\section*{26. Identity / IND 1C PINODE}
+
+Dining:
+\begin{align}
+\boxed{
+r_D
+=
+C_D\widetilde{\dot T}_D
+-
+\frac{T_o-T_D}{R_{Do}}
+-
+Q_{c,D}
+-
+\eta_{r,D}Q_{r,D}.
+}
+\tag{P4.109}
+\end{align}
+
+Kitchen:
+\begin{align}
+\boxed{
+r_K
+=
+C_K\widetilde{\dot T}_K
+-
+\frac{T_o-T_K}{R_{Ko}}
+-
+Q_{c,K}
+-
+\eta_{r,K}Q_{r,K}.
+}
+\tag{P4.110}
+\end{align}
+
+For Kitchen,
+\begin{align}
+\boxed{
+Q_{c,K}=Q_{ZIC,K}+Q_{AC,K},
+\qquad
+Q_{r,K}=Q_{ZIR,K}.
+}
+\tag{P4.111}
+\end{align}
+
+No \(R_{DK}\) exists in IND.
+
+\section*{27. Identity / IND 2C PINODE}
+
+Dining:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{a,D}
+={}&
+C_{a,D}\widetilde{\dot T}_{a,D}
+-
+\frac{T_o-T_{a,D}}{R_{Do}}
+-
+\frac{T_{m,D}-T_{a,D}}{R_{Dm}}
+-
+Q_{c,D}
+-
+(1-\eta_{r,D})Q_{r,D},
+\end{aligned}
+}
+\tag{P4.112}
+\end{align}
+\begin{align}
+\boxed{
+r_{m,D}
+=
+C_{m,D}\widetilde{\dot T}_{m,D}
+-
+\frac{T_{a,D}-T_{m,D}}{R_{Dm}}
+-
+\eta_{r,D}Q_{r,D}.
+}
+\tag{P4.113}
+\end{align}
+
+Kitchen:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{a,K}
+={}&
+C_{a,K}\widetilde{\dot T}_{a,K}
+-
+\frac{T_o-T_{a,K}}{R_{Ko}}
+-
+\frac{T_{m,K}-T_{a,K}}{R_{Km}}
+-
+Q_{c,K}
+-
+(1-\eta_{r,K})Q_{r,K},
+\end{aligned}
+}
+\tag{P4.114}
+\end{align}
+\begin{align}
+\boxed{
+r_{m,K}
+=
+C_{m,K}\widetilde{\dot T}_{m,K}
+-
+\frac{T_{a,K}-T_{m,K}}{R_{Km}}
+-
+\eta_{r,K}Q_{r,K}.
+}
+\tag{P4.115}
+\end{align}
+
+\section*{28. Identity / DEP1 1C PINODE}
+
+State and derivative:
+\begin{align}
+\boxed{
+x=
+\begin{bmatrix}
+T_D\\T_K
+\end{bmatrix},
+\qquad
+\widetilde f_{\omega,\rm DEP1}^{1C}
+=
+\begin{bmatrix}
+\widetilde{\dot T}_D\\
+\widetilde{\dot T}_K
+\end{bmatrix}.
+}
+\tag{P4.116}
+\end{align}
+
+Dining:
+\begin{align}
+\boxed{
+r_D
+=
+C_D\widetilde{\dot T}_D
+-
+\frac{T_o-T_D}{R_{Do}}
+-
+\frac{T_K-T_D}{R_{DK}}
+-
+Q_{c,D}
+-
+\eta_{r,D}Q_{r,D}.
+}
+\tag{P4.117}
+\end{align}
+
+Kitchen:
+\begin{align}
+\boxed{
+r_K
+=
+C_K\widetilde{\dot T}_K
+-
+\frac{T_o-T_K}{R_{Ko}}
+-
+\frac{T_D-T_K}{R_{DK}}
+-
+Q_{c,K}
+-
+\eta_{r,K}Q_{r,K}.
+}
+\tag{P4.118}
+\end{align}
+
+Residual vector:
+\begin{align}
+\boxed{
+r_{\rm DEP1}^{1C}
+=
+\begin{bmatrix}
+r_D\\r_K
+\end{bmatrix}.
+}
+\tag{P4.119}
+\end{align}
+
+The coupling is reciprocal:
+\begin{align}
+\boxed{R_{DK}=R_{KD}.}
+\tag{P4.120}
+\end{align}
+
+\section*{29. Identity / DEP1 2C PINODE}
+
+State:
+\begin{align}
+\boxed{
+x=
+\begin{bmatrix}
+T_{a,D}\\T_{m,D}\\T_{a,K}\\T_{m,K}
+\end{bmatrix}.
+}
+\tag{P4.121}
+\end{align}
+
+Dining air:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{a,D}
+={}&
+C_{a,D}\widetilde{\dot T}_{a,D}
+-
+\frac{T_o-T_{a,D}}{R_{Do}}
+-
+\frac{T_{m,D}-T_{a,D}}{R_{Dm}}
+-
+\frac{T_{a,K}-T_{a,D}}{R_{DK}}
+\\
+&-
+Q_{c,D}
+-
+(1-\eta_{r,D})Q_{r,D}.
+\end{aligned}
+}
+\tag{P4.122}
+\end{align}
+
+Dining mass:
+\begin{align}
+\boxed{
+r_{m,D}
+=
+C_{m,D}\widetilde{\dot T}_{m,D}
+-
+\frac{T_{a,D}-T_{m,D}}{R_{Dm}}
+-
+\eta_{r,D}Q_{r,D}.
+}
+\tag{P4.123}
+\end{align}
+
+Kitchen air:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{a,K}
+={}&
+C_{a,K}\widetilde{\dot T}_{a,K}
+-
+\frac{T_o-T_{a,K}}{R_{Ko}}
+-
+\frac{T_{m,K}-T_{a,K}}{R_{Km}}
+-
+\frac{T_{a,D}-T_{a,K}}{R_{DK}}
+\\
+&-
+Q_{c,K}
+-
+(1-\eta_{r,K})Q_{r,K}.
+\end{aligned}
+}
+\tag{P4.124}
+\end{align}
+
+Kitchen mass:
+\begin{align}
+\boxed{
+r_{m,K}
+=
+C_{m,K}\widetilde{\dot T}_{m,K}
+-
+\frac{T_{a,K}-T_{m,K}}{R_{Km}}
+-
+\eta_{r,K}Q_{r,K}.
+}
+\tag{P4.125}
+\end{align}
+
+Residual vector:
+\begin{align}
+\boxed{
+r_{\rm DEP1}^{2C}
+=
+\begin{bmatrix}
+r_{a,D}\\r_{m,D}\\r_{a,K}\\r_{m,K}
+\end{bmatrix}.
+}
+\tag{P4.126}
+\end{align}
+
+Zone-total residuals are
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{\Sigma,D}
+={}&
+C_{a,D}\widetilde{\dot T}_{a,D}
++
+C_{m,D}\widetilde{\dot T}_{m,D}
+-
+\frac{T_o-T_{a,D}}{R_{Do}}
+-
+\frac{T_{a,K}-T_{a,D}}{R_{DK}}
+-
+Q_{c,D}
+-
+Q_{r,D},
+\end{aligned}
+}
+\tag{P4.127}
+\end{align}
+and
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{\Sigma,K}
+={}&
+C_{a,K}\widetilde{\dot T}_{a,K}
++
+C_{m,K}\widetilde{\dot T}_{m,K}
+-
+\frac{T_o-T_{a,K}}{R_{Ko}}
+-
+\frac{T_{a,D}-T_{a,K}}{R_{DK}}
+-
+Q_{c,K}
+-
+Q_{r,K}.
+\end{aligned}
+}
+\tag{P4.128}
+\end{align}
+
+\section*{30. Identity / DEP2 1C PINODE}
+
+Define
+\begin{align}
+\boxed{
+\bar Q_c^{nh}
+=
+Q_{ZIC,A}+Q_{Sol1,A},
+}
+\tag{P4.129}
+\end{align}
+and
+\begin{align}
+\boxed{
+\bar Q_r
+=
+Q_{ZIR,A}+Q_{Sol2,A}.
+}
+\tag{P4.130}
+\end{align}
+
+Dining:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_D
+={}&
+C_D\widetilde{\dot T}_D
+-
+\frac{T_o-T_D}{R_{Do}}
+-
+\frac{T_K-T_D}{R_{DK}}
+-
+Q_{AC,D}
+-
+\lambda_{c,D}\bar Q_c^{nh}
+-
+\eta_{r,D}\lambda_{r,D}\bar Q_r.
+\end{aligned}
+}
+\tag{P4.131}
+\end{align}
+
+Kitchen:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_K
+={}&
+C_K\widetilde{\dot T}_K
+-
+\frac{T_o-T_K}{R_{Ko}}
+-
+\frac{T_D-T_K}{R_{DK}}
+-
+Q_{AC,K}
+-
+\lambda_{c,K}\bar Q_c^{nh}
+-
+\eta_{r,K}\lambda_{r,K}\bar Q_r.
+\end{aligned}
+}
+\tag{P4.132}
+\end{align}
+
+For the primary DEP2 1C model,
+\begin{align}
+\boxed{\eta_{r,D}=\eta_{r,K}=1.}
+\tag{P4.133}
+\end{align}
+
+\section*{31. Identity / DEP2 2C PINODE}
+
+Dining air:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{a,D}
+={}&
+C_{a,D}\widetilde{\dot T}_{a,D}
+-
+\frac{T_o-T_{a,D}}{R_{Do}}
+-
+\frac{T_{m,D}-T_{a,D}}{R_{Dm}}
+-
+\frac{T_{a,K}-T_{a,D}}{R_{DK}}
+-
+Q_{AC,D}
+-
+\lambda_{c,D}\bar Q_c^{nh}
+-
+(1-\eta_{r,D})\lambda_{r,D}\bar Q_r.
+\end{aligned}
+}
+\tag{P4.134}
+\end{align}
+
+Dining mass:
+\begin{align}
+\boxed{
+r_{m,D}
+=
+C_{m,D}\widetilde{\dot T}_{m,D}
+-
+\frac{T_{a,D}-T_{m,D}}{R_{Dm}}
+-
+\eta_{r,D}\lambda_{r,D}\bar Q_r.
+}
+\tag{P4.135}
+\end{align}
+
+Kitchen air:
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{a,K}
+={}&
+C_{a,K}\widetilde{\dot T}_{a,K}
+-
+\frac{T_o-T_{a,K}}{R_{Ko}}
+-
+\frac{T_{m,K}-T_{a,K}}{R_{Km}}
+-
+\frac{T_{a,D}-T_{a,K}}{R_{DK}}
+-
+Q_{AC,K}
+-
+\lambda_{c,K}\bar Q_c^{nh}
+-
+(1-\eta_{r,K})\lambda_{r,K}\bar Q_r.
+\end{aligned}
+}
+\tag{P4.136}
+\end{align}
+
+Kitchen mass:
+\begin{align}
+\boxed{
+r_{m,K}
+=
+C_{m,K}\widetilde{\dot T}_{m,K}
+-
+\frac{T_{a,K}-T_{m,K}}{R_{Km}}
+-
+\eta_{r,K}\lambda_{r,K}\bar Q_r.
+}
+\tag{P4.137}
+\end{align}
+
+Residual vector:
+\begin{align}
+\boxed{
+r_{\rm DEP2}^{2C}
+=
+\begin{bmatrix}
+r_{a,D}\\r_{m,D}\\r_{a,K}\\r_{m,K}
+\end{bmatrix}.
+}
+\tag{P4.138}
+\end{align}
+
+The zone-total residuals are
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{\Sigma,D}
+={}&
+C_{a,D}\widetilde{\dot T}_{a,D}
++
+C_{m,D}\widetilde{\dot T}_{m,D}
+-
+\frac{T_o-T_{a,D}}{R_{Do}}
+-
+\frac{T_{a,K}-T_{a,D}}{R_{DK}}
+-
+Q_{AC,D}
+-
+\lambda_{c,D}\bar Q_c^{nh}
+-
+\lambda_{r,D}\bar Q_r,
+\end{aligned}
+}
+\tag{P4.139}
+\end{align}
+and
+\begin{align}
+\boxed{
+\begin{aligned}
+r_{\Sigma,K}
+={}&
+C_{a,K}\widetilde{\dot T}_{a,K}
++
+C_{m,K}\widetilde{\dot T}_{m,K}
+-
+\frac{T_o-T_{a,K}}{R_{Ko}}
+-
+\frac{T_{a,D}-T_{a,K}}{R_{DK}}
+-
+Q_{AC,K}
+-
+\lambda_{c,K}\bar Q_c^{nh}
+-
+\lambda_{r,K}\bar Q_r.
+\end{aligned}
+}
+\tag{P4.140}
+\end{align}
+
+\section*{32. Physics-residual normalization}
+
+For zone \(i\), define a training-only heat scale
+\begin{align}
+\boxed{
+q_i^\star
+=
+\sqrt{
+\frac{1}{N_{\rm tr}}
+\sum_{k\in\mathcal I_{\rm tr}}
+\left(
+Q_{c,i,k}^2+Q_{r,i,k}^2
+\right)
+}
++
+\epsilon_q.
+}
+\tag{P4.141}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+\widetilde r_i=\frac{r_i}{q_i^\star}.
+}
+\tag{P4.142}
+\end{align}
+
+For 2C,
+\begin{align}
+\boxed{
+\ell_{\rm phys,i}^{2C}
+=
+\frac{r_{a,i}^2+r_{m,i}^2}{(q_i^\star)^2}.
+}
+\tag{P4.143}
+\end{align}
+
+The same zone heat scale is used for both air and mass equations.
+
+\section*{33. Data rollout loss}
+
+For rollout start \(k\),
+\begin{align}
+\boxed{
+\mathcal L_{\rm data}^{(k)}
+=
+\frac{1}{N_r}
+\sum_{\ell=1}^{N_r}
+\left\|
+S_y^{-1}
+\left(
+\widehat y_{k+\ell|k}-y_{k+\ell}
+\right)
+\right\|_2^2.
+}
+\tag{P4.144}
+\end{align}
+
+Across rollout windows,
+\begin{align}
+\boxed{
+\mathcal L_{\rm data}
+=
+\frac{1}{|\mathcal W_{\rm tr}|}
+\sum_{k\in\mathcal W_{\rm tr}}
+\mathcal L_{\rm data}^{(k)}.
+}
+\tag{P4.145}
+\end{align}
+
+Predicted states are recursively fed back within each rollout.
+
+\section*{34. Complete base-PINODE objective}
+
+The core objective is
+\begin{align}
+\boxed{
+\mathcal J_{\rm PINODE}
+=
+\lambda_y\mathcal L_{\rm data}
++
+\lambda_f\mathcal L_{\rm phys}.
+}
+\tag{P4.146}
+\end{align}
+
+With weight decay,
+\begin{align}
+\boxed{
+\mathcal J_{\rm PINODE}
+=
+\lambda_y\mathcal L_{\rm data}
++
+\lambda_f\mathcal L_{\rm phys}
++
+\lambda_{\rm wd}\mathcal L_{\rm reg}.
+}
+\tag{P4.147}
+\end{align}
+
+For 2C,
+\begin{align}
+\boxed{
+\mathcal L_{\rm reg}
+=
+\|\omega\|_2^2+\|\psi\|_2^2.
+}
+\tag{P4.148}
+\end{align}
+
+For 1C the encoder term is absent.
+
+If
+\begin{align}
+\lambda_f=0,
+\end{align}
+then
+\begin{align}
+\boxed{\text{base PINODE reduces to NODE.}}
+\tag{P4.149}
+\end{align}
+
+For finite \(\lambda_f\),
+\begin{align}
+\boxed{r_{\rm RC}=0\text{ is not guaranteed.}}
+\tag{P4.150}
+\end{align}
+
+\section*{35. Training stages}
+
+Stage A is a NODE warm start using
+\begin{align}
+\boxed{\mathcal L_{\rm data}.}
+\tag{P4.151}
+\end{align}
+
+Stage B jointly optimizes neural and physical parameters:
+\begin{align}
+\boxed{
+\mathcal J
+=
+\lambda_y\mathcal L_{\rm data}
++
+\lambda_f\mathcal L_{\rm phys}.
+}
+\tag{P4.152}
+\end{align}
+
+Stage C performs full joint refinement until validation rollout performance stops improving.
+
+\section*{36. Validation criterion}
+
+For validation segment \(s\),
+\begin{align}
+\boxed{
+\mathcal E_s^{val}
+=
+\frac{1}{N_{\rm val}}
+\sum_{\ell=1}^{N_{\rm val}}
+\left\|
+S_y^{-1}
+(\widehat y_{s,\ell}-y_{s,\ell})
+\right\|_2^2.
+}
+\tag{P4.153}
+\end{align}
+
+Across validation segments,
+\begin{align}
+\boxed{
+\mathcal E_{\rm val}
+=
+\frac{1}{N_{\rm seg,val}}
+\sum_s\mathcal E_s^{val}.
+}
+\tag{P4.154}
+\end{align}
+
+Checkpoint selection is
+\begin{align}
+\boxed{
+(\widehat\omega,\widehat\psi,\widehat\theta)
+=
+\arg\min_{\rm checkpoint}
+\mathcal E_{\rm val}.
+}
+\tag{P4.155}
+\end{align}
+
+Physics residual is logged but is not the sole checkpoint selector.
+
+\section*{37. Locked hyperparameter-selection protocol}
+
+Hyperparameter tuning is first performed on a smaller representative subset
+\begin{align}
+\boxed{
+\mathcal D_{\rm tune}\subset\mathcal D_{\rm train}.
+}
+\tag{P4.156}
+\end{align}
+
+The tuning subset is constructed only from training data and should preserve variation in heating/cooling conditions, occupied/unoccupied operation, QAC, solar gains, and outdoor temperature.
+
+For candidate hyperparameters \(h\),
+\begin{align}
+\boxed{
+h^\star
+=
+\arg\min_h
+\mathcal E_{\rm tune,val}(h).
+}
+\tag{P4.157}
+\end{align}
+
+Then
+\begin{align}
+\boxed{h=h^\star}
+\tag{P4.158}
+\end{align}
+is frozen.
+
+The final model is then trained on the complete training data:
+\begin{align}
+\boxed{
+\widehat\Theta
+=
+\arg\min_\Theta
+\mathcal J
+(
+\Theta;
+\mathcal D_{\rm train},
+h^\star
+).
+}
+\tag{P4.159}
+\end{align}
+
+The test set is untouched until final evaluation.
+
+This reduced-data tuning followed by frozen-hyperparameter full-data training is used for all four thermal-model methods.
+
+\section*{38. Hyperparameters included in tuning}
+
+The PINODE tuning set includes
+\begin{align}
+\boxed{
+\mathcal H_{\rm PINODE}
+=
+\{
+L_{\rm hid},
+\bm n_{\rm hid},
+\varphi,
+N_r,
+L_e,
+N_s,
+\lambda_f,
+\lambda_{\rm wd},
+\text{learning rate},
+\text{batch size},
+\text{optimizer},
+\Delta T_m^{\max}
+\}.
+}
+\tag{P4.160}
+\end{align}
+
+In particular,
+\begin{align}
+\boxed{
+L_{\rm hid}
+=
+\text{number of hidden layers},
+}
+\tag{P4.161}
+\end{align}
+and
+\begin{align}
+\boxed{
+\bm n_{\rm hid}
+=
+\text{number of neurons in the hidden layers}
+}
+\tag{P4.162}
+\end{align}
+are explicit hyperparameters.
+
+For 1C, \(L_e\) and \(\Delta T_m^{\max}\) do not apply.
+
+Once selected, all hyperparameters are frozen for final full-data training.
+
+\section*{39. Sim1}
+
+For 1C,
+\begin{align}
+\boxed{x_k=y_k.}
+\tag{P4.163}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+\widehat x_{k+1}
+=
+\Phi_{\widehat\omega}
+(x_k,v_k^{test};N_s).
+}
+\tag{P4.164}
+\end{align}
+
+For 2C,
+\begin{align}
+\boxed{
+x_k=[y_k,E_{\widehat\psi}(\mathcal C_k)].
+}
+\tag{P4.165}
+\end{align}
+
+The measured air state is reset each step and the hidden state is reconstructed causally.
+
+\section*{40. Sim2}
+
+Initialize once:
+\begin{align}
+\boxed{\widehat x_0=y_0}
+\tag{P4.166}
+\end{align}
+for 1C, or
+\begin{align}
+\boxed{
+\widehat x_0=[y_0,E_{\widehat\psi}(\mathcal C_0)]
+}
+\tag{P4.167}
+\end{align}
+for 2C.
+
+Then recursively
+\begin{align}
+\boxed{
+\widehat x_{k+1}
+=
+\Phi_{\widehat\omega}
+(\widehat x_k,v_k^{test};N_s).
+}
+\tag{P4.168}
+\end{align}
+
+Recorded test QAC and disturbances remain external forcing.
+
+\section*{41. Sim3}
+
+The local thermostat produces mass flow:
+\begin{align}
+\boxed{
+\dot m_k
+=
+\pi_{\rm thermostat}
+(\widehat T_{z,k},T_{\rm set,k}).
+}
+\tag{P4.169}
+\end{align}
+
+The Phase C QAC model produces
+\begin{align}
+\boxed{
+Q_{AC,k}
+=
+G_{QAC}
+(\dot m_k,\widehat T_{z,k},T_{sa,k},\ldots).
+}
+\tag{P4.170}
+\end{align}
+
+The PINODE integrates
+\begin{align}
+\boxed{
+\widehat x_{k+1}
+=
+\Phi_{\widehat\omega}
+(\widehat x_k,Q_{AC,k},d_k^{test};N_s).
+}
+\tag{P4.171}
+\end{align}
+
+Only disturbances are replayed from test data.
+
+\section*{42. Locked PHVAC contract for Sim1/Sim2/Sim3}
+
+For every thermal-model method and every Sim1/Sim2/Sim3 evaluation, PHVAC is computed and saved using the common Phase C PHVAC model.
+
+The common mapping is
+\begin{align}
+\boxed{
+\widehat P_{\rm HVAC,k}
+=
+G_{\rm PHVAC}(Q_{AC,k},\ldots).
+}
+\tag{P4.172}
+\end{align}
+
+For Sim1,
+\begin{align}
+\boxed{Q_{AC,k}=Q_{AC,k}^{test}.}
+\tag{P4.173}
+\end{align}
+
+For Sim2,
+\begin{align}
+\boxed{Q_{AC,k}=Q_{AC,k}^{test}.}
+\tag{P4.174}
+\end{align}
+
+For Sim3,
+\begin{align}
+\boxed{
+Q_{AC,k}
+=
+G_{QAC}
+(\dot m_k,\widehat T_{z,k},T_{sa,k},\ldots).
+}
+\tag{P4.175}
+\end{align}
+
+Then in every simulation,
+\begin{align}
+\boxed{
+\widehat P_{\rm HVAC,k}
+=
+G_{\rm PHVAC}(Q_{AC,k},\ldots).
+}
+\tag{P4.176}
+\end{align}
+
+For Sim1 and Sim2, PHVAC may be identical across thermal models when the same recorded QAC trajectory is replayed. It is still saved to preserve a common output contract.
+
+Required outputs for Sim1 and Sim2 include
+\begin{align}
+\boxed{
+\widehat T_z(t),
+\quad
+Q_{AC}^{test}(t),
+\quad
+\widehat P_{\rm HVAC}(t).
+}
+\tag{P4.177}
+\end{align}
+
+Required outputs for Sim3 include
+\begin{align}
+\boxed{
+\widehat T_z(t),
+\quad
+\dot m(t),
+\quad
+Q_{AC}(t),
+\quad
+\widehat P_{\rm HVAC}(t).
+}
+\tag{P4.178}
+\end{align}
+
+\section*{43. Residual diagnostics}
+
+At minimum record
+\begin{align}
+\boxed{\mathcal L_{\rm data},}
+\end{align}
+\begin{align}
+\boxed{\mathcal L_{\rm phys},}
+\end{align}
+\begin{align}
+\boxed{\mathcal J_{\rm PINODE},}
+\end{align}
+and validation rollout error.
+
+For coupled 2C also record
+\begin{align}
+\boxed{
+\operatorname{RMSE}(r_{a,D}),
+\quad
+\operatorname{RMSE}(r_{m,D}),
+}
+\tag{P4.179}
+\end{align}
+\begin{align}
+\boxed{
+\operatorname{RMSE}(r_{a,K}),
+\quad
+\operatorname{RMSE}(r_{m,K}),
+}
+\tag{P4.180}
+\end{align}
+and total-energy residuals
+\begin{align}
+\boxed{r_{\Sigma,D},\quad r_{\Sigma,K}.}
+\tag{P4.181}
+\end{align}
+
+Define the raw neural physics violation
+\begin{align}
+\boxed{
+\rho
+=
+r_{\rm RC}
+=
+M_\theta\widetilde f_\omega-b_\theta.
+}
+\tag{P4.182}
+\end{align}
+
+\section*{44. Base PINODE versus other methods}
+
+Inverse PINN deploys
+\begin{align}
+\boxed{
+f_{RC}(x,v;\widehat\theta).
+}
+\tag{P4.183}
+\end{align}
+
+Base PINODE deploys
+\begin{align}
+\boxed{
+\widetilde f_{\widehat\omega}(x,v).
+}
+\tag{P4.184}
+\end{align}
+
+NODE uses
+\begin{align}
+\boxed{
+\mathcal J_{\rm NODE}=\mathcal L_{\rm data}.
+}
+\tag{P4.185}
+\end{align}
+
+Base PINODE uses
+\begin{align}
+\boxed{
+\mathcal J_{\rm PINODE}
+=
+\mathcal L_{\rm data}
++
+\lambda_f\mathcal L_{\rm phys}
+}
+\tag{P4.186}
+\end{align}
+up to common weights and regularization.
+
+Base PINODE satisfies RC equations only softly:
+\begin{align}
+\boxed{r_{\rm RC}\approx0.}
+\tag{P4.187}
+\end{align}
+
+EBP will instead construct a projected derivative satisfying selected energy constraints
+\begin{align}
+\boxed{Af_P=b}
+\tag{P4.188}
+\end{align}
+by construction.
+
+Thus
+\begin{align}
+\boxed{\text{soft physics}\neq\text{hard physics}.}
+\tag{P4.189}
+\end{align}
+
+\section*{45. Complete base-PINODE algorithm}
+
+Choose
+\begin{align}
+\boxed{
+\mathcal A\in\{A,\mathrm{IND},\mathrm{DEP1},\mathrm{DEP2}\},
+}
+\end{align}
+and choose
+\begin{align}
+\boxed{1C\quad\text{or}\quad2C.}
+\end{align}
+
+Load the corresponding Phase-D \texttt{l1\_h1} data, build contiguous segments, compute training-only normalization and \(q_i^\star\), construct rollout windows of length \(N_r\), and for 2C construct causal contexts of length \(L_e\).
+
+Evaluate
+\begin{align}
+\boxed{
+\widetilde f_\omega
+=
+\frac{S_x}{\Delta t}g_\omega(z,\widetilde v).
+}
+\tag{P4.190}
+\end{align}
+
+Integrate using differentiable RK4 with \(N_s\) substeps per sampled interval.
+
+At every RK4 stage compute
+\begin{align}
+\boxed{
+r_{\rm RC}
+=
+M_\theta\widetilde f_\omega-b_\theta.
+}
+\tag{P4.191}
+\end{align}
+
+Optimize
+\begin{align}
+\boxed{
+\min_{\omega,\psi,\theta_{RC}}
+\left[
+\lambda_y\mathcal L_{\rm data}
++
+\lambda_f\mathcal L_{\rm phys}
++
+\lambda_{\rm wd}\mathcal L_{\rm reg}
+\right].
+}
+\tag{P4.192}
+\end{align}
+
+Hyperparameters are selected first on the smaller representative tuning dataset, including network hidden-layer count and neurons per hidden layer. Hyperparameters are then frozen. Final full-data training is performed on the complete training set, with validation used for checkpoint selection. The test set remains untouched until final Sim1/Sim2/Sim3 evaluation.
+
+The deployed derivative remains
+\begin{align}
+\boxed{
+\dot x
+=
+\widetilde f_{\widehat\omega}(x,v).
+}
+\tag{P4.193}
+\end{align}
+
+No RC correction or projection is applied during base-PINODE simulation.
+
+\section*{Part 4 conclusion}
+
+The base PINODE is
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}=g_\omega(z,\widetilde v)
+}
+\end{align}
+with physical derivative
+\begin{align}
+\boxed{
+\widetilde f_\omega
+=
+\frac{S_x}{\Delta t}g_\omega(z,\widetilde v)
+}
+\end{align}
+and full soft RC residual
+\begin{align}
+\boxed{
+r_{\rm RC}
+=
+M_\theta\widetilde f_\omega-b_\theta.
+}
+\end{align}
+
+Training minimizes
+\begin{align}
+\boxed{
+\mathcal J_{\rm PINODE}
+=
+\lambda_y\mathcal L_{\rm data}
++
+\lambda_f\mathcal L_{\rm phys}
++
+\lambda_{\rm wd}\mathcal L_{\rm reg}.
+}
+\end{align}
+
+The locked workflow is
+\begin{align}
+\boxed{\text{representative reduced-data hyperparameter tuning}}
+\end{align}
+followed by
+\begin{align}
+\boxed{\text{hyperparameter freezing}}
+\end{align}
+followed by
+\begin{align}
+\boxed{\text{full training on complete training data}}
+\end{align}
+followed by
+\begin{align}
+\boxed{\text{Sim1/Sim2/Sim3 evaluation on untouched test data}.}
+\end{align}
+
+The number of hidden layers and neurons per hidden layer are explicitly tuned in the reduced-data tuning stage and then frozen.
+
+For every method and every Sim1/Sim2/Sim3 run,
+\begin{align}
+\boxed{
+\widehat P_{\rm HVAC}
+=
+G_{\rm PHVAC}(Q_{AC},\ldots)
+}
+\end{align}
+is computed using the common Phase C PHVAC model and saved.
+
+Thus
+\begin{align}
+\boxed{\text{NODE}=\text{data-only neural ODE},}
+\end{align}
+\begin{align}
+\boxed{\text{Base PINODE}=\text{neural ODE + soft full-RC residual},}
+\end{align}
+and Part 5 will define
+\begin{align}
+\boxed{\text{EBP-PINODE}=\text{neural ODE + exact energy-balance projection}.}
+\end{align}
+
+\end{document}

@@ -1,0 +1,1398 @@
+﻿================================================================================
+PHASE D P1 - 36 FAILURE LOG DIAGNOSTICS
+================================================================================
+Generated: 2026-08-19 10:13:02
+Campaign: p1_compact_4b4c_labpc_1w_v1
+Phase D Run: phase_d_p1_full_20260813_111121
+Failure count: 36
+
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260712_230155_0033_320a2924_p1_l03_intermediate_equal
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          equal
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      82.86835499998415
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0033_aggr_20260712_230155_0033_320a2924_p1_l03_intermediate_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260712_231032_0034_112da076_p1_l03_intermediate_equal
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          equal
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      81.7996073999966
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0034_aggr_20260712_231032_0034_112da076_p1_l03_intermediate_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260712_231913_0035_c1cf6aa5_p1_l03_intermediate_equal
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          equal
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      82.40134280000348
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0035_aggr_20260712_231913_0035_c1cf6aa5_p1_l03_intermediate_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260712_232751_0036_9e2f404d_p1_l03_intermediate_equal
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          equal
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      82.3877622
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0036_aggr_20260712_232751_0036_9e2f404d_p1_l03_intermediate_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260713_000607_0049_320a2924_p1_l04_spatial_detailed_equal
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          equal
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      84.27483399998164
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0049_aggr_20260713_000607_0049_320a2924_p1_l04_spatial_detailed_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260713_002128_0050_112da076_p1_l04_spatial_detailed_equal
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          equal
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.6459915000014
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0050_aggr_20260713_002128_0050_112da076_p1_l04_spatial_detailed_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260713_003647_0051_c1cf6aa5_p1_l04_spatial_detailed_equal
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          equal
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      82.93298499999219
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0051_aggr_20260713_003647_0051_c1cf6aa5_p1_l04_spatial_detailed_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260713_005206_0052_9e2f404d_p1_l04_spatial_detailed_equal
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          equal
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.32023169999593
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0052_aggr_20260713_005206_0052_9e2f404d_p1_l04_spatial_detailed_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          equal
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      2.0106058999954257
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0065_aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260713_023527_0066_112da076_p1_l05_identity_equal
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          equal
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.9060408000077587
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0066_aggr_20260713_023527_0066_112da076_p1_l05_identity_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_023527_0066_112da076_p1_l05_identity_equal\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_023527_0066_112da076_p1_l05_identity_equal\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260713_031514_0067_c1cf6aa5_p1_l05_identity_equal
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          equal
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.9051392000110354
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0067_aggr_20260713_031514_0067_c1cf6aa5_p1_l05_identity_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_031514_0067_c1cf6aa5_p1_l05_identity_equal\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_031514_0067_c1cf6aa5_p1_l05_identity_equal\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260713_035506_0068_9e2f404d_p1_l05_identity_equal
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          equal
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.8937448000069708
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0068_aggr_20260713_035506_0068_9e2f404d_p1_l05_identity_equal.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_035506_0068_9e2f404d_p1_l05_identity_equal\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_035506_0068_9e2f404d_p1_l05_identity_equal\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260713_062859_0113_320a2924_p1_l03_intermediate_floor_area
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          floor_area
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      84.08766640000977
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0113_aggr_20260713_062859_0113_320a2924_p1_l03_intermediate_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260713_063739_0114_112da076_p1_l03_intermediate_floor_area
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          floor_area
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.31712720001815
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0114_aggr_20260713_063739_0114_112da076_p1_l03_intermediate_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260713_064616_0115_c1cf6aa5_p1_l03_intermediate_floor_area
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          floor_area
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.17784129999927
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0115_aggr_20260713_064616_0115_c1cf6aa5_p1_l03_intermediate_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260713_065454_0116_9e2f404d_p1_l03_intermediate_floor_area
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          floor_area
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.76588469999842
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0116_aggr_20260713_065454_0116_9e2f404d_p1_l03_intermediate_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260713_073307_0129_320a2924_p1_l04_spatial_detailed_floor_area
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          floor_area
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      84.38157430000138
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0129_aggr_20260713_073307_0129_320a2924_p1_l04_spatial_detailed_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260713_074828_0130_112da076_p1_l04_spatial_detailed_floor_area
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          floor_area
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.11491870001191
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0130_aggr_20260713_074828_0130_112da076_p1_l04_spatial_detailed_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260713_080351_0131_c1cf6aa5_p1_l04_spatial_detailed_floor_area
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          floor_area
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.15198659998714
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0131_aggr_20260713_080351_0131_c1cf6aa5_p1_l04_spatial_detailed_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260713_081911_0132_9e2f404d_p1_l04_spatial_detailed_floor_area
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          floor_area
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.24129370000446
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0132_aggr_20260713_081911_0132_9e2f404d_p1_l04_spatial_detailed_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260713_092259_0145_320a2924_p1_l05_identity_floor_area
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          floor_area
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      1.1536144000128843
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0145_aggr_20260713_092259_0145_320a2924_p1_l05_identity_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_092259_0145_320a2924_p1_l05_identity_floor_area\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_092259_0145_320a2924_p1_l05_identity_floor_area\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260713_100305_0146_112da076_p1_l05_identity_floor_area
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          floor_area
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.8929235999821685
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0146_aggr_20260713_100305_0146_112da076_p1_l05_identity_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_100305_0146_112da076_p1_l05_identity_floor_area\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_100305_0146_112da076_p1_l05_identity_floor_area\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260713_104317_0147_c1cf6aa5_p1_l05_identity_floor_area
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          floor_area
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.8879956000018865
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0147_aggr_20260713_104317_0147_c1cf6aa5_p1_l05_identity_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_104317_0147_c1cf6aa5_p1_l05_identity_floor_area\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_104317_0147_c1cf6aa5_p1_l05_identity_floor_area\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260713_112324_0148_9e2f404d_p1_l05_identity_floor_area
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          floor_area
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.8730763999919873
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0148_aggr_20260713_112324_0148_9e2f404d_p1_l05_identity_floor_area.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_112324_0148_9e2f404d_p1_l05_identity_floor_area\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_112324_0148_9e2f404d_p1_l05_identity_floor_area\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260713_135822_0193_320a2924_p1_l03_intermediate_volume
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          volume
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.67798390000826
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0193_aggr_20260713_135822_0193_320a2924_p1_l03_intermediate_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260713_140703_0194_112da076_p1_l03_intermediate_volume
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          volume
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.92920010001399
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0194_aggr_20260713_140703_0194_112da076_p1_l03_intermediate_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260713_141544_0195_c1cf6aa5_p1_l03_intermediate_volume
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          volume
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.59836449997965
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0195_aggr_20260713_141544_0195_c1cf6aa5_p1_l03_intermediate_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260713_142424_0196_9e2f404d_p1_l03_intermediate_volume
+aggregation_id:       p1_l03_intermediate
+aggregation_level:    L03
+aggregation_family:   intermediate
+weight_mode:          volume
+aggregate_zone_count: 5
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.82449470000574
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0196_aggr_20260713_142424_0196_9e2f404d_p1_l03_intermediate_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260713_150255_0209_320a2924_p1_l04_spatial_detailed_volume
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          volume
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.51470829997561
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0209_aggr_20260713_150255_0209_320a2924_p1_l04_spatial_detailed_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260713_151822_0210_112da076_p1_l04_spatial_detailed_volume
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          volume
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      82.80628860002616
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0210_aggr_20260713_151822_0210_112da076_p1_l04_spatial_detailed_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260713_153349_0211_c1cf6aa5_p1_l04_spatial_detailed_volume
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          volume
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      82.85792079998646
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0211_aggr_20260713_153349_0211_c1cf6aa5_p1_l04_spatial_detailed_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260713_154916_0212_9e2f404d_p1_l04_spatial_detailed_volume
+aggregation_id:       p1_l04_spatial_detailed
+aggregation_level:    L04
+aggregation_family:   spatial_detailed
+weight_mode:          volume
+aggregate_zone_count: 10
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      83.29814920001081
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0212_aggr_20260713_154916_0212_9e2f404d_p1_l04_spatial_detailed_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 9:     raise D6ContractError(
+Line 10: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 610, in assemble_zone_in_memory
+    availability = availability_from_canonical_table(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 92, in availability_from_canonical_table
+    raise D6ContractError(
+scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_4abb05aa9c546958efafe7c4
+building_type:        ApartmentMidRise
+climate_zone:         5A
+weather_location:     Buffalo
+aggregation_run_id:   aggr_20260713_165325_0225_320a2924_p1_l05_identity_volume
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          volume
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      1.2101269999984652
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0225_aggr_20260713_165325_0225_320a2924_p1_l05_identity_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_165325_0225_320a2924_p1_l05_identity_volume\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_165325_0225_320a2924_p1_l05_identity_volume\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_b9f042278ba1f2f6cd75d970
+building_type:        ApartmentMidRise
+climate_zone:         4C
+weather_location:     Seattle
+aggregation_run_id:   aggr_20260713_173339_0226_112da076_p1_l05_identity_volume
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          volume
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.9109035000146832
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0226_aggr_20260713_173339_0226_112da076_p1_l05_identity_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_173339_0226_112da076_p1_l05_identity_volume\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_173339_0226_112da076_p1_l05_identity_volume\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_ec9b92f636a696e64f49eea9
+building_type:        ApartmentMidRise
+climate_zone:         2A
+weather_location:     Tampa
+aggregation_run_id:   aggr_20260713_181351_0227_c1cf6aa5_p1_l05_identity_volume
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          volume
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.929626900004223
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0227_aggr_20260713_181351_0227_c1cf6aa5_p1_l05_identity_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_181351_0227_c1cf6aa5_p1_l05_identity_volume\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_181351_0227_c1cf6aa5_p1_l05_identity_volume\zones\G Corridor
+
+================================================================================
+FAILED AGGREGATION RUN
+================================================================================
+case_id:              epcase_bacd02766bd7dcdb78441c3f
+building_type:        ApartmentMidRise
+climate_zone:         2B
+weather_location:     Tucson
+aggregation_run_id:   aggr_20260713_185400_0228_9e2f404d_p1_l05_identity_volume
+aggregation_id:       p1_l05_identity
+aggregation_level:    L05
+aggregation_family:   identity
+weight_mode:          volume
+aggregate_zone_count: 27
+source_zone_count:    27
+return_code:          1
+runtime_seconds:      0.9169310000143014
+final_dataset_count:  0
+log_path:             F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\phase_d\campaign_runs\phase_d_p1_full_20260813_111121\logs\0228_aggr_20260713_185400_0228_9e2f404d_p1_l05_identity_volume.log
+
+----- MATCHED ERROR / TRACEBACK LINES -----
+Line 1: Traceback (most recent call last):
+Line 13:     raise PhaseDDiscoveryError(f"{label} not found: {path}")
+Line 14: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_185400_0228_9e2f404d_p1_l05_identity_volume\zones\G Corridor
+
+----- LAST 120 LOG LINES -----
+Traceback (most recent call last):
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 455, in <module>
+    raise SystemExit(main())
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\scripts\thermal_modeling\build_phase_d_final_datasets.py", line 103, in main
+    item = assemble_zone_in_memory(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\builders.py", line 565, in assemble_zone_in_memory
+    discovery = discover_phase_d_sources(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 602, in discover_phase_d_sources
+    aggregation_zone = resolve_aggregation_zone(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 177, in resolve_aggregation_zone
+    zone_root = _required_dir(
+  File "F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\NewOrg\scalebridge-research\src\scalebridge\data\thermal_modeling\discovery.py", line 61, in _required_dir
+    raise PhaseDDiscoveryError(f"{label} not found: {path}")
+scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_185400_0228_9e2f404d_p1_l05_identity_volume\zones\G Corridor
+
+================================================================================
+FAILURE SIGNATURE SUMMARY
+================================================================================
+
+COUNT: 12
+SIGNATURE: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_G_Corridor' has missing QAC control values
+
+COUNT: 12
+SIGNATURE: scalebridge.data.thermal_modeling.silo_contracts.D6ContractError: Aggregate zone 'Apartment_Corridors' has missing QAC control values
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_165325_0225_320a2924_p1_l05_identity_volume\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_112324_0148_9e2f404d_p1_l05_identity_floor_area\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_104317_0147_c1cf6aa5_p1_l05_identity_floor_area\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_185400_0228_9e2f404d_p1_l05_identity_volume\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_181351_0227_c1cf6aa5_p1_l05_identity_volume\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_173339_0226_112da076_p1_l05_identity_volume\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_ec9b92f636a696e64f49eea9\runs\aggr_20260713_031514_0067_c1cf6aa5_p1_l05_identity_equal\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_023527_0066_112da076_p1_l05_identity_equal\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_015540_0065_320a2924_p1_l05_identity_equal\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_b9f042278ba1f2f6cd75d970\runs\aggr_20260713_100305_0146_112da076_p1_l05_identity_floor_area\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_4abb05aa9c546958efafe7c4\runs\aggr_20260713_092259_0145_320a2924_p1_l05_identity_floor_area\zones\G Corridor
+
+COUNT: 1
+SIGNATURE: scalebridge.data.thermal_modeling.discovery.PhaseDDiscoveryError: aggregation zone root not found: F:\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\campaigns\p1_compact_4b4c_labpc_1w_v1\aggregation\cases\epcase_bacd02766bd7dcdb78441c3f\runs\aggr_20260713_035506_0068_9e2f404d_p1_l05_identity_equal\zones\G Corridor

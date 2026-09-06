@@ -1,0 +1,35 @@
+ScaleBridge Phase D D7.1 - pandas fragmentation optimization
+
+Scope:
+- Performance-only patch to expand_temporal_dataset().
+- Replaces repeated DataFrame column insertion with batched Series collection
+  plus pd.concat(axis=1).
+- Does not change:
+  * D6 schema
+  * column names
+  * column order
+  * lag semantics
+  * target semantics
+  * partition assignment
+  * leakage handling
+  * included counts
+  * manifests
+  * folder paths
+  * storage policy
+
+Regression tests:
+- exact final-column order equals D6 contract.final_columns()
+- no pandas highly-fragmented PerformanceWarning
+- complete D7 builder suite remains valid
+
+Validation command:
+  & ".\scripts\thermal_modeling\D7_1_VALIDATE_FRAGMENTATION_FIX.ps1"
+
+Then rerun:
+  & ".\scripts\thermal_modeling\D7_RUN_CONTROLLED_BUILDERS.ps1"
+
+Expected controlled results remain:
+- 8 final Parquets
+- 0 intermediate Parquets
+- ML included rows: 104508 per realization for l12_h6/mdh
+- Opt/Bayes included rows: 32248 per realization for l1_h1/sd

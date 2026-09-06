@@ -1,0 +1,37 @@
+﻿{
+    "documentation_id":  "PINODE_EPSR_PRODUCTION_DOCUMENTATION_DOC01_20260902_V1",
+    "installed_at":  "2026-09-02T16:57:34.6714858-07:00",
+    "repo_root":  "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\NewOrg\\scalebridge-research",
+    "target":  "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\NewOrg\\scalebridge-research\\PINODE_EPSR_Production_Documentation",
+    "replaced_existing":  false,
+    "backup":  null,
+    "manifest":  {
+                     "documentation_id":  "PINODE_EPSR_PRODUCTION_DOCUMENTATION_DOC01_20260902_V1",
+                     "created":  "2026-09-02",
+                     "install_target_relative":  "PINODE_EPSR_Production_Documentation",
+                     "baseline_patch":  "PINODE_EPSR_DAY1_PRODUCTION_HPO_PATCH01R2B_20260902_V5",
+                     "payload_files":  [
+                                           {
+                                               "relative_path":  "PINODE_EPSR_Production_Documentation\\PINODE_EPSR_Production_Campaigns_HPO_Quick_Reference.tex",
+                                               "bytes":  4665,
+                                               "sha256":  "D05D7FD1F539988734E8555BF3013B197888CE6EBB749D2BC64F05E7BBA63965"
+                                           },
+                                           {
+                                               "relative_path":  "PINODE_EPSR_Production_Documentation\\PINODE_EPSR_Production_Campaigns_HPO_Technical_Reference.tex",
+                                               "bytes":  37249,
+                                               "sha256":  "6DC3E33361D6C99D7ADC5106A64330346C046FE468B42123AF4CF976E951568A"
+                                           },
+                                           {
+                                               "relative_path":  "PINODE_EPSR_Production_Documentation\\PINODE_EPSR_Production_Source_of_Truth_Map.tex",
+                                               "bytes":  2138,
+                                               "sha256":  "BBD5E1028E660D7ACFAFBB02996DB4E4C40B9831EAEAEBF4329403EECEE2502C"
+                                           },
+                                           {
+                                               "relative_path":  "PINODE_EPSR_Production_Documentation\\README.txt",
+                                               "bytes":  971,
+                                               "sha256":  "B587D201CD59505F57D374D1C38871F9B6BC6B586EBAB69AE6395EA9D8C4E4E4"
+                                           }
+                                       ],
+                     "no_git_operations":  true
+                 }
+}

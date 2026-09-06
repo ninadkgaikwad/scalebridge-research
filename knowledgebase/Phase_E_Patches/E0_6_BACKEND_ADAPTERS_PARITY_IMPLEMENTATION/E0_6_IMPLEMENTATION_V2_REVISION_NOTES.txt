@@ -1,0 +1,9 @@
+E0-6 implementation v2 revision
+- Cross-backend authority is physical Theta.
+- PyTorch/Neuromancer: transformed rho -> Theta.
+- CasADi/IPOPT production: direct physical Theta with lbx/ubx and explicit simplex/DEP2 equalities.
+- CasadiTransformedRCBackend retained for parity/reference only; CasadiRCBackend compatibility alias preserved.
+- NumpyPhysicalRCBackend added for transform-free Bayesian/reference evaluation.
+- P4 parity changed to grad_rho = J_T^T grad_Theta.
+- Symbolic Euler/RK2/RK4 supported in direct physical CasADi path; exact ZOH remains value oracle/optional path.
+- Real IPOPT smoke solve required in validator.

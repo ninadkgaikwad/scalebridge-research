@@ -1,0 +1,36 @@
+{
+  "assistant_container_validation": {
+    "authoritative_real_neuromancer_runtime_tested_here": false,
+    "contract_test_count": 46,
+    "reason": "The assistant container does not have the qualified Neuromancer package and cannot install packages from the network.",
+    "required_next_validation": "Run validate_patch2.py in the qualified ScaleBridge environment; the report will record the actual Neuromancer package version/classes and run the controlled real-data matrix.",
+    "runtime_mode": "temporary API-compatible Neuromancer shim",
+    "shim_included_in_patch": false,
+    "status": "passed"
+  },
+  "framework_contract": {
+    "custom_rk4_in_paper_code": false,
+    "direct_torchdiffeq_calls_in_paper_code": false,
+    "hyperparameter_search": "optuna",
+    "integration": "neuromancer.dynamics.integrators.RK4",
+    "runtime": {
+      "mlp_class": "neuromancer.modules.blocks.MLP",
+      "node_class": "neuromancer.system.Node",
+      "penalty_loss_class": "neuromancer.loss.PenaltyLoss",
+      "problem_class": "neuromancer.problem.Problem",
+      "rk4_class": "neuromancer.dynamics.integrators.RK4",
+      "system_class": "neuromancer.system.System",
+      "version": "assistant-shim-not-authoritative"
+    },
+    "sciml": "neuromancer",
+    "tensor_autograd_optimizer": "pytorch"
+  },
+  "math_contracts": [
+    "PINODE_EPSR_Part1_RC_Representations_v1.tex",
+    "PINODE_EPSR_Part2_Inverse_PINN_RC.tex",
+    "PINODE_EPSR_Part3_NeuralODE_Detailed.tex"
+  ],
+  "real_data": "not_requested",
+  "real_data_requested": false,
+  "unit_contracts": "passed"
+}

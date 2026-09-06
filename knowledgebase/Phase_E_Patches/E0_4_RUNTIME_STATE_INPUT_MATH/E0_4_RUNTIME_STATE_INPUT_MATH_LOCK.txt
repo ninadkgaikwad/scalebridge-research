@@ -1,0 +1,27 @@
+ScaleBridge Phase E0 -- E0-4 Runtime State/Input Mathematics Lock
+Status: RATIFIED / LOCKED
+Date: 2026-08-27
+
+Locked sections:
+- E0-4A compiled-state ownership and deterministic ordering
+- E0-4B runtime initialization and state lifting
+- E0-4C canonical runtime frame and time semantics
+- E0-4D source availability vs model-forcing applicability
+- E0-4E IND/DEP1/DEP2 runtime forcing
+- E0-4F recursive runtime state ownership
+- E0-4G runtime validity/fail-fast rules
+- E0-4H eight runtime invariants
+
+Initialization contract:
+- supported modes: auto, user_fixed, observed, setpoint, default
+- auto precedence: user > observed Ta(t0) > resolved setpoint > configured default
+- configured default: 22 degC
+- if heating/cooling setpoints exist and active mode is unknown: midpoint
+- X0 = S0 T0_star
+- H S0 = I
+- all thermal states in a zone initialize to that zone's resolved T0_star
+
+Authority boundary:
+- E0-3 owns RC topology and continuous-time RHS
+- E0-4 owns runtime initialization and state/input realization
+- E0-5 owns interpolation, discretization, and numerical time advance

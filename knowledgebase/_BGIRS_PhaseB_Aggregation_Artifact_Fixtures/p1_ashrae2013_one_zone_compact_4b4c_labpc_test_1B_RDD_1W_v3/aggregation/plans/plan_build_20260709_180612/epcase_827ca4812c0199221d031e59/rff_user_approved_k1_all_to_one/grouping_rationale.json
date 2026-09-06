@@ -1,0 +1,37 @@
+{
+  "aggregation_id": "rff_user_approved_k1_all_to_one",
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "custom_grouping_summary": {
+    "aggregate_zone_count": 1,
+    "aggregate_zones": [
+      {
+        "aggregate_zone_id": "Aggregated_Zone_1",
+        "source_zones": [
+          "DINING",
+          "KITCHEN"
+        ]
+      }
+    ],
+    "approved_source_zone_count": 2,
+    "source_zone_count": 2
+  },
+  "rule_set": "legacy_v1",
+  "schema_version": "0.1.0",
+  "source": "approved_custom_groups.csv",
+  "strategy": "custom_groups",
+  "validation": {
+    "aggregate_zones": [
+      "Aggregated_Zone_1"
+    ],
+    "aggregation_id": "rff_user_approved_k1_all_to_one",
+    "approved_source_zone_count": 2,
+    "duplicate_zones": [],
+    "empty_aggregate_zone_rows": [],
+    "extra_zones": [],
+    "missing_zones": [],
+    "n_aggregate_zones": 1,
+    "row_count": 2,
+    "valid": true
+  },
+  "weight_mode": "equal"
+}

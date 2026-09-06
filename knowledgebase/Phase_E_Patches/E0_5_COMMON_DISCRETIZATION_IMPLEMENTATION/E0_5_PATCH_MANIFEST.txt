@@ -1,0 +1,22 @@
+ScaleBridge Phase E0-5 Common Discretization Implementation Patch
+
+Added:
+  docs/architecture/phase_e0_common_discretization.md
+  knowledgebase/Phase_E_Patches/E0_5_COMMON_DISCRETIZATION_IMPLEMENTATION/E0_5_IMPLEMENTATION_NOTES.txt
+  knowledgebase/Phase_E_Patches/E0_5_COMMON_DISCRETIZATION_IMPLEMENTATION/E0_5_PATCH_MANIFEST.txt
+  scripts/thermal_modeling/validate_phase_e0_common_discretization.py
+  src/scalebridge/models/grey_box/rc_networks/discretization/__init__.py
+  src/scalebridge/models/grey_box/rc_networks/discretization/contracts.py
+  src/scalebridge/models/grey_box/rc_networks/discretization/diagnostics.py
+  src/scalebridge/models/grey_box/rc_networks/discretization/engine.py
+  src/scalebridge/models/grey_box/rc_networks/discretization/linear_oracle.py
+  src/scalebridge/models/grey_box/rc_networks/discretization/linear_system.py
+  src/scalebridge/models/grey_box/rc_networks/discretization/neuromancer_ode.py
+  src/scalebridge/models/grey_box/rc_networks/discretization/solver_registry.py
+  tests/thermal_modeling/test_phase_e0_common_discretization.py
+
+Modified:
+  src/scalebridge/models/grey_box/rc_networks/__init__.py
+
+Deleted:
+  NONE

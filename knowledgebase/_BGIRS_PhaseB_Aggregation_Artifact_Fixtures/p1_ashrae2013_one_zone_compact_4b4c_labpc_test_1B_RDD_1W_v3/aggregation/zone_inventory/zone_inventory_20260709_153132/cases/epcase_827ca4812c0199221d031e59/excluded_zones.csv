@@ -1,0 +1,2 @@
+case_id,zone_name,include_flag,exclude_reason,part_of_total_building_area,north_axis_deg,origin_x_m,origin_y_m,origin_z_m,centroid_x_m,centroid_y_m,centroid_z_m,minimum_x_m,maximum_x_m,minimum_y_m,maximum_y_m,minimum_z_m,maximum_z_m,ceiling_height_m,volume_m3,floor_area_m2,exterior_gross_wall_area_m2,exterior_net_wall_area_m2,exterior_window_area_m2,number_of_surfaces,number_of_subsurfaces
+epcase_827ca4812c0199221d031e59,ATTIC,False,Part of Total Building Area != Yes,No,0.0,0.0,0.0,3.05,7.62,7.62,3.64,0.0,15.24,0.0,15.24,3.05,5.59,1.27,262.34,232.34,0.0,0.0,0.0,6,0

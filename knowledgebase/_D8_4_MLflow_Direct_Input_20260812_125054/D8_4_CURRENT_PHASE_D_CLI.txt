@@ -1,0 +1,79 @@
+﻿usage: run_phase_d_campaign.py [-h] --campaign-root CAMPAIGN_ROOT
+                               [--output-root OUTPUT_ROOT]
+                               [--matrix-run-id MATRIX_RUN_ID]
+                               [--phase-c-campaign-run-id PHASE_C_CAMPAIGN_RUN_ID]
+                               [--phase-d-run-id PHASE_D_RUN_ID]
+                               [--aggregation-id AGGREGATION_ID]
+                               [--weight-mode WEIGHT_MODE] [--case-id CASE_ID]
+                               [--max-aggregation-runs MAX_AGGREGATION_RUNS]
+                               [--phase-d-calendar-year PHASE_D_CALENDAR_YEAR]
+                               [--heat-representation {grouped,components}]
+                               [--qzivr-separate] [--ml-policy ML_POLICY]
+                               [--ml-input-lag ML_INPUT_LAG]
+                               [--ml-target-horizon ML_TARGET_HORIZON]
+                               [--ml-train-fraction ML_TRAIN_FRACTION]
+                               [--ml-test-fraction ML_TEST_FRACTION]
+                               [--ml-validation-fraction ML_VALIDATION_FRACTION]
+                               [--ml-sh-train-seasons ML_SH_TRAIN_SEASONS]
+                               [--ml-sh-test-seasons ML_SH_TEST_SEASONS]
+                               [--ml-sh-validation-seasons ML_SH_VALIDATION_SEASONS]
+                               [--ob-policy OB_POLICY]
+                               [--sd-season-offset-days SD_SEASON_OFFSET_DAYS]
+                               [--sd-train-days SD_TRAIN_DAYS]
+                               [--sd-test-days SD_TEST_DAYS]
+                               [--sbh-train-seasons SBH_TRAIN_SEASONS]
+                               [--sbh-test-seasons SBH_TEST_SEASONS]
+                               [--ci-start-datetime CI_START_DATETIME]
+                               [--ci-train-days CI_TRAIN_DAYS]
+                               [--ci-test-days CI_TEST_DAYS]
+                               [--cdr-train-range CDR_TRAIN_RANGE]
+                               [--cdr-test-range CDR_TEST_RANGE]
+                               [--parquet-compression PARQUET_COMPRESSION]
+                               [--resume] [--overwrite-existing]
+                               [--continue-on-error] [--dry-run]
+
+Run ScaleBridge Phase D D8 across an authoritative aggregation matrix.
+
+options:
+  -h, --help            show this help message and exit
+  --campaign-root CAMPAIGN_ROOT
+  --output-root OUTPUT_ROOT
+  --matrix-run-id MATRIX_RUN_ID
+  --phase-c-campaign-run-id PHASE_C_CAMPAIGN_RUN_ID
+  --phase-d-run-id PHASE_D_RUN_ID
+  --aggregation-id AGGREGATION_ID
+  --weight-mode WEIGHT_MODE
+  --case-id CASE_ID
+  --max-aggregation-runs MAX_AGGREGATION_RUNS
+  --phase-d-calendar-year PHASE_D_CALENDAR_YEAR
+  --heat-representation {grouped,components}
+  --qzivr-separate
+  --ml-policy ML_POLICY
+                        Repeatable ML/SciML policy: mdh, ch, sh (or long
+                        name). Default: mdh.
+  --ml-input-lag ML_INPUT_LAG
+  --ml-target-horizon ML_TARGET_HORIZON
+  --ml-train-fraction ML_TRAIN_FRACTION
+  --ml-test-fraction ML_TEST_FRACTION
+  --ml-validation-fraction ML_VALIDATION_FRACTION
+  --ml-sh-train-seasons ML_SH_TRAIN_SEASONS
+  --ml-sh-test-seasons ML_SH_TEST_SEASONS
+  --ml-sh-validation-seasons ML_SH_VALIDATION_SEASONS
+  --ob-policy OB_POLICY
+                        Repeatable Opt/Bayes policy: sd, sbh, ci, cdr (or long
+                        name). Default: sd.
+  --sd-season-offset-days SD_SEASON_OFFSET_DAYS
+  --sd-train-days SD_TRAIN_DAYS
+  --sd-test-days SD_TEST_DAYS
+  --sbh-train-seasons SBH_TRAIN_SEASONS
+  --sbh-test-seasons SBH_TEST_SEASONS
+  --ci-start-datetime CI_START_DATETIME
+  --ci-train-days CI_TRAIN_DAYS
+  --ci-test-days CI_TEST_DAYS
+  --cdr-train-range CDR_TRAIN_RANGE
+  --cdr-test-range CDR_TEST_RANGE
+  --parquet-compression PARQUET_COMPRESSION
+  --resume
+  --overwrite-existing
+  --continue-on-error
+  --dry-run

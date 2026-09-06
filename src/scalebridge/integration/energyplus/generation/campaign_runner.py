@@ -60,14 +60,39 @@ def validate_case_generation_outputs(*,case_root,expected_variable_count,require
 
 def normalize_cases(*,selected_cases,campaign_id,generated_data_root):
     records=[]
-    for case in selected_cases:
-        norm=normalize_idf_before_opyplus(source_idf_path=Path(case.idf_path),normalized_idf_path=normalized_idf_path_for_case(generated_data_root,campaign_id,case.case_id))
-        tags=dict(case.tags); tags['idf_pre_opyplus_normalization']='true'; tags['idf_patches']='; '.join(norm.applied_patches) if norm.applied_patches else 'none'
+    total=len(selected_cases)
+    for index,case in enumerate(selected_cases,1):
+        destination=normalized_idf_path_for_case(generated_data_root,campaign_id,case.case_id)
+        print(
+            f'[prepare {index}/{total}] Normalizing IDF: '
+            f'{case.building_type} / {case.weather_location}',
+            flush=True,
+        )
+        print(f'  source_idf: {case.idf_path}',flush=True)
+        print(f'  normalized_idf: {destination}',flush=True)
+        norm=normalize_idf_before_opyplus(
+            source_idf_path=Path(case.idf_path),
+            normalized_idf_path=destination,
+        )
+        tags=dict(case.tags)
+        tags['idf_pre_opyplus_normalization']='true'
+        tags['idf_patches']='; '.join(norm.applied_patches) if norm.applied_patches else 'none'
         records.append((case.model_copy(update={'idf_path':norm.normalized_idf_path,'tags':tags}),norm))
+        print(
+            f'[prepare {index}/{total}] IDF normalization complete; '
+            f'patches: {tags["idf_patches"]}',
+            flush=True,
+        )
     return records
 
 def run_generation_campaign(*,selected_cases:Sequence, campaign_id:str, machine_id:str, generated_data_root:Path, variable_limit:int|None, parallel_variable_workers:int, write_legacy_pickles:bool, rerun_completed:bool, mlflow_tracker=None, dry_run=False):
     collection=campaign_case_collection_name(campaign_id)
+    print('='*100,flush=True)
+    print('GENERATION CAMPAIGN STARTUP',flush=True)
+    print('='*100,flush=True)
+    print(f'campaign_id: {campaign_id}',flush=True)
+    print(f'selected_case_count: {len(selected_cases)}',flush=True)
+    print('Preparing normalized IDFs before EnergyPlus execution...',flush=True)
     records=normalize_cases(selected_cases=selected_cases,campaign_id=campaign_id,generated_data_root=generated_data_root)
     print('='*100,flush=True); print('GENERAL GENERATION CAMPAIGN PLAN',flush=True); print('='*100,flush=True)
     print(f'campaign_id: {campaign_id}',flush=True); print(f'generated_data_root: {generated_data_root}',flush=True); print(f'selected_case_count: {len(records)}',flush=True); print(f'variable_limit: {variable_limit if variable_limit is not None else "all"}',flush=True); print(f'parallel_variable_workers: {parallel_variable_workers}',flush=True)

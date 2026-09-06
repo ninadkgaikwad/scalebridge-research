@@ -1,0 +1,11 @@
+﻿{
+    "installed_at":  "2026-08-29T19:33:28-07:00",
+    "from_contract":  "20260829_v6",
+    "to_contract":  "20260829_v6_1",
+    "scientific_contract_changed":  false,
+    "history_closure":  {
+                            "full_300s_external_control_alignment":  true,
+                            "effective_vs_raw_actuator_readback_separated":  true,
+                            "heating_runtime_qualification_includes_kitchen":  true
+                        }
+}

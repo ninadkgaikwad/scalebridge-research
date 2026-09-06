@@ -1,0 +1,27 @@
+{
+  "aggregate_zone_count": 2,
+  "aggregated_long_rows": 6412320,
+  "aggregation_run_id": "aggr_20260709_182653_a8695a44",
+  "aggregation_run_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260709_182653_a8695a44",
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "created_at_utc": "2026-07-10T01:28:18.993944+00:00",
+  "diagnostic_rows": 9,
+  "equipment_contribution_rows": 9,
+  "loaded_variable_count": 29,
+  "outputs": {
+    "diagnostics_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260709_182653_a8695a44\\diagnostics",
+    "inputs_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260709_182653_a8695a44\\inputs",
+    "legacy_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260709_182653_a8695a44\\legacy",
+    "zones_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260709_182653_a8695a44\\zones"
+  },
+  "plan_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\plans\\plan_build_20260709_180612\\epcase_827ca4812c0199221d031e59\\rff_user_approved_k2_identity\\aggregation_plan.json",
+  "rule_set": "legacy_v1",
+  "rule_summary_rows": 70,
+  "runtime_seconds": 85.03294070006814,
+  "schema_version": "0.1.0",
+  "source_generation_run_id": "epvwr_a8695a44ed3f",
+  "static_equipment_rows": 7,
+  "status": "completed",
+  "strategy": "custom_groups",
+  "weight_mode": "equal"
+}

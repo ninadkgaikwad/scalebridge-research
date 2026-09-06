@@ -1,0 +1,3210 @@
+{
+  "schema_version": "0.1.0",
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "run_id": "epvwr_a8695a44ed3f",
+  "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "status": "completed_with_warnings",
+  "case_spec": {
+    "schema_version": "0.1.0",
+    "case_name": "p1_RestaurantFastFood_Buffalo_2013",
+    "building_type": "RestaurantFastFood",
+    "prototype_standard": "ASHRAE 90.1",
+    "prototype_year": "2013",
+    "climate_zone": "5A",
+    "weather_location": "Buffalo",
+    "idf_path": "F:\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\normalization\\idfs\\epcase_827ca4812c0199221d031e59\\normalized.idf",
+    "epw_path": "F:\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\TMY3_WeatherFiles_Commercial\\USA_NY_Buffalo.Niagara.Intl.AP.725280_TMY3.epw",
+    "idf_sha256": "bf67525d69589e06dc018b53e5d1c474a2e8f5e75ec57b59cc6f3690335db870",
+    "epw_sha256": "86b3c6b830fe8bc7a6cdee58051f5280ea9bc6f38951f65e30c3704c5f419dbc",
+    "run_period": {
+      "start_month": 1,
+      "start_day": 1,
+      "end_month": 12,
+      "end_day": 31,
+      "calendar_year": 2013
+    },
+    "timestep_minutes": 5,
+    "output_variables": [
+      {
+        "variable_name": "Schedule Value",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "schedule"
+      },
+      {
+        "variable_name": "Facility Total HVAC Electric Demand Power",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "hvac_electric_power"
+      },
+      {
+        "variable_name": "Site Diffuse Solar Radiation Rate per Area",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "solar"
+      },
+      {
+        "variable_name": "Site Direct Solar Radiation Rate per Area",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "solar"
+      },
+      {
+        "variable_name": "Site Outdoor Air Drybulb Temperature",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "temperature"
+      },
+      {
+        "variable_name": "Site Solar Altitude Angle",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "solar"
+      },
+      {
+        "variable_name": "Surface Inside Face Internal Gains Radiation Heat Gain Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Surface Inside Face Lights Radiation Heat Gain Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Surface Inside Face Solar Radiation Heat Gain Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "solar"
+      },
+      {
+        "variable_name": "Surface Inside Face Temperature",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "temperature"
+      },
+      {
+        "variable_name": "Zone Windows Total Transmitted Solar Radiation Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "solar"
+      },
+      {
+        "variable_name": "Zone Air Temperature",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "temperature"
+      },
+      {
+        "variable_name": "Zone People Convective Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Lights Convective Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Electric Equipment Convective Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Gas Equipment Convective Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Other Equipment Convective Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Hot Water Equipment Convective Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Steam Equipment Convective Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone People Radiant Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Lights Radiant Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Electric Equipment Radiant Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Gas Equipment Radiant Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Other Equipment Radiant Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Hot Water Equipment Radiant Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Steam Equipment Radiant Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Lights Visible Radiation Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Total Internal Convective Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Total Internal Radiant Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Total Internal Total Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Total Internal Visible Radiation Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "Zone Air System Sensible Cooling Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "hvac_cooling_rate"
+      },
+      {
+        "variable_name": "Zone Air System Sensible Heating Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "heat_gain_rate"
+      },
+      {
+        "variable_name": "System Node Temperature",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "temperature"
+      },
+      {
+        "variable_name": "System Node Mass Flow Rate",
+        "key_value": "*",
+        "reporting_frequency": "timestep",
+        "required": true,
+        "semantic_role": "mass_flow"
+      }
+    ],
+    "schedule_operations": [],
+    "request_variable_dictionary": true,
+    "energyplus_version": "9.0.1",
+    "write_legacy_pickles": true,
+    "preserve_raw_outputs": true,
+    "tags": {
+      "paper": "P1",
+      "campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+      "climate_category": "cold",
+      "campaign_variant": "compact_4b4c",
+      "compact_building_set": "RestaurantFastFood,OfficeSmall,RetailStripmall,ApartmentMidRise",
+      "idf_pre_opyplus_normalization": "true",
+      "idf_patches": "none"
+    }
+  },
+  "execution": {
+    "machine_id": "lab-pc",
+    "hostname": "DESKTOP-02GF2BT",
+    "platform": "Windows-10-10.0.26200-SP0",
+    "started_at": "2026-07-03T22:25:23.997072Z",
+    "completed_at": "2026-07-03T22:46:17.820388Z",
+    "runtime_seconds": 1253.8169631999917
+  },
+  "software": {
+    "scalebridge_version": "0.1.0",
+    "energyplus_version": "9.0.1",
+    "opyplus_version": "2.0.7",
+    "python_version": "3.10.20"
+  },
+  "validation": {
+    "exit_code": 0,
+    "warnings": 158572,
+    "severe_errors": 0,
+    "fatal_errors": 0,
+    "requested_signals": 29,
+    "produced_signals": 29,
+    "missing_required_signals": []
+  },
+  "artifacts": [
+    {
+      "role": "canonical_eio_tables",
+      "relative_path": "canonical\\eio_tables.json",
+      "media_type": "application/json",
+      "size_bytes": 98995,
+      "required": true
+    },
+    {
+      "role": "canonical_metadata",
+      "relative_path": "canonical\\metadata.json",
+      "media_type": "application/json",
+      "size_bytes": 13936,
+      "required": true
+    },
+    {
+      "role": "canonical_variable_manifest",
+      "relative_path": "canonical\\variable_manifest.csv",
+      "media_type": "text/csv",
+      "size_bytes": 24783,
+      "required": true
+    },
+    {
+      "role": "canonical_variable_manifest",
+      "relative_path": "canonical\\variable_manifest.json",
+      "media_type": "application/json",
+      "size_bytes": 35017,
+      "required": true
+    },
+    {
+      "role": "canonical_variable_timing_manifest",
+      "relative_path": "canonical\\variable_timing_manifest.json",
+      "media_type": "application/json",
+      "size_bytes": 12794,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_facility_total_hvac_electric_demand_power",
+      "relative_path": "canonical\\variables\\timestep_facility_total_hvac_electric_demand_power.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 988982,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_schedule_value",
+      "relative_path": "canonical\\variables\\timestep_schedule_value.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 5620554,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_site_diffuse_solar_radiation_rate_per_area",
+      "relative_path": "canonical\\variables\\timestep_site_diffuse_solar_radiation_rate_per_area.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 310788,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_site_direct_solar_radiation_rate_per_area",
+      "relative_path": "canonical\\variables\\timestep_site_direct_solar_radiation_rate_per_area.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 313113,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_site_outdoor_air_drybulb_temperature",
+      "relative_path": "canonical\\variables\\timestep_site_outdoor_air_drybulb_temperature.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 273944,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_site_solar_altitude_angle",
+      "relative_path": "canonical\\variables\\timestep_site_solar_altitude_angle.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 1198101,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate",
+      "relative_path": "canonical\\variables\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 13337786,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_surface_inside_face_lights_radiation_heat_gain_rate",
+      "relative_path": "canonical\\variables\\timestep_surface_inside_face_lights_radiation_heat_gain_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 2080625,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_surface_inside_face_solar_radiation_heat_gain_rate",
+      "relative_path": "canonical\\variables\\timestep_surface_inside_face_solar_radiation_heat_gain_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 5328927,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_surface_inside_face_temperature",
+      "relative_path": "canonical\\variables\\timestep_surface_inside_face_temperature.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 22025312,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_system_node_mass_flow_rate",
+      "relative_path": "canonical\\variables\\timestep_system_node_mass_flow_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 12159617,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_system_node_temperature",
+      "relative_path": "canonical\\variables\\timestep_system_node_temperature.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 32968563,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_air_system_sensible_cooling_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_air_system_sensible_cooling_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 1762511,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_air_system_sensible_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_air_system_sensible_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 720116,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_air_temperature",
+      "relative_path": "canonical\\variables\\timestep_zone_air_temperature.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 2886627,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_electric_equipment_convective_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_electric_equipment_convective_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 287579,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_electric_equipment_radiant_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_electric_equipment_radiant_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 287578,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_gas_equipment_convective_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_gas_equipment_convective_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 193060,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_gas_equipment_radiant_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_gas_equipment_radiant_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 193616,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_lights_convective_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_lights_convective_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 287201,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_lights_radiant_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_lights_radiant_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 290878,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_lights_visible_radiation_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_lights_visible_radiation_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 287409,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_people_convective_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_people_convective_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 1760381,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_people_radiant_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_people_radiant_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 1760656,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_total_internal_convective_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_total_internal_convective_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 1854785,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_total_internal_radiant_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_total_internal_radiant_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 1828586,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_total_internal_total_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_total_internal_total_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 460955,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_total_internal_visible_radiation_heating_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_total_internal_visible_radiation_heating_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 373415,
+      "required": true
+    },
+    {
+      "role": "canonical_timestep_zone_windows_total_transmitted_solar_radiation_rate",
+      "relative_path": "canonical\\variables\\timestep_zone_windows_total_transmitted_solar_radiation_rate.parquet",
+      "media_type": "application/vnd.apache.parquet",
+      "size_bytes": 860748,
+      "required": true
+    },
+    {
+      "role": "inputs_case_spec",
+      "relative_path": "inputs\\case_spec.json",
+      "media_type": "application/json",
+      "size_bytes": 9109,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_facility_total_hvac_electric_demand_power",
+      "relative_path": "inputs\\variable_idfs\\timestep_facility_total_hvac_electric_demand_power.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254156,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_schedule_value",
+      "relative_path": "inputs\\variable_idfs\\timestep_schedule_value.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_site_diffuse_solar_radiation_rate_per_area",
+      "relative_path": "inputs\\variable_idfs\\timestep_site_diffuse_solar_radiation_rate_per_area.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254157,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_site_direct_solar_radiation_rate_per_area",
+      "relative_path": "inputs\\variable_idfs\\timestep_site_direct_solar_radiation_rate_per_area.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254156,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_site_outdoor_air_drybulb_temperature",
+      "relative_path": "inputs\\variable_idfs\\timestep_site_outdoor_air_drybulb_temperature.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254151,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_site_solar_altitude_angle",
+      "relative_path": "inputs\\variable_idfs\\timestep_site_solar_altitude_angle.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254174,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_surface_inside_face_lights_radiation_heat_gain_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254166,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_surface_inside_face_solar_radiation_heat_gain_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254165,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_surface_inside_face_temperature",
+      "relative_path": "inputs\\variable_idfs\\timestep_surface_inside_face_temperature.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254146,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_system_node_mass_flow_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_system_node_mass_flow_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_system_node_temperature",
+      "relative_path": "inputs\\variable_idfs\\timestep_system_node_temperature.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_air_system_sensible_cooling_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_air_system_sensible_cooling_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254152,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_air_system_sensible_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_air_system_sensible_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254152,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_air_temperature",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_air_temperature.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_electric_equipment_convective_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_electric_equipment_convective_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254162,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_electric_equipment_radiant_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_electric_equipment_radiant_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254159,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_gas_equipment_convective_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_gas_equipment_convective_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254157,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_gas_equipment_radiant_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_gas_equipment_radiant_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254154,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_lights_convective_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_lights_convective_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254150,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_lights_radiant_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_lights_radiant_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254147,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_lights_visible_radiation_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_lights_visible_radiation_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254157,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_people_convective_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_people_convective_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254150,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_people_radiant_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_people_radiant_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254147,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_total_internal_convective_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_total_internal_convective_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254158,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_total_internal_radiant_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_total_internal_radiant_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254155,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_total_internal_total_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_total_internal_total_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254153,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_total_internal_visible_radiation_heating_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_total_internal_visible_radiation_heating_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254165,
+      "required": true
+    },
+    {
+      "role": "inputs_timestep_zone_windows_total_transmitted_solar_radiation_rate",
+      "relative_path": "inputs\\variable_idfs\\timestep_zone_windows_total_transmitted_solar_radiation_rate.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254166,
+      "required": true
+    },
+    {
+      "role": "legacy_legacy_manifest",
+      "relative_path": "legacy\\legacy_manifest.json",
+      "media_type": "application/json",
+      "size_bytes": 15408,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_facility_total_hvac_electric_demand_power",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_facility_total_hvac_electric_demand_power.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 2839593,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_schedule_value",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_schedule_value.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 46570879,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_site_diffuse_solar_radiation_rate_per_area",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_site_diffuse_solar_radiation_rate_per_area.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 2839590,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_site_direct_solar_radiation_rate_per_area",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_site_direct_solar_radiation_rate_per_area.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 2839591,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_site_outdoor_air_drybulb_temperature",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_site_outdoor_air_drybulb_temperature.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 2839585,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_site_solar_altitude_angle",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_site_solar_altitude_angle.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 2839575,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 22182165,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_surface_inside_face_lights_radiation_heat_gain_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_surface_inside_face_lights_radiation_heat_gain_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 19659198,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_surface_inside_face_solar_radiation_heat_gain_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_surface_inside_face_solar_radiation_heat_gain_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 19659197,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_surface_inside_face_temperature",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_surface_inside_face_temperature.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 22182137,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_system_node_mass_flow_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_system_node_mass_flow_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 27228415,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_system_node_temperature",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_system_node_temperature.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 27228413,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_air_system_sensible_cooling_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_air_system_sensible_cooling_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 4521520,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_air_system_sensible_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_air_system_sensible_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 4521517,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_air_temperature",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_air_temperature.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 4521503,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_electric_equipment_convective_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_electric_equipment_convective_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 3680561,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_electric_equipment_radiant_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_electric_equipment_radiant_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 3680558,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_gas_equipment_convective_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_gas_equipment_convective_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 2839587,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_gas_equipment_radiant_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_gas_equipment_radiant_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 2839585,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_lights_convective_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_lights_convective_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 3680550,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_lights_radiant_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_lights_radiant_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 3680546,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_lights_visible_radiation_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_lights_visible_radiation_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 3680557,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_people_convective_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_people_convective_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 3680550,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_people_radiant_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_people_radiant_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 3680547,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_total_internal_convective_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_total_internal_convective_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 4521526,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_total_internal_radiant_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_total_internal_radiant_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 4521523,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_total_internal_total_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_total_internal_total_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 4521521,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_total_internal_visible_radiation_heating_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_total_internal_visible_radiation_heating_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 4521533,
+      "required": true
+    },
+    {
+      "role": "legacy_timestep_zone_windows_total_transmitted_solar_radiation_rate",
+      "relative_path": "legacy\\per_variable_pickle\\timestep_zone_windows_total_transmitted_solar_radiation_rate.pickle",
+      "media_type": "application/python-pickle",
+      "size_bytes": 4521534,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_facility_total_hvac_electric_demand_power",
+      "relative_path": "raw\\eio\\timestep_facility_total_hvac_electric_demand_power.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_schedule_value",
+      "relative_path": "raw\\eio\\timestep_schedule_value.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_site_diffuse_solar_radiation_rate_per_area",
+      "relative_path": "raw\\eio\\timestep_site_diffuse_solar_radiation_rate_per_area.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_site_direct_solar_radiation_rate_per_area",
+      "relative_path": "raw\\eio\\timestep_site_direct_solar_radiation_rate_per_area.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_site_outdoor_air_drybulb_temperature",
+      "relative_path": "raw\\eio\\timestep_site_outdoor_air_drybulb_temperature.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_site_solar_altitude_angle",
+      "relative_path": "raw\\eio\\timestep_site_solar_altitude_angle.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate",
+      "relative_path": "raw\\eio\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_surface_inside_face_lights_radiation_heat_gain_rate",
+      "relative_path": "raw\\eio\\timestep_surface_inside_face_lights_radiation_heat_gain_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_surface_inside_face_solar_radiation_heat_gain_rate",
+      "relative_path": "raw\\eio\\timestep_surface_inside_face_solar_radiation_heat_gain_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_surface_inside_face_temperature",
+      "relative_path": "raw\\eio\\timestep_surface_inside_face_temperature.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_system_node_mass_flow_rate",
+      "relative_path": "raw\\eio\\timestep_system_node_mass_flow_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_system_node_temperature",
+      "relative_path": "raw\\eio\\timestep_system_node_temperature.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_air_system_sensible_cooling_rate",
+      "relative_path": "raw\\eio\\timestep_zone_air_system_sensible_cooling_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_air_system_sensible_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_air_system_sensible_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_air_temperature",
+      "relative_path": "raw\\eio\\timestep_zone_air_temperature.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_electric_equipment_convective_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_electric_equipment_convective_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_electric_equipment_radiant_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_electric_equipment_radiant_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_gas_equipment_convective_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_gas_equipment_convective_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_gas_equipment_radiant_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_gas_equipment_radiant_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_lights_convective_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_lights_convective_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_lights_radiant_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_lights_radiant_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_lights_visible_radiation_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_lights_visible_radiation_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_people_convective_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_people_convective_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_people_radiant_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_people_radiant_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_total_internal_convective_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_total_internal_convective_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_total_internal_radiant_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_total_internal_radiant_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_total_internal_total_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_total_internal_total_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_total_internal_visible_radiation_heating_rate",
+      "relative_path": "raw\\eio\\timestep_zone_total_internal_visible_radiation_heating_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_windows_total_transmitted_solar_radiation_rate",
+      "relative_path": "raw\\eio\\timestep_zone_windows_total_transmitted_solar_radiation_rate.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_facility_total_hvac_electric_demand_power",
+      "relative_path": "raw\\err\\timestep_facility_total_hvac_electric_demand_power.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_schedule_value",
+      "relative_path": "raw\\err\\timestep_schedule_value.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_site_diffuse_solar_radiation_rate_per_area",
+      "relative_path": "raw\\err\\timestep_site_diffuse_solar_radiation_rate_per_area.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_site_direct_solar_radiation_rate_per_area",
+      "relative_path": "raw\\err\\timestep_site_direct_solar_radiation_rate_per_area.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_site_outdoor_air_drybulb_temperature",
+      "relative_path": "raw\\err\\timestep_site_outdoor_air_drybulb_temperature.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_site_solar_altitude_angle",
+      "relative_path": "raw\\err\\timestep_site_solar_altitude_angle.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate",
+      "relative_path": "raw\\err\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_surface_inside_face_lights_radiation_heat_gain_rate",
+      "relative_path": "raw\\err\\timestep_surface_inside_face_lights_radiation_heat_gain_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_surface_inside_face_solar_radiation_heat_gain_rate",
+      "relative_path": "raw\\err\\timestep_surface_inside_face_solar_radiation_heat_gain_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_surface_inside_face_temperature",
+      "relative_path": "raw\\err\\timestep_surface_inside_face_temperature.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_system_node_mass_flow_rate",
+      "relative_path": "raw\\err\\timestep_system_node_mass_flow_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_system_node_temperature",
+      "relative_path": "raw\\err\\timestep_system_node_temperature.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_air_system_sensible_cooling_rate",
+      "relative_path": "raw\\err\\timestep_zone_air_system_sensible_cooling_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_air_system_sensible_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_air_system_sensible_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_air_temperature",
+      "relative_path": "raw\\err\\timestep_zone_air_temperature.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_electric_equipment_convective_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_electric_equipment_convective_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_electric_equipment_radiant_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_electric_equipment_radiant_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_gas_equipment_convective_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_gas_equipment_convective_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_gas_equipment_radiant_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_gas_equipment_radiant_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_lights_convective_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_lights_convective_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_lights_radiant_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_lights_radiant_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_lights_visible_radiation_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_lights_visible_radiation_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_people_convective_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_people_convective_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_people_radiant_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_people_radiant_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_total_internal_convective_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_total_internal_convective_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_total_internal_radiant_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_total_internal_radiant_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_total_internal_total_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_total_internal_total_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_total_internal_visible_radiation_heating_rate",
+      "relative_path": "raw\\err\\timestep_zone_total_internal_visible_radiation_heating_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "raw_timestep_zone_windows_total_transmitted_solar_radiation_rate",
+      "relative_path": "raw\\err\\timestep_zone_windows_total_transmitted_solar_radiation_rate.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254156,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_facility_total_hvac_electric_demand_power\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_schedule_value\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_schedule_value\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_schedule_value\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_schedule_value\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_schedule_value\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_schedule_value\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_schedule_value\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_schedule_value\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_schedule_value\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5735,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254157,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_site_diffuse_solar_radiation_rate_per_area\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254156,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_site_direct_solar_radiation_rate_per_area\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254151,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_site_outdoor_air_drybulb_temperature\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_site_solar_altitude_angle\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254174,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_internal_gains_radiation_heat_gain_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5677,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254166,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_lights_radiation_heat_gain_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5648,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254165,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_solar_radiation_heat_gain_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5648,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254146,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_surface_inside_face_temperature\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5677,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_system_node_mass_flow_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5735,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_system_node_temperature\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5735,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254152,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_cooling_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254152,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_air_system_sensible_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254141,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_air_temperature\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254162,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_convective_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254159,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_electric_equipment_radiant_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254157,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_convective_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254154,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_gas_equipment_radiant_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254150,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_lights_convective_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254147,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_lights_radiant_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254157,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_lights_visible_radiation_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254150,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_people_convective_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254147,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_people_radiant_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254158,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_convective_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254155,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_radiant_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254153,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_total_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254165,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_total_internal_visible_radiation_heating_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    },
+    {
+      "role": "variable_runs_#opyplus",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\#opyplus.info",
+      "media_type": "application/octet-stream",
+      "size_bytes": 97,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\eplusout.audit",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1721,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\eplusout.eio",
+      "media_type": "text/plain",
+      "size_bytes": 52814,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\eplusout.err",
+      "media_type": "text/plain",
+      "size_bytes": 12311,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\eplusout.mdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 4065,
+      "required": true
+    },
+    {
+      "role": "variable_runs_eplusout",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\eplusout.rdd",
+      "media_type": "application/octet-stream",
+      "size_bytes": 42204,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\opyplus.epw",
+      "media_type": "application/octet-stream",
+      "size_bytes": 1643446,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\opyplus.idf",
+      "media_type": "text/plain",
+      "size_bytes": 254166,
+      "required": true
+    },
+    {
+      "role": "variable_runs_opyplus_progress",
+      "relative_path": "variable_runs\\timestep_zone_windows_total_transmitted_solar_radiation_rate\\opyplus_progress.log",
+      "media_type": "text/plain",
+      "size_bytes": 5619,
+      "required": true
+    }
+  ],
+  "tracking": {
+    "mlflow_experiment": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3_generation",
+    "mlflow_run_id": "abf0189d8b6e4d11a4e9c698676891e7",
+    "mlflow_tracking_uri": "http://127.0.0.1:5000"
+  }
+}

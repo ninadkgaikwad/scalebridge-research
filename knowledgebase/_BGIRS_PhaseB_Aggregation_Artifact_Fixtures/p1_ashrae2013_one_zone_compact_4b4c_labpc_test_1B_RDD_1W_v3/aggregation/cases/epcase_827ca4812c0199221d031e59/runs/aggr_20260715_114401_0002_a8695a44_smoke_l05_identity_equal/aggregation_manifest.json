@@ -1,0 +1,54 @@
+{
+  "aggregate_zone_count": 2,
+  "aggregated_long_rows": 6412320,
+  "aggregation_run_id": "aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal",
+  "aggregation_run_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal",
+  "case_id": "epcase_827ca4812c0199221d031e59",
+  "created_at_utc": "2026-07-15T18:47:41.150453+00:00",
+  "deferred_system_node_mass_flow_variable_count": 1,
+  "deferred_system_node_temperature_variable_count": 1,
+  "diagnostic_rows": 63,
+  "equipment_contribution_rows": 9,
+  "loaded_variable_count": 27,
+  "outputs": {
+    "diagnostics_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\diagnostics",
+    "inputs_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\inputs",
+    "legacy_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\legacy",
+    "zones_root": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\aggr_20260715_114401_0002_a8695a44_smoke_l05_identity_equal\\zones"
+  },
+  "plan_aggregation_id": "smoke_l05_identity",
+  "plan_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\plans\\plan_build_20260715_113421\\epcase_827ca4812c0199221d031e59\\smoke_l05_identity\\aggregation_plan.json",
+  "rule_set": "legacy_v1",
+  "rule_summary_rows": 122,
+  "runtime_seconds": 219.51979689998552,
+  "schema_version": "0.1.0",
+  "source_generation_run_id": "epvwr_a8695a44ed3f",
+  "static_equipment_rows": 7,
+  "status": "completed",
+  "strategy": "custom_groups",
+  "system_node_mass_flow_summary": [
+    {
+      "mapped_key_count": 2,
+      "mapped_row_count": 210240,
+      "parquet_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\generation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\epvwr_a8695a44ed3f\\canonical\\variables\\timestep_system_node_mass_flow_rate.parquet",
+      "skipped_row_count": 4835520,
+      "source_key_count": 30,
+      "unmapped_key_count": 28,
+      "variable_id": "timestep_system_node_mass_flow_rate",
+      "variable_name": "System Node Mass Flow Rate"
+    }
+  ],
+  "system_node_temperature_summary": [
+    {
+      "mapped_key_count": 2,
+      "mapped_row_count": 210240,
+      "parquet_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\generation\\cases\\epcase_827ca4812c0199221d031e59\\runs\\epvwr_a8695a44ed3f\\canonical\\variables\\timestep_system_node_temperature.parquet",
+      "skipped_row_count": 4835520,
+      "source_key_count": 30,
+      "unmapped_key_count": 28,
+      "variable_id": "timestep_system_node_temperature",
+      "variable_name": "System Node Temperature"
+    }
+  ],
+  "weight_mode": "equal"
+}

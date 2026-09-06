@@ -1,0 +1,31 @@
+ScaleBridge Phase E0 - E0-3 Elemental RC Mathematics Lock
+==========================================================
+
+Status: LOCKED on 2026-08-25.
+
+Locked sources:
+- docs/mathematics/thermal_modeling/phase_e0/contracts/ScaleBridge_PhaseE0_E0-3_Generic_Elemental_RC_Contract_v1.tex
+- docs/mathematics/thermal_modeling/phase_e0/contracts/ScaleBridge_PhaseE0_E0-3_Current_RC_Flavours_v1.tex
+
+Locked here:
+- provider-independent canonical physical ports
+- generic elemental RC graph for one modeled aggregate zone
+- state/state and state/boundary resistance conventions
+- atomic heat ports and explicit routing
+- observation/latent-state contract
+- parameter declaration contract
+- generic continuous-time elemental equation
+- canonical 1R1C, 2R2C, 3R2C, 4R3C flavours
+- separate paper-compatible 1R1C reduced-radiative-participation variant
+- elemental total-energy identities
+
+NOT locked here:
+- multi-zone spatial compiler
+- zonal adjacency and chain fallback
+- multiple inter-zone node-pair rules
+- inter-zone R sharing/parameterization
+- IND/DEP1/DEP2 compilation
+- aggregation A_g and DEP2 allocation B_g/lambda mathematics
+- state initialization
+- discretization
+- method-specific training/estimation math

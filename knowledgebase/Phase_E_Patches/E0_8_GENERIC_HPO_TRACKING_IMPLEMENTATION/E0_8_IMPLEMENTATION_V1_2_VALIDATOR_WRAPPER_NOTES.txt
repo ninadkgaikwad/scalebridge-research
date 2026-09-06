@@ -1,0 +1,29 @@
+ScaleBridge Phase E0-8 Generic HPO Tracking Validation Wrapper v1.2 Notes
+
+Scope: validation-wrapper-only corrective patch after Windows qualification of
+E0-8 implementation v1.1.
+
+Observed failure:
+- VALIDATE_E0_8_IMPLEMENTATION_V1_1.ps1 entered the interactive Python REPL at
+  the first package-import step.
+- Root cause: the PowerShell RunPy helper declared a parameter named $Args.
+  PowerShell treats $args as an automatic variable (case-insensitive), so the
+  intended Python argument array was not reliably forwarded. The invocation
+  therefore became a bare `python` command.
+
+Correction:
+1. Rename the helper parameter to $PythonArgs.
+2. Use explicit named parameter binding at every RunPy call.
+3. Reject an empty Python argument vector before invoking Python, preventing a
+   future wrapper regression from silently launching the interactive REPL.
+4. Preserve all E0-8 v1.1 repository implementation files byte-for-byte.
+5. Preserve all ratified E0-8 science: TRAIN-only HPO ownership, provider-owned
+   method science/search spaces/objectives, Optuna authority, MLflow provenance,
+   deterministic trial seeds, resume fingerprinting, sampler-segment provenance,
+   terminal trial states, Pareto handling, and frozen-hyperparameter lineage.
+6. Produce a timestamped validation result bundle in the user's Downloads
+   directory containing the PowerShell transcript, environment evidence, and
+   authoritative E0-8 validation JSON when available.
+
+This patch changes no E.1/E.2/E.3/E.4 method-specific behavior and does not
+modify Phase-D, E0-7 production packaging, or E0-8 Python implementation code.

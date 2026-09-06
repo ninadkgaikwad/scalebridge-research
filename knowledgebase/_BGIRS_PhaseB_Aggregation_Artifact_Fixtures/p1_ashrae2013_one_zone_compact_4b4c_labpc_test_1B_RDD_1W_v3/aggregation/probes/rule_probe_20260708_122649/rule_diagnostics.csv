@@ -1,0 +1,6 @@
+severity,rule_family,aggregate_zone_id,source_variable_name,output_variable_name,message,source_zones,matched_key_count,matched_keys
+warning,Zone,Aggregated_Zone_1,Zone Gas Equipment Convective Heating Rate,Zone_Gas_Equipment_Convective_Heating_Rate_,no exact zone key_values matched source zone,DINING,0,
+warning,Zone,Aggregated_Zone_1,Zone Gas Equipment Radiant Heating Rate,Zone_Gas_Equipment_Radiant_Heating_Rate_,no exact zone key_values matched source zone,DINING,0,
+warning,Schedule,Aggregated_Zone_1,Schedule Value,Schedule_Value_OtherEquipment,no exact Schedule Value key_values matched EIO schedule names,DINING | KITCHEN,0,
+warning,Schedule,Aggregated_Zone_1,Schedule Value,Schedule_Value_HotWaterEquipment,no exact Schedule Value key_values matched EIO schedule names,DINING | KITCHEN,0,
+warning,Schedule,Aggregated_Zone_1,Schedule Value,Schedule_Value_SteamEquipment,no exact Schedule Value key_values matched EIO schedule names,DINING | KITCHEN,0,

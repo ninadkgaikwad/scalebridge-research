@@ -1,0 +1,115 @@
+SCALEBRIDGE STAGE C9: PHASE C MLFLOW REGISTRATION
+=================================================
+
+Purpose
+-------
+C9 registers an already completed C1-C8 heat-input-regression run into MLflow.
+
+C9 does not rerun C1-C8.
+C9 does not replace filesystem manifests.
+Filesystem manifests remain authoritative.
+
+MLflow hierarchy
+----------------
+Phase C parent
+  C1 audit
+  C2 features
+  C3 splits
+  C4 datasets
+  C5 model API
+  C6 training
+    one child per training_manifest.json
+  C7 evaluation
+    one child per evaluation_manifest.json
+  C8 inference
+    one child per annual_component_predictions_manifest.json
+
+Default smoke expectation
+-------------------------
+8 stage runs
+30 C6 training task runs
+30 C7 evaluation task runs
+3 C8 zone inference runs
+
+Total descendants registered by the smoke:
+71 nested runs plus the one Phase C parent.
+
+Artifact policy
+---------------
+By default C9 logs compact JSON/CSV/TXT/LOG artifacts only.
+Large Parquet prediction files are not copied into MLflow.
+Model artifact folders are not copied unless --log-model-artifacts is set.
+
+Important C2 policy
+-------------------
+Use canonical_aware_feature_validation_manifest.json for C2 registration.
+Do not use the obsolete legacy-only feature validator as the authoritative
+C2 status.
+
+Install
+-------
+Extract this ZIP into the scalebridge-research repository root.
+
+Files
+-----
+src/scalebridge/tracking/mlflow/heat_input_regression.py
+scripts/heat_input_regression/register_phase_c_run_with_mlflow.py
+scripts/heat_input_regression/validate_phase_c_mlflow_tracking.py
+knowledgebase/C9_Phase_C_MLflow_Smoke_Validation.ps1
+
+Run
+---
+Start the MLflow server first in a separate PowerShell window.
+
+In the repo PowerShell:
+
+    $env:SCALEBRIDGE_MACHINE_ID = "laptop"
+    $env:MLFLOW_TRACKING_URI = "http://127.0.0.1:5000"
+
+    & ".\knowledgebase\C9_Phase_C_MLflow_Smoke_Validation.ps1"
+
+The script discovers the C1-C8 run manifests using the successful
+20260722_205232 run IDs and validates the resulting MLflow hierarchy.
+
+
+Git metadata policy
+-------------------
+C9 does not log git_commit, git branch, dirty-state, or repository metadata.
+Phase C MLflow identity is based on campaign IDs, Phase C run IDs, stage IDs,
+machine ID, environment name, model identity, parameters, metrics, and
+filesystem-manifest provenance.
+
+
+Minimal-argument discovery interface
+------------------------------------
+Normal C9 use now requires only:
+
+    python `
+      ".\scripts\heat_input_regression\register_phase_c_run_with_mlflow.py" `
+      --campaign-id "<campaign-id>" `
+      --phase-c-run-id "<phase-c-run-id>"
+
+C9 extracts the YYYYMMDD_HHMMSS suffix, discovers one matching C1-C8 run
+folder per stage, locates the authoritative stage manifest, and uses the
+selected C6-C8 folders as the task roots. Explicit path options remain
+available only as overrides for exceptional legacy layouts.
+
+
+Schema-based manifest discovery
+-------------------------------
+C9 no longer depends on exact run-level manifest filenames. It searches JSON
+files under each uniquely selected stage run directory and identifies the
+authoritative manifest using stage-specific keys, embedded run identity, and
+run-level metadata. This supports the current C1-C8 outputs even when manifest
+filenames differ between stages or development increments.
+
+
+MLflow Windows run-link suppression
+-----------------------------------
+C9 disables MLflow's cosmetic TrackingServiceClient._log_url output. MLflow
+normally prints a flag emoji and browser URL whenever a run ends. Under some
+Windows PowerShell pipelines, stdout remains cp1252 and that cosmetic print can
+raise UnicodeEncodeError after the run has already been terminated.
+
+Suppressing the decorative print does not affect run creation, parameters,
+metrics, tags, artifacts, run status, experiment data, or the MLflow web UI.

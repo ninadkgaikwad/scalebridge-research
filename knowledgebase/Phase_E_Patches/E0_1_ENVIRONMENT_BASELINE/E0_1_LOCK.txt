@@ -1,0 +1,63 @@
+ScaleBridge Phase E0 - E0-1 Environment Baseline
+==================================================
+
+Purpose
+-------
+E0-1 establishes executable environment qualification for the four Phase E
+machines before common thermal-model physics development begins.
+
+Integrated files
+----------------
+scripts/thermal_modeling/qualify_phase_e0_environment.py
+scripts/thermal_modeling/E0_1_RUN_ENVIRONMENT_QUALIFICATION_WINDOWS.ps1
+tests/thermal_modeling/test_phase_e0_environment_qualification.py
+
+Why a dedicated qualifier is required
+-------------------------------------
+The existing environments/check_scalebridge_environment.py is a broad import
+smoke test. Phase E0 requires stronger executable checks:
+
+- NumPy/SciPy numerical operation
+- pandas/PyArrow parquet round-trip
+- scikit-learn fit/predict
+- PyTorch autograd and CUDA execution
+- real Neuromancer module forward/backward
+- Optuna SQLite persistence/resume
+- MLflow temporary local tracking
+- CasADi + bundled IPOPT solve
+- Pyomo + external IPOPT solve
+- Phase D contract import
+- Phase C model loader/runtime import
+- repository-local ScaleBridge import
+- pip check
+
+Kamiak policy
+-------------
+The Python qualifier deliberately fails the execution-context check for
+machine_id=kamiak unless SLURM_JOB_ID is present. Final Kamiak qualification
+must therefore run on a compute node, not on a login node.
+
+Version policy
+--------------
+E0-1 records the active environment versions. It does not silently rewrite
+machine environments to match stale lock summaries. Any repair is selective
+and follows only after the new executable report identifies a required failure.
+
+Completion
+----------
+E0-1 is complete only after qualification reports have been produced and
+reviewed for laptop, home-pc, lab-pc, and Kamiak, with selective repairs
+performed where required.
+
+Authoritative machine-specific environments
+-------------------------------------------
+Windows laptop : scalebridge-dev-gpu-laptop
+Windows home PC: scalebridge-dev-gpu-homepc
+Windows lab PC : scalebridge-dev-gpu-labpc
+Kamiak         : /home/ninad.gaikwad/conda_envs/scalebridge-dev-gpu-kamiak
+
+The qualifier must run inside the exact environment assigned to the selected
+machine. Repairs are applied selectively to that existing environment only;
+Phase E0 does not create replacement environments or force identical package
+versions across machines when the existing compatible versions pass the
+executable qualification.

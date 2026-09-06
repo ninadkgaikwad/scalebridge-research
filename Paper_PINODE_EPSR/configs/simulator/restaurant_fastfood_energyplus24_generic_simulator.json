@@ -1,0 +1,49 @@
+{
+  "contract_version": "20260829_v6_1",
+  "simulator_role": "generic policy-neutral plant wrapper",
+  "control_interval_seconds": 300,
+  "actuator_transform": {
+    "cp_air_j_kgk": 1006.0,
+    "fan": "a_fan = 0.5*m_dot_star",
+    "thermal": "a_q = m_dot_star*cp*(T_sa_star-T_zone_at_callback)"
+  },
+  "zones": {
+    "DINING": {
+      "heating_command_allowed_by_simulator": true,
+      "cooling_command_allowed_by_simulator": true
+    },
+    "KITCHEN": {
+      "heating_command_allowed_by_simulator": true,
+      "cooling_command_allowed_by_simulator": true
+    }
+  },
+  "feasibility_policy": {
+    "implemented_in_simulator": true,
+    "type": "generic_symmetric_per_zone_native_fallback",
+    "same_for_dining_and_kitchen": true,
+    "same_for_heating_and_cooling": true,
+    "categorical_kitchen_heating_exclusion": false,
+    "envelope": {
+      "min_flow_fraction_of_design": 0.5,
+      "max_flow_fraction_of_design": 0.8,
+      "min_abs_supply_minus_zone_temperature_c": 4.0,
+      "max_abs_supply_minus_zone_temperature_c": 8.0
+    },
+    "outside_envelope_action": "release fan and sensible-load overrides for that zone only for the current 300-s step; native EnergyPlus HVAC takes over",
+    "inside_envelope_action": "apply identical frozen actuator transform",
+    "future_note": "Exact final MPC bounds may be refined after learned models/MPC are built without changing the simulator fallback mechanism."
+  },
+  "history_profile": "BROAD_HVAC_HISTORY_V1",
+  "accepted_energyplus24_idf_sha256": "da86d8c3c782424d2d4f30e29a97220c9b9042f721e83591f43762f34df77101",
+  "history_internal_design_quantities": [
+    "fan_design_max_mass_flow_kg_s",
+    "unitary_design_heating_capacity_w",
+    "unitary_design_cooling_capacity_w"
+  ],
+  "history_semantics": {
+    "control_boundary_synchronization": "skip first threshold-crossing boundary; external control starts on next full zone timestep",
+    "completed_control_interval_seconds": 300,
+    "effective_actuator_readback": "null whenever external override inactive/native/fallback",
+    "raw_actuator_api_value": "preserved separately because EnergyPlus get_actuator_value may retain stale last-written value after reset_actuator"
+  }
+}

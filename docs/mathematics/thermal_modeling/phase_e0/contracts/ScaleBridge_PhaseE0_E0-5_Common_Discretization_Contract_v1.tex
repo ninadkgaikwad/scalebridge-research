@@ -1,0 +1,972 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,array,longtable}
+\usepackage{enumitem}
+\usepackage{hyperref}
+
+\newcommand{\SB}{\textsc{ScaleBridge}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\diagmode}{d_{\mathrm{diag}}}
+
+\title{\SB{} Phase E0 --- E0-5\\
+Common Fixed-Step Discretization Engine\\
+Mathematical Contract v1}
+\author{ScaleBridge Research Framework}
+\date{Ratified August 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document freezes the E0-5 numerical contract that maps the continuous-time
+thermal dynamics produced by E0-3, together with the canonical runtime state and
+forcing realized by E0-4, into the next discrete thermal state. E0-5 is a
+fixed-step numerical layer. It does not alter RC topology, parameters, forcing
+semantics, state initialization, or observations.
+
+For a canonical sample interval $[t_k,t_{k+1})$, E0-5 receives
+\[
+X_k,\qquad T_{B,k},\qquad Q_k,
+\]
+and computes
+\[
+\boxed{X_{k+1}=\Phi_{\Delta t_k}^{\mathcal M}(X_k,T_{B,k},Q_k;\Theta)}.
+\]
+The forcing is held with a causal left-endpoint zero-order hold for all solver
+stages and all internal substeps. The production solver is selectable from a
+compatibility-filtered family of fixed-step first-order Neuromancer integrators.
+Classical RK4 is the recommended/default method, but it is not hard-coded.
+
+For linear compiled RC systems, E0-5 also defines an exact zero-order-hold
+matrix-exponential propagator. This propagator is an independent scientific
+oracle and optional reference integration scheme. If Neuromancer's integrator
+abstraction is not an appropriate host for this exact propagator, ScaleBridge
+shall provide a dedicated linear-oracle integration package with the same
+high-level step contract.
+
+Expensive per-step diagnostics are optional. With diagnostics disabled, the
+runtime path performs the configured fixed-step ODE solve without per-step
+stability eigendecomposition or oracle comparison. With diagnostics enabled,
+all applicable numerical checks may be evaluated at every step without changing
+the propagated state.
+\end{abstract}
+
+\section{Scientific and software provenance}
+
+Classical one-step ODE methods, Runge--Kutta order, convergence, and stability
+are established numerical-analysis results \cite{Butcher2016ODE,HairerNorsettWanner1993ODEI}.
+Matrix-exponential propagation and reliable computation of matrix exponentials
+are standard tools for linear dynamical systems \cite{Higham2009MatrixExponential}.
+The augmented block-matrix construction used to evaluate integrals containing
+matrix exponentials follows the classical approach of Van Loan
+\cite{VanLoan1978MatrixExponentialIntegrals}.
+
+Neuromancer provides differentiable ODE-system abstractions and a family of
+integrators implemented in PyTorch \cite{Neuromancer2023}. The exact choice of
+which installed Neuromancer methods are admitted by E0-5 is a ScaleBridge
+compatibility policy rather than a claim made by the numerical-analysis
+literature.
+
+The following are explicitly ScaleBridge-derived design choices:
+\begin{itemize}[leftmargin=*]
+\item fixed-step solvers only in the E0-5 core;
+\item causal left-endpoint zero-order hold for forcing;
+\item a compatibility-filtered Neuromancer integrator registry;
+\item RK4 as the recommended/default, but not mandatory, integrator;
+\item one external substep wrapper shared across compatible solvers;
+\item an independent exact-linear-ZOH oracle/reference package;
+\item optional per-step diagnostics controlled by a diagnostic knob;
+\item no silent timestep, substep, clipping, projection, or solver correction.
+\end{itemize}
+
+% -----------------------------------------------------------------------------
+\section{E0-5A: Continuous-to-discrete authority boundary}
+
+E0-3 defines the continuous right-hand side
+\[
+\boxed{
+\dot X(t)=f_{E0-3}(X(t),T_B(t),Q(t);\Theta).
+}
+\]
+For the compiled RC network,
+\[
+\boxed{
+C\dot X=-L_{CC}X-L_{CB}T_B+\Gamma Q.
+}
+\]
+E0-4 provides the valid runtime quantities
+\[
+X_k,\quad T_{B,k},\quad Q_k
+\]
+at canonical timestamp $t_k$. E0-5 owns only the numerical flow from $X_k$ to
+$X_{k+1}$.
+
+Define canonical timestamps
+\[
+t_0<t_1<\cdots<t_K,
+\]
+and physical interval
+\[
+\boxed{\Delta t_k=t_{k+1}-t_k>0.}
+\]
+Because $R$ is in K/W, $C$ in J/K, and $Q$ in W, the natural E0-3 derivative
+has units K/s. Therefore the internal physical time unit is seconds:
+\[
+\boxed{\Delta t_k\text{ and every numerical }h\text{ are represented in seconds}.}
+\]
+A ten-minute interval is $\Delta t=600$ s.
+
+The discrete numerical flow is
+\[
+\boxed{
+X_{k+1}=\Phi_{\Delta t_k}^{\mathcal M}
+(X_k,T_{B,k},Q_k;\Theta,\mathcal D),
+}
+\]
+where $\mathcal M$ identifies the selected integration scheme and $\mathcal D$
+contains the numerical configuration.
+
+\subsection*{Worked example}
+For a two-zone 2R2C state
+\[
+X_k=[22,22,24,24]^\top
+\]
+and $\Delta t=600$ s, E0-5 receives the already-realized E0-4 forcing and
+advances only the thermal state. It does not reallocate DEP2 forcing, modify
+$\Gamma$, or reset observed states.
+
+% -----------------------------------------------------------------------------
+\section{E0-5B: Fixed-step forcing semantics}
+
+Define the combined E0-5 forcing
+\[
+\boxed{
+U_k=\begin{bmatrix}T_{B,k}\\Q_k\end{bmatrix}.
+}
+\]
+The E0-5 core uses only fixed-step numerical solvers. For every canonical
+interval,
+\[
+\boxed{
+U(t)=U_k,\qquad t_k\le t<t_{k+1}.
+}
+\]
+This is a causal left-endpoint zero-order hold (ZOH).
+
+No future value $U_{k+1}$, midpoint average, spline, or linear interpolation is
+permitted inside the core E0-5 step. If upstream signal semantics require a
+different timestamp alignment, that alignment must be completed before the
+forcing reaches E0-5.
+
+For any multistage solver admitted by E0-5, all internal stages receive the same
+held forcing $U_k$ while their intermediate state arguments may differ.
+
+\subsection*{Worked example: RK stages}
+For classical RK4,
+\[
+k_1=f(X,U_k),
+\]
+\[
+k_2=f(X+\tfrac{h}{2}k_1,U_k),
+\]
+\[
+k_3=f(X+\tfrac{h}{2}k_2,U_k),
+\]
+\[
+k_4=f(X+hk_3,U_k).
+\]
+The state changes between stages, but the E0-4 forcing does not.
+
+% -----------------------------------------------------------------------------
+\section{E0-5C: Neuromancer-compatible fixed-step solver registry}
+
+Let $\mathcal S_{NM}$ denote the integrator capabilities exposed by the installed
+Neuromancer version. E0-5 shall not hard-code one numerical method. Instead it
+defines the compatibility-filtered set
+\[
+\boxed{
+\mathcal S_{E05}^{NM}
+=
+\left\{
+s\in\mathcal S_{NM}:\
+\begin{array}{l}
+s\text{ advances a first-order ODE state},\\
+s\text{ uses a fixed configured step }h,\\
+s\text{ accepts the E0-3 state-in/state-out signature},\\
+s\text{ can hold additional forcing arguments constant},\\
+s\text{ requires no incompatible state-history representation}
+\end{array}
+\right\}.
+}
+\]
+The selected solver is
+\[
+\boxed{
+\mathcal M\in\mathcal S_{E05}^{NM}\cup\{\texttt{exact\_zoh\_linear}\}.
+}
+\]
+
+For Neuromancer 1.5.6, direct first-order fixed-$h$ candidates include Euler,
+Euler--trapezoidal predictor/corrector, RK2, RK4, RK4--trapezoidal,
+Luther, and Runge--Kutta--Fehlberg. The implementation must inspect the installed
+version rather than assuming a forever-fixed list. Methods with fundamentally
+different state contracts, such as second-order position/velocity integrators,
+are not silently registered as first-order thermal RC solvers.
+
+The default/recommended selection is
+\[
+\boxed{\mathcal M_{\mathrm{default}}=\texttt{RK4}.}
+\]
+This is a default configuration, not a restriction on valid E0-5 methods.
+
+\subsection*{Worked example: configuration}
+A valid configuration may be
+\begin{verbatim}
+integrator = RK2
+sample_dt_s = 600
+substeps = 4
+\end{verbatim}
+while another experiment may choose
+\begin{verbatim}
+integrator = Luther
+sample_dt_s = 600
+substeps = 2
+\end{verbatim}
+provided the installed Neuromancer solver satisfies the E0-5 compatibility
+predicate.
+
+% -----------------------------------------------------------------------------
+\section{E0-5D: Reference one-step methods}
+
+Forward Euler is
+\[
+\boxed{X^+=X+h f(X,U_k).}
+\]
+For the compiled RC model,
+\[
+\boxed{
+X^+=X+hC^{-1}\left(-L_{CC}X-L_{CB}T_{B,k}+\Gamma Q_k\right).
+}
+\]
+
+Classical RK4 is
+\[
+\boxed{
+X^+
+=X+\frac{h}{6}(k_1+2k_2+2k_3+k_4).
+}
+\]
+These equations serve as explicit mathematical anchors and unit-test references,
+even though the production selector may choose another compatible fixed-step
+Neuromancer integrator.
+
+\subsection*{Worked 1R1C Euler example}
+Let
+\[
+R=0.01\ \mathrm{K/W},\quad C=10^6\ \mathrm{J/K},\quad
+T_k=22^\circ\mathrm C,
+\]
+\[
+T_o=10^\circ\mathrm C,\quad Q=1000\ \mathrm W,\quad h=600\ \mathrm s.
+\]
+Then
+\[
+\dot T_k
+=
+\frac{(10-22)/0.01+1000}{10^6}
+=-2\times10^{-4}\ \mathrm{K/s},
+\]
+so Euler yields
+\[
+\boxed{T_{k+1}^{Euler}=21.88^\circ\mathrm C.}
+\]
+
+% -----------------------------------------------------------------------------
+\section{E0-5E: External substeps}
+
+Let $N_s\in\mathbb N$ be the number of numerical substeps within one canonical
+sample interval:
+\[
+\boxed{N_s\ge1,\qquad h_k=\frac{\Delta t_k}{N_s}.}
+\]
+Let
+\[
+X_{k,0}=X_k.
+\]
+For $s=0,\ldots,N_s-1$,
+\[
+\boxed{
+X_{k,s+1}=\Psi_{h_k}^{\mathcal M}(X_{k,s},U_k).
+}
+\]
+Then
+\[
+\boxed{X_{k+1}=X_{k,N_s}.}
+\]
+The same ZOH forcing $U_k$ is used for every substep.
+
+The default configuration is
+\[
+\boxed{N_s=1.}
+\]
+E0-5 may diagnose that a larger $N_s$ is advisable, but it shall never silently
+change the configured substep count.
+
+\subsection*{Worked example}
+For $\Delta t=600$ s and $N_s=4$,
+\[
+h=150\ \mathrm s.
+\]
+The selected solver is applied four times with the same $U_k$.
+
+% -----------------------------------------------------------------------------
+\section{E0-5F: Linear RC state-space form}
+
+For a fixed compiled RC model,
+\[
+C\dot X=-L_{CC}X-L_{CB}T_B+\Gamma Q.
+\]
+Define
+\[
+\boxed{A=-C^{-1}L_{CC}},
+\]
+\[
+\boxed{
+B=
+\begin{bmatrix}
+-C^{-1}L_{CB}&C^{-1}\Gamma
+\end{bmatrix},
+}
+\]
+and
+\[
+U=\begin{bmatrix}T_B\\Q\end{bmatrix}.
+\]
+Then
+\[
+\boxed{\dot X=AX+BU.}
+\]
+This linear form is used by the exact linear oracle and by linear-RC numerical
+diagnostics. It does not replace the E0-3 RHS authority.
+
+% -----------------------------------------------------------------------------
+\section{E0-5G: Exact linear zero-order-hold oracle}
+
+Under the E0-5 ZOH contract, $U(t)=U_k$ over the interval. The exact solution is
+\[
+X_{k+1}
+=e^{A\Delta t_k}X_k
++\int_0^{\Delta t_k}
+ e^{A(\Delta t_k-\tau)}BU_k\,d\tau.
+\]
+Define
+\[
+A_d=e^{A\Delta t_k}.
+\]
+Then
+\[
+\boxed{X_{k+1}=A_dX_k+B_dU_k.}
+\]
+
+To avoid requiring $A^{-1}$, define the augmented matrix
+\[
+\mathcal A=
+\begin{bmatrix}
+A&B\\
+0&0
+\end{bmatrix}.
+\]
+Then
+\[
+\boxed{
+\exp(\mathcal A\Delta t)
+=
+\begin{bmatrix}
+A_d&B_d\\
+0&I
+\end{bmatrix}.
+}
+\]
+This is the authoritative exact linear-ZOH oracle construction.
+
+\subsection{Oracle implementation policy}
+The exact linear propagator is not required to be implemented through a stock
+Neuromancer integrator. The implementation shall first determine whether a
+clean Neuromancer-compatible adapter can preserve the exact mathematical
+contract. If not, ScaleBridge shall implement a dedicated linear-oracle package
+with the same high-level step interface.
+
+The oracle kernel must remain computationally independent of Neuromancer's
+Euler/RK formulas so that it can detect integration errors rather than reproducing
+them.
+
+A differentiable torch matrix-exponential implementation may be provided for
+optional reference/runtime use, while an independent NumPy/SciPy-style
+scientific oracle may be retained for qualification. Exact software choices are
+implementation details; the matrix-exponential equation above is the authority.
+
+% -----------------------------------------------------------------------------
+\section{E0-5H: Scalar 1R1C analytical oracle}
+
+For
+\[
+C\dot T=\frac{T_o-T}{R}+Q,
+\]
+define
+\[
+\tau=RC,
+\qquad
+\boxed{T_\infty=T_o+RQ.}
+\]
+For constant $T_o$ and $Q$,
+\[
+\boxed{
+T(t_k+\Delta t)
+=T_\infty+(T_k-T_\infty)e^{-\Delta t/\tau}.
+}
+\]
+
+Using
+\[
+R=0.01,\quad C=10^6,\quad T_k=22,\quad T_o=10,\quad Q=1000,
+\quad \Delta t=600,
+\]
+we obtain
+\[
+\tau=10000\ \mathrm s,
+\qquad T_\infty=20^\circ\mathrm C,
+\]
+and
+\[
+\boxed{
+T_{k+1}^{exact}=20+2e^{-0.06}\approx21.883529^\circ\mathrm C.
+}
+\]
+This scalar solution is a mandatory simple analytical oracle.
+
+% -----------------------------------------------------------------------------
+\section{E0-5I: Linear RC modal stability structure}
+
+For the linear RC dynamics,
+\[
+A=-C^{-1}L_{CC}.
+\]
+Define
+\[
+M=C^{-1/2}L_{CC}C^{-1/2}.
+\]
+Because $C\succ0$ and $L_{CC}=L_{CC}^\top\succeq0$,
+\[
+M=M^\top\succeq0.
+\]
+Furthermore,
+\[
+C^{1/2}AC^{-1/2}=-M,
+\]
+so $A$ is similar to a real symmetric negative-semidefinite matrix. Therefore
+\[
+\boxed{\lambda_i(A)\in\R_{\le0}.}
+\]
+Define
+\[
+\boxed{\mu_{\max}=\lambda_{\max}(M).}
+\]
+
+For Euler, the negative-real-axis linear stability condition is
+\[
+\boxed{h\mu_{\max}<2.}
+\]
+For classical RK4, the corresponding boundary is approximately
+\[
+\boxed{h\mu_{\max}<2.7853.}
+\]
+These are method-specific diagnostic facts, not universal limits for every
+selectable Neuromancer integrator.
+
+For any other registered solver, an analytical stability radius may be used
+only if it is explicitly known and recorded as solver metadata. Missing
+method-specific theory is reported as ``diagnostic unavailable''; E0-5 shall not
+invent a stability radius.
+
+% -----------------------------------------------------------------------------
+\section{E0-5J: Stability-based substep recommendation}
+
+For a solver with known negative-real-axis stability radius $r_{\mathcal M}$,
+ScaleBridge defines the diagnostic safety factor
+\[
+\boxed{\eta_s=0.9.}
+\]
+The diagnostic condition is
+\[
+\boxed{
+h\mu_{\max}\le\eta_s r_{\mathcal M}.
+}
+\]
+Thus a recommended minimum substep count is
+\[
+\boxed{
+N_{s,\min}
+=
+\max\left(
+1,
+\left\lceil
+\frac{\Delta t_k\mu_{\max}}{\eta_s r_{\mathcal M}}
+\right\rceil
+\right).
+}
+\]
+This is a recommendation, not an automatic correction. Stability does not imply
+sufficient accuracy.
+
+\subsection*{Worked example}
+If $\Delta t=600$ s and $\mu_{\max}=0.01\ \mathrm{s}^{-1}$, then
+$\Delta t\mu_{\max}=6$. With $\eta_s=0.9$, Euler recommends at least four
+substeps, while classical RK4 recommends at least three. E0-5 reports those
+values but does not modify $N_s$.
+
+% -----------------------------------------------------------------------------
+\section{E0-5K: Accuracy and convergence diagnostics}
+
+For linear RC models, define exact-ZOH error
+\[
+\boxed{
+e_{N_s}
+=
+\left\|
+X_{k+1}^{num}(N_s)-X_{k+1}^{exact}
+\right\|.
+}
+\]
+For sufficiently regular problems, Euler is first-order and classical RK4 is
+fourth-order \cite{Butcher2016ODE,HairerNorsettWanner1993ODEI}. Thus, in an
+appropriate asymptotic regime, halving $h$ should reduce Euler error by roughly a
+factor of two and RK4 error by roughly a factor of sixteen. Qualification tests
+shall use tolerances/ranges rather than demand exact ratios because floating-point
+and problem-conditioning effects eventually dominate.
+
+The core convergence invariant is
+\[
+\boxed{
+\lim_{h\to0}X_{num}(h)=X_{exact}
+}
+\]
+for the linear oracle cases.
+
+% -----------------------------------------------------------------------------
+\section{E0-5L: Exact-ZOH semigroup/composition invariant}
+
+For a linear system under constant held $U_k$, the exact flow satisfies
+\[
+\boxed{
+\Phi_{\Delta t}^{exact}
+=
+\left(\Phi_{\Delta t/N}^{exact}\right)^N
+}
+\]
+up to floating-point error. For example, one exact 600-s step must agree with
+four exact 150-s steps when the same $U_k$ is held.
+
+Finite-step Euler/RK methods are not required to satisfy exact composition, but
+their repeated-substep result must converge toward the exact solution as $h$
+decreases.
+
+% -----------------------------------------------------------------------------
+\section{E0-5M: Equilibrium preservation}
+
+If
+\[
+\boxed{f(X^\star,U^\star)=0,}
+\]
+then every correctly implemented explicit one-step method whose stages evaluate
+the same RHS at the equilibrium must preserve it:
+\[
+\boxed{\Phi_h(X^\star,U^\star)=X^\star.}
+\]
+The exact ZOH propagator must do the same.
+
+For 1R1C,
+\[
+T^\star=T_o+RQ
+\]
+is such an equilibrium and shall remain unchanged by a valid step.
+
+% -----------------------------------------------------------------------------
+\section{E0-5N: Diagnostics knob and fast execution path}
+
+Define
+\[
+\boxed{
+\diagmode\in\{0,1\}.
+}
+\]
+The default is
+\[
+\boxed{\diagmode=0.}
+\]
+
+\paragraph{Diagnostics disabled ($\diagmode=0$).}
+E0-5 performs construction/configuration validation once, constructs the selected
+fixed-step solver, and advances the state. It does not perform per-step eigenvalue
+analysis, exact-oracle comparison, convergence studies, or stage-by-stage
+scientific diagnostics. This is the normal training/runtime path.
+
+\paragraph{Per-step diagnostics enabled ($\diagmode=1$).}
+At each canonical step, E0-5 may evaluate all diagnostics applicable to the
+selected solver and model, including:
+\begin{itemize}[leftmargin=*]
+\item pre/post state and forcing finiteness;
+\item state dimension and dtype consistency;
+\item method-specific stability index when a valid radius is known;
+\item recommended substep count;
+\item exact linear-ZOH error for linear RC models;
+\item scalar analytical error for 1R1C oracle cases;
+\item equilibrium residual when an equilibrium case is intentionally tested;
+\item solver-provided local-error information when available;
+\item deterministic execution metadata.
+\end{itemize}
+Diagnostics are observational only:
+\[
+\boxed{
+X_{k+1}^{diag}=X_{k+1}^{normal}
+}
+\]
+for the same solver/configuration, up to effects that arise solely from floating
+point evaluation ordering. Diagnostics shall never clip, correct, or replace the
+solver state.
+
+% -----------------------------------------------------------------------------
+\section{E0-5O: No hidden numerical repair}
+
+E0-5 shall not silently apply state clipping, projection, smoothing,
+normalization, setpoint replacement, observation reset, or timestep correction.
+In particular, there is no hidden operation such as
+\[
+T\leftarrow\min(T,T_{max})
+\]
+or
+\[
+T\leftarrow\max(T,T_{min}).
+\]
+A bad numerical configuration must remain observable as a diagnostic/failure,
+not be disguised by modifying the solution.
+
+% -----------------------------------------------------------------------------
+\section{E0-5P: Validity and fail-fast conditions}
+
+Construction/configuration must reject
+\[
+\Delta t_k\le0,
+\qquad
+N_s<1,
+\qquad
+h\le0,
+\]
+an unsupported/incompatible solver, incompatible state representation, or
+non-finite configuration values.
+
+When per-step diagnostics are enabled, non-finite input/state/output values are
+reported immediately. In the normal fast path, E0-5 does not add expensive
+scientific diagnostics around every step; the solver executes on the already
+validated E0-4 runtime contract.
+
+No invalid value is silently replaced by a previous state or default.
+
+% -----------------------------------------------------------------------------
+\section{E0-5Q: Variable canonical intervals with fixed-step solvers}
+
+Mathematically, E0-5 supports
+\[
+\boxed{\Delta t_k\text{ varying with }k.}
+\]
+For each interval,
+\[
+h_k=\frac{\Delta t_k}{N_{s,k}}.
+\]
+However, each actual fixed-step solver instance/call uses one common configured
+$h$. A tensor batch that is advanced in one vectorized solver call must therefore
+share the same $h$.
+
+For irregular sequential intervals, ScaleBridge may construct/cache solver
+instances for required $h_k$ values. It shall not silently use one row's timestep
+for another row.
+
+% -----------------------------------------------------------------------------
+\section{E0-5R: Neuromancer ODE realization contract}
+
+The production architecture shall preserve one RHS authority:
+\[
+\boxed{
+\mathrm{ode\_equations}(X,T_B,Q)
+=
+f_{E0-3}(X,T_B,Q;\Theta).
+}
+\]
+A Neuromancer-compatible ODE adapter may wrap this RHS so that the selected
+integrator evaluates the same E0-3 physics. No solver implementation shall
+re-derive an independent RC equation.
+
+Conceptually,
+\[
+\text{E0-3 RHS}
+\to
+\text{Neuromancer ODE adapter}
+\to
+\text{selected fixed-step integrator}
+\to
+\text{substep wrapper}
+\to
+X_{k+1}.
+\]
+The production PyTorch/Neuromancer path must remain differentiable through the
+selected solver where the underlying Neuromancer method itself is differentiable.
+
+% -----------------------------------------------------------------------------
+\section{E0-5S: Integrator-family compatibility policy}
+
+The existence of a method in Neuromancer does not automatically make it a valid
+E0-5 RC solver. The implementation registry shall classify installed methods.
+At minimum, it records:
+\[
+(\text{name},\text{fixed-step},\text{first-order-state},\text{history requirement},
+\text{ZOH-compatible},\text{order metadata},\text{stability metadata}).
+\]
+
+A direct fixed-step first-order method may be exposed as a normal E0-5 selection.
+A multistep method requiring four historical states is a different runtime
+contract and shall not be passed a single $X_k$ silently. A second-order
+position/velocity method shall not be applied to the first-order RC state vector
+without a separately ratified reformulation.
+
+Neuromancer wrappers capable of adaptive methods are outside the E0-5 fixed-step
+core unless the implementation explicitly constrains them to a verified fixed-step
+mode whose numerical step semantics satisfy this contract.
+
+% -----------------------------------------------------------------------------
+\section{E0-5T: Numerical provenance}
+
+Every numerical run/model bundle shall retain
+\[
+\boxed{
+\mathcal D=
+(\text{solver},\text{backend},\Delta t,N_s,h,\text{hold},\text{dtype},
+\text{diagnostics mode}).
+}
+\]
+For example:
+\begin{verbatim}
+solver             = RK4
+backend            = neuromancer
+sample_dt_s        = 600
+substeps           = 4
+integration_h_s    = 150
+input_hold         = zoh_left
+dtype              = float32
+diagnostics_per_step = false
+\end{verbatim}
+Numerical configuration is not RC physics. Changing RK4 to RK2 or changing
+$N_s$ does not create a new RC topology.
+
+% -----------------------------------------------------------------------------
+\section{E0-5U: Spatial-mode neutrality}
+
+IND, DEP1, and DEP2 differ upstream in E0-3/E0-4. Once E0-4 has produced the
+effective $T_{B,k}$ and $Q_k$, E0-5 uses the same numerical engine:
+\[
+\boxed{
+\Phi_{\Delta t}^{\mathcal M}
+\text{ is mode-neutral after E0-4 forcing realization}.}
+\]
+E0-5 shall not contain mode-specific disturbance allocation logic.
+
+% -----------------------------------------------------------------------------
+\section{E0-5V: Mandatory numerical invariants}
+
+Every implementation shall preserve the following invariants.
+
+\begin{enumerate}[leftmargin=*]
+\item \textbf{Zero-duration identity (mathematical):}
+\[
+\Phi_0(X,U)=X.
+\]
+Operational runtime intervals still require $\Delta t>0$.
+
+\item \textbf{Dimension preservation:}
+\[
+X_k\in\R^{N_x}\Rightarrow X_{k+1}\in\R^{N_x}.
+\]
+
+\item \textbf{Determinism:} fixed state, forcing, parameters, solver,
+configuration, backend, and dtype produce the same step in the absence of a
+deliberately stochastic model component.
+
+\item \textbf{ZOH stage forcing:} every internal stage and external substep of a
+canonical interval receives the same $U_k$.
+
+\item \textbf{No future input:} $U_{k+1}$ cannot enter the $k\to k+1$ step.
+
+\item \textbf{E0-3 fidelity:} the numerical engine does not alter $C,L,\Gamma,H$
+or re-derive RC physics.
+
+\item \textbf{Equilibrium preservation:}
+$f(X^\star,U^\star)=0$ implies $\Phi_h(X^\star,U^\star)=X^\star$ for valid core
+schemes.
+
+\item \textbf{Exact linear oracle:} matrix-exponential ZOH matches the exact
+linear-RC flow.
+
+\item \textbf{Exact composition:} repeated exact-ZOH substeps equal one exact
+full interval within floating-point tolerance.
+
+\item \textbf{Convergence:} compatible numerical methods approach the exact
+linear oracle as $h\to0$ on qualification problems.
+
+\item \textbf{No hidden repair:} state clipping/projection/reset is prohibited.
+
+\item \textbf{Diagnostics neutrality:} enabling diagnostics cannot intentionally
+change the solver state.
+
+\item \textbf{Mode neutrality:} the same E0-5 solver implementation is used for
+IND, DEP1, and DEP2 after E0-4 binding.
+\end{enumerate}
+
+% -----------------------------------------------------------------------------
+\section{Complete worked numerical pipeline}
+
+Consider a two-zone 2R2C model. E0-4 provides
+\[
+X_k=[22,22,24,24]^\top,
+\]
+outdoor/boundary temperatures $T_{B,k}$, and an effective thermal forcing
+$Q_k$. Suppose
+\[
+\Delta t=600\ \mathrm s,
+\qquad
+N_s=4,
+\qquad
+h=150\ \mathrm s.
+\]
+Choose
+\[
+\mathcal M=\texttt{RK4}.
+\]
+Then the E0-5 production path executes four Neuromancer RK4 steps with the same
+held $U_k$. It returns $X_{k+1}$ directly.
+
+If
+\[
+\diagmode=0,
+\]
+no exact-oracle or eigenvalue diagnostic is evaluated at every runtime step.
+
+If
+\[
+\diagmode=1,
+\]
+E0-5 may additionally construct
+\[
+A=-C^{-1}L_{CC},
+\qquad
+B=[-C^{-1}L_{CB},C^{-1}\Gamma],
+\]
+compute the exact ZOH reference
+\[
+X_{k+1}^{exact},
+\]
+and report
+\[
+\|X_{k+1}^{RK4}-X_{k+1}^{exact}\|,
+\]
+plus any applicable stability/substep diagnostics. The reported diagnostic
+information does not replace $X_{k+1}^{RK4}$.
+
+The same workflow applies after E0-4 IND, DEP1, or DEP2 binding because E0-5
+receives only effective state and forcing.
+
+% -----------------------------------------------------------------------------
+\section{Ratified E0-5 lock}
+
+The following decisions are frozen for E0-5 implementation:
+
+\begin{enumerate}[leftmargin=*]
+\item E0-5 owns continuous-to-discrete state evolution only.
+\item Internal physical time is seconds.
+\item $\Delta t_k=t_{k+1}-t_k>0$.
+\item The E0-5 core uses fixed-step solvers only.
+\item Forcing uses causal left-endpoint ZOH over every canonical interval.
+\item All solver stages and all substeps receive the same E0-4 forcing $U_k$.
+\item No $U_{k+1}$ interpolation is used by the core E0-5 contract.
+\item Integrator choice is configurable rather than hard-coded.
+\item The solver registry exposes every installed Neuromancer method satisfying
+the E0-5 first-order fixed-step compatibility predicate.
+\item RK4 is the recommended/default solver, not the only allowed solver.
+\item Incompatible multistep or second-order methods are not silently registered
+as drop-in first-order RC solvers.
+\item Neuromancer wrappers capable of adaptive stepping are outside the fixed-step
+core unless explicitly constrained and separately verified as fixed-step.
+\item External substeps satisfy $h=\Delta t/N_s$, with $N_s\ge1$.
+\item Default $N_s=1$.
+\item E0-5 never silently changes $N_s$.
+\item Pure compiled RC dynamics admit $\dot X=AX+BU$.
+\item Exact linear ZOH using an augmented matrix exponential is the primary
+scientific numerical oracle.
+\item The exact oracle does not rely on $A^{-1}$ and therefore remains valid for
+singular $A$.
+\item ScaleBridge shall implement the exact oracle through a Neuromancer-compatible
+adapter if cleanly possible; otherwise it shall provide a dedicated linear-oracle
+integration package with the same high-level step interface.
+\item The exact-oracle kernel remains independent of Neuromancer Euler/RK formulas.
+\item The scalar 1R1C exponential solution is a mandatory analytical test oracle.
+\item Linear RC dynamics have real nonpositive eigenvalues through similarity to
+$-C^{-1/2}L_{CC}C^{-1/2}$.
+\item Euler and classical RK4 stability bounds are retained as method-specific
+diagnostics.
+\item Solver-specific stability bounds may be used only when explicitly known;
+none are invented for other integrators.
+\item The diagnostic stability safety factor is $\eta_s=0.9$.
+\item Stability-based minimum substeps are recommendations only.
+\item Stability and accuracy are distinct.
+\item Linear-oracle convergence is tested for supported numerical methods where
+method order/reference expectations are known.
+\item Exact-ZOH full-step and repeated exact substeps agree within numerical
+tolerance.
+\item Equilibria are preserved by valid core methods.
+\item No hidden clipping, projection, smoothing, state reset, or numerical repair
+is allowed.
+\item Diagnostics are controlled by $\diagmode\in\{0,1\}$.
+\item Default $\diagmode=0$: normal execution runs the configured ODE solver
+without expensive per-step scientific validation.
+\item With $\diagmode=1$, all applicable per-step diagnostics may be computed.
+\item Diagnostics never intentionally alter the propagated state.
+\item Invalid static numerical configuration fails at construction/configuration.
+\item E0-5 mathematically supports variable canonical intervals, but each actual
+fixed-step solver call/batch uses one common $h$.
+\item The production ODE adapter calls the frozen E0-3 RHS rather than maintaining
+a duplicate RC equation.
+\item Production Neuromancer-compatible solver paths remain differentiable where
+the chosen method supports PyTorch differentiation.
+\item Numerical provenance records solver, backend, $\Delta t$, $N_s$, $h$, hold
+mode, dtype, and diagnostics mode.
+\item Numerical configuration is separate from RC topology/physics.
+\item IND, DEP1, and DEP2 use the same E0-5 engine after E0-4 forcing realization.
+\item E0-5 ends at $X_{k+1}$; training loss, optimization, observers, PHVAC, and
+control logic remain outside this contract.
+\end{enumerate}
+
+\section{Authority boundary after E0-5}
+\[
+\boxed{\text{E0-3: continuous RC physics}}
+\]
+\[
+\boxed{\text{E0-4: runtime state and canonical forcing realization}}
+\]
+\[
+\boxed{\text{E0-5: selectable fixed-step discretization and numerical propagation}}
+\]
+Future backend adapters may reuse the same E0-5 mathematical contract, but they
+must not change its ZOH, timestep, solver-selection, or oracle semantics.
+
+\bibliographystyle{plain}
+\bibliography{../../references/ScaleBridge_Thermal_Modeling_References}
+
+\end{document}

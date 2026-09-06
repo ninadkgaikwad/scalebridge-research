@@ -1,5 +1,5 @@
 from __future__ import annotations
-from dash import Input,Output,State,callback,no_update,html
+from dash import ALL, Input, Output, State, callback, ctx, no_update, html, dcc
 import dash_bootstrap_components as dbc
 import json
 import plotly.express as px
@@ -8,8 +8,92 @@ from scalebridge.integration.energyplus.generation.campaign_definition import Ge
 from scalebridge.dashapp.services.generation.definition_store import save_definition,load_definition
 from scalebridge.dashapp.services.generation.upload_import import import_zip
 from scalebridge.dashapp.services.generation.execution import MANAGER
-from scalebridge.dashapp.services.generation.results_data import campaign_index,load_series
+from scalebridge.dashapp.services.generation.results_data import (
+    build_selected_data_export,
+    campaign_index,
+    discover_key_values,
+    filter_index_rows,
+    load_series,
+)
 from .page import get_tab_builder
+
+def _compact_weather_label(value: object) -> str:
+ """Return a concise weather label for the native Plotly legend."""
+ text=str(value or "")
+ if text.startswith("USA_"):
+  parts=text.split("_")
+  if len(parts)>=3:
+   state=parts[1]
+   location=parts[2].split(".")[0].split("-")[0]
+   return f"{location}, {state}"
+ return text
+
+
+def _apply_custom_results_plot_layout(fig):
+ """Use the full graph panel for data; legend lives in a separate Dash panel."""
+ fig.update_layout(
+  showlegend=False,
+  margin=dict(l=70,r=25,t=45,b=65),
+  hovermode="x unified",
+  autosize=True,
+ )
+ return fig
+
+
+def _legend_button_style(color: str, visible: bool) -> dict[str, object]:
+ """Return compact clickable styling for one custom legend item."""
+ return {
+  "width":"100%",
+  "display":"flex",
+  "alignItems":"flex-start",
+  "gap":"0.55rem",
+  "padding":"0.55rem 0.6rem",
+  "marginBottom":"0.4rem",
+  "border":"1px solid rgba(120,120,120,0.25)",
+  "borderRadius":"0.4rem",
+  "background":"rgba(255,255,255,0.92)" if visible else "rgba(230,230,230,0.55)",
+  "opacity":1.0 if visible else 0.48,
+  "cursor":"pointer",
+  "textAlign":"left",
+  "whiteSpace":"normal",
+ }
+
+
+def _build_custom_legend(items):
+ """Build the independently scrollable, clickable legend contents."""
+ if not items:
+  return html.Div("Plot signals to populate the legend.",className="text-muted small")
+ visible_count=sum(1 for item in items if item.get("visible",True))
+ children=[html.Div(f"{visible_count} of {len(items)} traces visible",className="small text-muted mb-2")]
+ for item in items:
+  visible=bool(item.get("visible",True))
+  color=str(item.get("color") or "#666")
+  children.append(
+   html.Button(
+    [
+     html.Span(
+      style={
+       "display":"inline-block","width":"1rem","minWidth":"1rem","height":"0.28rem",
+       "marginTop":"0.45rem","borderRadius":"0.2rem","backgroundColor":color,
+      }
+     ),
+     html.Span(
+      [
+       html.Div(item.get("primary_label",item.get("display_name","")),style={"fontWeight":600}),
+       html.Div(item.get("variable_name",""),className="small"),
+       html.Div(f"Key: {item.get('key_value','')}",className="small text-muted"),
+      ],
+      style={"minWidth":0,"overflowWrap":"anywhere"},
+     ),
+    ],
+    id={"type":"generation-results-legend-toggle","index":int(item["index"])},
+    n_clicks=0,
+    title=item.get("full_name",item.get("display_name","")),
+    style=_legend_button_style(color,visible),
+   )
+  )
+ return children
+
 
 def register_generation_callbacks():
  @callback(Output('generation-workspace-content','children'),Input('generation-workspace-tabs','value'),prevent_initial_call=True)
@@ -87,15 +171,82 @@ def register_generation_callbacks():
  def ropts(rows,b,w,c): return options(rows or [],'run_id',[('building_type',b),('weather_location',w),('case_id',c)])
  @callback(Output('generation-results-variable','options'),Input('generation-results-index','data'),Input('generation-results-building','value'),Input('generation-results-weather','value'),Input('generation-results-case','value'),Input('generation-results-run','value'))
  def vopts(rows,b,w,c,r): return options(rows or [],'variable_name',[('building_type',b),('weather_location',w),('case_id',c),('run_id',r)])
+ @callback(Output('generation-results-key','options'),Output('generation-results-key','value'),Input('generation-results-index','data'),Input('generation-results-building','value'),Input('generation-results-weather','value'),Input('generation-results-case','value'),Input('generation-results-run','value'),Input('generation-results-variable','value'),State('generation-results-key','value'))
+ def kopts(rows,b,w,c,r,v,current):
+  selected=filter_index_rows(rows or [],building_types=b,weather_locations=w,case_ids=c,run_ids=r,variable_names=v)
+  keys=discover_key_values(selected) if v else []
+  opts=[{'label':key,'value':key} for key in keys]
+  current_valid=[key for key in (current or []) if key in keys]
+  return opts,(current_valid if current_valid else keys)
  @callback(Output('generation-results-start','disabled'),Output('generation-results-end','disabled'),Input('generation-results-range-mode','value'))
  def range_mode(v): return (v!='custom',v!='custom')
 
- @callback(Output('generation-results-graph','figure'),Output('generation-results-message','children'),Input('generation-results-plot-button','n_clicks'),State('generation-results-index','data'),State('generation-results-building','value'),State('generation-results-weather','value'),State('generation-results-case','value'),State('generation-results-run','value'),State('generation-results-variable','value'),State('generation-results-range-mode','value'),State('generation-results-start','value'),State('generation-results-end','value'),prevent_initial_call=True)
- def plot(n,rows,b,w,c,r,v,mode,start,end):
-  selected=rows or []
-  for key,vals in [('building_type',b),('weather_location',w),('case_id',c),('run_id',r),('variable_name',v)]:
-   if vals:selected=[x for x in selected if x[key] in vals]
-  if not selected:return no_update,dbc.Alert('Select at least one variable within the current filter context.',color='warning')
+ @callback(Output('generation-results-graph','figure'),Output('generation-results-custom-legend','children'),Output('generation-results-legend-state','data'),Output('generation-results-message','children'),Input('generation-results-plot-button','n_clicks'),State('generation-results-index','data'),State('generation-results-building','value'),State('generation-results-weather','value'),State('generation-results-case','value'),State('generation-results-run','value'),State('generation-results-variable','value'),State('generation-results-key','value'),State('generation-results-range-mode','value'),State('generation-results-start','value'),State('generation-results-end','value'),prevent_initial_call=True)
+ def plot(n,rows,b,w,c,r,v,keys,mode,start,end):
+  selected=filter_index_rows(rows or [],building_types=b,weather_locations=w,case_ids=c,run_ids=r,variable_names=v)
+  if not selected:return no_update,no_update,no_update,dbc.Alert('Select at least one variable within the current filter context.',color='warning')
+  if not keys:return no_update,no_update,no_update,dbc.Alert('Select at least one variable column / key.',color='warning')
   try:
-   frame=load_series(selected,start if mode=='custom' else None,end if mode=='custom' else None); fig=px.line(frame,x='timestamp',y='value',color='series'); fig.update_layout(legend_title_text='Building | Weather | Case | Run | Variable'); return fig,dbc.Alert(f'Plotted {len(selected)} signal artifact(s), {len(frame)} rows.',color='success')
+   frame=load_series(selected,start if mode=='custom' else None,end if mode=='custom' else None,key_values=keys)
+   if frame.empty:return no_update,no_update,no_update,dbc.Alert('No rows matched the selected variable columns / keys and datetime range.',color='warning')
+   fig=px.line(frame,x='timestamp',y='value',color='series')
+
+   row_by_prefix={}
+   for row in selected:
+    prefix=(
+     f"{row['building_type']} | {row['weather_location']} | "
+     f"{row['case_id']} | {row['run_id']} | {row['variable_name']}"
+    )
+    row_by_prefix[prefix]=row
+
+   legend_items=[]
+   for index,trace in enumerate(fig.data):
+    full_name=str(trace.name)
+    prefix,key_value=full_name.rsplit(' | ',1) if ' | ' in full_name else (full_name,'*')
+    row=row_by_prefix.get(prefix,{})
+    weather_short=_compact_weather_label(row.get('weather_location',''))
+    trace.hovertemplate=(
+     f"{full_name}<br>Datetime=%{{x}}<br>Value=%{{y}}<extra></extra>"
+    )
+    color=getattr(getattr(trace,'line',None),'color',None) or '#666'
+    legend_items.append({
+     'index':index,
+     'visible':True,
+     'color':color,
+     'full_name':full_name,
+     'primary_label':f"{row.get('building_type','')} | {weather_short}",
+     'variable_name':row.get('variable_name',prefix),
+     'key_value':key_value,
+    })
+
+   _apply_custom_results_plot_layout(fig)
+   return fig,_build_custom_legend(legend_items),legend_items,dbc.Alert(f'Plotted {len(fig.data)} selected variable/key trace(s), {len(frame)} rows.',color='success')
+  except Exception as e:return no_update,no_update,no_update,dbc.Alert(f'{type(e).__name__}: {e}',color='danger')
+
+ @callback(Output('generation-results-graph','figure',allow_duplicate=True),Output('generation-results-custom-legend','children',allow_duplicate=True),Output('generation-results-legend-state','data',allow_duplicate=True),Input({'type':'generation-results-legend-toggle','index':ALL},'n_clicks'),State('generation-results-graph','figure'),State('generation-results-legend-state','data'),prevent_initial_call=True)
+ def toggle_trace(_clicks,figure,items):
+  triggered=ctx.triggered_id
+  if not isinstance(triggered,dict) or triggered.get('type')!='generation-results-legend-toggle':
+   return no_update,no_update,no_update
+  if not figure or not items:
+   return no_update,no_update,no_update
+  index=int(triggered['index'])
+  if index<0 or index>=len(items) or index>=len(figure.get('data',[])):
+   return no_update,no_update,no_update
+  items=[dict(item) for item in items]
+  items[index]['visible']=not bool(items[index].get('visible',True))
+  figure=dict(figure)
+  figure['data']=[dict(trace) for trace in figure.get('data',[])]
+  figure['data'][index]['visible']=True if items[index]['visible'] else False
+  return figure,_build_custom_legend(items),items
+
+ @callback(Output('generation-results-download','data'),Output('generation-results-download-message','children'),Input('generation-results-download-button','n_clicks'),State('generation-results-campaign','value'),State('generation-results-index','data'),State('generation-results-building','value'),State('generation-results-weather','value'),State('generation-results-case','value'),State('generation-results-run','value'),State('generation-results-variable','value'),State('generation-results-key','value'),State('generation-results-range-mode','value'),State('generation-results-start','value'),State('generation-results-end','value'),State('generation-results-export-format','value'),prevent_initial_call=True)
+ def download_selected(n,cid,rows,b,w,c,r,v,keys,mode,start,end,export_format):
+  if not cid:return no_update,dbc.Alert('Select a generated campaign before downloading data.',color='warning')
+  selected=filter_index_rows(rows or [],building_types=b,weather_locations=w,case_ids=c,run_ids=r,variable_names=v)
+  if not selected:return no_update,dbc.Alert('Select at least one variable within the current filter context.',color='warning')
+  if not keys:return no_update,dbc.Alert('Select at least one variable column / key before downloading data.',color='warning')
+  try:
+   payload,filename=build_selected_data_export(campaign_id=cid,rows=selected,export_format=export_format or 'csv',range_mode=mode or 'full',start=start,end=end,key_values=keys)
+   return dcc.send_bytes(payload,filename),dbc.Alert(f'Prepared only the selected variable/key series as {filename}.',color='success')
   except Exception as e:return no_update,dbc.Alert(f'{type(e).__name__}: {e}',color='danger')

@@ -1,0 +1,18 @@
+﻿{
+    "installed_at":  "2026-08-30T13:16:35-07:00",
+    "delivery":  "PINODE_EPSR_Day7_FinalMathContracts_RepoDocs_20260830_v1",
+    "repository_root":  "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\NewOrg\\scalebridge-research\\Paper_PINODE_EPSR",
+    "data_root_writes":  0,
+    "authoritative_contracts":  [
+                                    "docs/mathematics/contracts/PINODE_EPSR_Part6_MPC_Observers_Detailed.tex",
+                                    "docs/mathematics/contracts/PINODE_EPSR_Part7_MPC_Actuator_Realization_Simplified_FROZEN.tex"
+                                ],
+    "historical_math":  [
+                            "docs/mathematics/history/PINODE_EPSR_Part7_MPC_Actuator_Realization_Detailed_HISTORICAL.tex"
+                        ],
+    "final_mpc_control":  "[m_dot_D*, T_sa_D*, m_dot_K*, T_sa_K*]",
+    "direct_energyplus_runtime_api":  true,
+    "sinergym_required":  false,
+    "categorical_kitchen_heating_exclusion":  false,
+    "generic_per_zone_native_fallback":  true
+}

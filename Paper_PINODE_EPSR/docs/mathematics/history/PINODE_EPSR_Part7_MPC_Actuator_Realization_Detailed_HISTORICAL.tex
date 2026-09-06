@@ -1,0 +1,1660 @@
+\documentclass[11pt]{article}
+
+% ============================================================================
+% HISTORICAL / EXPLORATORY DOCUMENT
+% ============================================================================
+% This detailed Part-7 file records the pre-freeze actuator-realization
+% investigation, including affine/hybrid candidates and open C2.8/C2.9 ideas.
+% It is NOT the authoritative final actuator contract.
+%
+% Authoritative final contract:
+%   docs/mathematics/contracts/
+%   PINODE_EPSR_Part7_MPC_Actuator_Realization_Simplified_FROZEN.tex
+%
+% Repository ownership:
+%   Clean LaTeX/docs live under the EPSR code repo.
+%   Scientific EnergyPlus experiment evidence lives under the separate data root.
+% ============================================================================
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{booktabs,longtable,array}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xcolor}
+
+\newcommand{\mdot}{\dot m}
+\newcommand{\Qx}{Q_{\mathrm{HVAC},X}}
+\newcommand{\Qac}{Q_{\mathrm{AC}}}
+\newcommand{\Phvac}{P_{\mathrm{HVAC}}}
+\newcommand{\uStar}{u^\star}
+\newcommand{\uEP}{u^{\mathrm{EP}}}
+\newcommand{\aEP}{a^{\mathrm{EP}}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Frozen}{\textbf{[EMPIRICALLY FROZEN]}}
+\newcommand{\Candidate}{\textbf{[CURRENT CANDIDATE]}}
+\newcommand{\OpenItem}{\textbf{[OPEN / TO IDENTIFY]}}
+\newcommand{\PaperRoot}{\texttt{Paper\_PINODE\_EPSR}}
+
+\title{PINODE/EPSR MPC and EnergyPlus Actuator Realization\\
+Detailed Mathematical Contract and Experimental Identification Record}
+\author{ScaleBridge / PINODE--EPSR Working Mathematical Contract}
+\date{29 August 2026 --- Version 5 (compile-clean)}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+This document extends the existing PINODE/EPSR MPC mathematics with the
+EnergyPlus actuator-realization layer required for closed-loop experiments on
+the RestaurantFastFood/Buffalo prototype.  The upper-level MPC retains the
+physically meaningful control variables supply-air mass flow
+$\mdot$ and supply-air temperature $T_{\mathrm{sa}}$.  A separate lower-level realization
+map converts those physical requests into the low-level EnergyPlus commands
+actually accepted by the two packaged single-zone (PSZ) HVAC systems serving
+Dining and Kitchen.  The formulation deliberately separates (i) desired MPC
+inputs, (ii) EnergyPlus actuator commands, and (iii) physically realized HVAC
+inputs.  Numerical experiments C1--C2.4 are incorporated explicitly, including
+the exact identified fan-flow inverse and the current evidence for
+mode-dependent thermal realization.  Items that are already established by
+experiment are marked separately from models that remain to be identified.
+\end{abstract}
+
+\section{Purpose and relationship to the existing Part-6 MPC contract}
+
+The existing PINODE/EPSR MPC contract keeps all four thermal-model families in
+continuous time and advances them over a fixed control interval using numerical
+integration.  The closed-loop control interval is
+\begin{equation}
+\Delta t_{\mathrm{MPC}} = 300~\mathrm{s}.
+\label{eq:mpc-dt}
+\end{equation}
+The intended physical HVAC path in the existing contract is
+\begin{equation}
+(\mdot,T_{\mathrm{sa}},T_z)
+\longrightarrow
+\Qx
+\longrightarrow
+G_Q
+\longrightarrow
+\Qac
+\longrightarrow
+\dot x = F_\theta(x,\Qac,d)
+\longrightarrow
+x_{k+1},
+\label{eq:existing-thermal-chain}
+\end{equation}
+while the electrical-power path remains separate,
+\begin{equation}
+|\Qac|
+\longrightarrow
+G_P
+\longrightarrow
+\Phvac.
+\label{eq:existing-power-chain}
+\end{equation}
+Here $G_Q$ is the common Phase-C signed thermal-input mapping and $G_P$ is the
+common Phase-C HVAC electrical-power mapping.  In particular, $\Phvac$ is an
+MPC objective/output quantity and does not enter the thermal ODE right-hand
+side.
+
+The present document adds a realization layer \emph{before}
+Eq.~\eqref{eq:existing-thermal-chain}.  It answers the practical question:
+\begin{quote}
+Given the MPC-requested physical pair $(\mdot^\star,T_{\mathrm{sa}}^\star)$, what
+low-level EnergyPlus actuator commands must be issued so that the actual
+RestaurantFastFood HVAC system realizes that pair as closely as physically
+possible?
+\end{quote}
+
+\section{System under study}
+
+The current controlled EnergyPlus plant is the RestaurantFastFood prototype in
+Buffalo, using the SHA-verified EnergyPlus 24.1 transition candidate
+\begin{verbatim}
+RestaurantFastFood_Buffalo_EPlus24.1_FINAL_CANDIDATE.idf
+
+SHA256:
+da86d8c3c782424d2d4f30e29a97220c9b9042f721e83591f43762f34df77101
+\end{verbatim}
+
+The physical thermal zones of interest are
+\begin{equation}
+\mathcal Z = \{D,K\},
+\end{equation}
+where $D$ denotes Dining and $K$ denotes Kitchen.
+
+Both zones are served by independent
+\texttt{AirLoopHVAC:UnitarySystem} packaged single-zone systems with
+\texttt{Control Type = Load}.  The major physical chains are:
+
+\begin{verbatim}
+DINING: PSZ-AC_1:1
+
+return / supply-equipment inlet
+          |
+          +---- outdoor air
+          |
+          v
+      OA mixer
+          |
+          v
+  DX cooling coil
+          |
+          v
+    heating coil
+          |
+          v
+   Fan:SystemModel
+          |
+          v
+ PSZ supply outlet
+          |
+          v
+ Dining Direct Air
+          |
+          v
+      DINING ZONE
+
+
+KITCHEN: PSZ-AC_2:2
+
+return / supply-equipment inlet
+          |
+          +---- outdoor / makeup air
+          |
+          v
+      OA mixer
+          |
+          v
+  DX cooling coil
+          |
+          v
+    heating coil
+          |
+          v
+   Fan:SystemModel
+          |
+          v
+ PSZ supply outlet
+          |
+          v
+ Kitchen Direct Air
+          |
+          v
+      KITCHEN ZONE
+\end{verbatim}
+
+The Kitchen system has a particularly important outdoor/makeup-air burden.
+Consequently, positive heating-coil output does not necessarily imply positive
+sensible heat delivery relative to the Kitchen zone temperature.
+
+\section{Notation registry}
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.20\textwidth}
+                  >{\raggedright\arraybackslash}p{0.58\textwidth}
+                  >{\raggedright\arraybackslash}p{0.14\textwidth}}
+\toprule
+Symbol & Meaning & Units \\
+\midrule
+\endfirsthead
+\toprule
+Symbol & Meaning & Units \\
+\midrule
+\endhead
+$i\in\mathcal Z$ & Zone index; $D$ = Dining, $K$ = Kitchen & -- \\
+$k$ & MPC control-step index & -- \\
+$j$ & Prediction-horizon index & -- \\
+$\Delta t_{\mathrm{MPC}}$ & Closed-loop control interval & s \\
+$x_{i,k}$ & Thermal-model state for zone/model block $i$ & model-dependent \\
+$\hat x_{i,k}$ & Observer/encoder state estimate used by MPC & model-dependent \\
+$d_{i,k}$ & Exogenous disturbances/forecasts & model-dependent \\
+$\xi_{i,k}$ & Local HVAC realization state/context & mixed \\
+$T_{z,i,k}$ & Zone air temperature & $^\circ$C \\
+$\mdot_{i,k}^\star$ & Physical supply-air mass-flow request produced by MPC & kg/s \\
+$T_{\mathrm{sa},i,k}^\star$ & Physical supply-air-temperature request produced by MPC & $^\circ$C \\
+$u_{i,k}^\star$ & Desired physical MPC HVAC input $[\mdot_i^\star,T_{\mathrm{sa},i}^\star]^\top$ & mixed \\
+$a_{m,i,k}$ & Low-level EnergyPlus fan mass-flow actuator command & kg/s \\
+$a_{q,i,k}$ & Low-level EnergyPlus unitary sensible-load request & W \\
+$a_{s,i,k}$ & Low-level EnergyPlus DX-speed command when used & dimensionless \\
+$a_{i,k}$ & Complete low-level EnergyPlus actuator vector & mixed \\
+$\mdot_{i,k}^{\mathrm{EP}}$ & Realized supply/direct-air-node mass flow & kg/s \\
+$T_{\mathrm{sa},i,k}^{\mathrm{EP}}$ & Realized supply/direct-air-node temperature & $^\circ$C \\
+$u_{i,k}^{\mathrm{EP}}$ & Realized physical HVAC input & mixed \\
+$c_p$ & Specific heat of air used consistently in control equations & J/(kg K) \\
+$\Qx$ & Raw air-side sensible heat quantity prior to Phase-C $G_Q$ & W \\
+$\Qac$ & Signed Phase-C thermal input supplied to the thermal ODE & W \\
+$\Phvac$ & Phase-C HVAC electrical-power output & W \\
+$G_Q$ & Common Phase-C signed thermal-input mapping & -- \\
+$G_P$ & Common Phase-C HVAC electrical-power mapping & -- \\
+$g_i$ & Forward low-level actuator-to-physical-HVAC realization map & -- \\
+$f_i$ & Inverse/realizer map from physical HVAC target to low-level commands & -- \\
+$\alpha_i,\beta_i$ & Local gain and offset for an affine thermal-realization model & --, W \\
+$\mathcal A_i$ & Admissible low-level actuator-command set & mixed \\
+$\mathcal U_i^{\mathrm{EP}}(\xi)$ & Physically realizable $(\mdot,T_{\mathrm{sa}})$ set under EnergyPlus state $\xi$ & mixed \\
+$\mathcal U_i^{\mathrm{train}}$ & Region supported by thermal-model training data & mixed \\
+$\mathcal U_i^{\mathrm{MPC}}$ & Final MPC physical-input feasible set & mixed \\
+$e^u_i$ & Physical actuator-realization error & mixed \\
+$e_i^{\mdot}$ & Mass-flow realization error & kg/s \\
+$e_i^T$ & Supply-temperature realization error & K or $^\circ$C difference \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Specific-heat convention.}
+The equations in this document retain the symbolic constant $c_p$ so one
+numerical convention is used throughout the final paper and implementation.
+The earlier Part-6 working contract used approximately
+$c_p=1005~\mathrm{J/(kg\,K)}$, whereas the C2.3/C2.4 screening scripts used
+$1006~\mathrm{J/(kg\,K)}$.  The final implementation should freeze one value
+and use it consistently in the MPC, actuator realizer, Phase-C interface, and
+all reported metrics.  This numerical difference is small but must not remain
+implicit in the final paper.
+
+\section{Two-layer control architecture}
+
+The fundamental architecture is
+
+\begin{verbatim}
+ weather / gains / price / forecasts
+                 |
+                 v
+        +------------------+
+        |       MPC        |
+        |                  |
+        | outputs physical |
+        |  m_dot* , T_sa*  |
+        +---------+--------+
+                  |
+                  | u* = [m_dot*, T_sa*]
+                  v
+        +---------------------------+
+        | actuator realization f_i  |
+        |                           |
+        | physical request          |
+        |      ->                   |
+        | EnergyPlus commands       |
+        +-------------+-------------+
+                      |
+                      | [fan command,
+                      |  load request,
+                      |  DX command, ...]
+                      v
+        +---------------------------+
+        |   EnergyPlus PSZ plant    |
+        +-------------+-------------+
+                      |
+                      v
+          m_dot_EP , T_sa_EP
+                      |
+                      +------> realized Q_HVAC
+                      |
+                      +------> zone / next MPC step
+\end{verbatim}
+
+For each zone,
+\begin{equation}
+u_{i,k}^\star
+=
+\begin{bmatrix}
+\mdot_{i,k}^\star\\
+T_{\mathrm{sa},i,k}^\star
+\end{bmatrix}.
+\label{eq:physical-mpc-input}
+\end{equation}
+
+The low-level command vector is
+\begin{equation}
+a_{i,k}
+=
+\begin{bmatrix}
+a_{m,i,k}\\
+a_{q,i,k}\\
+a_{s,i,k}\\
+\vdots
+\end{bmatrix}.
+\label{eq:low-level-actuator-vector}
+\end{equation}
+
+The true EnergyPlus plant defines a forward realization map
+\begin{equation}
+u_{i,k}^{\mathrm{EP}}
+=
+g_i(a_{i,k},\xi_{i,k})
+=
+\begin{bmatrix}
+\mdot_{i,k}^{\mathrm{EP}}\\
+T_{\mathrm{sa},i,k}^{\mathrm{EP}}
+\end{bmatrix},
+\label{eq:forward-realization-map}
+\end{equation}
+where $\xi_{i,k}$ may include zone state, outdoor/mixed-air state, humidity,
+equipment mode, controller state, and other quantities required to explain the
+local PSZ response.
+
+The low-level controller seeks an inverse or realization policy
+\begin{equation}
+a_{i,k}
+=
+f_i
+\left(
+u_{i,k}^\star,\xi_{i,k}
+\right)
+=
+f_i
+\left(
+\mdot_{i,k}^\star,
+T_{\mathrm{sa},i,k}^\star,
+\xi_{i,k}
+\right).
+\label{eq:inverse-realizer}
+\end{equation}
+
+The distinction between Eqs.~\eqref{eq:physical-mpc-input} and
+\eqref{eq:low-level-actuator-vector} is essential: the MPC variables remain
+physical variables even when the EnergyPlus realization requires different
+low-level commands.
+
+\section{Physical HVAC heat relation}
+
+At the zone-supply interface, the desired raw sensible heat associated with the
+MPC request is
+\begin{equation}
+Q_{X,i,k}^{\star}
+=
+\mdot_{i,k}^{\star}
+c_p
+\left(
+T_{\mathrm{sa},i,k}^{\star}-T_{z,i,k}
+\right).
+\label{eq:desired-airside-heat}
+\end{equation}
+
+The realized quantity is
+\begin{equation}
+Q_{X,i,k}^{\mathrm{EP}}
+=
+\mdot_{i,k}^{\mathrm{EP}}
+c_p
+\left(
+T_{\mathrm{sa},i,k}^{\mathrm{EP}}-T_{z,i,k}
+\right).
+\label{eq:realized-airside-heat}
+\end{equation}
+
+The existing paper pipeline then applies the common Phase-C mapping,
+\begin{equation}
+Q_{\mathrm{AC},i,k}
+=
+G_Q
+\left(
+Q_{X,i,k},\zeta_{Q,i,k}
+\right),
+\label{eq:phase-c-q-map}
+\end{equation}
+where $\zeta_Q$ denotes any additional regressors required by the frozen Phase-C
+model.  The thermal ODE uses $\Qac$, not electrical power.
+
+Electrical HVAC power is computed separately:
+\begin{equation}
+P_{\mathrm{HVAC},i,k}
+=
+G_P
+\left(
+|Q_{\mathrm{AC},i,k}|,\zeta_{P,i,k}
+\right).
+\label{eq:phase-c-p-map}
+\end{equation}
+
+Thus,
+\begin{verbatim}
+m_dot , T_sa , T_zone
+          |
+          v
+ Q_HVAC,X = m_dot cp (T_sa - T_zone)
+          |
+          v
+       Phase-C G_Q
+          |
+          v
+        signed Q_AC
+          |
+          +-------------> continuous thermal model / RK4
+          |
+          v
+       |Q_AC|
+          |
+          v
+       Phase-C G_P
+          |
+          v
+         P_HVAC
+          |
+          +-------------> MPC energy / price / grid objective
+\end{verbatim}
+
+\section{Empirically frozen mass-flow realization}
+
+\subsection{Causal screening result}
+
+The directed actuator experiments established that:
+\begin{itemize}[leftmargin=2em]
+\item the terminal/direct-air \texttt{Mass Flow Rate} actuator was writable but
+did not causally control the realized supply flow in this PSZ topology;
+\item the generic supply-node \texttt{Temperature Setpoint} actuator produced
+no meaningful causal effect because the parent unitary systems operate in
+\texttt{Load} control;
+\item the \texttt{Fan Air Mass Flow Rate} actuator directly controlled the
+realized supply flow;
+\item unitary sensible-load request and DX-speed commands affected thermal
+behavior and were retained for thermal-realization identification.
+\end{itemize}
+
+\subsection{Frozen fan mapping}
+
+For the present two-mode PSZ/Fan:SystemModel implementation, C2.2 established
+over Dining and Kitchen, heating and cooling, and the physical range
+$0.2$--$1.0$ of design mass flow:
+\begin{equation}
+\boxed{
+\mdot_{i}^{\mathrm{EP}} = 2 a_{m,i}
+}
+\qquad i\in\{D,K\}.
+\label{eq:exact-fan-forward}
+\end{equation}
+
+The corresponding inverse is
+\begin{equation}
+\boxed{
+a_{m,i}
+=
+\frac{1}{2}\mdot_i^\star .
+}
+\label{eq:exact-fan-inverse}
+\end{equation}
+
+This relation remained exact when thermal actuators were simultaneously active
+in C2.3 and C2.4.  In C2.4 the maximum measured absolute flow error and maximum
+fraction-of-design flow error were both reported as zero:
+\begin{equation}
+\max |e_i^{\mdot}| = 0,
+\qquad
+\max
+\frac{|e_i^{\mdot}|}{\mdot_{i,\max}}
+=0.
+\label{eq:c24-flow-zero-error}
+\end{equation}
+
+Therefore Eq.~\eqref{eq:exact-fan-inverse} is \Frozen\ for this exact
+RestaurantFastFood EnergyPlus 24.1 PSZ implementation.  It is a
+plant-specific realization law, not a universal EnergyPlus identity.
+
+\section{Why supply temperature requires a state-dependent realization map}
+
+Changing mass flow alone changes supply temperature because fan flow, outdoor
+air, coil operation, and unitary control are coupled.  Therefore the true
+thermal realization cannot generally be written as a completely independent
+map $T_{\mathrm{sa}}^\star\mapsto a_q$.
+
+For the air path
+\begin{equation}
+T_{\mathrm{mix}}
+\longrightarrow
+T_{\mathrm{coil,out}}
+\longrightarrow
+T_{\mathrm{heat,out}}
+\longrightarrow
+T_{\mathrm{sa}},
+\end{equation}
+the zone-level heat can be decomposed as
+\begin{align}
+Q_{X,i}
+&=
+\mdot_i c_p
+\left(
+T_{\mathrm{sa},i}-T_{z,i}
+\right)
+\nonumber\\
+&=
+\mdot_i c_p
+\left(
+T_{\mathrm{mix},i}-T_{z,i}
+\right)
++
+\mdot_i c_p
+\left(
+T_{\mathrm{sa},i}-T_{\mathrm{mix},i}
+\right).
+\label{eq:airpath-decomposition}
+\end{align}
+
+Define
+\begin{equation}
+Q_{\mathrm{burden},i}
+=
+\mdot_i c_p
+\left(
+T_{\mathrm{mix},i}-T_{z,i}
+\right),
+\label{eq:airpath-burden}
+\end{equation}
+and
+\begin{equation}
+Q_{\mathrm{equip},i}
+=
+\mdot_i c_p
+\left(
+T_{\mathrm{sa},i}-T_{\mathrm{mix},i}
+\right).
+\label{eq:airpath-equipment}
+\end{equation}
+Then
+\begin{equation}
+Q_{X,i}
+=
+Q_{\mathrm{burden},i}
++
+Q_{\mathrm{equip},i}.
+\label{eq:airpath-sum}
+\end{equation}
+
+This decomposition explains why a heating coil can be strongly active while
+the zone-level quantity $Q_{X,i}$ remains negative: the equipment may first be
+overcoming a large negative outdoor/makeup-air burden.
+
+\section{First-principles thermal-actuator candidate}
+
+The simplest possible unitary sensible-load request associated with a desired
+physical pair is
+\begin{equation}
+a_{q,i}^{(0)}
+=
+Q_{X,i}^\star
+=
+\mdot_i^\star c_p
+\left(
+T_{\mathrm{sa},i}^\star-T_{z,i}
+\right).
+\label{eq:naive-load-request}
+\end{equation}
+
+C2.3 showed that this direct physics request is already accurate over important
+operating points for Dining heating, Dining cooling, and Kitchen cooling, but
+is inadequate for Kitchen heating under a large makeup-air burden.  Therefore
+Eq.~\eqref{eq:naive-load-request} is a useful feedforward term but is not yet a
+universal low-level inverse.
+
+\section{Local affine realization model}
+
+A physically interpretable local model is
+\begin{equation}
+\boxed{
+Q_{X,i}^{\mathrm{EP}}
+=
+\alpha_i(\xi_i)\,a_{q,i}
++
+\beta_i(\xi_i)
++
+\varepsilon_{Q,i},
+}
+\label{eq:local-affine}
+\end{equation}
+where:
+\begin{itemize}[leftmargin=2em]
+\item $\alpha_i(\xi_i)$ is the local effectiveness/gain of the unitary
+sensible-load request;
+\item $\beta_i(\xi_i)$ is the local zone-interface heat that exists at zero
+low-level load request under the current air-loop/controller state;
+\item $\varepsilon_{Q,i}$ collects local nonlinearity, mode switching, and
+unmodeled effects.
+\end{itemize}
+
+When $\alpha_i\neq 0$ and the same local controller mode remains active, the
+corresponding inverse candidate is
+\begin{equation}
+\boxed{
+a_{q,i}^\star
+=
+\frac{
+Q_{X,i}^\star-\beta_i(\xi_i)
+}{
+\alpha_i(\xi_i)
+}
+=
+\frac{
+\mdot_i^\star c_p(T_{\mathrm{sa},i}^\star-T_{z,i})
+-\beta_i(\xi_i)
+}{
+\alpha_i(\xi_i)
+}.
+}
+\label{eq:affine-inverse}
+\end{equation}
+
+Equation~\eqref{eq:affine-inverse} is \Candidate, not yet globally frozen.
+
+\section{C2.4 counterfactual identification design}
+
+C2.4 removed the sequential-pulse confound by running independent
+counterfactual EnergyPlus simulations from the same historical trajectory and
+the same selected operating instant.
+
+\begin{verbatim}
+counterfactual A: same history -> same state -> fixed m_dot -> Q_req = 0
+counterfactual B: same history -> same state -> fixed m_dot -> Q_req = level 1
+counterfactual C: same history -> same state -> fixed m_dot -> Q_req = level 2
+counterfactual D: same history -> same state -> fixed m_dot -> Q_req = level 3
+\end{verbatim}
+
+For heating:
+\begin{equation}
+\Delta T^\star \in \{0,+4,+8,+12\}\ ^\circ\mathrm C,
+\end{equation}
+and for cooling:
+\begin{equation}
+\Delta T^\star \in \{0,-4,-8,-12\}\ ^\circ\mathrm C.
+\end{equation}
+The applied load request was
+\begin{equation}
+a_q
+=
+\mdot^\star c_p \Delta T^\star.
+\label{eq:c24-command}
+\end{equation}
+
+The fixed physical flow was
+\begin{equation}
+\mdot_i^\star
+=
+0.66\,\mdot_{i,\max},
+\label{eq:c24-flowtarget}
+\end{equation}
+implemented using Eq.~\eqref{eq:exact-fan-inverse}.
+
+\section{C2.4 numerical results}
+
+The C2.4 audit passed under the accepted EnergyPlus 24.1 candidate.  The
+portable evidence bundle used for this document was
+\begin{verbatim}
+PINODE_EPSR_Day7C2_4_CounterfactualLoadMap_PASS_20260829_103409.zip
+
+SHA256:
+cbe597daa377d35ca85ca764dc34bb40d73be9fe014c993af7ccde9934ffb6f7
+\end{verbatim}
+
+\subsection{Primary affine fits reported by C2.4}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{llrrrrl}
+\toprule
+Zone & Mode & $\alpha$ & $\beta$ [W] & $R^2$ & RMSE [W] & Classification \\
+\midrule
+Dining & Heating & 0.9610 & 292.1 & 0.99948 & 118.9 & strong affine \\
+Dining & Cooling & 0.9128 & -776.7 & 0.99968 & 87.8 & strong affine \\
+Kitchen & Heating & 0.1867 & -10514.8 & 0.28818 & 1295.1 & mode dependent \\
+Kitchen & Cooling & 0.6331 & -3338.4 & 0.86299 & 1113.6 & mode dependent \\
+\bottomrule
+\end{tabular}
+\caption{Primary C2.4 local affine fits using all four counterfactual points,
+including the explicitly forced zero-load point.}
+\label{tab:c24-affine}
+\end{table}
+
+Thus, Dining heating and cooling are strong local affine inverse candidates.
+Kitchen cannot yet be represented by one global affine line across the
+zero-load and active-actuation points.
+
+\subsection{Counterfactual points}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{llrrr}
+\toprule
+Zone & Mode & $\Delta T^\star$ [$^\circ$C] &
+$a_q$ [W] & $Q_X^{\mathrm{EP}}$ [W] \\
+\midrule
+Dining & Heating & 0 & 0 & 241.1 \\
+Dining & Heating & +4 & 4842.6 & 5103.3 \\
+Dining & Heating & +8 & 9685.2 & 9438.2 \\
+Dining & Heating & +12 & 14527.8 & 14309.3 \\
+\midrule
+Dining & Cooling & 0 & 0 & -863.4 \\
+Dining & Cooling & -4 & -4842.6 & -5112.4 \\
+Dining & Cooling & -8 & -9685.2 & -9526.3 \\
+Dining & Cooling & -12 & -14527.8 & -14126.4 \\
+\midrule
+Kitchen & Heating & 0 & 0 & -9097.9 \\
+Kitchen & Heating & +4 & 3948.2 & -11720.0 \\
+Kitchen & Heating & +8 & 7896.5 & -9407.1 \\
+Kitchen & Heating & +12 & 11844.7 & -7412.1 \\
+\midrule
+Kitchen & Cooling & 0 & 0 & -4557.8 \\
+Kitchen & Cooling & -4 & -3948.2 & -4187.7 \\
+Kitchen & Cooling & -8 & -7896.5 & -7980.5 \\
+Kitchen & Cooling & -12 & -11844.7 & -11626.0 \\
+\bottomrule
+\end{tabular}
+\caption{C2.4 settled zone-interface heat for the independently restarted
+counterfactual simulations.}
+\label{tab:c24-points}
+\end{table}
+
+\subsection{Supply-temperature tracking}
+
+The settled supply-temperature tracking errors
+$T_{\mathrm{sa}}^{\mathrm{EP}}-T_{\mathrm{sa}}^\star$ were approximately:
+\begin{align}
+\text{Dining heating:}\quad
+&\{+0.199,+0.215,-0.204,-0.180\}\ ^\circ\mathrm C,
+\\
+\text{Dining cooling:}\quad
+&\{-0.713,-0.223,+0.131,+0.332\}\ ^\circ\mathrm C,
+\\
+\text{Kitchen heating:}\quad
+&\{-9.217,-15.874,-17.530,-19.509\}\ ^\circ\mathrm C,
+\\
+\text{Kitchen cooling:}\quad
+&\{-4.618,-0.243,-0.085,+0.222\}\ ^\circ\mathrm C.
+\end{align}
+
+The Kitchen zero-load cooling point and all Kitchen heating points clearly
+belong to controller/air-path regimes that cannot be captured by one smooth
+global affine map centered at zero load.
+
+\subsection{Active-regime post-hoc fits}
+
+For interpretation, fitting only the three nonzero active-command points gives:
+\begin{align}
+\text{Dining heating:}\quad
+&Q_X^{\mathrm{EP}}
+\approx
+0.9505\,a_q + 410.9,
+\qquad R^2\approx0.99887,
+\\
+\text{Dining cooling:}\quad
+&Q_X^{\mathrm{EP}}
+\approx
+0.9307\,a_q - 574.4,
+\qquad R^2\approx0.99986,
+\\
+\text{Kitchen cooling:}\quad
+&Q_X^{\mathrm{EP}}
+\approx
+0.9420\,a_q - 493.1,
+\qquad R^2\approx0.99987,
+\\
+\text{Kitchen heating:}\quad
+&Q_X^{\mathrm{EP}}
+\approx
+0.5455\,a_q - 13821.0,
+\qquad R^2\approx0.99819.
+\end{align}
+
+These active-only regressions are derived diagnostics from the C2.4
+counterfactual points, not yet frozen paper parameters.  They suggest a
+piecewise/controller-mode realization structure:
+\begin{equation}
+Q_X^{\mathrm{EP}}
+=
+\alpha_{i,\sigma} a_q
++
+\beta_{i,\sigma}
++
+\varepsilon,
+\label{eq:piecewise-affine}
+\end{equation}
+where $\sigma$ denotes an identified HVAC/controller mode.
+
+The Kitchen-heating active-region result is particularly important: it can be
+locally affine while still having a very large negative offset.  Thus a
+positive low-level heating request does not imply that the resulting zone-level
+heat is positive unless the request first exceeds the current air-path burden.
+
+\section{Candidate realization-state vector}
+
+The realization context should be kept as small and physically interpretable as
+the data permit.  A candidate vector is
+\begin{equation}
+\xi_i
+=
+\begin{bmatrix}
+T_{z,i} &
+T_{\mathrm{mix},i} &
+W_{\mathrm{mix},i} &
+T_{\mathrm{oa}} &
+\mdot_i &
+\sigma_i &
+r_i
+\end{bmatrix}^{\top},
+\label{eq:xi-candidate}
+\end{equation}
+where $r_i$ may collect only additional equipment/controller states shown by
+future identification to be necessary.  \OpenItem\ The final components of
+$\xi_i$ must be selected from directed numerical evidence rather than included
+by default.
+
+A preferred hierarchy is:
+\begin{enumerate}[leftmargin=2em]
+\item exact analytical relation where available;
+\item physics-based feedforward plus calibrated gain/offset;
+\item piecewise-affine or monotone interpolation by controller mode;
+\item compact nonlinear regression only if simpler structures fail held-out
+validation;
+\item constrained low-level optimization when the inverse is nonunique or the
+requested pair is infeasible.
+\end{enumerate}
+
+\section{General nonlinear realizer}
+
+The most general forward map is
+\begin{equation}
+u_i^{\mathrm{EP}}
+=
+g_i(a_i,\xi_i).
+\label{eq:general-forward}
+\end{equation}
+
+If a closed-form inverse is unavailable, define the realizer by
+\begin{equation}
+\boxed{
+a_{i,k}^{\star}
+=
+\arg\min_{a\in\mathcal A_i}
+\left\|
+g_i(a,\xi_{i,k})
+-
+u_{i,k}^{\star}
+\right\|_{W_u}^{2}
++
+\lambda_a
+\left\|
+a-a_{i,k-1}
+\right\|_{W_a}^{2}.
+}
+\label{eq:low-level-realizer-optimization}
+\end{equation}
+
+Optional additional penalties can include low-level electrical power or
+actuator wear, but they should not duplicate objectives already present in the
+upper MPC without a documented reason.
+
+For the current plant, the flow component can be removed from the numerical
+inverse because Eq.~\eqref{eq:exact-fan-inverse} is exact:
+\begin{equation}
+a_{m,i}^{\star}
+=
+\frac12 \mdot_i^\star.
+\end{equation}
+The remaining low-level problem can therefore focus primarily on thermal
+realization.
+
+\section{Realizable physical-input set}
+
+For a fixed HVAC state/context $\xi_i$, define
+\begin{equation}
+\mathcal U_i^{\mathrm{EP}}(\xi_i)
+=
+\left\{
+u:
+\exists a\in\mathcal A_i
+\ \mathrm{s.t.}\
+u=g_i(a,\xi_i)
+\right\}.
+\label{eq:ep-feasible-set}
+\end{equation}
+
+The thermal model should not be driven by control requests far outside the
+region seen during identification/training.  Therefore define
+\begin{equation}
+\boxed{
+\mathcal U_i^{\mathrm{MPC}}(\xi_i)
+=
+\mathcal U_i^{\mathrm{train}}
+\cap
+\mathcal U_i^{\mathrm{EP}}(\xi_i).
+}
+\label{eq:mpc-feasible-set}
+\end{equation}
+
+The upper MPC must impose
+\begin{equation}
+u_{i,k+j|k}^\star
+\in
+\mathcal U_i^{\mathrm{MPC}}
+\left(
+\xi_{i,k+j|k}
+\right).
+\label{eq:mpc-realizable-constraint}
+\end{equation}
+
+If a requested pair is outside the realizable set, an optional projection or
+low-level constrained realizer may be used:
+\begin{equation}
+\bar u_i^\star
+=
+\operatorname*{arg\,min}_{u\in\mathcal U_i^{\mathrm{EP}}(\xi_i)}
+\|u-u_i^\star\|_{W_u}^{2}.
+\label{eq:realizable-projection}
+\end{equation}
+Any use of Eq.~\eqref{eq:realizable-projection} must be logged because it means
+the plant did not execute the MPC request exactly.
+
+\section{Actuator-realization error}
+
+Define
+\begin{equation}
+e_{i,k}^{u}
+=
+u_{i,k}^{\mathrm{EP}}
+-
+u_{i,k}^{\star}
+=
+\begin{bmatrix}
+e_{i,k}^{\mdot}\\
+e_{i,k}^{T}
+\end{bmatrix},
+\label{eq:realization-error-vector}
+\end{equation}
+where
+\begin{align}
+e_{i,k}^{\mdot}
+&=
+\mdot_{i,k}^{\mathrm{EP}}
+-
+\mdot_{i,k}^{\star},
+\\
+e_{i,k}^{T}
+&=
+T_{\mathrm{sa},i,k}^{\mathrm{EP}}
+-
+T_{\mathrm{sa},i,k}^{\star}.
+\end{align}
+
+The exact raw air-side heat error is
+\begin{align}
+e_{Q_X,i}
+&=
+Q_{X,i}^{\mathrm{EP}}
+-
+Q_{X,i}^{\star}
+\nonumber\\
+&=
+c_p
+\left[
+e_i^{\mdot}
+\left(
+T_{\mathrm{sa},i}^\star-T_{z,i}
+\right)
++
+\mdot_i^{\mathrm{EP}}e_i^T
+\right].
+\label{eq:exact-qx-error}
+\end{align}
+
+Hence
+\begin{equation}
+\boxed{
+|e_{Q_X,i}|
+\le
+c_p
+\left(
+|e_i^{\mdot}|
+|T_{\mathrm{sa},i}^\star-T_{z,i}|
++
+|\mdot_i^{\mathrm{EP}}|
+|e_i^T|
+\right).
+}
+\label{eq:qx-error-bound}
+\end{equation}
+
+Because the current flow realization is exact in the tested plant,
+Eq.~\eqref{eq:qx-error-bound} reduces experimentally to
+\begin{equation}
+|e_{Q_X,i}|
+=
+c_p
+|\mdot_i^\star|
+|e_i^T|
+\end{equation}
+for those validated regimes, up to numerical tolerance.
+
+If $G_Q$ is locally Lipschitz with constant $L_Q$ over the operating region,
+then
+\begin{equation}
+|e_{Q_{\mathrm{AC}},i}|
+\le
+L_Q |e_{Q_X,i}|.
+\label{eq:qac-error-lipschitz}
+\end{equation}
+If $G_P$ is locally Lipschitz with constant $L_P$, then a corresponding
+conditional electrical-power bound is
+\begin{equation}
+|e_{P_{\mathrm{HVAC}},i}|
+\le
+L_P |e_{Q_{\mathrm{AC}},i}|.
+\label{eq:phvac-error-lipschitz}
+\end{equation}
+Equations~\eqref{eq:qac-error-lipschitz} and
+\eqref{eq:phvac-error-lipschitz} are diagnostic bounds conditional on the
+stated local regularity and are not MPC stability theorems.
+
+\section{Continuous-time thermal prediction inside MPC}
+
+For each frozen thermal-model family, retain the continuous-time dynamics
+\begin{equation}
+\dot x(t)
+=
+F_\theta
+\left(
+x(t),
+\Qac(t),
+d(t)
+\right).
+\label{eq:continuous-model}
+\end{equation}
+
+For MPC step $k$ and candidate physical control
+$u_{k+j|k}^{\star}$:
+\begin{enumerate}[leftmargin=2em]
+\item compute the desired raw air-side heat using
+Eq.~\eqref{eq:desired-airside-heat};
+\item apply the frozen Phase-C $G_Q$ mapping;
+\item numerically integrate the continuous-time model over
+$\Delta t_{\mathrm{MPC}}=300$ s;
+\item compute $\Phvac$ separately using $G_P$ for the objective.
+\end{enumerate}
+
+Using a fixed-step RK4 operator $\Phi_{\mathrm{RK4}}$,
+\begin{equation}
+x_{k+1}
+=
+\Phi_{\mathrm{RK4}}
+\left(
+x_k,
+Q_{\mathrm{AC},k},
+d_k;
+\Delta t_{\mathrm{MPC}}
+\right).
+\label{eq:rk4-step}
+\end{equation}
+
+\section{Observer interface}
+
+This realization document does not replace the Part-6 observer definitions.
+The MPC should receive the state estimate
+\begin{equation}
+\hat x_k
+=
+\mathcal O
+\left(
+y_{0:k},
+u_{0:k-1},
+d_{0:k}
+\right).
+\label{eq:generic-observer}
+\end{equation}
+
+For learned two-capacitance models, the measured zone temperature directly
+anchors the observed state and the frozen causal encoder estimates only hidden
+states.  For Inverse PINN-RC two-capacitance cases, the Part-6
+Luenberger/Kalman-family observer options remain applicable.  The low-level
+realizer may consume measured EnergyPlus air-path quantities in $\xi_k$ without
+changing the thermal observer definition.
+
+\section{Upper-level MPC formulation}
+
+Let the prediction horizon be $N$.  A representative scalarized objective is
+\begin{equation}
+\min_{\{u^\star_{k+j|k}\}_{j=0}^{N-1}}
+J_k
+=
+w_T J_T
++
+w_E J_E
++
+w_C J_C
++
+w_G J_G
++
+w_{\Delta u}J_{\Delta u}
++
+w_s J_s
++
+w_R J_R,
+\label{eq:mpc-objective}
+\end{equation}
+where:
+\begin{align}
+J_T
+&=
+\sum_{j=1}^{N}
+\ell_T
+\left(
+T_{z,k+j|k},
+T_{z,k+j}^{\min},
+T_{z,k+j}^{\max}
+\right),
+\\
+J_E
+&=
+\sum_{j=0}^{N-1}
+P_{\mathrm{HVAC},k+j|k}\Delta t_{\mathrm{MPC}},
+\\
+J_C
+&=
+\sum_{j=0}^{N-1}
+c_{k+j}
+P_{\mathrm{HVAC},k+j|k}
+\Delta t_{\mathrm{MPC}},
+\\
+J_G
+&=
+\sum_{j=0}^{N-1}
+\left(
+P_{\mathrm{HVAC},k+j|k}
+-
+P_{k+j}^{\mathrm{ref}}
+\right)^2,
+\\
+J_{\Delta u}
+&=
+\sum_{j=0}^{N-1}
+\left\|
+u^\star_{k+j|k}
+-
+u^\star_{k+j-1|k}
+\right\|_{R}^{2},
+\\
+J_R
+&=
+\sum_{j=0}^{N-1}
+\widehat{\ell}_{R}
+\left(
+u^\star_{k+j|k},\xi_{k+j|k}
+\right).
+\end{align}
+
+$J_R$ is optional and may penalize requests predicted to have large
+actuator-realization error or poor local conditioning.  It should be included
+only after its empirical benefit is demonstrated.
+
+The principal constraints are
+\begin{align}
+x_{k+j+1|k}
+&=
+\Phi_{\mathrm{RK4}}
+\left(
+x_{k+j|k},
+Q_{\mathrm{AC},k+j|k},
+d_{k+j|k};
+\Delta t_{\mathrm{MPC}}
+\right),
+\\
+Q_{X,k+j|k}^{\star}
+&=
+\mdot_{k+j|k}^{\star}
+c_p
+\left(
+T_{\mathrm{sa},k+j|k}^{\star}
+-
+T_{z,k+j|k}
+\right),
+\\
+Q_{\mathrm{AC},k+j|k}
+&=
+G_Q
+\left(
+Q_{X,k+j|k}^{\star},
+\zeta_{Q,k+j|k}
+\right),
+\\
+P_{\mathrm{HVAC},k+j|k}
+&=
+G_P
+\left(
+|Q_{\mathrm{AC},k+j|k}|,
+\zeta_{P,k+j|k}
+\right),
+\\
+u_{k+j|k}^\star
+&\in
+\mathcal U^{\mathrm{MPC}}
+\left(
+\xi_{k+j|k}
+\right).
+\end{align}
+
+No binary heat/cool optimization variables are introduced unless future
+experiments prove them necessary.  The existing continuous auxiliary/epigraph
+treatment of $|\Qac|$ should be retained for the NLP.
+
+\section{Identity two-zone control}
+
+For the identity RestaurantFastFood representation,
+\begin{equation}
+u_k^\star
+=
+\begin{bmatrix}
+u_{D,k}^{\star}\\
+u_{K,k}^{\star}
+\end{bmatrix}
+=
+\begin{bmatrix}
+\mdot_{D,k}^\star\\
+T_{\mathrm{sa},D,k}^\star\\
+\mdot_{K,k}^\star\\
+T_{\mathrm{sa},K,k}^\star
+\end{bmatrix}.
+\label{eq:identity-control-vector}
+\end{equation}
+
+The two low-level realizers are allowed to have different thermal maps:
+\begin{align}
+a_{D,k}
+&=
+f_D(u_{D,k}^\star,\xi_{D,k}),
+\\
+a_{K,k}
+&=
+f_K(u_{K,k}^\star,\xi_{K,k}).
+\end{align}
+C2.4 strongly supports keeping these maps zone-specific rather than forcing one
+shared thermal inverse.
+
+\section{All-to-one aggregate-model control and allocation}
+
+When the predictive thermal model is all-to-one, the predictive state is
+aggregate but the EnergyPlus plant still contains two physical PSZ systems.
+Therefore an explicit physical-input allocation layer is required.
+
+Let the aggregate MPC request be
+\begin{equation}
+u_{a,k}^{\star}
+=
+\begin{bmatrix}
+\mdot_{a,k}^{\star}\\
+T_{\mathrm{sa},a,k}^{\star}
+\end{bmatrix}.
+\end{equation}
+
+Define a detailed allocation map
+\begin{equation}
+u_{k}^{z,\star}
+=
+\mathcal A_u
+\left(
+u_{a,k}^{\star},
+\xi_{D,k},
+\xi_{K,k}
+\right)
+=
+\begin{bmatrix}
+u_{D,k}^{\star}\\
+u_{K,k}^{\star}
+\end{bmatrix}.
+\label{eq:aggregate-allocation}
+\end{equation}
+
+The implemented allocation must be checked against the aggregation input map
+$P_u$.  Define the allocation residual
+\begin{equation}
+r_{u,k}
+=
+u_{a,k}^{\star}
+-
+P_u u_{k}^{z,\star}.
+\label{eq:allocation-residual}
+\end{equation}
+This quantity connects directly to the existing aggregation-theorem diagnostics:
+an aggregate thermal request need not correspond to one unique detailed
+Dining/Kitchen actuator allocation.
+
+\OpenItem\ The final $\mathcal A_u$ must be selected from the same actuator
+realizability evidence and should not be assumed to be equal splitting merely
+because the thermal aggregation uses equal temperature weights.
+
+\section{Closed-loop execution algorithm}
+
+At each real EnergyPlus control instant $k$:
+
+\begin{enumerate}[leftmargin=2em]
+\item Read measurements and update the thermal state estimate $\hat x_k$.
+\item Build weather, disturbance, price, and grid/reference forecasts.
+\item Solve the upper-level MPC in physical coordinates
+$(\mdot^\star,T_{\mathrm{sa}}^\star)$.
+\item For an aggregate predictive model, allocate the aggregate physical request
+to Dining/Kitchen requests using $\mathcal A_u$.
+\item For each physical zone, evaluate the low-level realization context
+$\xi_{i,k}$.
+\item Apply the exact fan inverse
+$a_{m,i,k}=\tfrac12\mdot_{i,k}^{\star}$.
+\item Evaluate the thermal realizer $a_{q,i,k}$ and, only if justified,
+$a_{s,i,k}$.
+\item Apply low-level commands through the EnergyPlus API.
+\item Measure
+$\mdot_{i,k}^{\mathrm{EP}}$ and
+$T_{\mathrm{sa},i,k}^{\mathrm{EP}}$.
+\item Compute and log $e^u_{i,k}$,
+$e_{Q_X,i,k}$, realized $\Qac$, and realized $\Phvac$.
+\item Advance EnergyPlus to the next 300-s MPC instant and repeat.
+\end{enumerate}
+
+\begin{verbatim}
+MEASURE
+  |
+  v
+OBSERVER / ENCODER
+  |
+  v
+MPC in physical coordinates
+  |
+  |  (m_dot*, T_sa*)
+  v
+REALIZABILITY / ALLOCATION
+  |
+  v
+LOW-LEVEL REALIZER
+  |
+  +--> a_fan = 0.5 m_dot*
+  |
+  +--> a_q = thermal inverse(...)
+  |
+  +--> optional DX command
+  |
+  v
+ENERGYPLUS
+  |
+  v
+(m_dot_EP, T_sa_EP)
+  |
+  +--> realization-error metrics
+  |
+  +--> Q_HVAC,X -> G_Q -> Q_AC -> thermal state
+  |
+  +--> |Q_AC| -> G_P -> P_HVAC
+  |
+  `----------------------------------> next MPC step
+\end{verbatim}
+
+\section{Required identification data}
+
+Future actuator-realization experiments should retain, at minimum:
+
+\subsection*{Zone/MPC-level signals}
+\begin{equation}
+\left\{
+T_z,\;
+\mdot^{\star},\;
+T_{\mathrm{sa}}^{\star},\;
+\mdot^{\mathrm{EP}},\;
+T_{\mathrm{sa}}^{\mathrm{EP}},\;
+Q_X^{\star},\;
+Q_X^{\mathrm{EP}}
+\right\}.
+\end{equation}
+
+\subsection*{Low-level actuator signals}
+\begin{equation}
+\left\{
+a_m,\;
+a_q,\;
+a_s,\;
+\text{fan power},\;
+Q_{\mathrm{heat,coil}},\;
+Q_{\mathrm{cool,coil}}
+\right\}.
+\end{equation}
+
+\subsection*{Air-path signals}
+At the return, mixed-air, cooling-coil outlet, heating-coil outlet, PSZ supply
+outlet, and zone direct-air inlet:
+\begin{equation}
+\left\{
+T,\;
+\mdot,\;
+W
+\right\}.
+\end{equation}
+
+\subsection*{Context/mode signals}
+Retain only quantities needed to explain mode dependence, such as:
+\begin{equation}
+\left\{
+T_{\mathrm{oa}},
+T_{\mathrm{mix}},
+W_{\mathrm{mix}},
+\text{heating/cooling/native controller mode},
+\text{unitary/DX state}
+\right\}.
+\end{equation}
+
+All identification summaries must be time weighted when EnergyPlus changes the
+system-timestep duration during HVAC iteration.
+
+\section{Identification roadmap after C2.4}
+
+The current evidence suggests the following directed sequence.
+
+\subsection*{C2.5: controller-mode segmentation}
+Determine whether Kitchen discontinuities are explained by a small number of
+discrete native controller regimes.  Candidate segmentation variables should
+be inferred from the actual air-loop/controller diagnostics, not guessed.
+
+\subsection*{C2.6: state-conditioned DOE}
+For each physically relevant mode, vary:
+\begin{equation}
+\mdot/\mdot_{\max},
+\qquad
+T_z,
+\qquad
+T_{\mathrm{mix}}\ \text{or}\ T_{\mathrm{oa}},
+\qquad
+a_q,
+\end{equation}
+using independent counterfactuals.  Estimate
+\begin{equation}
+\alpha_i(\xi),\qquad \beta_i(\xi),
+\end{equation}
+and determine whether a piecewise-affine model is sufficient.
+
+\subsection*{C2.7: held-out inverse validation}
+Given desired $(\mdot^\star,T_{\mathrm{sa}}^\star)$ pairs not used to fit the realizer,
+compute the low-level command and evaluate:
+\begin{align}
+\mathrm{MAE}_{\mdot},
+\quad
+\mathrm{RMSE}_{\mdot},
+\quad
+\max |e^{\mdot}|,
+\\
+\mathrm{MAE}_{T_{\mathrm{sa}}},
+\quad
+\mathrm{RMSE}_{T_{\mathrm{sa}}},
+\quad
+\max |e^T|.
+\end{align}
+
+\subsection*{C2.8: feasible-region identification}
+Map the state-dependent realizable set
+$\mathcal U_i^{\mathrm{EP}}(\xi)$ and intersect it with the TRAIN-supported
+control region.
+
+\subsection*{C2.9: frozen actuator contract}
+Freeze exact EnergyPlus actuator keys, units, call points, scaling, clipping,
+controller-mode logic, inverse model, and fallback behavior.
+
+\section{Status matrix}
+
+\begin{longtable}{p{0.27\textwidth}p{0.20\textwidth}p{0.44\textwidth}}
+\toprule
+Item & Status & Current conclusion \\
+\midrule
+\endfirsthead
+\toprule
+Item & Status & Current conclusion \\
+\midrule
+\endhead
+EnergyPlus 24.1 baseline & Frozen & Unchanged SHA-verified transition candidate accepted after airflow, DHW, and DX warning forensics. \\
+MPC physical variables & Locked & Upper MPC remains in $(\mdot,T_{\mathrm{sa}})$ physical coordinates. \\
+Terminal mass-flow actuator & Rejected & Writable but did not causally control actual supply flow in this topology. \\
+Supply-node temperature setpoint & Rejected & No causal effect under parent unitary \texttt{Load} control. \\
+Fan mass-flow actuator & Frozen & Exact relation $\mdot^{EP}=2a_m$ over tested range/modes. \\
+Fan inverse & Frozen & $a_m=\tfrac12\mdot^\star$. \\
+Unitary sensible-load actuator & Retained & Strong thermal-control candidate; direct physical request works well in several active regimes. \\
+DX-speed actuator & Retained for study & Potential cooling-side control coordinate; not yet selected as final thermal realizer. \\
+Dining thermal inverse & Strong candidate & Local affine behavior in C2.4 with $R^2>0.999$ heating and cooling. \\
+Kitchen cooling inverse & Piecewise candidate & Active nonzero cooling points are nearly affine, but zero-load/native-controller transition breaks one global line. \\
+Kitchen heating inverse & Open & Large makeup-air burden and controller-mode dependence require state/mode-conditioned realization. \\
+Realizable $(\mdot,T_{\mathrm{sa}})$ set & Open & Must be identified numerically and intersected with training support. \\
+Aggregate-to-zone allocator & Open & Must preserve aggregate meaning while respecting different Dining/Kitchen realizability. \\
+Final closed-loop MPC & Pending & Implement only after actuator realizer and feasible set are frozen. \\
+\bottomrule
+\end{longtable}
+
+\section{Paper-facing interpretation}
+
+The intended paper statement is not that EnergyPlus exposes ideal independent
+$\mdot$ and $T_{\mathrm{sa}}$ actuators.  Rather, the control architecture is:
+\begin{quote}
+The MPC optimizes physically interpretable supply-air mass-flow and
+supply-temperature trajectories.  A separately identified actuator-realization
+layer maps these physical requests to the low-level commands of the native
+EnergyPlus packaged-unitary systems.  The map is calibrated by directed
+counterfactual simulation, constrained to the empirically realizable operating
+region, and validated by commanded-versus-realized airflow and supply
+temperature.
+\end{quote}
+
+This formulation preserves the physical meaning of the thermal model and the
+MPC while treating equipment implementation as a plant-specific realization
+problem.
+
+\section{Claims that should not be made}
+
+The current evidence does \emph{not} support the following universal claims:
+\begin{itemize}[leftmargin=2em]
+\item ``EnergyPlus directly controls arbitrary $\mdot$ and $T_{\mathrm{sa}}$ pairs.''
+\item ``The fan factor of two is universal across EnergyPlus fan systems.''
+\item ``One affine thermal inverse is valid for all zones and all controller
+modes.''
+\item ``Positive heating-coil power implies positive heat delivery relative to
+the zone.''
+\item ``The zero-load point belongs to the same local controller regime as
+active heating/cooling.''
+\item ``Actuator realizability proves MPC recursive feasibility or closed-loop
+stability.''
+\item ``$\Qac$ and $\Phvac$ are interchangeable quantities.''
+\end{itemize}
+
+\section{Provenance}
+
+The persistent scientific root for this work is
+\begin{verbatim}
+C:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\
+From_WSU_OneDrive\BuildingModelingProject_Condensed\
+Data\ScaleBridge\Paper_PINODE_EPSR
+\end{verbatim}
+
+Relevant actuator-audit families are stored below
+\begin{verbatim}
+03_mpc_actuator_audit\
+\end{verbatim}
+with unique timestamped folders.
+
+This document incorporates numerical results from C1, C2.1, C2.2, C2.3, and
+the C2.4 PASS bundle identified above.  It is designed to live alongside the
+existing mathematical contracts under
+\begin{verbatim}
+Paper_PINODE_EPSR\docs\mathematics\contracts\
+\end{verbatim}
+as a new actuator-realization extension to the existing Part-6 MPC/observer
+contract.
+
+\section{Recommended repository filename}
+
+A suitable repository filename is
+\begin{verbatim}
+PINODE_EPSR_Part7_MPC_Actuator_Realization_Detailed.tex
+\end{verbatim}
+or, if Part 6 is intentionally kept as the sole MPC document, this material
+can be merged into a versioned extension of Part 6 after the remaining
+Kitchen-mode identification is frozen.
+
+\section{Current mathematical endpoint}
+
+The present experimentally supported architecture can be summarized as
+\begin{equation}
+\boxed{
+u_{i,k}^{\star}
+=
+\begin{bmatrix}
+\mdot_{i,k}^{\star}\\
+T_{\mathrm{sa},i,k}^{\star}
+\end{bmatrix}
+}
+\end{equation}
+from the upper MPC, followed by
+\begin{equation}
+\boxed{
+a_{m,i,k}
+=
+\frac12\mdot_{i,k}^{\star}
+}
+\end{equation}
+and a thermal realizer
+\begin{equation}
+\boxed{
+a_{q,i,k}
+=
+f_{q,i}
+\left(
+\mdot_{i,k}^{\star},
+T_{\mathrm{sa},i,k}^{\star},
+\xi_{i,k}
+\right),
+}
+\end{equation}
+with the physics-informed piecewise-affine candidate
+\begin{equation}
+\boxed{
+a_{q,i,k}
+\approx
+\frac{
+\mdot_{i,k}^{\star}c_p
+(T_{\mathrm{sa},i,k}^{\star}-T_{z,i,k})
+-
+\beta_{i,\sigma}(\xi_{i,k})
+}{
+\alpha_{i,\sigma}(\xi_{i,k})
+}.
+}
+\label{eq:current-endpoint}
+\end{equation}
+
+The resulting realized physical action is
+\begin{equation}
+u_{i,k}^{\mathrm{EP}}
+=
+g_i
+\left(
+a_{i,k},\xi_{i,k}
+\right),
+\end{equation}
+and the closed-loop experiment explicitly evaluates
+\begin{equation}
+u_{i,k}^{\mathrm{EP}}
+-
+u_{i,k}^{\star}.
+\end{equation}
+
+Equation~\eqref{eq:current-endpoint} is the present mathematical bridge between
+the physically interpretable MPC variables and the native EnergyPlus PSZ
+actuator system.  The remaining directed numerical work is to identify the
+smallest state/mode dependence required for $\alpha$ and $\beta$, validate the
+inverse on held-out counterfactuals, and freeze the realizable control set.
+
+\end{document}

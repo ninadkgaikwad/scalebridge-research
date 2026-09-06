@@ -1,0 +1,4 @@
+aggregate_zone_id,equipment_type,source_zone,schedule_name,equipment_level,eio_table,matched_schedule_key_count,matched_schedule_keys
+Dining,People,DINING,BLDG_OCC_SCH,87.5,People Internal Gains Nominal,1,BLDG_OCC_SCH
+Dining,Lights,DINING,BLDG_LIGHT_DINING_SCH,812.799,Lights Internal Gains Nominal,1,BLDG_LIGHT_DINING_SCH
+Dining,ElectricEquipment,DINING,BLDG_EQUIP_SCH,13567.311,ElectricEquipment Internal Gains Nominal,1,BLDG_EQUIP_SCH

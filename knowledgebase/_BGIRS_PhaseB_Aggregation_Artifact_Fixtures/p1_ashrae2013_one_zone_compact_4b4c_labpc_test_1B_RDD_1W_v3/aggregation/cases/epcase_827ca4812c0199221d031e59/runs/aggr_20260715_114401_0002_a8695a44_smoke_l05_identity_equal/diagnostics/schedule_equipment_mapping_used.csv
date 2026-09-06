@@ -1,0 +1,10 @@
+case_id,run_id,equipment_type,eio_table,zone_name,schedule_name,equipment_level_column,equipment_level,included_thermal_zone
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,People,People Internal Gains Nominal,DINING,BLDG_OCC_SCH,Number of People {},87.5,true
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,People,People Internal Gains Nominal,KITCHEN,BLDG_OCC_SCH,Number of People {},6.3,true
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,Lights,Lights Internal Gains Nominal,DINING,BLDG_LIGHT_DINING_SCH,Lighting Level {W},812.799,true
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,Lights,Lights Internal Gains Nominal,KITCHEN,BLDG_LIGHT_KITCHEN_SCH,Lighting Level {W},1513.056,true
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,ElectricEquipment,ElectricEquipment Internal Gains Nominal,DINING,BLDG_EQUIP_SCH,Equipment Level {W},13567.311,true
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,ElectricEquipment,ElectricEquipment Internal Gains Nominal,KITCHEN,BLDG_EQUIP_SCH,Equipment Level {W},31468.723,true
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,ElectricEquipment,ElectricEquipment Internal Gains Nominal,KITCHEN,ALWAYS_ON,Equipment Level {W},457.500,true
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,ElectricEquipment,ElectricEquipment Internal Gains Nominal,KITCHEN,ALWAYS_ON,Equipment Level {W},570.000,true
+epcase_827ca4812c0199221d031e59,epvwr_a8695a44ed3f,GasEquipment,GasEquipment Internal Gains Nominal,KITCHEN,FF_GAS_EQUIP_SCH,Equipment Level {W},91932.601,true

@@ -1,0 +1,28 @@
+ScaleBridge Phase E0
+E0-7 Runtime + PHVAC + Portable Model Bundles
+MATHEMATICS LOCK v1.1
+
+Status: RATIFIED MATHEMATICAL AUTHORITY
+Date: 2026-08-30
+
+Frozen core:
+- E0-7 is post-training/post-estimation packaging + forward runtime.
+- Immutable model bundle contains all static information required for proper forward execution.
+- Fitted normalization/inverse-normalization is part of the immutable artifact when method-required.
+- Mutable runtime state and time-varying forcing trajectories are not part of the immutable model authority.
+- Historical Sim1/Sim2/Sim3 resolve forcing through portable Phase-B/C/D lineage; future SmartBuildingsSim supplies controls/disturbances through the simulator layer.
+- Method payload envelope is generic until E.1/E.2/E.3/E.4 implementations define their exact payload extensions.
+- ODE/RC and Inverse-PINN deployment use final physical Theta; NODE uses learned vector-field weights; Base-PINODE and EBP-PINODE retain required physical/neural deployment payloads.
+- CasADi/IPOPT estimator output is final physical Theta plus RC/runtime specification.
+- Bayesian output may be Theta, mean/covariance, or a later-defined posterior payload under a declared deployment policy.
+- Current Phase-C PHVAC contract is g(abs(QAC)) trained against facility HVAC electricity / N aggregate zones.
+- Current production PHVAC allocation is equal across all campaigns.
+- M is the number of aggregate zones without an applicable PHVAC model; N-M models are available.
+- M=0: all N PHVAC models are available; sum all N predictions directly with no completion.
+- 0<M<N: facility PHVAC = [N/(N-M)] * sum available PHVAC predictions; added part is allocation completion, not non-HVAC-zone electricity.
+- M=N: no PHVAC model is available; model-based PHVAC is unavailable and N/(N-M) is never evaluated.
+- General unequal-allocation formula is retained only as future-compatible mathematics, not current campaign behavior.
+- Detailed validation/replay/hash/disturbance echo capabilities are mandatory but optional during normal runtime.
+- E0-7 supplies runtime primitives; it does not implement Sim evaluators, SmartBuildingsSim, MPC, or RL.
+- Every Sim1/Sim2/Sim3 evaluation stores model-derived PHVAC wherever available.
+- E0-10 is the authoritative comprehensive real E0 testing campaign.

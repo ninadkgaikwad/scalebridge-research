@@ -1,0 +1,32 @@
+{
+  "custom_grouping_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\user_groupings\\user_grouping_20260709_164400\\cases\\epcase_827ca4812c0199221d031e59\\approved_custom_groups.csv",
+  "approved_zone_features_path": "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\Data\\ScaleBridge\\campaigns\\p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3\\aggregation\\zone_features\\zone_features_20260709_154951\\cases\\epcase_827ca4812c0199221d031e59\\approved_zone_features.csv",
+  "valid": true,
+  "aggregation_count": 1,
+  "row_count": 2,
+  "approved_zones": [
+    "DINING",
+    "KITCHEN"
+  ],
+  "errors": [],
+  "warnings": [],
+  "aggregation_summaries": [
+    {
+      "aggregation_id": "rff_user_approved_all_to_one_v1",
+      "row_count": 2,
+      "approved_zone_count": 2,
+      "used_zone_count": 2,
+      "n_aggregate_zones": 1,
+      "effective_max_aggregate_zones": 2,
+      "missing_zones": [],
+      "extra_zones": [],
+      "duplicate_zones": [],
+      "aggregate_zones": [
+        "Aggregated_Zone_1"
+      ],
+      "valid": true
+    }
+  ],
+  "uses_raw_idf": false,
+  "uses_opyplus": false
+}

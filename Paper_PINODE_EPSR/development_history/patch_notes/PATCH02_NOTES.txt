@@ -1,0 +1,86 @@
+PINODE / EPSR DAY 3 PATCH 02 - NEUROMANCER REBUILD
+=================================================
+
+Framework contract
+------------------
+- NeuroMANCER owns the SciML function blocks, recurrent Node/System graphs, Problem/PenaltyLoss objective graph, and all RK4 numerical integration.
+- PyTorch owns tensors, autograd, positive/bounded parameter transforms, tensor algebra, and optimizers.
+- Optuna owns representative-training-subset hyperparameter search and frozen-hyperparameter export.
+- Paper code contains NO custom Runge--Kutta formula.
+- Paper code makes NO direct torchdiffeq call. NeuroMANCER may depend on torchdiffeq internally, but Patch 02 directly instantiates neuromancer.dynamics.integrators.RK4.
+
+Scope implemented
+-----------------
+1. Shared SciML infrastructure:
+   - NeuroMANCER MLP construction
+   - NeuroMANCER Node/System recurrent graphs
+   - NeuroMANCER Problem/PenaltyLoss training-objective graph
+   - NeuroMANCER RK4 for all ODE numerical steps
+   - training-only normalization
+   - contiguous 300-s segments
+   - 1C/2C rollout windows
+   - deterministic representative training subsets
+   - checkpoint/provenance helpers
+   - Optuna search/freeze plumbing
+
+2. Part-2 Inverse PINN-RC:
+   - all_to_one, identity_ind, identity_dep1, identity_dep2
+   - 1C + 2C
+   - NeuroMANCER trajectory MLPs; PyTorch autograd for dT/dt
+   - physical positive R/C transforms
+   - eta options
+   - DEP2 alpha/lambda allocations
+   - DEP2-1C eta/lambda identifiability safeguard
+   - physical-unit RC residuals
+   - retained physical RC ODE rollout independent of trajectory PINN
+   - retained RC rollout uses NeuroMANCER Node/System + NeuroMANCER RK4
+
+3. Part-3 Neural ODE:
+   - all four spatial cases
+   - 1C + 2C
+   - NeuroMANCER MLP vector fields and causal encoders
+   - exact architecture-specific forcing dimensions
+   - no absolute-time input
+   - causal 2C encoder evaluated only at rollout initialization
+   - NeuroMANCER Node/System recursive rollout
+   - NeuroMANCER RK4 with N_s substeps and Delta tau=1 per 300-s sample
+   - no physics loss / no RC parameters
+
+4. Phase-C test integration:
+   - QAC and PHVAC persisted-model adapter/discovery
+   - actual-artifact requirement in --real-data validation
+   - controlled coefficient fallback restricted to synthetic/unit tests
+   - PHVAC remains an auxiliary output and is never a thermal-model forcing
+
+5. Bai Cui / ORNL reference initialization:
+   - R_w -> R_out initial value
+   - R_im -> R_mass and R_DK initial value
+   - C_in -> C_air initial value
+   - C_im -> C_mass initial value
+   - C1/C2/C3 retained in provenance but not interpreted as J/K capacitances
+
+Authoritative math contracts
+----------------------------
+- PINODE_EPSR_Part1_RC_Representations_v1.tex
+- PINODE_EPSR_Part2_Inverse_PINN_RC.tex
+- PINODE_EPSR_Part3_NeuralODE_Detailed.tex
+
+No known TEX-to-code mathematical deviation is introduced by this rebuild.
+No production src/scalebridge files are changed.
+
+Assistant-container validation
+------------------------------
+The assistant container does not contain the qualified NeuroMANCER installation and has no network package installation access.
+Therefore the 46 Patch-1 + Patch-2 behavioral/contract tests were exercised locally with a temporary API-compatible NeuroMANCER shim that mirrors the current MLP, Node, System, and RK4 interfaces. The shim is NOT included in this patch.
+
+Authoritative validation must run after applying on the user's qualified ScaleBridge environment with the real installed NeuroMANCER package. validate_patch2.py prints the actual NeuroMANCER version/classes into the validation JSON before executing the complete smoke matrix.
+
+Required user-machine validation
+--------------------------------
+python -m Paper_PINODE_EPSR.validate_patch2 --real-data --max-rows 48 --train-steps 2 --output Paper_PINODE_EPSR\results\patch02_validation_real.json
+
+The real-data validation must load actual Phase-C QAC/PHVAC models for:
+- RestaurantFastFood_All
+- Dining
+- Kitchen
+and smoke both Inverse PINN-RC and NODE over all four spatial cases and 1C/2C using the real NeuroMANCER runtime.

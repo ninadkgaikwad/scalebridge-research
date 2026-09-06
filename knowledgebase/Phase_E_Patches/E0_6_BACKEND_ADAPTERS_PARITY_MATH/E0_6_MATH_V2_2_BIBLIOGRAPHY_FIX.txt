@@ -1,0 +1,30 @@
+ScaleBridge Phase E0
+E0-6 Mathematics v2.2 Bibliography Hotfix
+=========================================
+
+Scope
+-----
+This hotfix does not change the E0-6 v2 mathematical contract.  It corrects
+one LaTeX-unsafe title in the shared thermal-modeling bibliography so that the
+full pdflatex -> bibtex -> pdflatex -> pdflatex validation sequence succeeds.
+
+Affected bibliography key
+-------------------------
+PyTorchMatrixExpDocs2026
+
+Old title
+---------
+{torch.linalg.matrix_exp} Documentation
+
+Corrected LaTeX-safe title
+--------------------------
+{torch.linalg.matrix\_exp} Documentation
+
+The URL is unchanged.
+
+Scientific meaning
+------------------
+NONE.  This is a typesetting-only correction.  The E0-6 v2 mathematics,
+method-family architecture, physical-Theta parity authority, PyTorch/
+Neuromancer transformed-coordinate policy, CasADi/IPOPT physical-coordinate
+NLP policy, Bayesian forward-model role, and P0-P5 contracts are unchanged.

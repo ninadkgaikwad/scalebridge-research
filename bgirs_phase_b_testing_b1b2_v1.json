@@ -1,0 +1,49 @@
+﻿{
+  "schema_version": "0.1.0",
+  "aggregation_campaign_id": "bgirs_phase_b_testing_b1b2_v1",
+  "parent_generation_campaign_id": "p1_ashrae2013_one_zone_compact_4b4c_labpc_test_1B_RDD_1W_v3",
+  "machine_id": "labpc",
+
+  "case_ids": [],
+  "case_limit": null,
+
+  "plan_requests": [
+    {
+      "strategy": "all_thermal_zones_to_one",
+      "weight_mode": "equal",
+      "rule_set": "legacy_v1",
+      "custom_aggregation_ids": [],
+      "aggregation_level": "all_to_one",
+      "aggregation_level_index": 1,
+      "aggregation_family": "all_to_one"
+    },
+    {
+      "strategy": "identity",
+      "weight_mode": "equal",
+      "rule_set": "legacy_v1",
+      "custom_aggregation_ids": [],
+      "aggregation_level": "identity",
+      "aggregation_level_index": 2,
+      "aggregation_family": "identity"
+    }
+  ],
+
+  "custom_zone_groups_path": null,
+
+  "aggregate_zone_name_stem": "Aggregated_Zone",
+  "system_node_name_pattern": "DIRECT AIR INLET NODE",
+
+  "parent_generation_campaign_root": null,
+  "generated_data_root": null,
+
+  "max_variables": null,
+  "preview_rows": 100,
+  "write_legacy_pickle": false,
+  "continue_on_error": true,
+
+  "mlflow_enabled": false,
+  "mlflow_tracking_uri": "http://127.0.0.1:5000",
+  "mlflow_experiment_name": null,
+  "mlflow_run_name": null,
+  "mlflow_strict": false
+}

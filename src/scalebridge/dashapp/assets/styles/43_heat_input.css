@@ -1,0 +1,317 @@
+/* Phase C Heat-Input Regression workspace */
+
+.heat-input-workspace,
+.heat-input-page {
+    width: 100%;
+}
+
+.heat-input-workspace-heading,
+.heat-input-subpage-heading {
+    margin-bottom: 1rem;
+}
+
+.heat-input-card {
+    margin-bottom: 1rem;
+    border: 1px solid rgba(120, 120, 120, 0.22);
+}
+
+.heat-input-label-with-help {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.35rem;
+}
+
+.heat-input-config-group {
+    margin-top: 1rem;
+}
+
+.heat-input-group-title {
+    margin-bottom: 0.65rem;
+}
+
+.heat-input-field-card {
+    border: 1px solid rgba(120, 120, 120, 0.18);
+}
+
+.heat-input-field-meta {
+    display: flex;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+    margin-top: 0.45rem;
+}
+
+.heat-input-stage-badge,
+.heat-input-visibility-badge {
+    border-radius: 999px;
+    padding: 0.12rem 0.45rem;
+    background: rgba(120, 120, 120, 0.12);
+    font-size: 0.72rem;
+    line-height: 1.2;
+}
+
+.heat-input-readonly-box {
+    min-height: 2.35rem;
+    padding: 0.45rem 0.6rem;
+    border: 1px solid rgba(120, 120, 120, 0.25);
+    border-radius: 0.375rem;
+    overflow-wrap: anywhere;
+    background: rgba(120, 120, 120, 0.06);
+}
+
+.heat-input-definition-preview {
+    max-height: 38rem;
+    overflow: auto;
+    padding: 0.85rem;
+    border-radius: 0.4rem;
+    background: rgba(120, 120, 120, 0.08);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.heat-input-path-text,
+.heat-input-wrap-alert,
+.heat-input-field-description {
+    overflow-wrap: anywhere;
+}
+
+
+/* Phase C managed Execution tab */
+.heat-input-command-preview,
+.heat-input-live-console {
+    max-height: 30rem;
+    overflow: auto;
+    padding: 0.8rem;
+    border-radius: 0.4rem;
+    background: rgba(120, 120, 120, 0.08);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.heat-input-command-preview {
+    min-height: 4rem;
+}
+
+.heat-input-live-console {
+    min-height: 18rem;
+    margin-top: 0.75rem;
+}
+
+.heat-input-stage-progress {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+}
+
+.heat-input-progress-badge {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.6rem;
+}
+
+/* Phase C read-only Results tab */
+.heat-input-results-table {
+    font-size: 0.82rem;
+    margin-bottom: 0.5rem;
+}
+
+.heat-input-results-cell {
+    max-width: 24rem;
+    overflow-wrap: anywhere;
+    vertical-align: top;
+}
+
+.heat-input-scroll-legend {
+    height: 515px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.35rem;
+}
+
+.heat-input-legend-panel {
+    height: 580px;
+    border-left: 1px solid rgba(120, 120, 120, 0.25);
+    padding-left: 1rem;
+    padding-top: 0.75rem;
+}
+
+/* Phase C Results UX hardening */
+.heat-input-results-section {
+    margin-bottom: 1rem;
+}
+
+.heat-input-results-section .card-body {
+    padding: 1.15rem 1.25rem;
+}
+
+.heat-input-results-table-wrap {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    border: 1px solid rgba(120, 120, 120, 0.16);
+    border-radius: 0.55rem;
+    background: var(--bs-body-bg);
+}
+
+.heat-input-results-table {
+    width: 100%;
+    margin: 0;
+    font-size: 0.82rem;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.heat-input-results-table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    padding: 0.55rem 0.65rem;
+    font-weight: 600;
+    white-space: nowrap;
+    background: var(--bs-tertiary-bg);
+    border-bottom: 1px solid rgba(120, 120, 120, 0.22);
+}
+
+.heat-input-results-table tbody td {
+    padding: 0.48rem 0.65rem;
+    border-top: 0;
+    border-bottom: 1px solid rgba(120, 120, 120, 0.10);
+}
+
+.heat-input-results-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.heat-input-results-cell {
+    min-width: 6rem;
+    max-width: 24rem;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    vertical-align: top;
+    line-height: 1.35;
+}
+
+.heat-input-results-cell-number {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.heat-input-table-note {
+    padding: 0.45rem 0.65rem 0.55rem;
+}
+
+.heat-input-results-empty {
+    padding: 0.75rem 0.9rem;
+    border: 1px dashed rgba(120, 120, 120, 0.25);
+    border-radius: 0.45rem;
+}
+
+.heat-input-legend-panel {
+    height: 580px;
+    border-left: 1px solid rgba(120, 120, 120, 0.20);
+    padding: 0.85rem 0.25rem 0.25rem 1rem;
+    background: rgba(127, 127, 127, 0.025);
+}
+
+.heat-input-scroll-legend {
+    height: 515px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 0.35rem;
+}
+
+.heat-input-legend-count {
+    margin-bottom: 0.45rem;
+    font-size: 0.78rem;
+    color: var(--bs-secondary-color);
+}
+
+.heat-input-legend-item {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+    gap: 0.6rem;
+    padding: 0.48rem 0.5rem;
+    margin: 0 0 0.22rem;
+    border: 0;
+    border-radius: 0.4rem;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.heat-input-legend-item:hover {
+    background: var(--bs-tertiary-bg);
+}
+
+.heat-input-legend-item-hidden {
+    opacity: 0.42;
+}
+
+.heat-input-legend-swatch {
+    flex: 0 0 auto;
+    width: 0.85rem;
+    height: 0.85rem;
+    margin-top: 0.16rem;
+    border: 1px solid;
+    border-radius: 999px;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.35);
+}
+
+.heat-input-legend-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.heat-input-legend-primary {
+    font-size: 0.83rem;
+    font-weight: 600;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+}
+
+.heat-input-legend-secondary {
+    margin-top: 0.12rem;
+    font-size: 0.74rem;
+    line-height: 1.25;
+    color: var(--bs-secondary-color);
+    overflow-wrap: anywhere;
+}
+
+.heat-input-plot-download-bar {
+    margin: 0.35rem 0 0.9rem;
+    padding: 0.7rem 0.8rem;
+    border: 1px solid rgba(120, 120, 120, 0.16);
+    border-radius: 0.55rem;
+    background: rgba(127, 127, 127, 0.035);
+}
+
+.heat-input-download-heading {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-bottom: 0.4rem;
+}
+
+.heat-input-download-label {
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
+.heat-input-results-section h5 {
+    margin-bottom: 0.55rem;
+}
+
+.heat-input-results-section details {
+    border: 1px solid rgba(120, 120, 120, 0.15);
+    border-radius: 0.5rem;
+    padding: 0.65rem 0.8rem;
+}
+
+.heat-input-results-section details > summary {
+    cursor: pointer;
+    font-weight: 600;
+}
+

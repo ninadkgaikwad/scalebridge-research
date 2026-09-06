@@ -1,0 +1,2060 @@
+\documentclass[11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\usepackage{bm}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+
+\title{Part 3: Detailed Neural ODE Formulation}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Part 3 --- Detailed Neural ODE Formulation}
+
+We now define \textbf{only the data-only Neural ODE baseline}, while preserving the information architectures and state dimensions locked in Part 1.
+
+The key methodological distinction is
+\begin{align}
+\boxed{\text{Inverse PINN-RC learns physical parameters } \theta_{RC};}
+\end{align}
+whereas
+\begin{align}
+\boxed{\text{NODE learns the continuous-time vector field itself.}}
+\end{align}
+
+Importantly, NODE receives no RC residual, no \(R\), no \(C\), no \(\eta_r\), and no EBP projection.
+
+\section*{1. What ``1R1C/2R2C NODE'' means}
+
+Because NODE contains no resistors or capacitances, it would be imprecise to say that NODE itself is physically a 1R1C or 2R2C model.
+
+Instead, throughout the paper,
+\begin{align}
+\boxed{\text{NODE-1C}}
+\end{align}
+means the NODE counterpart having the \textbf{same state dimension and observed-state structure} as the corresponding 1R1C architecture.
+
+Likewise,
+\begin{align}
+\boxed{\text{NODE-2C}}
+\end{align}
+means the NODE counterpart having the same state dimension as the corresponding 2R2C architecture.
+
+Thus
+\begin{align}
+\boxed{1R1C\leftrightarrow\text{NODE-1C}},
+\end{align}
+and
+\begin{align}
+\boxed{2R2C\leftrightarrow\text{NODE-2C}.}
+\end{align}
+
+But NODE has no explicit \(R\) or \(C\).
+
+\section*{2. General forced Neural ODE}
+
+Let
+\begin{align}
+x(t)\in\mathbb R^{n_x}
+\end{align}
+denote the NODE state and
+\begin{align}
+v(t)\in\mathbb R^{n_v}
+\end{align}
+the measured forcing vector.
+
+The NODE dynamics are
+\begin{align}
+\boxed{
+\dot x(t)=f_\omega\left(x(t),v(t)\right),
+}
+\tag{N3.1}
+\end{align}
+where
+\begin{align}
+f_\omega:\mathbb R^{n_x+n_v}\rightarrow\mathbb R^{n_x}
+\end{align}
+is a neural network with trainable parameters
+\begin{align}
+\omega.
+\end{align}
+
+The observation equation remains
+\begin{align}
+\boxed{y(t)=Hx(t).}
+\tag{N3.2}
+\end{align}
+
+For fully observed NODE-1C cases,
+\begin{align}
+H=I.
+\end{align}
+
+For NODE-2C, \(H\) selects only the zone-air coordinates.
+
+\section*{3. No absolute-time memorization}
+
+We do \textbf{not} include calendar timestamp \(t\) itself as an input to the NODE vector field. Thus we use
+\begin{align}
+f_\omega(x,v),
+\end{align}
+not
+\begin{align}
+f_\omega(x,v,t).
+\end{align}
+
+Timestamp is used only to order samples, verify continuity, construct trajectories, and determine integration duration. The NODE must explain the dynamics from the state and the same physical forcing information available to the other methods.
+
+\section*{4. Raw forcing channels, not RC-combined heat terms}
+
+For the RC methods, Part 1 introduced
+\begin{align}
+Q_c=Q_{ZIC}+Q_{Sol1}+Q_{AC},
+\end{align}
+and
+\begin{align}
+Q_r=Q_{ZIR}+Q_{Sol2}.
+\end{align}
+
+The NODE instead receives the \textbf{individual measured Phase-D channels}. For all-to-one,
+\begin{align}
+\boxed{
+v_A=
+\begin{bmatrix}
+T_o\\
+Q_{AC,A}\\
+Q_{ZIC,A}\\
+Q_{ZIR,A}\\
+Q_{Sol1,A}\\
+Q_{Sol2,A}
+\end{bmatrix}.
+}
+\tag{N3.3}
+\end{align}
+
+This avoids imposing the RC assumption that measured heat channels of the same nominal type must affect the state identically.
+
+\section*{5. All-to-One forcing}
+
+The forcing vector is
+\begin{align}
+\boxed{
+v_A=
+\begin{bmatrix}
+T_o\\
+Q_{AC,A}\\
+Q_{ZIC,A}\\
+Q_{ZIR,A}\\
+Q_{Sol1,A}\\
+Q_{Sol2,A}
+\end{bmatrix},
+}
+\tag{N3.4}
+\end{align}
+with
+\begin{align}
+n_v=6.
+\end{align}
+
+\section*{6. Identity / IND forcing}
+
+Dining receives
+\begin{align}
+\boxed{
+v_D=
+\begin{bmatrix}
+T_o\\
+Q_{AC,D}\\
+Q_{ZIC,D}\\
+Q_{ZIR,D}\\
+Q_{Sol1,D}\\
+Q_{Sol2,D}
+\end{bmatrix}.
+}
+\tag{N3.5}
+\end{align}
+
+Kitchen receives
+\begin{align}
+\boxed{
+v_K=
+\begin{bmatrix}
+T_o\\
+Q_{AC,K}\\
+Q_{ZIC,K}\\
+Q_{ZIR,K}
+\end{bmatrix}.
+}
+\tag{N3.6}
+\end{align}
+
+No artificial zero solar channels are added solely to equalize dimensions.
+
+\section*{7. Identity / DEP1 forcing}
+
+The coupled DEP1 model receives
+\begin{align}
+\boxed{
+v_{\mathrm{DEP1}}
+=
+\begin{bmatrix}
+T_o\\
+Q_{AC,D}\\
+Q_{AC,K}\\
+Q_{ZIC,D}\\
+Q_{ZIR,D}\\
+Q_{Sol1,D}\\
+Q_{Sol2,D}\\
+Q_{ZIC,K}\\
+Q_{ZIR,K}
+\end{bmatrix}.
+}
+\tag{N3.7}
+\end{align}
+
+Thus
+\begin{align}
+\boxed{n_v^{DEP1}=9.}
+\tag{N3.8}
+\end{align}
+
+\section*{8. Identity / DEP2 forcing}
+
+DEP2 uses
+\begin{align}
+\boxed{
+v_{\mathrm{DEP2}}
+=
+\begin{bmatrix}
+T_o\\
+Q_{AC,D}\\
+Q_{AC,K}\\
+Q_{ZIC,A}\\
+Q_{ZIR,A}\\
+Q_{Sol1,A}\\
+Q_{Sol2,A}
+\end{bmatrix}.
+}
+\tag{N3.9}
+\end{align}
+
+Thus
+\begin{align}
+\boxed{n_v^{DEP2}=7.}
+\tag{N3.10}
+\end{align}
+
+NODE does not introduce \(\lambda_c\) or \(\lambda_r\). The data-only vector field itself learns how aggregate disturbances affect Dining and Kitchen:
+\begin{align}
+\boxed{
+\text{DEP2 allocation is explicit in RC/PINODE physics,
+but implicit in the data-only NODE.}
+}
+\tag{N3.11}
+\end{align}
+
+\section*{9. Training-only normalization}
+
+For observed state channel \(j\),
+\begin{align}
+\boxed{
+\mu_{x,j}
+=
+\frac{1}{N_{\rm tr}}
+\sum_{k\in\mathcal I_{\rm tr}}x_{k,j},
+}
+\tag{N3.12}
+\end{align}
+and
+\begin{align}
+\boxed{
+s_{x,j}
+=
+\max\left[
+\sqrt{
+\frac{1}{N_{\rm tr}}
+\sum_{k\in\mathcal I_{\rm tr}}
+(x_{k,j}-\mu_{x,j})^2
+},
+\epsilon_x
+\right].
+}
+\tag{N3.13}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+S_x=\operatorname{diag}(s_{x,1},\ldots,s_{x,n_x}).
+}
+\tag{N3.14}
+\end{align}
+
+For forcing channel \(j\),
+\begin{align}
+\boxed{
+\mu_{v,j}
+=
+\frac{1}{N_{\rm tr}}
+\sum_{k\in\mathcal I_{\rm tr}}v_{k,j},
+}
+\tag{N3.15}
+\end{align}
+and
+\begin{align}
+\boxed{
+s_{v,j}
+=
+\max\left[
+\sqrt{
+\frac{1}{N_{\rm tr}}
+\sum_{k\in\mathcal I_{\rm tr}}
+(v_{k,j}-\mu_{v,j})^2
+},
+\epsilon_v
+\right].
+}
+\tag{N3.16}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+S_v=\operatorname{diag}(s_{v,1},\ldots,s_{v,n_v}),
+}
+\tag{N3.17}
+\end{align}
+and
+\begin{align}
+\boxed{
+\widetilde v=S_v^{-1}(v-\mu_v).
+}
+\tag{N3.18}
+\end{align}
+
+Validation and test use frozen training statistics.
+
+\section*{10. NODE-1C normalized state}
+
+For NODE-1C all state coordinates are observed:
+\begin{align}
+\boxed{
+z=S_x^{-1}(x-\mu_x),
+}
+\tag{N3.19}
+\end{align}
+so
+\begin{align}
+\boxed{
+x=\mu_x+S_xz.
+}
+\tag{N3.20}
+\end{align}
+
+\section*{11. NODE-2C normalization with hidden states}
+
+NODE-2C contains hidden mass-like states whose empirical statistics cannot be measured directly. Therefore each hidden state uses the corresponding air-temperature normalization:
+\begin{align}
+\boxed{
+z_{a,i}
+=
+\frac{T_{a,i}-\mu_{T_i}}{s_{T_i}},
+}
+\tag{N3.21}
+\end{align}
+and
+\begin{align}
+\boxed{
+z_{m,i}
+=
+\frac{T_{m,i}-\mu_{T_i}}{s_{T_i}}.
+}
+\tag{N3.22}
+\end{align}
+
+For one zone,
+\begin{align}
+\boxed{
+S_x=\operatorname{diag}(s_T,s_T).
+}
+\tag{N3.23}
+\end{align}
+
+For coupled Dining/Kitchen,
+\begin{align}
+\boxed{
+S_x=
+\operatorname{diag}
+(s_{T_D},s_{T_D},s_{T_K},s_{T_K}),
+}
+\tag{N3.24}
+\end{align}
+and
+\begin{align}
+\boxed{
+\mu_x=
+\begin{bmatrix}
+\mu_{T_D}\\
+\mu_{T_D}\\
+\mu_{T_K}\\
+\mu_{T_K}
+\end{bmatrix}.
+}
+\tag{N3.25}
+\end{align}
+
+\section*{12. Why use normalized time \(\tau\) instead of raw \(t\)?}
+
+The NODE could be written directly in physical seconds:
+\begin{align}
+\boxed{
+\frac{dx}{dt}=f_\omega(x,v).
+}
+\tag{N3.26}
+\end{align}
+
+Thus using \(t\) directly is mathematically valid. However, Phase-D sampling is
+\begin{align}
+\boxed{\Delta t=300\ {\rm s}.}
+\tag{N3.27}
+\end{align}
+
+Define dimensionless time
+\begin{align}
+\boxed{
+\tau=\frac{t-t_{\rm ref}}{\Delta t},
+}
+\tag{N3.28}
+\end{align}
+where \(t_{\rm ref}\) can be the beginning of a contiguous segment.
+
+Then
+\begin{align}
+\frac{d\tau}{dt}=\frac{1}{\Delta t},
+\end{align}
+so
+\begin{align}
+\frac{dx}{dt}
+=
+\frac{dx}{d\tau}\frac{d\tau}{dt}
+=
+\frac{1}{\Delta t}\frac{dx}{d\tau}.
+\end{align}
+
+Therefore
+\begin{align}
+\boxed{
+\frac{dx}{d\tau}
+=
+\Delta t\frac{dx}{dt}.
+}
+\tag{N3.29}
+\end{align}
+
+One 5-minute observation interval becomes exactly one normalized-time unit:
+\begin{align}
+\boxed{
+\tau_{k+1}-\tau_k=1.
+}
+\tag{N3.30}
+\end{align}
+
+Since
+\begin{align}
+x=\mu_x+S_xz,
+\end{align}
+we have
+\begin{align}
+\frac{dx}{dt}=S_x\frac{dz}{dt},
+\end{align}
+and
+\begin{align}
+\frac{dz}{dt}
+=
+\frac{1}{\Delta t}\frac{dz}{d\tau}.
+\end{align}
+
+Hence
+\begin{align}
+\boxed{
+\frac{dx}{dt}
+=
+\frac{S_x}{\Delta t}
+\frac{dz}{d\tau}.
+}
+\tag{N3.31}
+\end{align}
+
+We train
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}
+=
+g_\omega(z,\widetilde v).
+}
+\tag{N3.32}
+\end{align}
+
+The equivalent physical vector field is
+\begin{align}
+\boxed{
+f_\omega(x,v)
+=
+\frac{S_x}{\Delta t}
+g_\omega
+\left(
+S_x^{-1}(x-\mu_x),
+S_v^{-1}(v-\mu_v)
+\right).
+}
+\tag{N3.33}
+\end{align}
+
+Thus \(\tau\) is used because
+\begin{align}
+\boxed{
+\text{one measured 5-minute transition corresponds to one integration-time unit,}
+}
+\tag{N3.34}
+\end{align}
+\begin{align}
+\boxed{
+\text{the neural derivative has a numerically better scale,}
+}
+\tag{N3.35}
+\end{align}
+and
+\begin{align}
+\boxed{
+\text{ODE-solver step sizes become easy to interpret relative to data sampling.}
+}
+\tag{N3.36}
+\end{align}
+
+Using \(\tau\) changes only numerical parameterization, not the underlying physical-time dynamics.
+
+\section*{13. Neural vector-field parameterization}
+
+Define
+\begin{align}
+\xi=
+\begin{bmatrix}
+z\\
+\widetilde v
+\end{bmatrix}.
+\end{align}
+
+Set
+\begin{align}
+\boxed{h^{(0)}=\xi.}
+\tag{N3.37}
+\end{align}
+
+For \(\ell=1,\ldots,L\),
+\begin{align}
+\boxed{
+h^{(\ell)}
+=
+\varphi
+\left(
+W^{(\ell)}h^{(\ell-1)}+b^{(\ell)}
+\right).
+}
+\tag{N3.38}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+g_\omega(z,\widetilde v)
+=
+W^{(L+1)}h^{(L)}+b^{(L+1)}.
+}
+\tag{N3.39}
+\end{align}
+
+The output dimension satisfies
+\begin{align}
+\boxed{\dim g_\omega=n_x.}
+\tag{N3.40}
+\end{align}
+
+\section*{14. All-to-One NODE-1C}
+
+\begin{align}
+\boxed{
+z_A=\frac{T_A-\mu_{T_A}}{s_{T_A}}.
+}
+\tag{N3.41}
+\end{align}
+
+\begin{align}
+\boxed{
+\frac{dz_A}{d\tau}
+=
+g_{\omega,A}^{1C}(z_A,\widetilde v_A).
+}
+\tag{N3.42}
+\end{align}
+
+\begin{align}
+\boxed{
+g_{\omega,A}^{1C}:\mathbb R^{7}\rightarrow\mathbb R.
+}
+\tag{N3.43}
+\end{align}
+
+\section*{15. All-to-One NODE-2C}
+
+\begin{align}
+\boxed{
+z_A=
+\begin{bmatrix}
+z_{a,A}\\
+z_{m,A}
+\end{bmatrix}.
+}
+\tag{N3.44}
+\end{align}
+
+\begin{align}
+\boxed{
+\frac{d}{d\tau}
+\begin{bmatrix}
+z_{a,A}\\
+z_{m,A}
+\end{bmatrix}
+=
+g_{\omega,A}^{2C}(z_A,\widetilde v_A).
+}
+\tag{N3.45}
+\end{align}
+
+\begin{align}
+\boxed{
+g_{\omega,A}^{2C}:\mathbb R^{8}\rightarrow\mathbb R^2.
+}
+\tag{N3.46}
+\end{align}
+
+\begin{align}
+\boxed{
+H_A=
+\begin{bmatrix}
+1&0
+\end{bmatrix}.
+}
+\tag{N3.47}
+\end{align}
+
+\section*{16. Identity / IND NODE-1C}
+
+\begin{align}
+\boxed{
+\frac{dz_D}{d\tau}
+=
+g_{\omega,D}^{1C}(z_D,\widetilde v_D),
+}
+\tag{N3.48}
+\end{align}
+and
+\begin{align}
+\boxed{
+\frac{dz_K}{d\tau}
+=
+g_{\omega,K}^{1C}(z_K,\widetilde v_K).
+}
+\tag{N3.49}
+\end{align}
+
+There is no cross-zone state dependence:
+\begin{align}
+\boxed{
+\frac{\partial g_D}{\partial T_K}=0,
+\qquad
+\frac{\partial g_K}{\partial T_D}=0.
+}
+\tag{N3.50}
+\end{align}
+
+\section*{17. Identity / IND NODE-2C}
+
+\begin{align}
+\boxed{
+z_D=
+\begin{bmatrix}
+z_{a,D}\\
+z_{m,D}
+\end{bmatrix},
+\qquad
+z_K=
+\begin{bmatrix}
+z_{a,K}\\
+z_{m,K}
+\end{bmatrix}.
+}
+\tag{N3.51}
+\end{align}
+
+\begin{align}
+\boxed{
+\frac{dz_D}{d\tau}
+=
+g_{\omega,D}^{2C}(z_D,\widetilde v_D),
+}
+\tag{N3.52}
+\end{align}
+and
+\begin{align}
+\boxed{
+\frac{dz_K}{d\tau}
+=
+g_{\omega,K}^{2C}(z_K,\widetilde v_K).
+}
+\tag{N3.53}
+\end{align}
+
+\section*{18. Identity / DEP1 NODE-1C}
+
+\begin{align}
+\boxed{
+z=
+\begin{bmatrix}
+z_D\\
+z_K
+\end{bmatrix}.
+}
+\tag{N3.54}
+\end{align}
+
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}
+=
+g_{\omega,\mathrm{DEP1}}^{1C}
+(z,\widetilde v_{\mathrm{DEP1}}).
+}
+\tag{N3.55}
+\end{align}
+
+\begin{align}
+\boxed{
+g_{\omega,\mathrm{DEP1}}^{1C}:
+\mathbb R^{11}\rightarrow\mathbb R^2.
+}
+\tag{N3.56}
+\end{align}
+
+\section*{19. Identity / DEP1 NODE-2C}
+
+\begin{align}
+\boxed{
+z=
+\begin{bmatrix}
+z_{a,D}\\
+z_{m,D}\\
+z_{a,K}\\
+z_{m,K}
+\end{bmatrix}.
+}
+\tag{N3.57}
+\end{align}
+
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}
+=
+g_{\omega,\mathrm{DEP1}}^{2C}
+(z,\widetilde v_{\mathrm{DEP1}}).
+}
+\tag{N3.58}
+\end{align}
+
+\begin{align}
+\boxed{
+g_{\omega,\mathrm{DEP1}}^{2C}:
+\mathbb R^{13}\rightarrow\mathbb R^4.
+}
+\tag{N3.59}
+\end{align}
+
+\begin{align}
+\boxed{
+H=
+\begin{bmatrix}
+1&0&0&0\\
+0&0&1&0
+\end{bmatrix}.
+}
+\tag{N3.60}
+\end{align}
+
+\section*{20. Identity / DEP2 NODE-1C}
+
+\begin{align}
+\boxed{
+z=
+\begin{bmatrix}
+z_D\\
+z_K
+\end{bmatrix}.
+}
+\tag{N3.61}
+\end{align}
+
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}
+=
+g_{\omega,\mathrm{DEP2}}^{1C}
+(z,\widetilde v_{\mathrm{DEP2}}).
+}
+\tag{N3.62}
+\end{align}
+
+\begin{align}
+\boxed{
+g_{\omega,\mathrm{DEP2}}^{1C}:
+\mathbb R^{9}\rightarrow\mathbb R^2.
+}
+\tag{N3.63}
+\end{align}
+
+\section*{21. Identity / DEP2 NODE-2C}
+
+\begin{align}
+\boxed{
+z=
+\begin{bmatrix}
+z_{a,D}\\
+z_{m,D}\\
+z_{a,K}\\
+z_{m,K}
+\end{bmatrix}.
+}
+\tag{N3.64}
+\end{align}
+
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}
+=
+g_{\omega,\mathrm{DEP2}}^{2C}
+(z,\widetilde v_{\mathrm{DEP2}}).
+}
+\tag{N3.65}
+\end{align}
+
+\begin{align}
+\boxed{
+g_{\omega,\mathrm{DEP2}}^{2C}:
+\mathbb R^{11}\rightarrow\mathbb R^4.
+}
+\tag{N3.66}
+\end{align}
+
+\section*{22. Why NODE-2C needs a causal encoder but NODE-1C does not}
+
+NODE-1C is fully observed. For one zone,
+\begin{align}
+\boxed{x_k=T_{z,k}=y_k.}
+\tag{N3.67}
+\end{align}
+
+For coupled identity,
+\begin{align}
+\boxed{
+x_k=
+\begin{bmatrix}
+T_{D,k}\\
+T_{K,k}
+\end{bmatrix}
+=y_k.
+}
+\tag{N3.68}
+\end{align}
+
+Thus the complete rollout initial state is known:
+\begin{align}
+\boxed{x_k=y_k.}
+\tag{N3.69}
+\end{align}
+
+There is nothing to estimate, so NODE-1C needs no encoder.
+
+NODE-2C is partially observed. For one zone,
+\begin{align}
+\boxed{
+x_k=
+\begin{bmatrix}
+T_{a,k}\\
+T_{m,k}
+\end{bmatrix},
+}
+\tag{N3.70}
+\end{align}
+but
+\begin{align}
+\boxed{y_k=T_{a,k}.}
+\tag{N3.71}
+\end{align}
+
+Thus \(T_{m,k}\) is unknown, yet a complete ODE initial condition is required. Therefore
+\begin{align}
+\boxed{
+\widehat T_{m,k}
+=
+E_\psi(\text{information available at or before }t_k).
+}
+\tag{N3.72}
+\end{align}
+
+The encoder must be causal. It cannot use
+\begin{align}
+T_{a,k+1},T_{a,k+2},\ldots
+\end{align}
+because these are future observations relative to rollout initialization.
+
+Hence
+\begin{align}
+\boxed{\text{NODE-2C is partially observed},}
+\tag{N3.73}
+\end{align}
+whereas
+\begin{align}
+\boxed{\text{NODE-1C is fully observed}.}
+\tag{N3.74}
+\end{align}
+
+The encoder estimates only the unobserved second thermal coordinate; it does not replace the physical-coordinate observation map.
+
+\section*{23. Causal encoder context}
+
+Choose
+\begin{align}
+L_e\ge1.
+\end{align}
+
+For rollout start \(k\),
+\begin{align}
+\boxed{
+\mathcal C_k
+=
+\left\{
+(y_j,v_j):
+j=k-L_e+1,\ldots,k
+\right\}.
+}
+\tag{N3.75}
+\end{align}
+
+If
+\begin{align}
+L_e=6,
+\end{align}
+then the encoder sees
+\begin{align}
+\boxed{6\times5=30\ {\rm minutes}}
+\tag{N3.76}
+\end{align}
+of causal sampled context including the rollout-start sample.
+
+Context rows must satisfy
+\begin{align}
+\boxed{p_j=p_k,}
+\tag{N3.77}
+\end{align}
+\begin{align}
+\boxed{a_j=1,}
+\tag{N3.78}
+\end{align}
+and
+\begin{align}
+\boxed{t_{j+1}-t_j=300\ {\rm s}.}
+\tag{N3.79}
+\end{align}
+
+\section*{24. Hidden-state encoder}
+
+For one zone,
+\begin{align}
+\boxed{
+c_k
+=
+\operatorname{vec}
+\left[
+\widetilde y_{k-L_e+1:k},
+\widetilde v_{k-L_e+1:k}
+\right].
+}
+\tag{N3.80}
+\end{align}
+
+The encoder produces
+\begin{align}
+\boxed{e_\psi(c_k)\in\mathbb R.}
+\tag{N3.81}
+\end{align}
+
+Use
+\begin{align}
+\boxed{
+T_{m,k}^{(0)}
+=
+T_{a,k}
++
+\Delta T_m^{\max}
+\tanh[e_\psi(c_k)].
+}
+\tag{N3.82}
+\end{align}
+
+Therefore
+\begin{align}
+\boxed{
+|T_{m,k}^{(0)}-T_{a,k}|
+<
+\Delta T_m^{\max}.
+}
+\tag{N3.83}
+\end{align}
+
+For coupled DEP1/DEP2,
+\begin{align}
+\boxed{
+e_\psi(c_k)=
+\begin{bmatrix}
+e_D(c_k)\\
+e_K(c_k)
+\end{bmatrix}.
+}
+\tag{N3.84}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+T_{m,D,k}^{(0)}
+=
+T_{a,D,k}
++
+\Delta T_{m,D}^{\max}\tanh e_D(c_k),
+}
+\tag{N3.85}
+\end{align}
+and
+\begin{align}
+\boxed{
+T_{m,K,k}^{(0)}
+=
+T_{a,K,k}
++
+\Delta T_{m,K}^{\max}\tanh e_K(c_k).
+}
+\tag{N3.86}
+\end{align}
+
+\section*{25. Interpretation of the hidden NODE-2C coordinate}
+
+Because NODE has no RC residual,
+\begin{align}
+\boxed{
+T_m^{NODE}
+\text{ is not independently physically identifiable from temperature data alone.}
+}
+\tag{N3.87}
+\end{align}
+
+It is therefore described as a
+\begin{align}
+\boxed{\text{hidden mass-coordinate / mass-like thermal state}.}
+\tag{N3.88}
+\end{align}
+
+\section*{26. Constructing contiguous trajectories from \texttt{l1\_h1}}
+
+Let each row contain
+\begin{align}
+(t_k,y_k,v_k,p_k,a_k).
+\end{align}
+
+Adjacent rows belong to one contiguous segment only if
+\begin{align}
+\boxed{t_{k+1}-t_k=300\ {\rm s},}
+\tag{N3.89}
+\end{align}
+\begin{align}
+\boxed{p_{k+1}=p_k,}
+\tag{N3.90}
+\end{align}
+and
+\begin{align}
+\boxed{a_k=a_{k+1}=1.}
+\tag{N3.91}
+\end{align}
+
+\section*{27. What a training rollout is}
+
+Let
+\begin{align}
+N_r\ge1
+\end{align}
+be the rollout horizon in sampled intervals.
+
+A rollout starting at \(k\) is initialized once and predicts
+\begin{align}
+\widehat y_{k+1|k},
+\widehat y_{k+2|k},
+\ldots,
+\widehat y_{k+N_r|k}.
+\end{align}
+
+After initialization,
+\begin{align}
+\boxed{
+\widehat x_{k+\ell|k}
+\text{ is fed into the next ODE step rather than the measured state.}
+}
+\tag{N3.92}
+\end{align}
+
+Thus a rollout trains recursive dynamics, not merely one-step mapping.
+
+Define
+\begin{align}
+\boxed{
+\mathcal W_{\rm tr}^{(N_r)}
+=
+\left\{
+k:
+k:k+N_r
+\text{ is contiguous and training}
+\right\}.
+}
+\tag{N3.93}
+\end{align}
+
+\section*{28. How rollout validity depends on encoder context}
+
+For NODE-1C, a rollout starting at \(k\) only requires
+\begin{align}
+\boxed{k:k+N_r}
+\tag{N3.94}
+\end{align}
+to be valid.
+
+For NODE-2C, the rollout also requires \(L_e\) causal samples to estimate its hidden initial state. Therefore the complete required range is
+\begin{align}
+\boxed{
+k-L_e+1:k+N_r.
+}
+\tag{N3.95}
+\end{align}
+
+If a contiguous segment begins at \(s\) and ends at \(e\), the first eligible NODE-2C rollout start is
+\begin{align}
+\boxed{k_{\min}=s+L_e-1,}
+\tag{N3.96}
+\end{align}
+and the last is
+\begin{align}
+\boxed{k_{\max}=e-N_r.}
+\tag{N3.97}
+\end{align}
+
+Therefore
+\begin{align}
+\boxed{
+s+L_e-1\le k\le e-N_r.
+}
+\tag{N3.98}
+\end{align}
+
+For a segment containing \(N_{\rm seg}\) samples, the number of eligible windows is
+\begin{align}
+\boxed{
+N_{\rm windows}
+=
+\max\left[
+0,\,
+N_{\rm seg}-L_e-N_r+1
+\right].
+}
+\tag{N3.99}
+\end{align}
+
+The meanings differ:
+\begin{align}
+\boxed{
+L_e=\text{past context used to estimate hidden initial state},
+}
+\tag{N3.100}
+\end{align}
+whereas
+\begin{align}
+\boxed{
+N_r=\text{future recursive prediction horizon used for training}.
+}
+\tag{N3.101}
+\end{align}
+
+The encoder is evaluated only at rollout initialization. It is not re-evaluated at each future predicted step:
+\begin{align}
+\boxed{
+\widehat x_{k|k}
+=
+E_\psi(\mathcal C_k)
+\text{ for hidden coordinates,}
+}
+\tag{N3.102}
+\end{align}
+followed by
+\begin{align}
+\boxed{
+\widehat x_{k+\ell+1|k}
+=
+\Phi_\omega
+(\widehat x_{k+\ell|k},v_{k+\ell}).
+}
+\tag{N3.103}
+\end{align}
+
+\section*{29. Why \texttt{l1\_h1} is sufficient}
+
+Longer NODE trajectories are formed by chaining consecutive rows:
+\begin{align}
+\boxed{
+x_k
+\rightarrow
+x_{k+1}
+\rightarrow
+x_{k+2}
+\rightarrow
+\cdots
+\rightarrow
+x_{k+N_r}.
+}
+\tag{N3.104}
+\end{align}
+
+Thus a separate longer-lag or longer-horizon Phase-D dataset is not required.
+
+\section*{30. Forcing inside each 5-minute interval}
+
+Use zero-order hold:
+\begin{align}
+\boxed{
+v(t)=v_k,
+\qquad
+t\in[t_k,t_{k+1}),
+}
+\tag{N3.105}
+\end{align}
+or in normalized time
+\begin{align}
+\boxed{
+\widetilde v(\tau)=\widetilde v_k,
+\qquad
+\tau\in[\tau_k,\tau_k+1).
+}
+\tag{N3.106}
+\end{align}
+
+\section*{31. What \(N_s\) means}
+
+Let
+\begin{align}
+N_s\in\mathbb N
+\end{align}
+be the number of RK4 numerical substeps inside one observed 5-minute interval.
+
+Because one observed interval has normalized duration
+\begin{align}
+\Delta\tau=1,
+\end{align}
+the normalized substep is
+\begin{align}
+\boxed{h=\frac{1}{N_s}.}
+\tag{N3.107}
+\end{align}
+
+The physical substep duration is
+\begin{align}
+\boxed{
+\Delta t_{\rm sub}
+=
+\frac{\Delta t}{N_s}
+=
+\frac{300}{N_s}\ {\rm s}.
+}
+\tag{N3.108}
+\end{align}
+
+Examples are
+\begin{align}
+N_s=1
+&\Longrightarrow \Delta t_{\rm sub}=300\ {\rm s},\\
+N_s=2
+&\Longrightarrow \Delta t_{\rm sub}=150\ {\rm s},\\
+N_s=5
+&\Longrightarrow \Delta t_{\rm sub}=60\ {\rm s},\\
+N_s=10
+&\Longrightarrow \Delta t_{\rm sub}=30\ {\rm s}.
+\end{align}
+
+Thus \(N_s\) controls numerical integration resolution, not data resolution.
+
+The same forcing remains held over all \(N_s\) substeps:
+\begin{align}
+\boxed{
+\widetilde v=\widetilde v_k
+\quad
+\text{for all }N_s\text{ substeps between }k\text{ and }k+1.
+}
+\tag{N3.109}
+\end{align}
+
+The three quantities are distinct:
+\begin{align}
+\boxed{
+\Delta t=300\ {\rm s}=\text{data sampling interval},
+}
+\tag{N3.110}
+\end{align}
+\begin{align}
+\boxed{
+N_s=\text{ODE-solver substeps per sampled interval},
+}
+\tag{N3.111}
+\end{align}
+and
+\begin{align}
+\boxed{
+N_r=\text{sampled intervals in a training rollout}.
+}
+\tag{N3.112}
+\end{align}
+
+A rollout spans
+\begin{align}
+\boxed{
+T_{\rm rollout}=N_r\Delta t=300N_r\ {\rm s},
+}
+\tag{N3.113}
+\end{align}
+and executes
+\begin{align}
+\boxed{
+N_{\rm RK4,rollout}=N_rN_s
+}
+\tag{N3.114}
+\end{align}
+RK4 substeps.
+
+\section*{32. Differentiable RK4 integration}
+
+For normalized state \(z_n\) and held forcing \(\widetilde v_k\),
+\begin{align}
+\boxed{
+k_1=g_\omega(z_n,\widetilde v_k),
+}
+\tag{N3.115}
+\end{align}
+\begin{align}
+\boxed{
+k_2=
+g_\omega\left(z_n+\frac{h}{2}k_1,\widetilde v_k\right),
+}
+\tag{N3.116}
+\end{align}
+\begin{align}
+\boxed{
+k_3=
+g_\omega\left(z_n+\frac{h}{2}k_2,\widetilde v_k\right),
+}
+\tag{N3.117}
+\end{align}
+\begin{align}
+\boxed{
+k_4=
+g_\omega\left(z_n+hk_3,\widetilde v_k\right).
+}
+\tag{N3.118}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+z_{n+1}
+=
+z_n+\frac{h}{6}(k_1+2k_2+2k_3+k_4).
+}
+\tag{N3.119}
+\end{align}
+
+After \(N_s\) substeps,
+\begin{align}
+\boxed{
+\tau_k\rightarrow\tau_{k+1}=\tau_k+1.
+}
+\tag{N3.120}
+\end{align}
+
+\section*{33. One-step transition operator}
+
+Define
+\begin{align}
+\boxed{
+z_{k+1}
+=
+\Phi_\omega(z_k,\widetilde v_k;N_s).
+}
+\tag{N3.121}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+x_{k+1}=\mu_x+S_xz_{k+1}.
+}
+\tag{N3.122}
+\end{align}
+
+\section*{34. Multi-step rollout}
+
+For rollout start \(k\),
+\begin{align}
+\widehat z_{k|k}=z_k^{(0)}.
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+\widehat z_{k+\ell+1|k}
+=
+\Phi_\omega
+(\widehat z_{k+\ell|k},\widetilde v_{k+\ell};N_s),
+}
+\tag{N3.123}
+\end{align}
+for
+\begin{align}
+\ell=0,\ldots,N_r-1.
+\end{align}
+
+Physical state is
+\begin{align}
+\boxed{
+\widehat x_{k+\ell|k}
+=
+\mu_x+S_x\widehat z_{k+\ell|k},
+}
+\tag{N3.124}
+\end{align}
+and output is
+\begin{align}
+\boxed{
+\widehat y_{k+\ell|k}
+=
+H\widehat x_{k+\ell|k}.
+}
+\tag{N3.125}
+\end{align}
+
+\section*{35. Initial state for NODE-1C}
+
+Because NODE-1C is fully observed,
+\begin{align}
+\boxed{\widehat x_{k|k}=y_k,}
+\tag{N3.126}
+\end{align}
+and
+\begin{align}
+\boxed{
+\widehat z_{k|k}
+=
+S_x^{-1}(y_k-\mu_x).
+}
+\tag{N3.127}
+\end{align}
+
+\section*{36. Initial state for NODE-2C}
+
+For one zone,
+\begin{align}
+\boxed{
+\widehat x_{k|k}
+=
+\begin{bmatrix}
+T_{a,k}\\
+E_\psi(\mathcal C_k)
+\end{bmatrix}.
+}
+\tag{N3.128}
+\end{align}
+
+For coupled identity,
+\begin{align}
+\boxed{
+\widehat x_{k|k}
+=
+\begin{bmatrix}
+T_{a,D,k}\\
+E_{\psi,D}(\mathcal C_k)\\
+T_{a,K,k}\\
+E_{\psi,K}(\mathcal C_k)
+\end{bmatrix}.
+}
+\tag{N3.129}
+\end{align}
+
+The encoder is evaluated once at rollout start; the NODE propagates the hidden state afterward.
+
+\section*{37. NODE output-loss scaling}
+
+Use the training-only output scale from Part 2:
+\begin{align}
+\boxed{
+S_y=\operatorname{diag}(s_{y,1},\ldots,s_{y,n_y}).
+}
+\tag{N3.130}
+\end{align}
+
+\section*{38. Multi-step NODE loss}
+
+For one valid training rollout,
+\begin{align}
+\boxed{
+\mathcal L_{\mathrm{roll}}^{(k)}
+=
+\frac{1}{N_r}
+\sum_{\ell=1}^{N_r}
+\left\|
+S_y^{-1}
+(\widehat y_{k+\ell|k}-y_{k+\ell})
+\right\|_2^2.
+}
+\tag{N3.131}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+\mathcal L_{\mathrm{NODE}}
+=
+\frac{1}{|\mathcal W_{\rm tr}^{(N_r)}|}
+\sum_{k\in\mathcal W_{\rm tr}^{(N_r)}}
+\mathcal L_{\mathrm{roll}}^{(k)}.
+}
+\tag{N3.132}
+\end{align}
+
+There is no physics term:
+\begin{align}
+\boxed{\lambda_{\mathrm{phys}}=0.}
+\tag{N3.133}
+\end{align}
+
+For NODE-2C,
+\begin{align}
+\boxed{
+\mathcal L_{\mathrm{NODE}}
+=
+\mathcal L_{\mathrm{NODE}}(\omega,\psi),
+}
+\tag{N3.134}
+\end{align}
+because the complete future rollout depends on the encoder-estimated initial hidden state.
+
+For NODE-1C,
+\begin{align}
+\boxed{
+\mathcal L_{\mathrm{NODE}}
+=
+\mathcal L_{\mathrm{NODE}}(\omega).
+}
+\tag{N3.135}
+\end{align}
+
+\section*{39. Optional statistical regularization}
+
+\begin{align}
+\boxed{
+\mathcal L_{\mathrm{reg}}
+=
+\|\omega\|_2^2+\|\psi\|_2^2.
+}
+\tag{N3.136}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+\mathcal J_{\mathrm{NODE}}
+=
+\mathcal L_{\mathrm{NODE}}
++
+\lambda_{\mathrm{wd}}\mathcal L_{\mathrm{reg}}.
+}
+\tag{N3.137}
+\end{align}
+
+For NODE-1C the \(\psi\) term is absent.
+
+\section*{40. Trainable quantities}
+
+For NODE-1C,
+\begin{align}
+\boxed{
+\Theta_{\mathrm{NODE}}=\{\omega\}.
+}
+\tag{N3.138}
+\end{align}
+
+For NODE-2C,
+\begin{align}
+\boxed{
+\Theta_{\mathrm{NODE}}=\{\omega,\psi\}.
+}
+\tag{N3.139}
+\end{align}
+
+NODE contains no \(R\), \(C\), \(R_{DK}\), \(\eta_r\), \(\lambda_c\), or \(\lambda_r\).
+
+\section*{41. Sim1}
+
+For NODE-1C,
+\begin{align}
+\boxed{
+z_k=S_x^{-1}(y_k-\mu_x),
+}
+\tag{N3.140}
+\end{align}
+\begin{align}
+\boxed{
+\widehat z_{k+1}
+=
+\Phi_\omega(z_k,\widetilde v_k^{test};N_s).
+}
+\tag{N3.141}
+\end{align}
+
+For NODE-2C,
+\begin{align}
+\boxed{
+\widehat x_k^{(0)}
+=
+\begin{bmatrix}
+y_k\\
+E_\psi(\mathcal C_k)
+\end{bmatrix}.
+}
+\tag{N3.142}
+\end{align}
+
+Thus NODE-2C Sim1 is a causal state-reconstructed one-step predictor.
+
+\section*{42. Sim2}
+
+NODE-1C initializes once:
+\begin{align}
+\boxed{\widehat x_0=y_0.}
+\tag{N3.143}
+\end{align}
+
+NODE-2C initializes once:
+\begin{align}
+\boxed{
+\widehat x_0=
+\begin{bmatrix}
+y_0\\
+E_\psi(\mathcal C_0)
+\end{bmatrix}.
+}
+\tag{N3.144}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+\widehat x_{k+1}
+=
+\Phi_\omega(\widehat x_k,v_k^{test};N_s).
+}
+\tag{N3.145}
+\end{align}
+
+No measured future state is fed back.
+
+\section*{43. Sim3}
+
+The thermostat uses predicted zone temperature:
+\begin{align}
+\boxed{
+\dot m_k
+=
+\pi_{\mathrm{thermostat}}
+(\widehat T_{z,k},T_{\mathrm{set},k}).
+}
+\tag{N3.146}
+\end{align}
+
+Phase C gives
+\begin{align}
+\boxed{
+Q_{AC,k}
+=
+G_{QAC}
+(\dot m_k,\widehat T_{z,k},T_{sa,k},\ldots).
+}
+\tag{N3.147}
+\end{align}
+
+Remaining disturbances come from test data:
+\begin{align}
+\boxed{d_k=d_k^{test}.}
+\tag{N3.148}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+\widehat x_{k+1}
+=
+\Phi_\omega
+(\widehat x_k,Q_{AC,k},d_k^{test};N_s).
+}
+\tag{N3.149}
+\end{align}
+
+\section*{44. PHVAC}
+
+PHVAC is not a NODE state:
+\begin{align}
+\boxed{
+\widehat P_{\mathrm{HVAC},k}
+=
+G_{PHVAC}(Q_{AC,k},\ldots).
+}
+\tag{N3.150}
+\end{align}
+
+\section*{45. Validation objective}
+
+For a validation segment containing \(N_{\rm val}\) sampled prediction steps,
+\begin{align}
+\boxed{
+\mathcal E_s
+=
+\frac{1}{N_{\rm val}}
+\sum_{\ell=1}^{N_{\rm val}}
+\left\|
+S_y^{-1}
+(\widehat y_{s,\ell}-y_{s,\ell})
+\right\|_2^2.
+}
+\tag{N3.151}
+\end{align}
+
+Across validation segments,
+\begin{align}
+\boxed{
+\mathcal E_{\mathrm{val}}
+=
+\frac{1}{N_{\mathrm{seg,val}}}
+\sum_s\mathcal E_s.
+}
+\tag{N3.152}
+\end{align}
+
+The best checkpoint satisfies
+\begin{align}
+\boxed{
+(\omega^\star,\psi^\star)
+=
+\arg\min_{\text{checkpoint}}
+\mathcal E_{\mathrm{val}}.
+}
+\tag{N3.153}
+\end{align}
+
+The notation \(N_{\rm val}\) is intentionally different from \(N_s\): \(N_s\) always means RK4 substeps per sampled interval.
+
+\section*{46. Hyperparameters}
+
+\begin{align}
+\boxed{
+\mathcal H_{\mathrm{NODE}}
+=
+\{
+L,
+n_h,
+\varphi,
+N_r,
+L_e,
+N_s,
+\lambda_{\mathrm{wd}},
+\Delta T_m^{\max}
+\}.
+}
+\tag{N3.154}
+\end{align}
+
+Their meanings are
+\begin{align}
+L&=\text{hidden-layer count},\\
+n_h&=\text{hidden width},\\
+N_r&=\text{training rollout horizon in sampled intervals},\\
+L_e&=\text{causal encoder-history length},\\
+N_s&=\text{RK4 substeps per 5-minute interval}.
+\end{align}
+
+For NODE-1C, \(L_e\) and \(\Delta T_m^{\max}\) do not apply.
+
+\section*{47. Multi-start training}
+
+For seed
+\begin{align}
+s=1,\ldots,S,
+\end{align}
+train
+\begin{align}
+(\omega^{(s)},\psi^{(s)}).
+\end{align}
+
+Select
+\begin{align}
+\boxed{
+s^\star
+=
+\arg\min_s
+\mathcal E_{\mathrm{val}}
+(\omega^{(s)},\psi^{(s)}).
+}
+\tag{N3.155}
+\end{align}
+
+Then
+\begin{align}
+\boxed{
+(\widehat\omega,\widehat\psi)
+=
+(\omega^{(s^\star)},\psi^{(s^\star)}).
+}
+\tag{N3.156}
+\end{align}
+
+\section*{48. No physical-parameter interpretation}
+
+NODE does not identify \(R\), \(C\), or \(\eta_r\). Its claim is only
+\begin{align}
+\boxed{
+f_{\widehat\omega}
+\text{ approximates the continuous-time thermal vector field over the studied operating domain.}
+}
+\tag{N3.157}
+\end{align}
+
+\section*{49. Mathematical distinction between NODE-1C and NODE-2C}
+
+NODE-1C:
+\begin{align}
+\boxed{
+\dot T=f_\omega(T,v).
+}
+\tag{N3.158}
+\end{align}
+
+NODE-2C:
+\begin{align}
+\boxed{
+\begin{bmatrix}
+\dot T_a\\
+\dot T_m
+\end{bmatrix}
+=
+f_\omega(T_a,T_m,v).
+}
+\tag{N3.159}
+\end{align}
+
+For coupled identity,
+\begin{align}
+\boxed{
+\begin{bmatrix}
+\dot T_{a,D}\\
+\dot T_{m,D}\\
+\dot T_{a,K}\\
+\dot T_{m,K}
+\end{bmatrix}
+=
+f_\omega(T_{a,D},T_{m,D},T_{a,K},T_{m,K},v).
+}
+\tag{N3.160}
+\end{align}
+
+\section*{50. Fairness relative to PINODE and EBP}
+
+For the same architecture and state order, NODE, base PINODE and EBP-PINODE should share
+\begin{align}
+\boxed{n_x,}
+\end{align}
+\begin{align}
+\boxed{v,}
+\end{align}
+\begin{align}
+\boxed{H,}
+\end{align}
+\begin{align}
+\boxed{E_\psi\text{ for 2C initialization},}
+\end{align}
+\begin{align}
+\boxed{N_r,}
+\end{align}
+and
+\begin{align}
+\boxed{N_s.}
+\end{align}
+
+Their distinction is
+\begin{align}
+\boxed{\text{NODE: unrestricted neural derivative},}
+\end{align}
+\begin{align}
+\boxed{\text{base PINODE: neural derivative + soft RC physics},}
+\end{align}
+and
+\begin{align}
+\boxed{\text{EBP: neural derivative + exact projected energy balance}.}
+\end{align}
+
+\section*{51. Complete NODE algorithm}
+
+Choose architecture
+\begin{align}
+\boxed{
+\mathcal A\in\{A,\mathrm{IND},\mathrm{DEP1},\mathrm{DEP2}\},
+}
+\end{align}
+and state order
+\begin{align}
+\boxed{
+n_x=n_x^{1C}\quad\text{or}\quad n_x^{2C}.
+}
+\end{align}
+
+Load Phase-D \texttt{l1\_h1}, construct contiguous segments, compute training-only normalization, construct rollout windows \(N_r\), and for NODE-2C causal contexts \(L_e\).
+
+Initialize:
+\begin{align}
+\boxed{x_0=y_0}
+\end{align}
+for NODE-1C, or
+\begin{align}
+\boxed{x_0=[y_0,E_\psi(\mathcal C_0)]}
+\end{align}
+for NODE-2C.
+
+Integrate
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}=g_\omega(z,\widetilde v)
+}
+\end{align}
+with RK4 using \(N_s\) substeps per observed interval.
+
+Compute
+\begin{align}
+\boxed{
+\mathcal L_{\mathrm{NODE}}
+=
+\frac{1}{|\mathcal W|}
+\sum_{k,\ell}
+\left\|
+S_y^{-1}
+(\widehat y_{k+\ell|k}-y_{k+\ell})
+\right\|^2.
+}
+\tag{N3.161}
+\end{align}
+
+Backpropagate through the complete rollout and through the causal encoder for NODE-2C. Select checkpoints with validation rollout error and evaluate Sim1/Sim2/Sim3 only after model selection.
+
+\section*{Part 3 conclusion}
+
+The NODE baseline is
+\begin{align}
+\boxed{
+\frac{dz}{d\tau}=g_\omega(z,\widetilde v)
+}
+\end{align}
+with
+\begin{align}
+\boxed{\text{no physical residual}}
+\end{align}
+and
+\begin{align}
+\boxed{\text{no physical projection}.}
+\end{align}
+
+Normalized time is
+\begin{align}
+\boxed{
+\tau=\frac{t-t_{\rm ref}}{\Delta t},
+}
+\end{align}
+and physical-time derivatives are recovered exactly through
+\begin{align}
+\boxed{
+\frac{dx}{dt}
+=
+\frac{S_x}{\Delta t}g_\omega(z,\widetilde v).
+}
+\end{align}
+
+NODE-1C needs no encoder because
+\begin{align}
+\boxed{x_k=y_k.}
+\end{align}
+
+NODE-2C needs a causal encoder because
+\begin{align}
+\boxed{
+T_{m,k}=E_\psi(\mathcal C_k)
+}
+\end{align}
+must be inferred from past/current information.
+
+Finally,
+\begin{align}
+\boxed{L_e\neq N_r\neq N_s.}
+\end{align}
+
+Their roles are
+\begin{align}
+\boxed{L_e=\text{hidden-state history},}
+\end{align}
+\begin{align}
+\boxed{N_r=\text{training recursive prediction horizon},}
+\end{align}
+and
+\begin{align}
+\boxed{N_s=\text{numerical integration resolution}.}
+\end{align}
+
+Most importantly,
+\begin{align}
+\boxed{\mathrm{NODE}\neq\mathrm{RC},}
+\end{align}
+and NODE does not estimate or use
+\begin{align}
+R,\ C,\ \eta_r,\ \lambda_c,\ \lambda_r.
+\end{align}
+
+Its scientific purpose is to answer: how accurately can an unconstrained continuous-time neural vector field learn the same building dynamics from exactly the same available information?
+
+\end{document}

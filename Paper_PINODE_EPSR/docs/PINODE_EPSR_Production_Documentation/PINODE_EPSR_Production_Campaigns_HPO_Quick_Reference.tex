@@ -1,0 +1,96 @@
+\documentclass[10pt]{article}
+\usepackage[margin=0.65in]{geometry}
+\usepackage{booktabs,tabularx,array,longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{xurl}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{4pt}
+\renewcommand{\arraystretch}{1.15}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\title{PINODE/EPSR Production Campaign + HPO Quick Reference}
+\date{September 2, 2026 -- Patch01R2B Qualified Baseline}
+\begin{document}
+\maketitle
+
+\section*{Campaign matrix}
+\begin{tabularx}{\textwidth}{L{0.22\textwidth}YY}
+\toprule
+Dimension & Values & Count \\
+\midrule
+Methods & inverse\_pinn, neural\_ode, base\_pinode, ebp\_pinode & 4 \\
+RC order & 1C, 2C & 2 \\
+Cases & all\_to\_one, identity\_ind, identity\_dep1, identity\_dep2 & 4 \\
+Total & $4\times2\times4$ & 32 \\
+\bottomrule
+\end{tabularx}
+
+\section*{Scope}
+\begin{tabular}{lll}
+\toprule
+CLI scope & Cases & Configurations \\
+\midrule
+priority-a & all\_to\_one & 8 \\
+priority-ab & all\_to\_one + identity\_ind & 16 \\
+full & all four & 32 \\
+\bottomrule
+\end{tabular}
+
+\section*{Method HPO spaces}
+\small
+\begin{longtable}{L{0.20\textwidth}L{0.72\textwidth}}
+\toprule
+Method & Exact tuned spaces \\
+\midrule
+Inverse PINN & hidden\_layers 1--4; hidden\_width $\{16,32,64,128\}$; activation $\{tanh,silu,gelu\}$; learning\_rate $10^{-4}$--$3\times10^{-2}$ log; lambda\_f $10^{-2}$--10 log; optimizer $\{adam,rmsprop\}$; lambda\_y fixed 1. \\
+Neural ODE 1C & common architecture; $N_r\in\{1,3,6,12\}$; $N_s\in\{1,2,5,10\}$; lambda\_wd $10^{-8}$--$10^{-3}$ log; batch\_size $\{8,16,32,64\}$. \\
+Neural ODE 2C & NODE 1C + $L_e\in\{3,6,12\}$ + delta\_T\_m\_max continuous 2--15 C. \\
+Base PINODE 1C & NODE 1C + lambda\_f $10^{-4}$--10 log; lambda\_y fixed 1. \\
+Base PINODE 2C & Base 1C + $L_e\in\{3,6,12\}$ + delta\_T\_m\_max 2--15 C. \\
+EBP-PINODE 1C & NODE 1C + lambda\_corr $10^{-6}$--1 log; lambda\_f fixed 0. \\
+EBP-PINODE 2C & EBP 1C + lambda\_int $10^{-4}$--10 log + $L_e\in\{3,6,12\}$ + delta\_T\_m\_max 2--15 C. \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section*{Production HPO protocol defaults}
+\begin{tabularx}{\textwidth}{L{0.34\textwidth}L{0.18\textwidth}Y}
+\toprule
+Field & Default & Note \\
+\midrule
+TRAIN percentage & 2\% & Applied separately to each monthly TRAIN block; floor to integer target rows. \\
+Inner holdout & 20\% & Floored from selected monthly target rows. \\
+Objective & recursive\_temperature\_normalized & Minimized. \\
+Trials & 12 & Target total completed trials in persistent study. \\
+HPO epochs/patience & 25 / 5 & Per trial. \\
+TPE seed & 42 & HPOConfig default; not exposed by campaign CLI. \\
+HPO max batch cap & 32 & Effective trial batch = min(sampled batch size, 32). \\
+Sampling blocks/month & 4 & HPOConfig default. \\
+Production geometry & $N_r\le12$, $L_e\le12$ & Full paper HPO geometry. \\
+Micro32 geometry & $N_r\le3$, $L_e\le12$ & Keeps default 0.5\% qualification feasible. \\
+\bottomrule
+\end{tabularx}
+
+\section*{Current authority}
+\begin{itemize}
+\item Search spaces: \path{src/pinode_epsr/training/trainer.py}.
+\item Matrix/priorities: \path{src/pinode_epsr/production/matrix.py}.
+\item HPO protocol and persistent studies: \path{src/pinode_epsr/production/contracts.py}, \path{hpo.py}.
+\item Production CLI creates HPO/training configs from CLI arguments/defaults. The \code{hpo}, \code{training}, and \code{evaluation} YAML blocks are not currently loaded by \code{campaign}.
+\item The \code{controller} block in \path{configs/production.yaml} is actively loaded.
+\end{itemize}
+
+\section*{Campaign lifecycle}
+HPO TRAIN-only $\rightarrow$ freeze best HP $\rightarrow$ full TRAIN multi-start restarts $\rightarrow$ checkpoint gates $\rightarrow$ VALIDATION selects accepted restart $\rightarrow$ final TEST Sim1/Sim2/Sim3.
+
+\section*{Controller override semantics}
+\code{deadband_half_width_C=1.0} means $\pm1$ C around setpoint (2 C total band). Precedence: user override $>$ observed TRAIN data $>$ documented fallback. Kitchen heating remains explicitly extrapolative/OOD if unobserved in TRAIN even when user-overridden.
+
+\section*{Important batch-size implementation note}
+The search space includes batch\_size=64, but default HPO execution caps effective batch size at 32. A best trial may therefore record 64 while being evaluated with effective 32; final training may use 64 because its cap defaults to 64. Review before treating batch size as scientifically resolved.
+
+\section*{Qualification}
+Patch01R2B: 135/135 bounded tests PASS. Micro32: 32 completed, 32 accepted, 0 rejected, 0 failed, exit code 0\@.
+
+\end{document}

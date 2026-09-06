@@ -1,0 +1,2 @@
+machine_id,tracking_uri,experiment_id,experiment_name,lifecycle_stage,artifact_location
+laptop,http://127.0.0.1:5000,3,ScaleBridge_P1_Aggregation_Test,active,c:\Users\ninad\Dropbox\NinadGaikwad_PhD\Gaikwad_Research\From_WSU_OneDrive\BuildingModelingProject_Condensed\Data\ScaleBridge\mlflow_artifacts/3

@@ -1,0 +1,24 @@
+﻿{
+    "installed_at":  "2026-08-29T18:37:10-07:00",
+    "delivery":  "PINODE_EPSR_EnergyPlus_GenericSimulator_20260829_v6",
+    "paper_repo":  "C:\\Users\\ninad\\Dropbox\\NinadGaikwad_PhD\\Gaikwad_Research\\From_WSU_OneDrive\\BuildingModelingProject_Condensed\\NewOrg\\scalebridge-research\\Paper_PINODE_EPSR",
+    "scientific_data_writes_during_install":  0,
+    "four_command_interface":  "[m_dot_D*, T_sa_D*, m_dot_K*, T_sa_K*]",
+    "all_four_zone_modes_commandable":  true,
+    "categorical_kitchen_heating_exclusion":  false,
+    "feasibility":  {
+                        "type":  "generic symmetric per-zone native fallback",
+                        "min_flow_fraction":  0.5,
+                        "max_flow_fraction":  0.8,
+                        "min_abs_delta_t_c":  4,
+                        "max_abs_delta_t_c":  8,
+                        "outside_action":  "release fan + sensible-load overrides for infeasible zone only"
+                    },
+    "transform":  {
+                      "fan":  "a_fan = 0.5*m_dot_star",
+                      "thermal":  "a_q = m_dot_star*cp*(T_sa_star-T_zone)",
+                      "identical_for_dining_kitchen_heating_cooling":  true
+                  },
+    "history_profile":  "BROAD_HVAC_HISTORY_V1",
+    "exact_final_mpc_contract":  "deferred until learned models and MPC are built"
+}

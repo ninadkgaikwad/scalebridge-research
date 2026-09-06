@@ -1,0 +1,1 @@
+Patch 06 removes legend.maxheight for Dash/Plotly.js compatibility while retaining a native ~75/25 plot/legend split and concise legend labels. Replace callbacks.py and add the unit test. No other Generation behavior changes.

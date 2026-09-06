@@ -1,0 +1,56 @@
+ScaleBridge Phase E0 - E0-8 Generic HPO + Tracking Mathematics Lock
+===================================================================
+Status: RATIFIED / MATHEMATICS v1
+Date: 2026-08-31
+
+Authoritative contract:
+  docs/mathematics/thermal_modeling/phase_e0/contracts/
+  ScaleBridge_PhaseE0_E0-8_Generic_HPO_Tracking_FrozenConfiguration_Contract_v1.tex
+
+LOCKED RESPONSIBILITY BOUNDARY
+------------------------------
+E0-8 owns generic HPO study/trial orchestration, Optuna integration, MLflow
+tracking/provenance, TRAIN-only leakage enforcement, reproducible study/trial
+identity, compatible resume, trial terminal-state semantics, Pareto bookkeeping,
+and frozen-hyperparameter artifacts.
+
+E.1/E.2/E.3/E.4 own method-specific hyperparameter names, domains, conditions,
+scientific meanings, objective evaluators/directions, representative-subset
+science, pruning validity, and final production-model fitting.
+
+Hyperparameters h are NOT fitted model parameters Theta, neural weights psi, or
+posterior representations Pi_Theta.
+
+DATA AUTHORITY
+--------------
+HPO data must be a subset of Phase-D TRAIN only.
+Phase-D VALIDATION and TEST cannot influence proposals, pruning, trial scores,
+ranking, Pareto construction, or final HPO selection.
+Any HPO inner fit/score split or cross-validation is constructed from TRAIN only.
+
+SOFTWARE AUTHORITY
+------------------
+Optuna = HPO optimization authority.
+MLflow = experiment/provenance authority.
+E0-8 does not duplicate Optuna optimization logic inside MLflow.
+
+FINAL OUTPUT
+------------
+E0-8 freezes h* (or a Pareto result) with complete study/search-space/objective/
+data provenance. E0-8 does NOT fit the final production model.
+E.x performs final fitting with frozen h* and then exports the fitted model to E0-7.
+
+RESUME
+------
+Resume is allowed only when immutable study fingerprints match. Incompatible
+search space, objective, data selection, provider version, seed policy, or schema
+must fail clearly rather than append incomparable trials.
+
+TRIAL STATES
+------------
+COMPLETE != PRUNED != FAILED.
+
+E0-10
+-----
+E0-10 remains the authoritative comprehensive real testing campaign after
+E.1/E.2/E.3/E.4 exist.

@@ -1,0 +1,89 @@
+ScaleBridge Phase E0-8 Generic HPO Tracking Implementation Notes
+================================================================
+
+AUTHORITY
+---------
+Mathematical/software-science authority:
+  docs/mathematics/thermal_modeling/phase_e0/contracts/
+  ScaleBridge_PhaseE0_E0-8_Generic_HPO_Tracking_FrozenConfiguration_Contract_v1.tex
+
+RESPONSIBILITY BOUNDARY
+-----------------------
+E0-8 owns generic HPO study/trial orchestration, Optuna persistence, MLflow
+provenance, TRAIN-only enforcement, deterministic study/trial identity,
+resume compatibility, standardized study artifacts, Pareto evidence, and
+frozen hyperparameter configuration.
+
+E.1/E.2/E.3/E.4 own all real hyperparameter names/domains/conditional science,
+trial fitting/scoring, representative TRAIN-subset science, pruning scientific
+meaning, and any deterministic final Pareto selection.
+
+E0-8 freezes h*. It does NOT fit the final production model.
+E.x performs final fitting; E0-7 packages the fitted result.
+
+IMPLEMENTATION
+--------------
+Production package added:
+  src/scalebridge/tuning/e0_hpo/
+
+Modules:
+  contracts.py       canonical identities, hashes, objective/data/trial/frozen contracts
+  provider.py        generic E.x HPO-provider boundary
+  data_policy.py     Phase-D TRAIN-only leakage guard
+  seeding.py         deterministic per-trial seed derivation
+  optuna_backend.py  sampler/pruner/storage registry + fingerprint-safe resume
+  mlflow_tracking.py parent study + nested trial provenance
+  artifacts.py       standardized JSON/Parquet study outputs
+  runner.py          generic orchestration + selection/freezing
+  handoff.py         downstream E0-7 HPO provenance record
+
+IMPORTANT HARDENING
+-------------------
+1. resume=True requires persistent Optuna storage_url. It cannot silently
+   create a new in-memory study.
+2. A non-disabled pruner is rejected unless the E.x provider explicitly
+   authorizes pruning.
+3. RecoverableTrialError is the only generic method-declared failure allowed to
+   continue as a FAILED trial. Infrastructure exceptions terminate the study.
+4. Provider-generated trial artifact references are retained in trials.parquet
+   and logged into the matching nested MLflow trial run when tracking is enabled.
+5. Multi-objective E0-8 preserves Pareto results. One frozen h* exists only if
+   the provider selects exactly one Pareto member.
+6. Study fingerprint intentionally follows the ratified formula and therefore
+   includes study identity, method/provider version, search-space snapshot,
+   objective contract, HPO-data fingerprint, study seed, and E0-8 schema.
+
+DATA-LEAKAGE CONTRACT
+---------------------
+The E0-2 Phase-D temporal contract remains authoritative. E0-8 v1 accepts only
+literal outer source_partitions=("train",). A provider may create an inner
+fit/score/CV/representative subset only within TRAIN, and the exact selection
+payload is fingerprinted.
+
+STANDARD ARTIFACTS
+------------------
+  study_manifest.json
+  search_space_snapshot.json
+  objective_contract.json
+  data_selection_manifest.json
+  trials.parquet
+  study_summary.json
+  selection_manifest.json
+  frozen_hyperparameters.json (when one final trial is selected)
+  pareto_trials.parquet       (multi-objective)
+
+QUALIFICATION
+-------------
+Focused local framework tests before packaging:
+  12 passed
+  2 skipped only because the packaging container lacks pyarrow and mlflow.
+
+A local E0-2/Phase-D/E0-7 compatibility subset also passes. The authoritative
+laptop validator reruns focused/regression tests with the full ScaleBridge
+environment and validates real pyarrow + real MLflow integration.
+
+The standalone E0-8 validator uses a real controlled Phase-D manifest/parquet,
+but the HPO model and demo_* hyperparameters are explicitly synthetic framework
+fixtures. This is infrastructure qualification, not E.1-E.4 scientific HPO.
+
+E0-10 remains the authoritative comprehensive real testing campaign.

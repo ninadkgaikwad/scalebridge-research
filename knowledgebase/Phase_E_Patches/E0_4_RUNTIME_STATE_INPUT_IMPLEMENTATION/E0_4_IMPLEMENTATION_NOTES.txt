@@ -1,0 +1,40 @@
+ScaleBridge Phase E0 -- E0-4 Runtime State/Input Implementation
+
+Mathematical authority:
+  docs/mathematics/thermal_modeling/phase_e0/contracts/
+  ScaleBridge_PhaseE0_E0-4_Runtime_State_Input_Contract_v1.tex
+
+Implemented scope:
+- compiler-owned deterministic state realization
+- initialization policies: auto/user_fixed/observed/setpoint/default
+- auto precedence: user > observed > setpoint > configured default
+- default initialization temperature: 22 degC
+- setpoint scalar / active mode / heating-cooling midpoint resolution
+- X0 = S0 T0* and H S0 = I validation
+- canonical timestamped runtime frame
+- source availability distinct from model-forcing applicability
+- rich-frame extras retained as unused rather than silently consumed
+- IND local forcing
+- DEP1 local forcing
+- DEP2 local QAC + all-to-one non-HVAC B_g allocation
+- sample-wise A_g q_tilde_g = qbar_g validation
+- boundary broadcast through existing E0-3 boundary ordering
+- PHVAC auxiliary-only exclusion from thermal Q
+- explicit recursive state ownership
+- explicit-reset-only state reset API
+- runtime invariant diagnostics
+- no numerical integration
+
+Compatibility:
+- E0-3B continuous RHS and compiler are not modified.
+- E0-3B default_initial_state() is preserved unchanged as an observed-only
+  compatibility helper.
+- Production generic ScaleBridge code does not import Paper_PINODE_EPSR.
+
+Local targeted qualification before delivery:
+- new E0-4 tests: 71/71 PASS
+- E0-2 + E0-3B + E0-4 combined targeted tests: 120/120 PASS
+- E0-3B standalone validator: PASS
+- E0-4 standalone validator: PASS, qualified=true
+- compileall: PASS
+- no E0-4 numerical integration backend introduced

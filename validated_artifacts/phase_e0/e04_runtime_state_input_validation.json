@@ -1,0 +1,241 @@
+{
+  "continuous_time_only": true,
+  "expected_rejections": {
+    "aggregate_qac": {
+      "error": "QAC must remain local and cannot be an aggregate DEP2 source",
+      "passed": true
+    },
+    "missing_required_local_signal": {
+      "error": "Required local thermal source ('A', 'zic') is unavailable for ind",
+      "passed": true
+    },
+    "observed_missing": {
+      "error": "observed initialization requires a finite air temperature for zone 'A'",
+      "passed": true
+    },
+    "phvac_in_thermal_domain": {
+      "error": "PHVAC is electrical power and cannot appear in local_thermal_powers",
+      "passed": true
+    },
+    "setpoint_missing": {
+      "error": "setpoint initialization requires a resolvable thermostat target for zone 'A'",
+      "passed": true
+    },
+    "timestamp_mismatch": {
+      "error": "Runtime timestamp mismatch: frame='t0', expected='t1'",
+      "passed": true
+    },
+    "user_fixed_missing": {
+      "error": "user_fixed initialization requires a finite user value for zone 'A'",
+      "passed": true
+    }
+  },
+  "flavours": {
+    "1r1c": {
+      "hs0_identity_max_abs": 0.0,
+      "hx0_matches_t0star": true,
+      "initial_state": [
+        21.0,
+        24.0
+      ],
+      "resolved_sources": {
+        "A": "user_fixed",
+        "B": "observed"
+      },
+      "state_dimension": 2,
+      "state_keys": [
+        "A::a",
+        "B::a"
+      ]
+    },
+    "2r2c": {
+      "hs0_identity_max_abs": 0.0,
+      "hx0_matches_t0star": true,
+      "initial_state": [
+        21.0,
+        21.0,
+        24.0,
+        24.0
+      ],
+      "resolved_sources": {
+        "A": "user_fixed",
+        "B": "observed"
+      },
+      "state_dimension": 4,
+      "state_keys": [
+        "A::a",
+        "A::m",
+        "B::a",
+        "B::m"
+      ]
+    },
+    "3r2c": {
+      "hs0_identity_max_abs": 0.0,
+      "hx0_matches_t0star": true,
+      "initial_state": [
+        21.0,
+        21.0,
+        24.0,
+        24.0
+      ],
+      "resolved_sources": {
+        "A": "user_fixed",
+        "B": "observed"
+      },
+      "state_dimension": 4,
+      "state_keys": [
+        "A::a",
+        "A::m",
+        "B::a",
+        "B::m"
+      ]
+    },
+    "4r3c": {
+      "hs0_identity_max_abs": 0.0,
+      "hx0_matches_t0star": true,
+      "initial_state": [
+        21.0,
+        21.0,
+        21.0,
+        24.0,
+        24.0,
+        24.0
+      ],
+      "resolved_sources": {
+        "A": "user_fixed",
+        "B": "observed"
+      },
+      "state_dimension": 6,
+      "state_keys": [
+        "A::a",
+        "A::e",
+        "A::m",
+        "B::a",
+        "B::e",
+        "B::m"
+      ]
+    }
+  },
+  "initialization_policy": {
+    "default_zone_D_C": 22.0,
+    "priority_result_C": [
+      21.0,
+      23.5,
+      22.0,
+      22.0
+    ],
+    "setpoint_midpoint_zone_C_C": 22.0,
+    "source_by_zone": {
+      "A": "user_fixed",
+      "B": "observed",
+      "C": "setpoint",
+      "D": "default"
+    }
+  },
+  "numerical_integrator_present": false,
+  "phase": "E0-4",
+  "qualified": true,
+  "recursive_state": {
+    "hidden_measurement_reset_used": false,
+    "initial_origin": "initialization",
+    "next_origin": "model_evolution",
+    "next_state_matches_model_evolved_state": true
+  },
+  "runtime_binding": {
+    "dep1_dep2_graph_equivalent": true,
+    "dep1_used_local": [
+      [
+        "A",
+        "qac"
+      ],
+      [
+        "A",
+        "zic"
+      ],
+      [
+        "B",
+        "qac"
+      ],
+      [
+        "B",
+        "zic"
+      ]
+    ],
+    "dep2_coordinate_error_max_abs": 1.1368683772161603e-13,
+    "dep2_phvac_auxiliary_only": [
+      [
+        "A",
+        "phvac"
+      ],
+      [
+        "B",
+        "phvac"
+      ]
+    ],
+    "dep2_used_aggregate": [
+      "zic"
+    ],
+    "dep2_used_local": [
+      [
+        "A",
+        "qac"
+      ],
+      [
+        "B",
+        "qac"
+      ]
+    ],
+    "ind_used_local": [
+      [
+        "A",
+        "qac"
+      ],
+      [
+        "A",
+        "zic"
+      ],
+      [
+        "B",
+        "qac"
+      ],
+      [
+        "B",
+        "zic"
+      ]
+    ],
+    "rhs": {
+      "dep1": {
+        "dimension": 4,
+        "finite": true,
+        "values": [
+          0.00032,
+          0.0,
+          0.00028,
+          0.0
+        ]
+      },
+      "dep2": {
+        "dimension": 4,
+        "finite": true,
+        "values": [
+          0.0005548706386437192,
+          0.0,
+          0.0006319685098313221,
+          0.0
+        ]
+      },
+      "ind": {
+        "dimension": 4,
+        "finite": true,
+        "values": [
+          0.0003,
+          0.0,
+          0.0003,
+          0.0
+        ]
+      }
+    },
+    "runtime_invariants_passed": true,
+    "source_availability_differs_from_model_applicability": true
+  }
+}

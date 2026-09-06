@@ -1,0 +1,87 @@
+PHASE D D8 CAMPAIGN RUNNER LOCK — NAME-AGNOSTIC VERSION
+
+IMPORTANT
+---------
+P1 labels such as p1_l01_all_to_one, p1_l02_functional,
+p1_l03_intermediate, p1_l04_spatial_detailed and p1_l05_identity are
+campaign-specific aggregation_id metadata. They MUST NOT be used to determine
+Phase D product semantics or Dep2 eligibility.
+
+Likewise, user-defined custom-group aggregation IDs/names may differ across
+campaigns and users.
+
+AUTHORITATIVE D8 ENUMERATION
+----------------------------
+D8 enumerates successful aggregation_matrix_case_runs.csv rows and preserves
+the exact aggregation_id, aggregation_run_id and available descriptive
+metadata from each row. Unknown/custom IDs are valid.
+
+DEPENDENT-2 COUNTERPART RULE
+----------------------------
+Dep2 counterpart discovery is structural.
+
+A candidate is a one-zone/full-coverage realization when:
+  aggregate_zone_count == 1
+and the single aggregate zone covers the full source-zone set.
+
+The following are NOT Dep2 compatibility requirements:
+- aggregation_id or user-defined aggregation name
+- aggregation level label/index
+- aggregation family label
+- aggregate-zone name
+- grouping strategy (custom_groups / all_thermal_zones_to_one / identity)
+
+The following data-affecting lineage remains required to match:
+- campaign
+- case
+- source generation lineage
+- building type
+- climate zone
+- weather location
+- rule/config/schema version
+- weighting mode
+- system-node pattern
+- thermal-zone filter
+- complete source-zone set
+- same aggregation matrix search scope
+- usable Phase C C8 inference for the selected one-zone candidate
+
+If multiple compatible one-zone candidates exist, retain all candidates and
+select deterministically by:
+1. matrix record order
+2. creation timestamp
+3. lexical aggregation_run_id
+
+If no compatible usable one-zone candidate exists:
+- ind and dep1 still build
+- dep2 is omitted
+- no dep2/data.parquet is written
+- reason/status is preserved
+
+PRODUCTION HIERARCHY
+--------------------
+<campaign_root>/phase_d/
+  campaign_runs/<phase_d_run_id>/
+    phase_d_campaign_plan.json
+    phase_d_campaign_run_manifest.json
+    aggregation_run_registry.csv
+    dataset_registry.csv
+    failures.csv
+    logs/
+  cases/<case_id>/aggregation_runs/<aggregation_run_id>/
+    aggregation_manifest.json
+    silos/
+      ml|ob/
+        ind|dep1|dep2/
+          .../
+            data.parquet
+            manifest.json
+
+No D3/D4 intermediate time-series are persisted.
+
+RESUME
+------
+Normal run refuses accidental overwrite.
+--resume skips validated completed aggregation outputs and rebuilds incomplete
+outputs.
+--overwrite-existing deliberately rebuilds existing Phase D outputs.

@@ -1,0 +1,7 @@
+aggregate_zone_id,equipment_type,source_zone,schedule_name,equipment_level,eio_table,matched_schedule_key_count,matched_schedule_keys
+Aggregated_Zone_KITCHEN,People,KITCHEN,BLDG_OCC_SCH,6.3,People Internal Gains Nominal,1,BLDG_OCC_SCH
+Aggregated_Zone_KITCHEN,Lights,KITCHEN,BLDG_LIGHT_KITCHEN_SCH,1513.056,Lights Internal Gains Nominal,1,BLDG_LIGHT_KITCHEN_SCH
+Aggregated_Zone_KITCHEN,ElectricEquipment,KITCHEN,BLDG_EQUIP_SCH,31468.723,ElectricEquipment Internal Gains Nominal,1,BLDG_EQUIP_SCH
+Aggregated_Zone_KITCHEN,ElectricEquipment,KITCHEN,ALWAYS_ON,457.5,ElectricEquipment Internal Gains Nominal,1,ALWAYS_ON
+Aggregated_Zone_KITCHEN,ElectricEquipment,KITCHEN,ALWAYS_ON,570.0,ElectricEquipment Internal Gains Nominal,1,ALWAYS_ON
+Aggregated_Zone_KITCHEN,GasEquipment,KITCHEN,FF_GAS_EQUIP_SCH,91932.601,GasEquipment Internal Gains Nominal,1,FF_GAS_EQUIP_SCH
